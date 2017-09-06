@@ -259,10 +259,15 @@ class UserController extends Controller {
 		if (empty($targetUser))
 			Response::fail('User not found');
 
+
+		$sameUser = $targetUser->id === Auth::$user->id;
+		$You = $sameUser ? 'You' : $targetUser->name;
+		$do = $sameUser ? 'do' : 'does';
+		$you = $sameUser ? 'you' : 'they';
 		$avail = $targetUser->getPCGAvailableSlots(false);
-		if ($avail === 0)
-			Response::fail('You do not have any available slots left. You can always fulfill additional requests to get more.');
-		Response::done();
+		if ($avail > 0)
+			Response::done();
+		Response::fail("$You $do not have any available slots left, but $you can always fulfill some requests to get more.");
 	}
 
 	const CONTRIB_NAMES = [
@@ -362,8 +367,8 @@ class UserController extends Controller {
 	}
 
 	public function list(){
-		if (!Permission::sufficient('staff'))
-			CoreUtils::notFound();
+		if (Permission::insufficient('staff'))
+			CoreUtils::noPerm();
 
 		$Users = DB::$instance->orderBy('name')->get(User::$table_name);
 

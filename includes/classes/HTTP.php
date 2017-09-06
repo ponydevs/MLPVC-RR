@@ -168,6 +168,6 @@ class HTTP {
 	public static function redirect($url = '/', $http = self::REDIRECT_PERM){
 		header("Location: $url", true, $http);
 		$urlenc = CoreUtils::aposEncode($url);
-		die("Click <a href='$urlenc'>here</a> if you aren’t redirected.<script>location.replace(".JSON::encode($url).')</script>');
+		die("HTTP $http - Click <a href='$urlenc'>here</a> if you aren’t redirected.<script>location.replace(".JSON::encode($url).')</script>');
 	}
 }

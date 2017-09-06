@@ -132,17 +132,10 @@
 
 					newPageNumber = parseInt(this.page, 10);
 
-					let $active = $navbar.find('li.active').children().last();
-					if (pageRegex.test($active.text()))
-						$active.html(function(){ this.innerHTML.replace(pageRegex,`Page ${newPageNumber}`) });
-
 					// Preserve static page title component at the end
 					if (typeof titleProcessor === 'function')
 						document.title = titleProcessor(newPageNumber);
 					document.title = document.title.replace(pageRegex, `Page ${newPageNumber}`);
-					$navbar.find('li.active').children().last().html(function(){
-						return this.innerHTML.replace(pageRegex, `Page ${newPageNumber}`);
-					});
 
 					let newURI = this.request_uri || (basePath+newPageNumber+
 							(

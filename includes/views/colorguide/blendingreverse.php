@@ -33,11 +33,16 @@
 				</table>
 			</div>
 			<div id="filter-candidates">
-				<h2>Potential filters</h2>
+				<h2>Calculated filter</h2>
 				<ul></ul>
 			</div>
 		</div>
 		<div class="section">
+			<!-- TODO Add selector functionality in JS -->
+			<div id="reverse-what" class="hidden">
+				<label><input type="radio" name="reverse-target" value="color"> Single color</label>
+				<label><input type="radio" name="reverse-target" value="image" checked> An image</label>
+			</div>
 			<div id="image-select">
 				<h2>Image</h2>
 				<button class="blue typcn typcn-upload">Browse&hellip;</button>

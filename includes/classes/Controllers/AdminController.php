@@ -27,7 +27,7 @@ class AdminController extends Controller {
 		parent::__construct();
 
 		if (!Permission::sufficient('staff'))
-			CoreUtils::notFound();
+			CoreUtils::noPerm();
 	}
 
 	public function index(){
@@ -475,7 +475,7 @@ HTML;
 
 	public function wsdiag(){
 		if (Permission::insufficient('developer'))
-			CoreUtils::notFound();
+			CoreUtils::noPerm();
 
 		$heading = 'WebSocket Server Diagnostics';
 		CoreUtils::loadPage(__METHOD__, [

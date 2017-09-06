@@ -11,8 +11,8 @@ class PreferenceController extends Controller {
 	public function __construct(){
 		parent::__construct();
 
-		if (!Permission::sufficient('user') || !POST_REQUEST)
-			CoreUtils::notFound();
+		if (!POST_REQUEST || Permission::insufficient('user'))
+			CoreUtils::noPerm();
 		CSRFProtection::protect();
 	}
 

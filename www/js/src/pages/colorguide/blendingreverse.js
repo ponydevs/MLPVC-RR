@@ -19,6 +19,54 @@ $(function(){
 		},
 	};
 
+	const Math_NotEvenOnce = {
+		normal: (originalColors, filteredColors) =>{
+			const n = originalColors.length;
+			const sb = new $.RGBAColor(0, 0, 0), sd = new $.RGBAColor(0, 0, 0);
+			let numerator = 0, denominator = 0;
+
+			$.RGBAColor.COMPONENTS.forEach(component => {
+				originalColors.forEach((color, index) => { // iterate over each colour pair
+					const b = color[component];
+					const d = b - filteredColors[index][component];
+					sb[component] += b;
+					sd[component] += d;
+					numerator -= n * Math.pow(d, 2);
+					denominator -= n * b * d;
+				});
+				numerator += Math.pow(sd[component], 2);
+				denominator += sd[component] * sb[component];
+			});
+
+			const alpha = $.clamp(numerator / denominator, 0, 1);
+			sb.alpha = alpha;
+			$.RGBAColor.COMPONENTS.forEach(component => {
+				let z = alpha ? (sb[component] - sd[component] / alpha) / n : 0;
+				sb[component] = Math.round($.clamp(z, 0, 255));
+			});
+
+			return sb;
+		},
+		multiply: (originalColors, filteredColors) => {
+			console.log(originalColors);
+			let filter = new $.RGBAColor(0, 0, 0);
+			$.RGBAColor.COMPONENTS.forEach(component => {
+				let numerator = originalColors.reduce((p, b, i) => p + b[component] * (b[component] - filteredColors[i][component]), 0);
+				let denominator = originalColors.reduce((p, b, i) => p + Math.pow(b[component] - filteredColors[i][component], 2), 0);
+				filter[component] = numerator / (denominator * 2);
+			});
+			let alpha = 0.5;
+			let kmin = Math.max(1, 1 / filter.toRGBArray().reduce((p, c) => Math.min(p, c)));
+			$.RGBAColor.COMPONENTS.forEach(component => {
+				let z = 255 - 255 / (filter[component] * kmin);
+				filter[component] = Math.round($.clamp(z, 0, 255));
+			});
+			filter.alpha = $.clamp(alpha * kmin, 0, 1);
+
+			return filter;
+		}
+	};
+
 	class MultiplyReverseForm {
 		constructor(){
 			this.$controls = $('#controls');
@@ -174,7 +222,7 @@ $(function(){
 				}
 			});
 			this.$filterOverrideOpacity = $('#filter-override-opacity').on('change', e => {
-				e.target.value = $.rangeLimit(e.target.value,false,0,100);
+				e.target.value = $.clamp(e.target.value,0,100);
 				this.updateOverriddenFilterColor();
 			});
 			this.$filterOverrideColor = $('#filter-override-color').on('change',e => {
@@ -209,12 +257,10 @@ $(function(){
 			/// DEBUG ///
 			this.addKnownValueInputRow();
 			this.addKnownValueInputRow();
-			const vals = ['#9BDBF5','#364AAB','#F9B764','#573F45','#1B98D1','#093395','#EC4141','#52152D'];
+			const vals = ['#FF0000','rgb(170,0,0)','#00FF00','rgb(0,189,0)','#0000FF','rgb(0,0,184)','#FFFF00','rgb(170,189,0)'];
 			this.$knownColorsTbody.find('input').each((i, el) => {
 				$(el).val(vals[i]).trigger('blur');
 			});
-			this.$filterOverrideOpacity.val(75);
-			this.$filterOverrideColor.val('#221F9A').trigger('blur');
 		}
 		isOverlayEnabled(){
 			return !this.$previewOverlayCanvas.hasClass('hidden');
@@ -374,7 +420,7 @@ $(function(){
 							toobig = true;
 						if (!toosmall && newpixel+maxdiff < 0)
 							toosmall = true;
-						imgData.data[j] = $.rangeLimit(newpixel, false, 0, 255);
+						imgData.data[j] = $.clamp(newpixel, 0, 255);
 					});
 					if (toosmall || toobig){
 						overlayData.data[i] = this.overlayColor.red;
@@ -390,8 +436,10 @@ $(function(){
 			},200);
 		}
 		updateFilterCandidateList(){
-			let reference = null;
-			const pairs = [];
+			const values = {
+				original: [],
+				filtered: []
+			};
 
 			this.$filterCandidates.empty();
 			this.selectedFilterColor = null;
@@ -403,71 +451,22 @@ $(function(){
 				if ($inputs.length !== 2)
 					return;
 
-				const values = {};
 				$inputs.each((_, input) => {
-					values[input.parentNode.className.split(' ')[1]] = $.RGBAColor.parse(input.value);
-				});
-				if ($tr.hasClass('reference'))
-					reference = values;
-				else pairs.push(values);
-			});
-
-			if (reference === null || !pairs.length)
-				return;
-
-			let allfilters = this.getValidFilterValues(reference.original, reference.filtered);
-
-			// Store in an object to avoid dupes & increase a confidence count if dupes are found
-			let
-				bestfilterArray = [],
-				confidence = {},
-				bestconfidence = 1;
-			$.each(pairs, (_, pair) => {
-				let values = this.pickBestFilterValues(allfilters, pair.original, pair.filtered);
-				$.each(values, (_, value) => {
-					const k = value.round().toRGBA();
-					if (typeof confidence[k] !== 'undefined'){
-						confidence[k].push(pair);
-						if (confidence[k].length > bestconfidence)
-							bestconfidence = confidence[k].length;
-						return;
-					}
-
-					confidence[k] = [pair];
-					bestfilterArray.push(value);
+					values[input.parentNode.className.split(' ')[1]].push($.RGBAColor.parse(input.value));
 				});
 			});
 
-			if (bestfilterArray.length > 1){
-				// Sort descending by confidence
-				bestfilterArray.sort((a,b) => {
-					const ac = confidence[a.toRGBA()].length;
-					const bc = confidence[b.toRGBA()].length;
+			const color = Math_NotEvenOnce[this.getFilterType()](values.original, values.filtered);
 
-					return ac === bc ? 0 : (ac < bc ? 1 : -1);
-				});
-			}
-
-			$.each(bestfilterArray, (_, color) => {
-				const pairs = confidence[color.toRGBA()];
-				this.$filterCandidates.append(
-					MultiplyReverseForm.getFilterDisplayLi(color, pairs)
-				);
-			});
+			this.$filterCandidates.append(
+				MultiplyReverseForm.getFilterDisplayLi(color.round())
+			);
 		}
-		static getFilterDisplayLi(color, pairs = []){
+		static getFilterDisplayLi(color){
+			console.log(color);
 			const
 				rgba = color.toRGBA(),
 				$pairs = $.mk('ul').attr('class','pairs');
-
-			$.each(pairs, (_, pair) => {
-				$pairs.append(
-					$.mk('li').append(
-						$.mk('span').attr('title', pair.original.toString()).css('background-color', pair.original),
-						$.mk('span').attr('title', pair.filtered.toString()).css('background-color', pair.filtered)
-					)
-				);
-			});
 
 			return $.mk('li').attr({'data-rgba':rgba,title:'Click to select & apply'}).append(
 				$.mk('div').attr('class', 'color').append (
@@ -478,7 +477,7 @@ $(function(){
 						`<div><strong>R:</strong> <span class="color-red">${color.red}</span></div>`,
 						`<div><strong>G:</strong> <span class="color-green">${color.green}</span></div>`,
 						`<div><strong>B:</strong> <span class="color-blue">${color.blue}</span></div>`,
-						`<div><strong>A:</strong> <span>${color.alpha*100}%</span></div>`
+						`<div><strong>A:</strong> <span>${Math.round(color.alpha*100)}%</span></div>`
 					)
 				),
 				$pairs
@@ -487,22 +486,6 @@ $(function(){
 		getFilterType(){
 			return this.$filterTypeSelect.children(':selected').attr('value');
 		}
-		getFilterCalculator(){
-			switch (this.getFilterType()){
-				case 'multiply':
-					return Blender.multiplyFilter;
-				case 'normal':
-					return Blender.normalFilter;
-			}
-		}
-		getNormalCalculator(){
-			switch (this.getFilterType()){
-				case 'multiply':
-					return Blender.multiply;
-				case 'normal':
-					return Blender.normal;
-			}
-		}
 		getReverseCalculator(){
 			switch (this.getFilterType()){
 				case 'multiply':
@@ -510,68 +493,6 @@ $(function(){
 				case 'normal':
 					return Blender.normalReverse;
 			}
-		}
-		getValidFilterValues(Bot, Top){
-			let valid = [];
-			for (let i = 0; i<=100; i++){
-				const
-					values ={},
-					alpha = i/100;
-				let rip = false;
-				$.each(RGB, (_, k) => {
-					const run = this.getFilterCalculator()(alpha, Top[k], Bot[k]);
-					if (isNaN(run)){
-						values[k] = run;
-						return;
-					}
-
-					if (!isFinite(run) || run < 0 || run > 255){
-						rip = true;
-						return false;
-					}
-					values[k] = run;
-				});
-				if (rip)
-					continue;
-				values.alpha = alpha;
-				valid.push($.RGBAColor.fromRGB(values));
-			}
-			return valid;
-		}
-		pickBestFilterValues(valid, Bot, Top){
-			let lowestScore, lowestIndex = 0, winners = [];
-			const calculator = this.getNormalCalculator();
-			$.each(valid, (ix, filterColor) => {
-				let score = 0;
-				$.each(RGB, (_, k) => {
-					if (isNaN(filterColor[k])){
-						let subScore, subValue;
-						for (let test = 0; test <= 255; test++){
-							const run = calculator(filterColor.alpha, test, Bot[k]);
-							let diff = Math.abs(Top[k] - run);
-							if (subScore === undefined || diff < subScore){
-								subScore = diff;
-								subValue = test;
-							}
-						}
-						filterColor[k] = subValue;
-						score += subScore;
-					}
-					else {
-						const run = calculator(filterColor.alpha, filterColor[k], Bot[k]);
-						score += Math.abs(Top[k] - run);
-					}
-				});
-				if (score === 0)
-					winners.push(filterColor);
-				if (lowestScore === undefined || score < lowestScore){
-					lowestScore = score;
-					lowestIndex = ix;
-				}
-			});
-			if (winners.length > 0)
-				return winners;
-			return [valid[lowestIndex]];
 		}
 	}
 

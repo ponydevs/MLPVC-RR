@@ -35,7 +35,7 @@ class View {
 						if (isset($scope['Session'])){
 							/** @var $session \App\Models\Session */
 							$session = $scope['Session'];
-							$bc = (new NavBreadcrumb('Users', '/users'))->setActive(Permission::insufficient('staff'))->setChild(
+							$bc = (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'))->setChild(
 								(new NavBreadcrumb($session->user->name, $session->user->toURL()))->setChild('Session #'.$session->id)
 							);
 						}
@@ -83,10 +83,10 @@ class View {
 							$bc = $appearance->owner->getPCGBreadcrumb();
 						$bc->end()->setChild($appearance->label);
 					break;
-					case 'belnding':
+					case 'blending':
 						$bc->setChild('Color Blending Calculator');
 					break;
-					case 'belndingreverse':
+					case 'blendingreverse':
 						$bc->setChild('Color Blending Reverser');
 					break;
 					case 'change-list':
@@ -117,12 +117,12 @@ class View {
 				return $bc;
 			break;
 			case 'components':
-				return new NavBreadcrumb('Components');
+				return new NavBreadcrumb('Components',null,true);
 			break;
 			case 'episode':
 				switch ($this->method){
 					case 'list':
-						return new NavBreadcrumb('Episodes & Movies');
+						return new NavBreadcrumb('Episodes & Movies',null,true);
 					break;
 					case 'view':
 						/** @var $ep \App\Models\Episode */
@@ -135,13 +135,19 @@ class View {
 				$bc = new NavBreadcrumb('Error');
 				switch ($this->method){
 					case 'auth':
-						$bc->setChild(new NavBreadcrumb('Auth'));
+						$bc->setChild('Auth');
 					break;
 					case 'fatal':
-						$bc->setChild(new NavBreadcrumb('Fatal'));
+						$bc->setChild('Fatal');
 					break;
 					case 'notfound':
-						$bc->setChild(new NavBreadcrumb('Not Found'));
+						$bc->setChild('Not Found');
+					break;
+					case 'noperm':
+						$bc->setChild('Unauthorized');
+					break;
+					case 'badreq':
+						$bc->setChild('Bad Request');
 					break;
 					default:
 						$bc->setActive();
@@ -151,7 +157,7 @@ class View {
 			case 'event':
 				switch ($this->method){
 					case 'list':
-						return new NavBreadcrumb('Events');
+						return new NavBreadcrumb('Events',null,true);
 					break;
 					case 'index':
 						return (new NavBreadcrumb('Events', '/events'))->setChild($scope['heading']);
@@ -159,7 +165,7 @@ class View {
 				}
 			break;
 			case 'user':
-				$bc = (new NavBreadcrumb('Users', '/users'))->setActive(Permission::insufficient('staff'));
+				$bc = (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'));
 				if ($this->method !== 'list'){
 					/** @var $User \App\Models\User */
 					$User = $scope['User'];

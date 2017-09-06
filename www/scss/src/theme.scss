@@ -375,10 +375,19 @@ header, #sidebar .mobile-nav {
 	width: 100%;
 	box-sizing: border-box;
 	color: #fff;
-	font-weight: bold;
 
 	&:empty {
 		display: none;
+	}
+
+	.div {
+		$margin: .5em;
+		opacity: .5;
+		margin-right: $margin;
+
+		&:not(:first-child) {
+			margin-left: $margin;
+		}
 	}
 
 	> a {

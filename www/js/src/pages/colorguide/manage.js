@@ -372,7 +372,7 @@ $(function(){
 		if (!PersonalGuide)
 			return mkPonyEditor($this,title);
 
-		$.Dialog.wait(title, 'Checking whether you have any more slots');
+		$.Dialog.wait(title, 'Checking whether there are available slots');
 		$.post(`${PGRq}/cg/slot-check`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
@@ -740,7 +740,7 @@ $(function(){
 					<span>Change reason (1-255 chars.)</span>
 					<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{1,255}')}" required disabled>
 				</label>
-				<p class="align-center">Each color must have a short (3-30 chars.) description.<br>The eitor rounds RGB values: ≤3 to 0 and ≥252 to 255.</p>`,
+				<p class="align-center">Each color must have a short (3-30 chars.) description.<br>The editor rounds RGB values: ≤3 to 0 and ≥252 to 255.</p>`,
 				$.mk('div').attr('class', 'btn-group').append(
 					this.$addBtn, this.$editorToggle
 				),

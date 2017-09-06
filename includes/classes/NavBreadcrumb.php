@@ -10,15 +10,16 @@ class NavBreadcrumb {
 	private $link;
 
 	/** @var bool */
-	private $active;
+	private $active, $enabled;
 
 	/** @var NavBreadcrumb */
 	private $child;
 
-	function __construct(string $name, string $link = null){
+	function __construct(string $name, string $link = null, bool $active = false){
 		$this->name = $name;
 		$this->link = $link;
-		$this->active = $link === null;
+		$this->enabled = $link !== null;
+		$this->active = $active;
 	}
 
 	function setActive(bool $value = true){
@@ -27,14 +28,25 @@ class NavBreadcrumb {
 		return $this;
 	}
 
+	function setEnabled(bool $value){
+		$this->enabled = $value;
+
+		return $this;
+	}
+
 	/**
 	 * @param string|NavBreadcrumb $ch
+	 * @param bool                 $activate Whether to set child as active
 	 *
 	 * @return self
 	 */
-	function setChild($ch):NavBreadcrumb {
-		if (is_string($ch))
+	function setChild($ch, bool $activate = false):NavBreadcrumb {
+		if (is_string($ch)){
 			$ch = new self($ch);
+			$activate = true;
+		}
+		if ($activate === true)
+			$ch->setActive();
 		$this->child = $ch;
 
 		return $this;
@@ -59,8 +71,10 @@ class NavBreadcrumb {
 
 	function toAnchor(){
 		$name = CoreUtils::escapeHTML($this->name);
-		return $this->active ? "<span>$name</span>" : "<a href='{$this->link}'>$name</a>";
+		return $this->active ? "<strong>$name</strong>" : ($this->enabled ? "<a href='{$this->link}'>$name</a>" : "<span>$name</span>");
 	}
+
+	const DIV = '<span class="div">/</span>';
 
 	function __toString():string {
 		$HTML = [];
@@ -71,6 +85,6 @@ class NavBreadcrumb {
 		}
 		while ($ptr !== null);
 
-		return implode(' &rsaquo; ', $HTML);
+		return self::DIV.implode(self::DIV, $HTML);
 	}
 }

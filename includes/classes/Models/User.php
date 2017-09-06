@@ -249,11 +249,11 @@ class User extends AbstractUser implements LinkableInterface {
 				'postcount' => $postcount,
 				'totalslots' => 0,
 				'available' => 0,
-			] :0;
+			] : 0;
 		}
 		$usedSlots = $this->getPCGAppearances(null, true);
 
-		$available = $totalslots-$usedSlots;
+		$available = (int)($totalslots-$usedSlots);
 		if (!$returnArray)
 			return $available;
 		return [
@@ -664,7 +664,7 @@ HTML;
 	}
 
 	public function getPCGBreadcrumb($active = false){
-		return (new NavBreadcrumb('Users', '/users'))->setActive(Permission::insufficient('staff'))->setChild(
+		return (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'))->setChild(
 			(new NavBreadcrumb($this->name, $this->toURL()))->setChild(
 				(new NavBreadcrumb('Personal Color Guide', $this->toURL().'/cg'))->setActive($active)
 			)

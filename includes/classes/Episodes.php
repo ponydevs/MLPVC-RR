@@ -273,7 +273,6 @@ HTML;
 			<td class='season' rowspan='2'>{$title['season']}</td>
 			<td class='episode' rowspan='2'>{$title['episode']}</td>
 HTML;
-
 			}
 			else {
 				$href = $Episode->toURL();
@@ -287,7 +286,7 @@ HTML;
 				$star = '<span class="typcn typcn-home" title="Curently visible on the homepage"></span> ';
 			}
 			if (!$Episode->aired)
-				$star .= '<span class="typcn typcn-media-play-outline" title="'.($Episode->is_movie?'Movie':'Episode').' didn’t air yet, voting disabled"></span>&nbsp;';
+				$star .= '<span class="typcn typcn-chart-pie" title="'.($Episode->is_movie?'Movie':'Episode').' didn’t air yet, voting disabled"></span>&nbsp;';
 
 			$airs = Time::tag($Episode->airs, Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 

@@ -125,11 +125,11 @@ class ColorGuideController extends Controller {
 
 	public function sprite($params){
 		if (Permission::insufficient('member'))
-			CoreUtils::notFound();
+			CoreUtils::noPerm();
 
 		$this->_getAppearance($params);
 		if ($this->_appearance->owner_id != Auth::$user->id && Permission::insufficient('staff'))
-			CoreUtils::notFound();
+			CoreUtils::noPerm();
 
 		if ($this->_appearance->owner_id !== null)
 			$params['name'] = $this->_appearance->owner->name;
@@ -497,7 +497,7 @@ class ColorGuideController extends Controller {
 				'isOwner' => $this->_isOwnedByUser,
 			],
 		];
-		if ($this->_isOwnedByUser){
+		if ($this->_isOwnedByUser || Permission::sufficient('staff')){
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
 		}
@@ -506,8 +506,8 @@ class ColorGuideController extends Controller {
 
 	const CM_BASIC_COLS = 'id,favme,favme_rotation,preview_src,facing';
 	public function export(){
-		if (!Permission::sufficient('developer'))
-			CoreUtils::notFound();
+		if (Permission::insufficient('developer'))
+			CoreUtils::noPerm();
 		$JSON = [
 			'Appearances' => [],
 			'Tags' => [],
@@ -1420,7 +1420,7 @@ class ColorGuideController extends Controller {
 	public function tagAction($params){
 		$this->_initialize($params);
 		if (Permission::insufficient('staff'))
-			CoreUtils::notFound();
+			CoreUtils::noPerm();
 
 		$action = $params['action'];
 		$adding = $action === 'make';
@@ -2020,7 +2020,7 @@ HTML;
 		global $HEX_COLOR_REGEX;
 
 		if (Permission::insufficient('staff'))
-			CoreUtils::notFound();
+			CoreUtils::noPerm();
 
 		CoreUtils::fixPath('/cg/blending-reverse');
 

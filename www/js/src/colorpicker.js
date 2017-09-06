@@ -1287,7 +1287,7 @@
 						const data = $AreaUpdateForm.mkData();
 						$.Dialog.wait(false, 'Updating area');
 
-						const newsize = $.rangeLimit(parseInt(data.size,10), false, 1, 400);
+						const newsize = $.clamp(parseInt(data.size,10), 1, 400);
 						if (newsize !== area.boundingRect.sideLength)
 							area.resize(newsize);
 
@@ -1469,7 +1469,7 @@
 		}
 		setPickingSize(size = undefined, store = true){
 			if (!isNaN(size))
-				this._pickingAreaSize = $.rangeLimit(size,false,1,400);
+				this._pickingAreaSize = $.clamp(size,1,400);
 			this._$pickingSize.text(this._pickingAreaSize+'px');
 			this._$decreasePickingSize.attr('disabled', this._pickingAreaSize === 1);
 			this._$increasePickingSize.attr('disabled', this._pickingAreaSize === 400);
@@ -1727,7 +1727,7 @@
 				return;
 
 			const size = activeTab.getImageSize();
-			let newzoomlevel = $.rangeLimit(perc, false, Zoom.min, Zoom.max),
+			let newzoomlevel = $.clamp(perc, Zoom.min, Zoom.max),
 				newsize,
 				oldzoomlevel;
 			if (this._zoomlevel !== newzoomlevel){
@@ -1802,7 +1802,7 @@
 			this.setZoomLevel(this._zoomlevel);
 		}
 		setPickerWidth(perc){
-			const pickerwidth = $.rangeLimit(parseFloat(perc),false,50,85);
+			const pickerwidth = $.clamp(parseFloat(perc),50,85);
 			this._$picker.width(pickerwidth+'%');
 			this._$areasSidebar.outerWidth((100-pickerwidth)+'%');
 			this.resizeHandler();

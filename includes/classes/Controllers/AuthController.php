@@ -133,7 +133,7 @@ class AuthController extends Controller {
 	private function _moveToState(?string $state){
 		global $REWRITE_REGEX;
 
-		if (!isset($state) || !$REWRITE_REGEX->match($state))
+		if ($state === null || !$REWRITE_REGEX->match($state))
 			$state = '/';
 
 		HTTP::redirect($state, HTTP::REDIRECT_TEMP);

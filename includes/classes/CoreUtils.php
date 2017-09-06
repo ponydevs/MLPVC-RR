@@ -139,6 +139,32 @@ class CoreUtils {
 	}
 
 	/**
+	 * Display a 401 page
+	 */
+	public static function noPerm(){
+		HTTP::statusCode(403);
+
+		Users::authenticate();
+
+		self::loadPage('ErrorController::noPerm', [
+			'title' => '401',
+		]);
+	}
+
+	/**
+	 * Display a 400 page
+	 */
+	public static function badReq(){
+		HTTP::statusCode(400);
+
+		Users::authenticate();
+
+		self::loadPage('ErrorController::badReq', [
+			'title' => '400',
+		]);
+	}
+
+	/**
 	 * Page loading function
 	 * ---------------------
 	 * $options = array(

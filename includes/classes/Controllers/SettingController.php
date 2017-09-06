@@ -13,8 +13,8 @@ class SettingController extends Controller {
 	public function __construct(){
 		parent::__construct();
 
-		if (!Permission::sufficient('staff'))
-			CoreUtils::notFound();
+		if (Permission::insufficient('staff'))
+			CoreUtils::noPerm();
 		CSRFProtection::protect();
 	}
 
