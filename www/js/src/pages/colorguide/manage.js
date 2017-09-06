@@ -740,7 +740,7 @@ $(function(){
 					<span>Change reason (1-255 chars.)</span>
 					<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{1,255}')}" required disabled>
 				</label>
-				<p class="align-center">Each color must have a short (3-30 chars.) description.<br>The editor rounds RGB values: ≤3 to 0 and ≥252 to 255.</p>`,
+				<p class="align-center">Each color must have a short (3-30 chars.) description.<br>The editor rounds RGB values: ≤3 to 0 and ≥252 to 255.<br>Rows that have a label will always be saved.</p>`,
 				$.mk('div').attr('class', 'btn-group').append(
 					this.$addBtn, this.$editorToggle
 				),
@@ -762,7 +762,7 @@ $(function(){
 				e.preventDefault();
 
 				try {
-					this.saveColorInputs(true, true);
+					this.saveColorInputs(true);
 				}
 				catch (error){
 					if (!(error instanceof ColorTextParseError))
@@ -776,7 +776,11 @@ $(function(){
 
 				let data = this.$form.mkData(),
 					appearance_id = this.appearance_id;
-				data.Colors = this.colorValues;
+				data.Colors = [];
+				$.each(this.colorValues, (_, el) => {
+					if (!el.deleted)
+						data.Colors.push(el);
+				});
 				if (!this.editing)
 					data.ponyid = this.appearance_id;
 				if (data.Colors.length === 0)
@@ -903,6 +907,8 @@ $(function(){
 
 			$el.append("<span class='clrp'></span>",$ci,$cl,$cid,$ca);
 			$ci.triggerHandler('change');
+			if (typeof color === 'object' && color.deleted)
+				$ca.find('.remove').triggerHandler('click');
 
 			return $el;
 		}
@@ -950,7 +956,7 @@ $(function(){
 				animation: 150,
 			});
 		}
-		saveColorInputs(storeState, strict){
+		saveColorInputs(storeState){
 			let $colors = this.$form.children('.clrs');
 			if (this.mode === 'gui'){
 				// Saving
@@ -959,7 +965,8 @@ $(function(){
 					const
 						$row = $(this),
 						$method = $row.children('.clrmthd'),
-						method = $method.is(':disabled') ? null : $method.find('option:selected').attr('value'),
+						deleted = $method.is(':disabled'),
+						method = $method.find('option:selected').attr('value'),
 						$clrid = $row.children('.clrid'),
 						id = $clrid.length ? $clrid.text().replace('ID:','') : void 0;
 
@@ -971,13 +978,11 @@ $(function(){
 								rgb = $.RGBAColor.parse(val),
 								valid = rgb !== null;
 
-							if (!valid && (val.length || strict))
-								return;
-
 							data.push({
 								id,
-								hex: valid ? rgb.toHex() : undefined,
+								hex: valid ? rgb.toHex() : (val||''),
 								label: $row.children('.clrl').val(),
+								deleted,
 							});
 						break;
 						case "link":
@@ -987,6 +992,7 @@ $(function(){
 								hex: undefined,
 								label: $row.children('.clrl').val(),
 								linked_to: $clc.val(),
+								deleted,
 							});
 						break;
 					}
@@ -998,21 +1004,24 @@ $(function(){
 				// Switching
 				let editorContent = ['// One color per line, e.g. #012ABC Fill'];
 				$.each(data, (_, color) =>{
-					let line = [];
+					let out = '';
 
 					if (typeof color === 'object'){
+						let line = [];
 						if (color.linked_to)
 							line.push('@'+color.linked_to);
 						else line.push(color.hex ? color.hex : '#');
 						line.push(color.label || '');
 						if (color.id)
 							line.push('ID:'+color.id);
+
+						out = (color.deleted?'//':'')+line.join('\t');
 					}
 
-					editorContent.push(line.join('\t'));
+					editorContent.push(out);
 				});
 
-				this.destroySortable();
+				//this.destroySortable();
 				$colors.unbind().hide().text(editorContent.join('\n') + '\n');
 
 				// Create editor
@@ -1029,30 +1038,31 @@ $(function(){
 			}
 			else {
 				// Saving
-				this.colorValues = ColorGroupEditor.parseColorsText(this.editor.getValue(), storeState || strict);
+				this.colorValues = ColorGroupEditor.parseColorsText(this.editor.getValue());
 				if (storeState)
 					return;
 
 				// Switching
 				this.editor.destroy();
 				this.editor = null;
-				$colors.empty().unbind().attr('class','clrs');
+				$colors.attr('class','clrs');
 				this.renderColorInputs();
 				this.mode = 'gui';
 			}
 		}
-		static parseColorsText(text, strict){
+		static parseColorsText(text){
 			let colors = [],
 				lines = text.split('\n');
 
 			for (let lineIndex = 0, lineCount = lines.length; lineIndex < lineCount; lineIndex++){
-				let line = lines[lineIndex];
+				const
+					line = lines[lineIndex],
+					trimmedLine = line.trim();
 
 				// Comment or empty line
-				if (/^(\/\/.*)?$/.test(line))
+				if (/^(\/\/($|[^#@].*))?$/.test(trimmedLine))
 					continue;
 
-				const trimmedLine = line.trim();
 				if (trimmedLine === '#'){
 					colors.push({
 						hex: undefined,
@@ -1061,14 +1071,16 @@ $(function(){
 					continue;
 				}
 
-				const matches = trimmedLine.match(/^(?:#?([a-f\d]{6}|[a-f\d]{3})?|@(\d+))(?:\s*([ -~]{3,30}))?(?:\s*ID:(\d+))?$/i);
+				const matches = trimmedLine.match(/^(?:(\/\/)?#?(?:([a-f\d]{0,6})?|@(\d+)))?\s+(?:([ -~]{3,30}))?(?:\s*ID:(\d+))?$/i);
 				// Valid line
-				if (matches && matches[3] && (strict ? matches[1] : true)){
+				if (matches && matches[4]){
+					const color = $.RGBAColor.parse(matches[2]);
 					colors.push({
-						hex: matches[1] ? $.RGBAColor.parse(matches[1]).toHex() : undefined,
-						label: matches[3],
-						id: matches[4],
-						linked_to: matches[2] ? matches[2] : undefined,
+						hex: color !== null ? color.toHex() : (matches[2]?'#'+matches[2]:''),
+						label: matches[4],
+						id: matches[5],
+						linked_to: matches[3] ? matches[3] : null,
+						deleted: !!matches[1],
 					});
 					continue;
 				}

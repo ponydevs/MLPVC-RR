@@ -110,6 +110,11 @@
 			color: $NBlue;
 			font-weight: bold;
 		}
+		// Commented out (deleted) color line
+		.ace_comment.ace_line.ace_character {
+			color: $NLavander;
+			font-style: italic;
+		}
 		.ace_colorname { color: #006000 }
 		.ace_colorid_start { color: #600090 }
 		.ace_colorid { color: red }

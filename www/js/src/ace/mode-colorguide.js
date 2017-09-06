@@ -8,18 +8,37 @@ ace.define("ace/mode/colorguide",["require","exports","ace/mode/colorguide_highl
 			this.$rules = {
 				start: [
 					{
+					    token: "comment.line.character",
+					    regex: /^\/\/[#@].+$/,
+					},
+					{
 					    token: "comment.line.double-slash",
 					    regex: /^\/\/.+$/,
 					},
 					{
 						token: "hex",
-						regex: /^#(?:[a-f\d]{6}|[a-f\d]{3})/,
+						regex: /^#[a-f\d]{6}\s/,
+						next: "colorname",
+					},
+					{
+						token: "hex",
+						regex: /^#[a-f\d]{3}\s/,
+						next: "colorname",
+					},
+					{
+						token: "invalid",
+						regex: /^#([a-f\d]{4,5}|[a-f\d]{1,2})[^a-f\d]/,
 						next: "colorname",
 					},
 					{
 						token: "colorlink",
 						regex: /^@\d+/,
 						next: "colorname",
+					},
+					{
+						token: "meta",
+						regex: /^\s*/,
+					    next: "colorname",
 					},
 					{ caseInsensitive: true },
 

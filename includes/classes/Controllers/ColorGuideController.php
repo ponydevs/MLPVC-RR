@@ -1780,15 +1780,15 @@ HTML;
 				if (empty($append))
 					Response::fail("Trying to edit color with ID {$c['id']} which does not exist");
 				if ($append->group_id !== $Group->id)
-					Response::fail("Trying to edit color with ID {$c['id']} which is not part of color group {$Group->id}");
-				$append->order = $part;
+					Response::fail("Trying to modify color with ID {$c['id']} which is not part of the color group you're editing");
+				$append->order = $part+1;
 				$index = "(ID: {$c['id']})";
 				$recvColorIDs[] = $c['id'];
 			}
 			else {
 				$append = new Color([
 					'group_id' => $Group->id,
-					'order' => $part,
+					'order' => $part+1,
 				]);
 				$index = "(index: $part)";
 			}
@@ -1803,42 +1803,42 @@ HTML;
 			$append->label = $label;
 
 			if (empty($c['hex'])){
-				if (empty($c['linked_to']))
-					Response::fail("You must specify a color code $index");
-				$link_target = Color::find($c['linked_to']);
-				if (empty($link_target))
-					Response::fail("Link target color does not exist $index");
-				// Regular guide
-				if ($link_target->appearance->owner_id === null){
-					// linking to PCG
-					if ($append->appearance->owner_id !== null)
-						Response::fail("Colors of appearances in the official guide cannot link to colors in personal color guides $index");
-					// not Staff
-					if (Permission::insufficient('staff'))
-						Response::fail("Only staff members can edit colors in the official guide $index");
+				if (!empty($c['linked_to'])){
+					$link_target = Color::find($c['linked_to']);
+					if (empty($link_target))
+						Response::fail("Link target color does not exist $index");
+					// Regular guide
+					if ($link_target->appearance->owner_id === null){
+						// linking to PCG
+						if ($append->appearance->owner_id !== null)
+							Response::fail("Colors of appearances in the official guide cannot link to colors in personal color guides $index");
+						// not Staff
+						if (Permission::insufficient('staff'))
+							Response::fail("Only staff members can edit colors in the official guide $index");
+					}
+					// Personal color guide
+					else {
+						// linking to regular guide
+						if ($append->appearance->owner_id === null)
+							Response::fail("Colors of appearances in personal color guides cannot link to colors in the official guide $index");
+						// not (owner of both appearances) and not Staff
+						if ($append->appearance->owner_id !== Auth::$user->id && $link_target->appearance->owner_id !== Auth::$user->id && Permission::insufficient('staff'))
+							Response::fail();
+					}
+					if ($link_target->linked_to !== null)
+						Response::fail("The target color is already linked to a different color $index");
+					if (!empty((array)$append->dependant_colors))
+						Response::fail("Some colors point to this color which means it cannot be changed to a link $index");
+					$append->linked_to = $link_target->id;
+					$append->hex = $link_target->hex;
+					if (!isset($check_colors_of[$link_target->appearance_id]))
+						$check_colors_of[$link_target->appearance_id] = $link_target->appearance;
 				}
-				// Personal color guide
-				else {
-					// linking to regular guide
-					if ($append->appearance->owner_id === null)
-						Response::fail("Colors of appearances in personal color guides cannot link to colors in the official guide $index");
-					// not (owner of both appearances) and not Staff
-					if ($append->appearance->owner_id !== Auth::$user->id && $link_target->appearance->owner_id !== Auth::$user->id && Permission::insufficient('staff'))
-						Response::fail();
-				}
-				if ($link_target->linked_to !== null)
-					Response::fail("The target color is already linked to a different color $index");
-				if (!empty((array)$append->dependant_colors))
-					Response::fail("Some colors point to this color which means it cannot be changed to a link $index");
-				$append->linked_to = $link_target->id;
-				$append->hex = $link_target->hex;
-				if (!isset($check_colors_of[$link_target->appearance_id]))
-					$check_colors_of[$link_target->appearance_id] = $link_target->appearance;
 			}
 			else {
 				$hex = CoreUtils::trim($c['hex']);
 				if (!$HEX_COLOR_REGEX->match($hex, $_match))
-					Response::fail("HEX color is in an invalid format $index");
+					Response::fail('Hex color '.CoreUtils::escapeHTML($hex)." is invalid, please leave empty or fix $index");
 				$append->hex = CGUtils::roundHex('#'.strtoupper($_match[1]));
 				$append->linked_to = null;
 			}
