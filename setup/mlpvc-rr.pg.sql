@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.4
--- Dumped by pg_dump version 9.6.4
+-- Dumped from database version 9.6.5
+-- Dumped by pg_dump version 9.6.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -203,7 +203,8 @@ CREATE TABLE cutiemarks (
     facing character varying(10),
     favme character varying(7),
     rotation smallint NOT NULL,
-    contributor_id uuid
+    contributor_id uuid,
+    label character varying(24)
 );
 
 

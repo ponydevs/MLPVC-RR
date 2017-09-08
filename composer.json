@@ -31,7 +31,7 @@
 		"php-activerecord/php-activerecord": "dev-master",
 		"seinopsys/oauth2-deviantart": "^1.0",
 		"s1lentium/iptools": "^1.1",
-		"robmorgan/phinx": "dev-feature-postgres-citext",
+		"robmorgan/phinx": "dev-custom-columns",
 		"enshrined/svg-sanitize": "dev-fix-remote-reference-check"
 	},
 	"require-dev": {

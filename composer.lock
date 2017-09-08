@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2d6e48c23eb97bfa2b35b4ed9b2f4b6e",
+    "content-hash": "05106f39b96f3aa1b623de20b83ea895",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1230,16 +1230,16 @@
         },
         {
             "name": "robmorgan/phinx",
-            "version": "dev-feature-postgres-citext",
+            "version": "dev-custom-columns",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/phinx.git",
-                "reference": "acc2c58c9ceb41adbdc64fb7ac6960b45e19da82"
+                "reference": "ff457355cadd02d86b5ad70c87fa2006d39ded25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/acc2c58c9ceb41adbdc64fb7ac6960b45e19da82",
-                "reference": "acc2c58c9ceb41adbdc64fb7ac6960b45e19da82",
+                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/ff457355cadd02d86b5ad70c87fa2006d39ded25",
+                "reference": "ff457355cadd02d86b5ad70c87fa2006d39ded25",
                 "shasum": ""
             },
             "require": {
@@ -1301,9 +1301,9 @@
                 "phinx"
             ],
             "support": {
-                "source": "https://github.com/SeinopSys/phinx/tree/feature-postgres-citext"
+                "source": "https://github.com/SeinopSys/phinx/tree/custom-columns"
             },
-            "time": "2017-08-07 22:23:03"
+            "time": "2017-09-08 15:22:43"
         },
         {
             "name": "s1lentium/iptools",

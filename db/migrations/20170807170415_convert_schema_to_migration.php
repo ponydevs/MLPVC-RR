@@ -265,8 +265,8 @@ class ConvertSchemaToMigration extends AbstractMigration {
 
 		$table = 'log__da_namechange';
 		$this->tables[$table] = $this->table($table, ['id' => 'entryid'])
-			->addColumn('old',     'text', ['case_sensitive' => false])
-			->addColumn('new',     'text', ['case_sensitive' => false])
+			->addCustomColumn('old', 'citext')
+			->addCustomColumn('new', 'citext')
 			->addColumn('user_id', 'uuid')
 			->addIndex('user_id');
 		$this->tables[$table]->create();
@@ -476,11 +476,11 @@ class ConvertSchemaToMigration extends AbstractMigration {
 
 		$table = 'users';
 		$this->tables[$table] = $this->table($table, ['id' => false, 'primary_key' => 'id'])
-			->addColumn('id','uuid')
-			->addColumn('name','text',['case_sensitive' => false])
-			->addColumn('role','string',['length' => 10, 'default' => 'user'])
-			->addColumn('avatar_url','string',['length' => 255])
-			->addColumn('signup_date','timestamp',['timezone' => true, 'default' => 'CURRENT_TIMESTAMP']);
+			->addColumn('id',          'uuid')
+			->addCustomColumn('name',  'citext')
+			->addColumn('role',        'string',    ['length' => 10, 'default' => 'user'])
+			->addColumn('avatar_url',  'string',    ['length' => 255])
+			->addColumn('signup_date', 'timestamp', ['timezone' => true, 'default' => 'CURRENT_TIMESTAMP']);
 		$this->tables[$table]->create();
 
 		$this->execute(<<<SQL
