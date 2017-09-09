@@ -248,10 +248,13 @@ $TFeature:  adjust_hue($_TBase, 20);
 		font-size: 20px;
 		display: block;
 		font-weight: bold;
-    max-width: 250px;
 		//noinspection CssInvalidPropertyValue
 		word-break: break-word;
 		overflow: hidden;
+
+		@media all and (min-width: $Breakpoint){
+      max-width: 250px;
+		}
 
 		+ :not(.subtitle) {
 			margin-top: 5px;
