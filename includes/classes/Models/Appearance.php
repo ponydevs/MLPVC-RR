@@ -675,7 +675,7 @@ HTML;
 				$success[] = CoreUtils::deleteFile($path);
 			else {
 				foreach (glob($path) as $file)
-					$success[] = CoreUtils::deleteFile($fpath);
+					$success[] = CoreUtils::deleteFile($file);
 			}
 		}
 		return !in_array(false, $success, true);

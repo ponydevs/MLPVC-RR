@@ -1901,7 +1901,7 @@ HTML;
 		$isCMGroup = $Group->label === 'Cutie Mark';
 		foreach ($check_colors_of as $appearance){
 			$appearance->checkSpriteColors();
-			$appearance->clearRenderedImages([Appearance::CLEAR_CM]);
+			$appearance->clearRenderedImages([Appearance::CLEAR_CMDIR, Appearance::CLEAR_PALETTE, Appearance::CLEAR_PREVIEW]);
 			if ($isCMGroup)
 				$appearance->clearRenderedImages([Appearance::CLEAR_CM]);
 		}
