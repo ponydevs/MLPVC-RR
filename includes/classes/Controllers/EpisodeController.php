@@ -28,7 +28,7 @@ class EpisodeController extends Controller {
 	public function index(){
 		$CurrentEpisode = Episodes::getLatest();
 		if (empty($CurrentEpisode))
-			CoreUtils::loadPage(__METHOD__, [
+			CoreUtils::loadPage(__CLASS__.'::view', [
 				'title' => 'Home',
 			]);
 

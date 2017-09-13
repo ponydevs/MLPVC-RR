@@ -204,7 +204,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/svg-sanitizer/tree/fix-remote-reference-check"
             },
-            "time": "2017-08-22 10:40:29"
+            "time": "2017-08-22T10:40:29+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -1036,7 +1036,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/php-activerecord/tree/master"
             },
-            "time": "2017-08-03 17:52:29"
+            "time": "2017-08-03T17:52:29+00:00"
         },
         {
             "name": "psr/http-message",
@@ -1303,7 +1303,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/phinx/tree/custom-columns"
             },
-            "time": "2017-09-08 15:22:43"
+            "time": "2017-09-08T15:22:43+00:00"
         },
         {
             "name": "s1lentium/iptools",

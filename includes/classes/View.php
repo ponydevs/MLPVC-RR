@@ -127,6 +127,8 @@ class View {
 						return new NavBreadcrumb('Episodes & Movies',null,true);
 					break;
 					case 'view':
+						if (!isset($scope['CurrentEpisode']))
+							return new NavBreadcrumb('Home',null,true);
 						/** @var $ep \App\Models\Episode */
 						$ep = $scope['CurrentEpisode'];
 						return (new NavBreadcrumb($ep->is_movie ? 'Movies' : 'Episodes', $ep->is_movie ? '/movies' : '/episodes'))->setChild($scope['heading']);

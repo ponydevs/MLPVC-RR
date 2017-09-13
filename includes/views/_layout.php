@@ -139,7 +139,7 @@ ga('send','pageview');
 	<div id="breadcrumbs"><?=CoreUtils::getBreadcrumbsHTML($fatalErrorPage, $scope, $view ?? null)?></div>
 
 	<div id="main">
-<?  if (isset($view) && $view instanceof View)
+<?php  if (isset($view) && $view instanceof View)
 		require $view;
 	else echo $mainContent;
 ?>
