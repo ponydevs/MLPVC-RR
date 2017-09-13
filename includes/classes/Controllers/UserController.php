@@ -37,9 +37,15 @@ class UserController extends Controller {
 		else $User = Users::get($un, 'name');
 
 		if (empty($User)){
-			if ($User === false){
-				$MSG = 'User does not exist';
-				$SubMSG = 'Check the name for typos and try again';
+			if (Auth::$signed_in && $User === false){
+				if (strpos(Auth::$session->scope, 'browse') !== false){
+					$MSG = 'User does not exist';
+					$SubMSG = 'Check the name for typos and try again';
+				}
+				else {
+					$MSG = 'Could not fetch user information';
+					$SubMSG = 'Your session is missing the "browse" scope';
+				}
 			}
 			else if ($MSG === null){
 				$MSG = 'Local user data missing';

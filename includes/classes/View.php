@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Models\User;
+
 class View {
 	/** @var string */
 	public $name, $class, $method;
@@ -169,10 +171,13 @@ class View {
 				if ($this->method !== 'list'){
 					/** @var $User \App\Models\User */
 					$User = $scope['User'];
-					if ($this->method === 'colorguide')
-						return $User->getPCGBreadcrumb(true);
+					if ($User instanceof User){
+						if ($this->method === 'colorguide')
+							return $User->getPCGBreadcrumb(true);
 
-					$subbc = new NavBreadcrumb($User->name, $User->toURL());
+						$subbc = new NavBreadcrumb($User->name, $User->toURL());
+					}
+					else $subbc = new NavBreadcrumb('Profile',null);
 					switch ($this->method){
 						case 'contrib':
 							$subbc->setChild(
