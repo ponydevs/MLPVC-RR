@@ -502,7 +502,7 @@ HTML;
 					$posted_by = $item->requester->toAnchor();
 					$requested_at = Time::tag($item->requested_at);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $requested_at";
-					$finished = Time::tag($item->finished_at);
+					$finished = $item->finished_at === null ? '<span class="typcn typcn-time missing-time" title="Time data missing"></span>' : Time::tag($item->finished_at);
 					$deviation = "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>";
 					$TR = <<<HTML
 <td>$preview</td>

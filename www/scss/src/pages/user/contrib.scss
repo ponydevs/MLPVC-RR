@@ -24,10 +24,10 @@
 		opacity: .7;
 	}
 
-	.typcn-tick, .typcn-times {
+	.typcn-tick, .typcn-times, .missing-time {
 		font-size: 2em;
 	}
-	.typcn-times {
+	.typcn-times, .missing-time {
 		color: #888;
 	}
 }
