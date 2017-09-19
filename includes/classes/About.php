@@ -7,8 +7,8 @@ use \Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodes
 class About {
 	public static function getServerOS(){
 		return PHP_OS === 'WINNT'
-			? str_replace('Caption=','',CoreUtils::trim(shell_exec('wmic os get Caption /value')))
-			: preg_replace(new RegExp('^[\s\S]*Description:\s+(\w+).*(\d+\.\d+(?:\.\d)?)\s+(\(\w+\))[\s\S]*$'),'$1 $2 $3',shell_exec('lsb_release -da'));
+			? str_replace(new RegExp('^[\s\S]*?ProductName\s+REG_SZ\s+([^\r\n]+)[\s\S]*$'),'$1',CoreUtils::trim(shell_exec('reg query "HKLM\Software\Microsoft\Windows NT\CurrentVersion" /v "ProductName"')))
+			: CoreUtils::trim(preg_replace(new RegExp('^Distributor ID:\s+([^\n]+)\nRelease:\s+([^\n]+)\nCodename:\s+([^\n]+)\n?$'),'$1 $2 ($3)',shell_exec('lsb_release -irc')));
 	}
 	public static function getServerSoftware(){
 		return implode(' ',array_slice(preg_split('~[/ ]~',$_SERVER['SERVER_SOFTWARE']),0,2));

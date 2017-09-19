@@ -78,7 +78,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
  - Vivaldi from [Vivaldi Press Kit](https://vivaldi.com/press/)
  - Maxthon, Pale Moon, Firefox Focus & Yandex Browser from [alrra/browser-logos](https://github.com/alrra/browser-logos/)
  
-[**Belnding Reverser**](https://mlpvc-rr.ml/cg/blending-reverse) built with the help of [Pirill-Poveniy](https://pirill-poveniy.deviantart.com) and [Parcly-Taxel](https://parcly-taxel.deviantart.com) 
+[**Belnding Reverser**](https://mlpvc-rr.ml/cg/blending-reverse) built with the help of [Pirill-Poveniy](https://pirill-poveniy.deviantart.com) and [Parcly-Taxel](https://parcly-taxel.deviantart.com)<br>
 **Coding, design & hosting:** [SeinopSys](https://github.com/SeinopSys)
 
 ## Contributing
