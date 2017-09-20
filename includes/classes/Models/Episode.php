@@ -12,19 +12,19 @@ use App\RegExp;
 /**
  * @property int            $season
  * @property int            $episode
- * @property int            $no
- * @property int            $willairts
+ * @property bool           $twoparter  (Uses magic method)
  * @property string         $title
  * @property DateTime       $posted
  * @property string         $posted_by
  * @property DateTime       $airs
- * @property DateTime       $willair
+ * @property int            $no
+ * @property string|null    $score      (Uses magic method)
  * @property string         $notes
  * @property bool           $is_movie   (Via magic method)
- * @property string|null    $score      (Via magic method)
- * @property bool           $twoparter  (Via magic method)
  * @property bool           $displayed  (Via magic method)
  * @property bool           $aired      (Via magic method)
+ * @property DateTime       $willair    (Via magic method)
+ * @property int            $willairts  (Via magic method)
  * @property EpisodeVideo[] $videos     (Via relations)
  * @property User           $poster     (Via relations)
  * @method static Episode find_by_season_and_episode(int $season, int $episode)

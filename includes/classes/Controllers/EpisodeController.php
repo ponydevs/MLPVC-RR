@@ -628,4 +628,24 @@ class EpisodeController extends Controller {
 			'only' => ['episode','airs','season','title'],
 		]));
 	}
+
+	public function prefill($params){
+		CSRFProtection::protect();
+
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		/** @var $LastAdded Episode */
+		$LastAdded = DB::$instance->orderBy('posted','DESC')->where('season != 0')->getOne(Episode::$table_name);
+
+		if (empty($LastAdded))
+			Response::fail('No last added episode found');
+
+		Response::done([
+			'season' => $LastAdded->season,
+			'episode' => min($LastAdded->episode + 1, 26),
+			'no' => $LastAdded->no + ($LastAdded->twoparter ? 2 : 1),
+			'airday' => $LastAdded->airs->add(new \DateInterval('P1W'))->format('Y-m-d'),
+		]);
+	}
 }

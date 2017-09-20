@@ -12,10 +12,8 @@ $(function(){
 		EPISODE = window.EPISODE;
 	moment.tz.add("America/Los_Angeles|PST PDT PWT PPT|80 70 70 70|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261q0 1nX0 11B0 1nX0 SgN0 8x10 iy0 5Wp0 1Vb0 3dB0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0");
 
-	let saturday = moment.tz(new Date(), "America/Los_Angeles").set({
-		day: 'Saturday',
-		h: 8, m: 30, s: 0,
-	}).local();
+	const setSat830 = ts => moment.tz(ts, "America/Los_Angeles").set({ day: 'Saturday', h: 8, m: 30, s: 0 }).local();
+	let saturday = setSat830(new Date());
 	const sat_date = $.momentToYMD(saturday);
 	const sat_time = $.momentToHM(saturday);
 	const sat_day = saturday.format('dddd');
@@ -88,18 +86,48 @@ $(function(){
 		let $AddEpForm = $AddEpFormTemplate.clone(true, true);
 		$AddEpForm.find(movie ? '.episode-only' : '.movie-only').remove();
 
+		if (!movie)
+			$AddEpForm.prepend(
+				$.mk('div').attr('class','align-center').html(
+					$.mk('button').attr('class','typcn typcn-flash blue').text('Pre-fill based on last added').on('click', e => {
+						const
+							$this = $(e.target),
+							$form = $this.closest('form');
+
+						$this.disable();
+
+						$.post('/episode/prefill', $.mkAjaxHandler(function(){
+							if (!this.status) return $.Dialog.fail(false, this.message);
+
+							let airs = setSat830(this.airday);
+							$.each({
+								airdate: $.momentToYMD(airs),
+								airtime: $.momentToHM(airs),
+								episode: this.episode,
+								season: this.season,
+								no: this.no,
+							}, (name, value) => {
+								$form.find(`[name=${name}]`).val(value);
+							});
+						})).always(function(){
+							$this.enable();
+						});
+					})
+				)
+			);
+
 		$.Dialog.request(`Add ${movie?'Movie':'Episode'}`, $AddEpForm,'Add', function($form){
-				let session;
-				$.getAceEditor(false, 'html', function(mode){
-					try {
-						let div = $form.find('.ace_editor').get(0),
-							editor = ace.edit(div);
-						session = $.aceInit(editor, mode);
-						session.setMode(mode);
-						session.setUseWrapMode(true);
-					}
-					catch(e){ console.error(e) }
-				});
+			let session;
+			$.getAceEditor(false, 'html', function(mode){
+				try {
+					let div = $form.find('.ace_editor').get(0),
+						editor = ace.edit(div);
+					session = $.aceInit(editor, mode);
+					session.setMode(mode);
+					session.setUseWrapMode(true);
+				}
+				catch(e){ console.error(e) }
+			});
 
 			$form.on('submit', function(e){
 				e.preventDefault();
