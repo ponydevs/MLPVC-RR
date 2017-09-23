@@ -1,7 +1,7 @@
 # Let's encrypt
 www/.well-known
 includes/conf.php
-*error.log
+*.log
 *.opdownload
 node_modules
 www/img/cg

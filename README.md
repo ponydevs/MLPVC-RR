@@ -52,8 +52,10 @@ After some time, the idea of moving the old PNG color guide into an easier to us
    - [SASS](http://sass-lang.com/)
    - [Babel](https://babeljs.io/)
    - [Autoprefixer](https://github.com/postcss/autoprefixer)
+   - [Kint](http://raveren.github.io/kint/)
    - [Hasklig](https://github.com/i-tu/Hasklig)
    - [Phinx](https://phinx.org/)
+   - [Monolog](https://seldaek.github.io/monolog/)
 
 **[Color Belending Calculator](https://mlpvc-rr.ml/blending)** originally made by [DASPRiD](https://github.com/dasprid)<br>
 **Headings' font:** [Celestia Medium Redux](http://www.mattyhex.net/CMR/)<br>

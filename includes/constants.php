@@ -2,17 +2,14 @@
 
 use App\RegExp;
 
-// Expected PHP vesrion constant for fatal error page output
-define('PHPVER', '7.1');
-
 // Configuration \\
 define('HTTPS', !empty($_SERVER['HTTPS']));
 define('ABSPATH',(HTTPS?'https':'http').'://'.($_SERVER['SERVER_NAME']??'localhost').'/');
 /** @noinspection RealpathInSteamContextInspection */
-define('PROJPATH',realpath(__DIR__.'/../').DIRECTORY_SEPARATOR);
-define('APPATH',  PROJPATH.'www'.DIRECTORY_SEPARATOR);
-define('FSPATH',  PROJPATH.'fs'.DIRECTORY_SEPARATOR);
-define('INCPATH', PROJPATH.'includes'.DIRECTORY_SEPARATOR);
+define('PROJPATH',realpath(__DIR__.'/../').'/');
+define('APPATH',  PROJPATH.'www/');
+define('FSPATH',  PROJPATH.'fs/');
+define('INCPATH', PROJPATH.'includes/');
 define('POST_REQUEST', ($_SERVER['REQUEST_METHOD']??'GET') === 'POST');
 define('GITHUB_PROJECT_NAME','ponydevs/MLPVC-RR');
 define('GITHUB_URL','https://github.com/'.GITHUB_PROJECT_NAME);
@@ -26,7 +23,9 @@ if (!file_exists(INCPATH.'conf.php'))
 require INCPATH.'conf.php';
 
 // Some constants \\
-# integer - none
+# integer
+define('ONLY_REQUESTS', 1); // Posts::Get
+define('ONLY_RESERVATIONS', 2); // Posts::Get
 # string
 define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
 define('SPRITE_PATH', FSPATH.'sprites/');
@@ -39,8 +38,6 @@ define('HTML_ONLY', true); // CoreUtils::_processHeaderLink
 define('PREPEND_NUMBER', true); // CoreUtils::MakePlural
 define('NOWRAP', false);
 define('WRAP', !NOWRAP);
-define('ONLY_REQUESTS', 1); // Posts::Get
-define('ONLY_RESERVATIONS', 2); // Posts::Get
 define('RETURN_ARRANGED', true); // Posts::GetRequestsSection & Posts::GetReservationsSection
 define('IS_REQUEST', true); // Posts::GetRequestsSection
 define('WITH_GIT_INFO', true); // CoreUtils::GetFooter

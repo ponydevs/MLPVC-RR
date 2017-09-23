@@ -45,7 +45,7 @@ Make sure `short_open_tag` is enabled in `php.ini`. File uploading should be ena
 
 The site depends on DeviantArt's API for authentication, which means you'll need OAuth credentails to put in the config file. You can grab a set of those by going to <https://www.deviantart.com/developers/register>
 
-Optionally, use the `xdebug` extension or [Kint](http://raveren.github.io/kint/) to ease debugging with stack traces/cleaner var_dump outputs. Setting `max_execution_time` to `30` *(seconds)* or below is also recommended for development in case an infinite loop breaks loose. You never know. It has to be a reasonably big though because requests to DeviantArt's API can cause script execution to take longer than usual.
+Setting `max_execution_time` to `30` *(seconds)* or below is recommended for development in case an infinite loop breaks loose. You never know. It has to be a reasonably big though, because requests to DeviantArt's API can cause script execution to take longer than usual.
 
 The `fs` and the `vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/`folders must be writable by PHP for the site to function.
 

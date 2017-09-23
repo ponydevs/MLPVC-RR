@@ -3,6 +3,7 @@
 namespace App;
 
 use ActiveRecord\RecordNotFound;
+use App\CoreUtils;
 use App\Models\Appearance;
 use App\Models\Notification;
 use App\Models\Post;
@@ -154,12 +155,12 @@ class Notifications {
 			self::markRead($NotifID, $action);
 		}
 		catch (ServerConnectionFailureException $e){
-			error_log("Notification server down!\n".$e->getMessage());
+			CoreUtils::error_log("Notification server down!\n".$e->getMessage());
 			if (!$silent)
 				Response::fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
 		}
 		catch (\Exception $e){
-			error_log("SocketEvent Error\n".$e->getMessage());
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage());
 			if (!$silent)
 				Response::fail('SocketEvent Error: '.$e->getMessage());
 		}

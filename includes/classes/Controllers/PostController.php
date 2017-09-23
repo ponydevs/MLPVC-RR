@@ -58,7 +58,7 @@ class PostController extends Controller {
 				CoreUtils::socketEvent('post-break',$log);
 			}
 			catch (\Exception $e){
-				error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+				CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 			}
 			$log['reserved_by'] = $oldreserver ?? $this->_post->reserved_by;
 			Logs::logAction('post_break',$log);
@@ -135,7 +135,7 @@ class PostController extends Controller {
 					]);
 				}
 				catch (\Exception $e){
-					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 
 				Response::done();
@@ -232,7 +232,7 @@ class PostController extends Controller {
 					$response['li'] = Posts::getLi($this->_post);
 				}
 				catch (\Exception $e){
-					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 				if ($isUserReserver)
 					$response['message'] .= ' '.self::CONTRIB_THANKS;
@@ -257,7 +257,7 @@ class PostController extends Controller {
 					]);
 				}
 				catch (\Exception $e){
-					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 
 				Response::done();
@@ -293,7 +293,7 @@ class PostController extends Controller {
 							]);
 						}
 						catch (\Exception $e){
-							error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+							CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 						}
 
 						Response::success('Reservation deleted',['remove' => true]);
@@ -322,7 +322,7 @@ class PostController extends Controller {
 					]);
 				}
 				catch (\Exception $e){
-					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 
 				Response::done();
@@ -366,7 +366,7 @@ class PostController extends Controller {
 					]);
 				}
 				catch (\Exception $e){
-					error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 
 				if (!empty($message))
@@ -416,10 +416,10 @@ class PostController extends Controller {
 		}
 		catch (ServerConnectionFailureException $e){
 			$socketServerAvailable = false;
-			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 		catch (\Exception $e){
-			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
 		if ($thing === 'request'){
@@ -481,7 +481,7 @@ class PostController extends Controller {
 
 		$Image = $this->_checkImage();
 		if (!is_object($Image)){
-			error_log("Getting post image failed\n".var_export($Image, true));
+			CoreUtils::error_log("Getting post image failed\n".var_export($Image, true));
 			Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
 		}
 
@@ -530,7 +530,7 @@ class PostController extends Controller {
 			]);
 		}
 		catch (\Exception $e){
-			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
 		Response::done(['id' => "$thing-$PostID"]);
@@ -591,7 +591,7 @@ class PostController extends Controller {
 			]);
 		}
 		catch (\Exception $e){
-			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
 		Response::done();
@@ -811,7 +811,7 @@ class PostController extends Controller {
 			]);
 		}
 		catch (\Exception $e){
-			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
 		Response::success('Reservation added');

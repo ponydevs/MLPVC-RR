@@ -67,12 +67,12 @@ class KnownIP extends NSModel implements LinkableInterface {
 		return $existing;
 	}
 
-	function toAnchor(bool $with_freshness = true):string{
+	function toAnchor(bool $with_freshness = true):string {
 		$fresh = $with_freshness ? "style='opacity:{$this->getFreshness()}'" : '';
 		return "<a href='{$this->toURL()}' $fresh>$this->ip</a>";
 	}
 
-	function toURL():string{
+	function toURL():string {
 		return "/admin/ip/$this->ip";
 	}
 

@@ -91,7 +91,7 @@ class DeviantArt {
 			throw new CURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
 		if (empty($response)){
-			error_log(__METHOD__.": Empty response (HTTP $responseCode)\nURI: $requestURI\nResponse headers:\n$http_response_header\ncURL error: $curlError");
+			CoreUtils::error_log(__METHOD__.": Empty response (HTTP $responseCode)\nURI: $requestURI\nResponse headers:\n$http_response_header\ncURL error: $curlError");
 			return null;
 		}
 		if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
@@ -132,7 +132,7 @@ class DeviantArt {
 				if ($Deviation !== null)
 					$Deviation->update_attributes(['updated_on' => date('c', time()+Time::IN_SECONDS['minute'] )]);
 
-				error_log("Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString());
+				CoreUtils::error_log("Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString());
 
 				if ($e->getCode() === 404){
 					if ($Deviation !== null)
@@ -243,7 +243,7 @@ class DeviantArt {
 				Cookie::delete('access', Cookie::HTTPONLY);
 			}
 			$response_body = $e->getResponseBody();
-			error_log(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
+			CoreUtils::error_log(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
 			try {
 				$data = JSON::decode($response_body);
 				$_GET['error'] = rawurlencode($data['error']);

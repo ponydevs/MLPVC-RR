@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\CoreUtils;
 use App\Models\Episode;
 
 class Input {
@@ -191,7 +192,7 @@ class Input {
 						throw new \RuntimeException(rtrim('Could not decode JSON; '.json_last_error(),'; '));
 				}
 				catch (\Throwable $e){
-					error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
+					CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
 					return self::ERROR_INVALID;
 				}
 			break;
@@ -264,7 +265,7 @@ class Input {
 				$message = str_replace('@max', $this->_range[1], $message);
 		}
 		if ($this->_silentFail)
-			return error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
+			return CoreUtils::error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
 		if ($this->_respond)
 			Response::fail($message);
 		throw new \Exception($message);

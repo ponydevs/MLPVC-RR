@@ -16,6 +16,7 @@ use enshrined\svgSanitize\data\AllowedAttributes;
 use enshrined\svgSanitize\data\AttributeInterface;
 use enshrined\svgSanitize\data\TagInterface;
 use enshrined\svgSanitize\Sanitizer;
+use Monolog\Logger;
 
 class CoreUtils {
 	const
@@ -1316,5 +1317,10 @@ HTML;
 
 	public static function stringSize(string $data):int {
 		return mb_strlen($data, '8bit');
+	}
+
+	public static function error_log(string $message){
+		global $logger;
+		$logger->log(Logger::DEBUG, $message);
 	}
 }

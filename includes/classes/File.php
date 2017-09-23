@@ -35,7 +35,7 @@ class File {
 	public static function chmod(string $name):bool {
 		$result = @chmod($name, FILE_PERM);
 		if ($result === false)
-			error_log(__METHOD__.': Fail for file '.$name);
+			CoreUtils::error_log(__METHOD__.': Fail for file '.$name);
 		return $result;
 	}
 }

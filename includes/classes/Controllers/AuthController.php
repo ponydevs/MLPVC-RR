@@ -39,12 +39,12 @@ class AuthController extends Controller {
 		}
 		catch (CURLRequestException $e){
 			if ($e->getCode() >= 500){
-				error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
+				CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
 				$this->_error('server_error');
 			}
 		}
 		catch(Exception $e){
-			error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
+			CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
 			$this->_error('server_error');
 		}
 		Auth::$signed_in = !empty(Auth::$user);

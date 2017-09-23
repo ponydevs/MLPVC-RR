@@ -6,6 +6,9 @@
 	define('DB_PASS','example-password');
 	define('DB_NAME','mlpvc-rr');
 
+	// Log path - relative to the "logs" directory, e.g. "error.log" == "/var/www/MLPVC-RR/logs/error.log"
+	define('LOG_PATH','error.log');
+
 	// dA API Codes \\
 	define('DA_CLIENT','');
 	define('DA_SECRET','');

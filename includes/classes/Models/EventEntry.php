@@ -52,7 +52,7 @@ class EventEntry extends NSModel {
 			]);
 		}
 		catch (\Exception $e){
-			error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 	}
 

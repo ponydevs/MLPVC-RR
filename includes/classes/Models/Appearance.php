@@ -418,7 +418,7 @@ HTML;
 			CoreUtils::elasticClient()->update($this->toElasticArray(false, true));
 		}
 		catch (ElasticNoNodesAvailableException $e){
-			error_log('ElasticSearch server was down when server attempted to index appearance '.$this->id);
+			CoreUtils::error_log('ElasticSearch server was down when server attempted to index appearance '.$this->id);
 		}
 	}
 

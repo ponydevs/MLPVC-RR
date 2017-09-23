@@ -4,6 +4,44 @@
 $_dir = rtrim(__DIR__, '\/').DIRECTORY_SEPARATOR;
 require $_dir.'test_init.php';
 
+if (class_exists('Kint')){
+	Kint::$app_root_dirs[PROJPATH] = 'PROJPATH';
+	Kint::$app_root_dirs[INCPATH] = 'INCPATH';
+	Kint::$app_root_dirs[FSPATH] = 'FSPATH';
+	Kint::$app_root_dirs[APPATH] = 'APPATH';
+	Kint::$mode_default = Kint::MODE_PLAIN;
+	Kint::$aliases[] = 'sd';
+	function sd(...$args){
+	    Kint::dump(...$args);
+	    exit;
+	}
+}
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+
+function monolog_setup(){
+	global $logger;
+	$formatter = new LineFormatter(LineFormatter::SIMPLE_FORMAT, LineFormatter::SIMPLE_DATE);
+	$formatter->includeStacktraces(true);
+
+	if (!defined('LOG_PATH'))
+		throw new RuntimeException('The LOG_PATH constant is not defined, please add it to your conf.php file');
+
+	$stream = new StreamHandler(PROJPATH.'logs/'.LOG_PATH);
+	$stream->setFormatter($formatter);
+
+	$logger = new Logger('logger');
+	$logger->pushHandler($stream);
+
+	$handler = new \App\GracefulErrorHandler($logger);
+	$handler->registerErrorHandler([], false);
+	$handler->registerExceptionHandler();
+	$handler->registerFatalHandler();
+}
+monolog_setup();
+
 use App\About;
 use App\DB;
 use App\PostgresDbWrapper;

@@ -34,7 +34,7 @@ class AboutController extends Controller {
 		else $Session = null;
 		$browser = CoreUtils::detectBrowser($AgentString);
 		if (empty($browser['platform']))
-			error_log('Could not find platform based on the following UA string: '.preg_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $AgentString));
+			CoreUtils::error_log('Could not find platform based on the following UA string: '.preg_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $AgentString));
 
 		if ($Session !== null){
 			$Session->platform = $browser['platform'];

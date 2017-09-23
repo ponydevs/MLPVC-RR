@@ -112,7 +112,7 @@ class Episodes {
 			$EpData = Episode::parseID($force);
 
 			if ($EpData['season'] === 0){
-				error_log("Attempted visit to $force from ".(!empty($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'[unknown referrer]').', redirecting to /movie page');
+				CoreUtils::error_log("Attempted visit to $force from ".(!empty($_SERVER['HTTP_REFERER'])? $_SERVER['HTTP_REFERER']:'[unknown referrer]').', redirecting to /movie page');
 				HTTP::redirect('/movie/'.$EpData['episode']);
 			}
 

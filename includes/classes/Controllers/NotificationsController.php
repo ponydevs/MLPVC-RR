@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Appearances;
 use App\Auth;
+use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
 use App\Input;
@@ -33,7 +34,7 @@ class NotificationsController extends Controller {
 			Response::done(['list' => $Notifications]);
 		}
 		catch (\Throwable $e){
-			error_log('Exception caught when fetching notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
+			CoreUtils::error_log('Exception caught when fetching notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
 			Response::fail('An error prevented the notifications from appearing. If this persists, <a class="send-feedback">let us know</a>.');
 		}
 	}

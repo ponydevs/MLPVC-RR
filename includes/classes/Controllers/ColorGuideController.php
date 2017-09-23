@@ -854,7 +854,7 @@ class ColorGuideController extends Controller {
 						throw $e;
 				}
 				catch (ElasticNoNodesAvailableException $e){
-					error_log('ElasticSearch server was down when server attempted to remove appearance '.$this->_appearance->id);
+					CoreUtils::error_log('ElasticSearch server was down when server attempted to remove appearance '.$this->_appearance->id);
 				}
 
 				if (!empty($Tagged))
@@ -1886,7 +1886,7 @@ HTML;
 				continue;
 
 			$colorError = true;
-			error_log(__METHOD__.': Database error triggered by user '.Auth::$user->name.' ('.Auth::$user->id.") while saving colors:\n".JSON::encode($c->errors, JSON_PRETTY_PRINT));
+			CoreUtils::error_log(__METHOD__.': Database error triggered by user '.Auth::$user->name.' ('.Auth::$user->id.") while saving colors:\n".JSON::encode($c->errors, JSON_PRETTY_PRINT));
 		}
 		if (!$adding && !empty($removedColors)){
 			foreach ($removedColors as $color)

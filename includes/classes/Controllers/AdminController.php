@@ -158,7 +158,7 @@ class AdminController extends Controller {
 
 		$Details = DB::$instance->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
 		if (empty($Details)){
-			error_log("Could not find details for entry {$MainEntry['reftype']}#{$MainEntry['refid']}, NULL-ing refid of Main#{$MainEntry['entryid']}");
+			CoreUtils::error_log("Could not find details for entry {$MainEntry['reftype']}#{$MainEntry['refid']}, NULL-ing refid of Main#{$MainEntry['entryid']}");
 			DB::$instance->where('entryid', $MainEntry['entryid'])->update('log', ['refid' => null]);
 			Response::fail('Failed to retrieve details', ['unlickable' => true]);
 		}
