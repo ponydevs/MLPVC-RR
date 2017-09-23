@@ -14,7 +14,6 @@ define('POST_REQUEST', ($_SERVER['REQUEST_METHOD']??'GET') === 'POST');
 define('GITHUB_PROJECT_NAME','ponydevs/MLPVC-RR');
 define('GITHUB_URL','https://github.com/'.GITHUB_PROJECT_NAME);
 define('SITE_TITLE', 'MLP Vector Club');
-define('EXEC_START_MICRO', microtime(true));
 define('SVGO_BINARY',PROJPATH.'node_modules/svgo/bin/svgo');
 
 // Load private configuration \\
