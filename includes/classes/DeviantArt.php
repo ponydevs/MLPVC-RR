@@ -90,6 +90,10 @@ class DeviantArt {
 		if ($responseCode < 200 || $responseCode >= 300)
 			throw new CURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
 
+		if (empty($response)){
+			error_log(__METHOD__.": Empty response (HTTP $responseCode)\nURI: $requestURI\nResponse headers:\n$http_response_header\ncURL error: $curlError");
+			return null;
+		}
 		if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
 			$response = gzdecode($response);
 		return JSON::decode($response);

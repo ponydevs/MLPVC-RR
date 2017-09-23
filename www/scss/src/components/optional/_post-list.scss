@@ -80,13 +80,10 @@
 				&.error {
 					color: $NOrange;
 					border: 2px solid;
-					padding: 40px 10px;
+					padding: 58px 10px;
 					background: $NOrangeBG;
 					margin-bottom: 10px;
-
-					a {
-						color: inherit;
-					}
+					font-size: 1.3em;
 				}
 				img {
 					border: 1px solid $DeviationBorder;

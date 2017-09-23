@@ -131,7 +131,7 @@ abstract class Post extends NSModel implements LinkableInterface {
 		$Deviation = DeviantArt::getCachedDeviation($this->deviation_id);
 		if (empty($Deviation)){
 			$ImageLink = $view_only ? $this->toURL() : "http://fav.me/{$this->deviation_id}";
-			$Image = "<div class='image deviation error'><a href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a></div>";
+			$Image = "<a class='image deviation error' href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a>";
 		}
 		else {
 			$alt = CoreUtils::aposEncode($Deviation->title);

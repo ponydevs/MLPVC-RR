@@ -53,8 +53,16 @@ class KnownIP extends NSModel implements LinkableInterface {
 			$data['ip'] = 'localhost';
 
 		$existing = self::find_by_ip_and_user_id($data['ip'], $data['user_id']);
-		if (empty($existing))
-			return self::create($data);
+		if (empty($existing)){
+			try {
+				return self::create($data);
+			}
+			catch (\PDOException $e){
+				if (strpos($e->getMessage(), 'duplicate key value violates unique constraint "known_ips_ip_user_id"') === false)
+					throw $e;
+				return self::find_by_ip_and_user_id($data['ip'], $data['user_id']);
+			}
+		}
 		else $existing->update_attributes($data);
 		return $existing;
 	}
