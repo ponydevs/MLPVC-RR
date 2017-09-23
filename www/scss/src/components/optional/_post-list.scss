@@ -86,7 +86,7 @@
 					font-size: 1.3em;
 				}
 				img {
-					border: 1px solid $DeviationBorder;
+					border: 2px solid $DeviationBorder;
 				}
 
 				.post-deviation-promise {
@@ -113,8 +113,6 @@
 			}
 			&.approved > a {
 				position: relative;
-
-				img { border-width: 2px }
 
 				$imageSize: 40px;
 				.approved-info {
