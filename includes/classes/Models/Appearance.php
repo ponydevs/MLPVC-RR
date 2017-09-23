@@ -195,6 +195,8 @@ class Appearance extends NSModel implements LinkableInterface {
 				return '';
 			$notes = '';
 		}
+		if (Cutiemark::exists(['appearance_id' => $this->id]))
+			$notes .= "<span>Cutie marks available</span>";
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
 	}
 
