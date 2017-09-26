@@ -1234,12 +1234,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/phinx.git",
-                "reference": "ff457355cadd02d86b5ad70c87fa2006d39ded25"
+                "reference": "57e6b6bffe83cc519e5c79eafd7e5aa9f52e3765"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/ff457355cadd02d86b5ad70c87fa2006d39ded25",
-                "reference": "ff457355cadd02d86b5ad70c87fa2006d39ded25",
+                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/57e6b6bffe83cc519e5c79eafd7e5aa9f52e3765",
+                "reference": "57e6b6bffe83cc519e5c79eafd7e5aa9f52e3765",
                 "shasum": ""
             },
             "require": {
@@ -1303,7 +1303,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/phinx/tree/custom-columns"
             },
-            "time": "2017-09-08T15:22:43+00:00"
+            "time": "2017-09-25T13:53:58+00:00"
         },
         {
             "name": "s1lentium/iptools",
@@ -2766,16 +2766,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.3.0",
+            "version": "6.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "9501bab711403a1ab5b8378a8adb4ec3db3debdb"
+                "reference": "c0ff817b36a827e64bf5f57bc72278150cf30a77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9501bab711403a1ab5b8378a8adb4ec3db3debdb",
-                "reference": "9501bab711403a1ab5b8378a8adb4ec3db3debdb",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c0ff817b36a827e64bf5f57bc72278150cf30a77",
+                "reference": "c0ff817b36a827e64bf5f57bc72278150cf30a77",
                 "shasum": ""
             },
             "require": {
@@ -2846,7 +2846,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-08-04T05:20:39+00:00"
+            "time": "2017-09-24T07:25:54+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
