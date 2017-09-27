@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use ActiveRecord\DatabaseException;
 use ActiveRecord\DateTime;
 use App\Logs;
 use App\Time;
@@ -57,7 +58,7 @@ class KnownIP extends NSModel implements LinkableInterface {
 			try {
 				return self::create($data);
 			}
-			catch (\PDOException $e){
+			catch (\PDOException | DatabaseException $e){
 				if (strpos($e->getMessage(), 'duplicate key value violates unique constraint "known_ips_ip_user_id"') === false)
 					throw $e;
 				return self::find_by_ip_and_user_id($data['ip'], $data['user_id']);
