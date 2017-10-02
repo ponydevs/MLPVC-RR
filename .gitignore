@@ -14,4 +14,3 @@ fs
 !setup/*.pg.sql
 setup/*_data.pg.sql
 /vendor/
-/nbproject/private/

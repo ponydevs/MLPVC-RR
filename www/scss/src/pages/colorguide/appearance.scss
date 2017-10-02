@@ -103,6 +103,10 @@
 		padding: 10px;
 		border: 1px solid burlywood;
 		display: inline-block;
+
+		> span:not(:first-child) {
+			display: none;
+		}
 	}
 
 	.approved-cutie-mark {
