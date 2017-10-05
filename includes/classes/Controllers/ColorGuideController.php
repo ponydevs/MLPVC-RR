@@ -591,10 +591,6 @@ class ColorGuideController extends Controller {
 		}
 
 		$data = JSON::encode($JSON);
-		$data = preg_replace_callback('/^\s+/m', function($match){
-			return str_pad('',CoreUtils::length($match[0])/4,"\t", STR_PAD_LEFT);
-		}, $data);
-
 		CoreUtils::downloadAsFile($data, 'mlpvc-colorguide.json');
 	}
 
