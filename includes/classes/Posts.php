@@ -151,7 +151,7 @@ class Posts {
 				]
 			]))->out();
 			if (isset($posted) && $posted !== strtotime($Post->posted_at))
-				CoreUtils::set($target,'posted',date('c', $posted));
+				CoreUtils::set($target,'posted_at',date('c', $posted));
 
 			$finished_at = self::validateFinishedAt();
 			if (isset($finished_at)){
