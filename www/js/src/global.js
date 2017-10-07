@@ -428,15 +428,17 @@ $(function(){
 		else callme();
 	});
 
+	const $html = $('html');
+
 	// Disappearing header when in standalone mode
 	// Replace condition with "true" when needed for development
 	if ($.isRunningStandalone()){
-		let lastScrollTop = $body.scrollTop(),
+		let lastScrollTop = $html.scrollTop(),
 			disappearingHeaderHandler = function(){
-				if (!window.withinMobileBreakpoint())
+				if (!window.withinMobileBreakpoint() || $html.is(':animated'))
 					return;
 
-				let scrollTop = $body.scrollTop(),
+				let scrollTop = $html.scrollTop(),
 					headerHeight = $header.outerHeight(),
 					headerTop = parseInt($header.css('top'),10);
 
@@ -451,8 +453,6 @@ $(function(){
 		$w.on('scroll',disappearingHeaderHandler);
 		disappearingHeaderHandler();
 	}
-
-	const $html = $('html');
 	const $toTheTop = $('#to-the-top').on('click',function(e){
 		e.preventDefault();
 
