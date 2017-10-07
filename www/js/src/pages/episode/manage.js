@@ -506,7 +506,7 @@ $(function(){
 						)
 					);
 
-				if (typeof postdata.posted === 'string')
+				if (typeof postdata.posted_at === 'string')
 					$PostEditForm.append(
 						$.mk('label').append(
 							$.mk('span').text('Post timestamp'),
@@ -678,11 +678,11 @@ $(function(){
 						$type.children('option').filter(function(){
 							return this.value === postdata.type;
 						}).attr('selected', true);
-					if (typeof postdata.posted === 'string'){
+					if (typeof postdata.posted_at === 'string'){
 						$date = $form.find('[name=date]');
 
-						let posted = moment(postdata.posted);
-						$date.val(posted.format('YYYY-MM-DD\THH:mm:ssZ'));
+						let posted_at = moment(postdata.posted_at);
+						$date.val(posted_at.format('YYYY-MM-DD\THH:mm:ssZ'));
 					}
 					if (typeof postdata.reserved_at === 'string'){
 						$reserved_at = $form.find('[name=reserved_at]');

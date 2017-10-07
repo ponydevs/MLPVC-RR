@@ -17,7 +17,7 @@ if (class_exists('Kint')){
 	}
 }
 
-use Monolog\Logger;
+use App\UsefulLogger as Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
 

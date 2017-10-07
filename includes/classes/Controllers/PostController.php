@@ -110,7 +110,7 @@ class PostController extends Controller {
 						$response['reserved_at'] = !empty($this->_post->reserved_at) ? date('c', strtotime($this->_post->reserved_at)) : '';
 				}
 				if (Permission::sufficient('developer')){
-					$response['posted'] = date('c', strtotime($this->_post->posted_at));
+					$response['posted_at'] = date('c', strtotime($this->_post->posted_at));
 					if (!empty($this->_post->reserved_by) && !empty($this->_post->deviation_id))
 							$response['finished_at'] = !empty($this->_post->finished_at) ? date('c', strtotime($this->_post->finished_at)) : '';
 				}

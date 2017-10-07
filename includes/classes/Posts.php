@@ -69,13 +69,13 @@ class Posts {
 		$RecentPosts = DB::$instance->disableAutoClass()->query(
 			"SELECT * FROM
 			(
-				SELECT $cols, requested_by, requested_at AS posted FROM requests
+				SELECT $cols, requested_by, requested_at AS posted_at FROM requests
 				WHERE requested_at > NOW() - INTERVAL '20 DAYS'
 				UNION ALL
-				SELECT $cols, null AS requested_by, reserved_at AS posted FROM reservations
+				SELECT $cols, null AS requested_by, reserved_at AS posted_at FROM reservations
 				WHERE reserved_at > NOW() - INTERVAL '20 DAYS'
 			) t
-			ORDER BY posted DESC
+			ORDER BY posted_at DESC
 			LIMIT 20");
 
 		$HTML = '';
@@ -424,6 +424,7 @@ HTML;
 HTML;
 		}
 
+		// TODO Add a check image button & disable the submit button
 		$HTML .= <<<HTML
 		</div>
 		<button class="green">Submit $type</button> <button type="reset">Cancel</button>
