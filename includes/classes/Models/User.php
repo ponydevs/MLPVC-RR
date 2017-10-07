@@ -353,7 +353,7 @@ class User extends AbstractUser implements LinkableInterface {
 			"SELECT * FROM (
 				SELECT $cols, requested_by, requested_at, requested_at as posted_at FROM requests WHERE reserved_by = :userid AND deviation_id IS NOT NULL
 				UNION ALL
-				SELECT $cols, null as requested_by, null as requested_at, reserved_at as posted FROM reservations WHERE reserved_by = :userid AND deviation_id IS NOT NULL
+				SELECT $cols, null as requested_by, null as requested_at, reserved_at as posted_at FROM reservations WHERE reserved_by = :userid AND deviation_id IS NOT NULL
 			) t";
 		if ($pagination)
 			$query .= ' ORDER BY posted_at DESC '.$pagination->getLimitString();
