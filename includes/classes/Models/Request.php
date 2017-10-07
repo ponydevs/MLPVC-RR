@@ -18,7 +18,8 @@ class Request extends Post {
 	];
 
 	public static $alias_attribute = [
-		'posted' => 'requested_at',
+		'posted_at' => 'requested_at',
+		'posted_by' => 'requested_by',
 	];
 
 	public function get_is_request():bool {

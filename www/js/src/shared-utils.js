@@ -172,7 +172,10 @@
 					d = {
 						past: substract > 0,
 						time: Math.abs(substract),
-						target: timestamp
+						target: timestamp,
+						week: 0,
+						month: 0,
+						year: 0,
 					},
 					time = d.time;
 

@@ -276,7 +276,7 @@ $(function(){
 
 		if ($previewIMG.length === 0) $previewIMG = $(new Image()).appendTo($formImgPreview);
 		$(`#${type}-btn`).on('click',function(){
-			if (!$form.is(':visible')){
+			if ($form.hasClass('hidden')){
 				$form.removeClass('hidden');
 				$formDescInput.focus();
 				$.scrollTo($form.offset().top - $navbar.outerHeight() - 10, 500);
@@ -284,7 +284,7 @@ $(function(){
 		});
 		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
 			let $AddReservationForm = $.mk('form','add-reservation').html(
-				`<div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and all you want to do is link your already-made vector under the newly posted episode.</div>
+				`<div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and you just want to link the finished vector under the newly posted episode OR if this was a request, but the original image (screencap) is no longer available, only the finished vector.</div>
 				<div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I'm done</strong> button to mark it as finished instead of adding it here.</div>
 				<label>
 					<span>Deviation URL</span>
@@ -306,7 +306,11 @@ $(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, this.message);
-						$(`#${type}s`).trigger('pls-update');
+						const id = this.id;
+						$(`#${type}s`).trigger('pls-update', [function(){
+							$.Dialog.close();
+							window.location.hash = '#'+id;
+						}]);
 					}));
 				});
 			});
@@ -464,7 +468,7 @@ $(function(){
 			$notice.html(noticeHTML).show();
 			$previewIMG.hide();
 			$formImgInput.removeData('prev-url');
-			$(this).hide();
+			$form.addClass('hidden');
 		});
 	};
 
@@ -599,8 +603,13 @@ $(function(){
 				if (found === false && showdialog){
 					const title = 'Scroll post into view';
 					// Attempt to find the post as a last resort, it might be on a different episode page
-					$.post('/post/locate/'+location.hash.substring(1).replace('-','/'),$.mkAjaxHandler(function(){
+					$.post('/post/locate/'+location.hash.substring(1).replace('-','/'),{SEASON,EPISODE},$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.info(title, this.message);
+
+						if (this.refresh){
+							$(`#${this.refresh}s`).triggerHandler('pls-update');
+							return;
+						}
 
 						const castle = this.castle;
 

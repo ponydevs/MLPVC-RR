@@ -23,7 +23,8 @@ use App\CoreUtils;
  * @property DateTime $finished_at
  * @property bool     $broken
  * @property bool     $lock
- * @property DateTime $posted         (Via alias)
+ * @property DateTime $posted_at      (Via alias)
+ * @property string   $posted_by      (Via alias)
  * @property User     $reserver       (Via child relations)
  * @property Episode  $ep             (Via magic method)
  * @property string   $kind           (Via magic method)

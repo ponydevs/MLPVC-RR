@@ -92,11 +92,11 @@ class Posts {
 	/**
 	 * POST data validator function used when creating/editing posts
 	 *
-	 * @param string                   $thing "request"/"reservation"
-	 * @param array                    $array Array to output the checked data into
-	 * @param Request|Reservation|null $Post  Optional, exsting post to compare new data against
+	 * @param string                   $thing  "request"/"reservation"
+	 * @param array|object             $target Array or object to output the checked data into
+	 * @param Request|Reservation|null $Post   Optional, exsting post to compare new data against
 	 */
-	public static function checkPostDetails($thing, array &$array, $Post = null){
+	public static function checkPostDetails($thing, &$target, $Post = null){
 		$editing = !empty($Post);
 
 		$label = (new Input('label','string', [
@@ -110,12 +110,12 @@ class Posts {
 			if (!$editing || $label !== $Post->label){
 				CoreUtils::checkStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
 				$label = preg_replace(new RegExp("''"),'"',$label);
-				CoreUtils::set($array, 'label', $label);
+				CoreUtils::set($target, 'label', $label);
 			}
 		}
 		else if (!$editing && $thing !== 'reservation')
 			Response::fail('Description cannot be empty');
-		else CoreUtils::set($array, 'label', null);
+		else CoreUtils::set($target, 'label', null);
 
 		if ($thing === 'request'){
 			$type = (new Input('type',function($value){
@@ -131,15 +131,15 @@ class Posts {
 				Response::fail('Missing request type');
 
 			if (!$editing || (isset($type) && $type !== $Post->type))
-				CoreUtils::set($array,'type',$type);
+				CoreUtils::set($target,'type',$type);
 
 			if (Permission::sufficient('developer')){
 				$reserved_at = self::validateReservedAt();
 				if (isset($reserved_at)){
 					if ($reserved_at !== strtotime($Post->reserved_at))
-						CoreUtils::set($array,'reserved_at',date('c', $reserved_at));
+						CoreUtils::set($target,'reserved_at',date('c', $reserved_at));
 				}
-				else CoreUtils::set($array,'reserved_at',null);
+				else CoreUtils::set($target,'reserved_at',null);
 			}
 		}
 
@@ -150,15 +150,15 @@ class Posts {
 					Input::ERROR_INVALID => '"Posted" timestamp (@value) is invalid',
 				]
 			]))->out();
-			if (isset($posted) && $posted !== strtotime($Post->posted))
-				CoreUtils::set($array,'posted',date('c', $posted));
+			if (isset($posted) && $posted !== strtotime($Post->posted_at))
+				CoreUtils::set($target,'posted',date('c', $posted));
 
 			$finished_at = self::validateFinishedAt();
 			if (isset($finished_at)){
 				if ($finished_at !== strtotime($Post->finished_at))
-					CoreUtils::set($array,'finished_at',date('c', $finished_at));
+					CoreUtils::set($target,'finished_at',date('c', $finished_at));
 			}
-			else CoreUtils::set($array,'finished_at',null);
+			else CoreUtils::set($target,'finished_at',null);
 		}
 	}
 
@@ -216,17 +216,18 @@ class Posts {
 			if (!empty($Deviation->author)){
 				$Author = Users::get($Deviation->author, 'name');
 
-				if (!empty($Author)){
-					if (!isset($_POST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author->id !== $ReserverID){
-						$sameUser = Auth::$user->id === $ReserverID;
-						$person = $sameUser ? 'you' : 'the user who reserved this post';
-						Response::fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author->name} the new reserver.".($sameUser
-								? "<br><br>This means that you'll no longer be able to interact with this post until {$Author->name} or an administrator cancels the reservation on it."
-								: ''), ['retry' => true]);
-					}
+				if (empty($Author))
+					Response::fail("Could not fetch local user data for username: $Deviation->author");
 
-					$return['reserved_by'] = $Author->id;
+				if (!isset($_POST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author->id !== $ReserverID){
+					$sameUser = Auth::$user->id === $ReserverID;
+					$person = $sameUser ? 'you' : 'the user who reserved this post';
+					Response::fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author->name} the new reserver.".($sameUser
+							? "<br><br>This means that you'll no longer be able to interact with this post until {$Author->name} or an administrator cancels the reservation on it."
+							: ''), ['retry' => true]);
 				}
+
+				$return['reserved_by'] = $Author->id;
 			}
 
 			if (CoreUtils::isDeviationInClub($return['deviation_id']) === true)
@@ -413,7 +414,11 @@ HTML;
 			$HTML .= <<<HTML
 			<label>
 				<span>$Type as user</span>
-				<input type="text" name="post_as" pattern="^$UNP$" maxlength="20" placeholder="Username" spellcheck="false">
+				<input type="text" name="post_as" pattern="^\s*$UNP\s*$" maxlength="20" placeholder="Username" spellcheck="false">
+			</label>
+			<label>
+				<span>$Type timestamp</span>
+				<input type="text" name="posted_at" placeholder="time()" spellcheck="false" autocomplete="off">
 			</label>
 
 HTML;
@@ -509,7 +514,7 @@ HTML;
 		$cachebust = $cachebust_url ? '?t='.time() : '';
 		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a></div>";
 		$post_label = self::_getPostLabel($Post);
-		$permalink = "<a href='$postlink'>".Time::tag($Post->posted).'</a>';
+		$permalink = "<a href='$postlink'>".Time::tag($Post->posted_at).'</a>';
 		$isStaff = Permission::sufficient('staff');
 
 		$posted_at = '<em class="post-date">';
@@ -593,7 +598,7 @@ HTML;
 	public static function getSuggestionLi(Request $Request):string {
 		$escapedLabel = CoreUtils::aposEncode($Request->label);
 		$label = self::_getPostLabel($Request);
-		$time_ago = Time::tag($Request->posted);
+		$time_ago = Time::tag($Request->posted_at);
 		$cat = self::REQUEST_TYPES[$Request->type];
 		$reserve = Permission::sufficient('member') ? self::getPostReserveButton($Request, null, false) : "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
 		return <<<HTML
@@ -754,6 +759,15 @@ HTML;
 		return Users::validateName('post_as', [
 			Input::ERROR_INVALID => '"Post as" username (@value) is invalid',
 		]);
+	}
+
+	public static function validatePostedAt(){
+		return (new Input('posted_at','timestamp', [
+			Input::IS_OPTIONAL => true,
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_INVALID => '"Posted at" timestamp (@value) is invalid',
+			]
+		]))->out();
 	}
 
 	public static function validateReservedAt(){

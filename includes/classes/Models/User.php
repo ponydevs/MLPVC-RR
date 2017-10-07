@@ -530,8 +530,8 @@ HTML;
 						array_filter(array_values(Posts::getRequestsSection($PendingRequestReservations, RETURN_ARRANGED)['unfinished']))
 					);
 					usort($Posts, function(Post $a, Post $b){
-						$a = strtotime($a->posted);
-						$b = strtotime($b->posted);
+						$a = strtotime($a->posted_at);
+						$b = strtotime($b->posted_at);
 
 						return $b <=> $a;
 					});
@@ -541,7 +541,7 @@ HTML;
 						$postAnchor = $Post->toAnchor();
 						$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
 						$actionCond = $Post->is_request && !empty($Post->reserved_at);
-						$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted);
+						$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted_at);
 						$PostedAction = $actionCond ? 'Reserved' : 'Posted';
 						$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
 						$broken = $Post->broken ? Posts::BROKEN : '';

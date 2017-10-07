@@ -9,7 +9,8 @@ class Reservation extends Post {
 	];
 
 	public static $alias_attribute = [
-		'posted' => 'reserved_at',
+		'posted_at' => 'reserved_at',
+		'posted_by' => 'reserved_by',
 	];
 
 	public function get_is_request():bool {

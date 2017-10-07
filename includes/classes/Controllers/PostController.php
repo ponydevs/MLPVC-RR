@@ -110,7 +110,7 @@ class PostController extends Controller {
 						$response['reserved_at'] = !empty($this->_post->reserved_at) ? date('c', strtotime($this->_post->reserved_at)) : '';
 				}
 				if (Permission::sufficient('developer')){
-					$response['posted'] = date('c', strtotime($this->_post->posted));
+					$response['posted'] = date('c', strtotime($this->_post->posted_at));
 					if (!empty($this->_post->reserved_by) && !empty($this->_post->deviation_id))
 							$response['finished_at'] = !empty($this->_post->finished_at) ? date('c', strtotime($this->_post->finished_at)) : '';
 				}
@@ -170,6 +170,11 @@ class PostController extends Controller {
 			case 'locate':
 				if (empty($this->_post) || $this->_post->broken)
 					Response::fail("The post you were linked to has either been deleted or didn’t exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\</div>");
+
+				if (isset($_POST['SEASON']) && isset($_POST['EPISODE']) && $this->_post->ep->season === (int)$_POST['SEASON'] && $this->_post->ep->episode === (int)$_POST['EPISODE'])
+					Response::done([
+						'refresh' => $this->_post->kind,
+					]);
 
 				Response::done([
 					'castle' => [
@@ -485,23 +490,24 @@ class PostController extends Controller {
 			Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
 		}
 
-		$insert = [
-			'preview' => $Image->preview,
-			'fullsize' => $Image->fullsize,
-		];
+		$className = '\App\Models\\'.ucwords($thing);
+		/** @var $Post Post */
+		$Post = new $className();
+		$Post->preview = $Image->preview;
+		$Post->fullsize = $Image->fullsize;
 
 		$season = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
 		$episode = Episodes::validateEpisode();
 		$epdata = Episodes::getActual($season, $episode, Episodes::ALLOW_MOVIES);
 		if (empty($epdata))
 			Response::fail("The specified episode (S{$season}E$episode) does not exist");
-		$insert['season'] = $epdata->season;
-		$insert['episode'] = $epdata->episode;
+		$Post->season = $epdata->season;
+		$Post->episode = $epdata->episode;
 
 		$ByID = Auth::$user->id;
 		if (Permission::sufficient('developer')){
 			$username = Posts::validatePostAs();
-			if (isset($username)){
+			if ($username !== null){
 				$PostAs = Users::get($username, 'name');
 
 				if (empty($PostAs))
@@ -512,28 +518,31 @@ class PostController extends Controller {
 
 				$ByID = $PostAs->id;
 			}
+
+			$posted_at = Posts::validatePostedAt();
+			if ($posted_at !== null)
+				$Post->posted_at = date('c', $posted_at);
 		}
 
-		$insert[$thing === 'reservation' ? 'reserved_by' : 'requested_by'] = $ByID;
-		Posts::checkPostDetails($thing, $insert);
+		$Post->{$Post->is_reservation ? 'reserved_by' : 'requested_by'} = $ByID;
+		Posts::checkPostDetails($thing, $Post);
 
-		$PostID = DB::$instance->insert("{$thing}s",$insert,'id');
-		if (!$PostID)
+		if (!$Post->save())
 			Response::dbError();
 
 		try {
 			CoreUtils::socketEvent('post-add',[
-				'id' => $PostID,
-				'type' => $thing,
-				'season' => (int)$insert['season'],
-				'episode' => (int)$insert['episode'],
+				'id' => $Post->id,
+				'type' => $Post->kind,
+				'season' => (int)$Post->season,
+				'episode' => (int)$Post->episode,
 			]);
 		}
 		catch (\Exception $e){
 			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
-		Response::done(['id' => "$thing-$PostID"]);
+		Response::done(['id' => $Post->getID()]);
 	}
 
 	/** @var Request|Reservation */
@@ -545,7 +554,7 @@ class PostController extends Controller {
 			$this->_post = $thing === 'request' ? Request::find($params['id']) : Reservation::find($params['id']);
 		}
 		catch (RecordNotFound $e){}
-		if (empty($this->_post))
+		if (empty($this->_post) && $action !== 'locate')
 			Response::fail("There’s no $thing with the ID {$params['id']}");
 
 		if (!empty($this->_post->lock) && Permission::insufficient('developer') && !in_array($action,['unlock','lazyload','locate'],true))
@@ -814,7 +823,7 @@ class PostController extends Controller {
 			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
-		Response::success('Reservation added');
+		Response::success('Reservation added', ['id' => $Post->getID()]);
 	}
 
 	const SHARE_TYPE = [

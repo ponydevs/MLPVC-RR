@@ -476,7 +476,7 @@ HTML;
 					/** @var $item Request|Reservation */
 					$preview = $item->toAnchorWithPreview();
 					$posted_by = ($item->is_request ? $item->requester : $item->reserver)->toAnchor();
-					$posted_at = Time::tag($item->posted);
+					$posted_at = Time::tag($item->posted_at);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $posted_at";
 					if ($item->is_request){
 						$posted = "<td class='by-at'>$posted</td>";

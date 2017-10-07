@@ -256,12 +256,12 @@ class CoreUtils {
 		/** @var $UpcomingEpisodes Episode[] */
 		$UpcomingEpisodes = Episode::find('all', ['conditions' => "airs > NOW() AND airs < NOW() + INTERVAL '6 MONTH'", 'order' => 'airs asc']);
 		if (!empty($UpcomingEpisodes)){
-			foreach ($UpcomingEpisodes as $Episode){
+			foreach ($UpcomingEpisodes as $i => $Episode){
 				$airtime = strtotime($Episode->airs);
 				$airs = date('c', $airtime);
 				$month = date('M', $airtime);
 				$day = date('j', $airtime);
-				$time = self::_eventTimeTag($airtime);
+				$time = self::_eventTimeTag($airtime, $i);
 
 				$title = !$Episode->is_movie
 					? $Episode->title
@@ -314,25 +314,27 @@ class CoreUtils {
 		return $wrap ? "<section id='upcoming'><h2>Happening soon</h2><ul>$HTML</ul></section>" : $HTML;
 	}
 
-	private static function _eventTimeTag(int $timestamp): string{
-		$diff = Time::difference(time(), $timestamp);
-		if ($diff['time'] < Time::IN_SECONDS['month']){
-			$ret = 'in ';
-			$tz = '('.date('T', $timestamp).')';
-			if (!empty($diff['day'])){
-				$ret .= "{$diff['day']} day".($diff['day'] !== 1 ? 's' : '').' & ';
-			}
-			if (!empty($diff['hour'])){
-				$ret .= "{$diff['hour']}:";
-			}
-			foreach (['minute', 'second'] as $k){
-				$diff[$k] = self::pad($diff[$k]);
-			}
-			$timec = date('c', $timestamp);
+	private static function _eventTimeTag(int $timestamp, int $index):string {
+		if ($index === 0){
+			$diff = Time::difference(time(), $timestamp);
+			if ($diff['time'] < Time::IN_SECONDS['month']){
+				$ret = 'in ';
+				$tz = '('.date('T', $timestamp).')';
+				if (!empty($diff['day'])){
+					$ret .= "{$diff['day']} day".($diff['day'] !== 1 ? 's' : '').' & ';
+				}
+				if (!empty($diff['hour'])){
+					$ret .= "{$diff['hour']}:";
+				}
+				foreach (['minute', 'second'] as $k){
+					$diff[$k] = self::pad($diff[$k]);
+				}
+				$timec = date('c', $timestamp);
 
-			return "<time datetime='$timec'>$ret{$diff['minute']}:{$diff['second']} $tz</time>";
+				return "<time datetime='$timec' class'dynt nodt'>$ret{$diff['minute']}:{$diff['second']} $tz</time>";
+			}
 		}
-		else return Time::tag($timestamp);
+		return Time::tag($timestamp);
 	}
 
 	/**
