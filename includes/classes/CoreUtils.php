@@ -1324,8 +1324,8 @@ HTML;
 		/** @var $logger Logger */
 		$logger->log(Logger::DEBUG, $message, [
 			'ip' => $_SERVER['REMOTE_ADDR'],
-			'referrer' => $_SERVER['HTTP_REFERER'],
-			'auth' => Auth::$signed_in ? Auth::$user->to_array(['include' => [ 'session' => Auth::$session ]]) : null,
+			'referrer' => $_SERVER['HTTP_REFERER'] ?? null,
+			'auth' => Auth::$signed_in ? Auth::$user->to_array(['include' => [ 'session' => Auth::$session->id ]]) : null,
 		]);
 	}
 }
