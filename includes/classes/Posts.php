@@ -144,7 +144,7 @@ class Posts {
 		}
 
 		if (Permission::sufficient('developer')){
-			$posted = (new Input('posted','timestamp', [
+			$posted = (new Input('posted_at','timestamp', [
 				Input::IS_OPTIONAL => true,
 				Input::CUSTOM_ERROR_MESSAGES => [
 					Input::ERROR_INVALID => '"Posted" timestamp (@value) is invalid',

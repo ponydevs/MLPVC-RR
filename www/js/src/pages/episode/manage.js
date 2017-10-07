@@ -512,7 +512,7 @@ $(function(){
 							$.mk('span').text('Post timestamp'),
 							$.mk('input').attr({
 								type: 'datetime',
-								name: 'date',
+								name: 'posted_at',
 								required: true,
 								spellcheck: false,
 								autocomplete: 'off',
@@ -671,7 +671,7 @@ $(function(){
 				$.Dialog.request(false, $PostEditForm, 'Save', function($form){
 					let $label = $form.find('[name=label]'),
 						$type = $form.find('[name=type]'),
-						$date, $reserved_at, $finished_at;
+						$posted_at, $reserved_at, $finished_at;
 					if (postdata.label)
 						$label.val(postdata.label);
 					if (postdata.type)
@@ -679,10 +679,10 @@ $(function(){
 							return this.value === postdata.type;
 						}).attr('selected', true);
 					if (typeof postdata.posted_at === 'string'){
-						$date = $form.find('[name=date]');
+						$posted_at = $form.find('[name=posted_at]');
 
 						let posted_at = moment(postdata.posted_at);
-						$date.val(posted_at.format('YYYY-MM-DD\THH:mm:ssZ'));
+						$posted_at.val(posted_at.format('YYYY-MM-DD\THH:mm:ssZ'));
 					}
 					if (typeof postdata.reserved_at === 'string'){
 						$reserved_at = $form.find('[name=reserved_at]');
@@ -706,11 +706,12 @@ $(function(){
 						let data = { label: $label.val() };
 						if (type === 'request')
 							data.type = $type.val();
-						if (typeof postdata.posted === 'string'){
-							data.posted = new Date($date.val());
-							if (isNaN(data.posted.getTime()))
+						console.log(postdata.posted_at);
+						if (typeof postdata.posted_at === 'string'){
+							data.posted_at = new Date($posted_at.val());
+							if (isNaN(data.posted_at.getTime()))
 								return $.Dialog.fail(false, 'Post timestamp is invalid');
-							data.posted = data.posted.toISOString();
+							data.posted_at = data.posted_at.toISOString();
 						}
 						if (typeof postdata.reserved_at === 'string'){
 							let reserved_at = $reserved_at.val();
