@@ -251,7 +251,7 @@ class EpisodeController extends Controller {
 		]))->out();
 		if ($notes !== null){
 			CoreUtils::checkStringValidity($notes, "$What notes", INVERSE_PRINTABLE_ASCII_PATTERN);
-			$notes = CoreUtils::sanitizeHtml($notes);
+			$notes = CoreUtils::sanitizeHtml($notes, ['a'], ['a.href']);
 			if (!$editing || $notes !== $this->_episode->notes)
 				$update['notes'] = $notes;
 		}

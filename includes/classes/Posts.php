@@ -38,7 +38,7 @@ class Posts {
 					$Episode->season,
 					$Episode->episode
 				],
-				'order' => 'requested_at asc',
+				'order' => 'finished_at asc, requested_at asc',
 			]);
 		}
 		if ($only !== ONLY_REQUESTS){
@@ -50,7 +50,7 @@ class Posts {
 					$Episode->season,
 					$Episode->episode
 				],
-				'order' => 'reserved_at asc',
+				'order' => 'finished_at asc, reserved_at asc',
 			]);;
 		}
 

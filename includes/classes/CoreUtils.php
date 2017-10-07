@@ -278,10 +278,12 @@ class CoreUtils {
 				];
 			}
 		}
+		else $i = 0;
+
 		/** @var $UpcomingEvents Event[] */
 		$UpcomingEvents = Event::upcoming();
 		if (!empty($UpcomingEvents)){
-			foreach ($UpcomingEvents as $Event){
+			foreach ($UpcomingEvents as $j => $Event){
 				$time = strtotime($Event->starts_at);
 				$beforestartdate = time() < $time;
 				if (!$beforestartdate){
@@ -292,7 +294,7 @@ class CoreUtils {
 				$day = date('j', $time);
 				$diff = Time::difference(time(), $time);
 				$Verbs = $beforestartdate ? 'Stars' : 'Ends';
-				$timetag = self::_eventTimeTag($time);
+				$timetag = self::_eventTimeTag($time, $i+$j);
 
 				$HTML[] = [
 					$time, "<li><div class='calendar'><span class='top event'>$month</span><span class='bottom'>$day</span></div>".
@@ -524,6 +526,7 @@ class CoreUtils {
 		if (!empty($allowedTags))
 			$whitelist = array_merge($whitelist, $allowedTags);
 		$config->set('HTML.AllowedElements', $whitelist);
+		$config->set('HTML.AllowedAttributes', $allowedAttributes);
 		$config->set('Core.EscapeInvalidTags', true);
 
 		// Mapping old to new
