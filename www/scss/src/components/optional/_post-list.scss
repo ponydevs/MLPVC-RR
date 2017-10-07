@@ -31,7 +31,10 @@
 		li {
 			margin: 5px;
 
-			.image img { height: 150px }
+			.image img {
+				max-height: 150px;
+        max-width: 300px;
+			}
 		}
 	}
 
