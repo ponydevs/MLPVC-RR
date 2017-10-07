@@ -450,7 +450,7 @@ $(function(){
 
 				lastScrollTop = scrollTop;
 			};
-		$w.on('scroll',disappearingHeaderHandler);
+		$d.on('scroll',disappearingHeaderHandler);
 		disappearingHeaderHandler();
 	}
 	const $toTheTop = $('#to-the-top').on('click',function(e){
