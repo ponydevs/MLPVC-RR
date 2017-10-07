@@ -52,7 +52,7 @@ class HTTP {
 		curl_close($r);
 
 		if ($responseCode < 200 || $responseCode >= 300)
-			throw new CURLRequestException(rtrim("cURL fail for URL \"$url\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
+			throw new CURLRequestException("cURL fail for URL \"$url\"", $responseCode, $curlError);
 
 		global $http_response_header;
 		$http_response_header = array_map('rtrim',explode("\n",$responseHeaders));

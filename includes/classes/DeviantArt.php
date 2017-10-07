@@ -88,7 +88,7 @@ class DeviantArt {
 		curl_close($r);
 
 		if ($responseCode < 200 || $responseCode >= 300)
-			throw new CURLRequestException(rtrim("cURL fail for URL \"$requestURI\" (HTTP $responseCode); $curlError",' ;'), $responseCode);
+			throw new CURLRequestException(rtrim("cURL fail for URL \"$requestURI\"",' ;'), $responseCode, $curlError);
 
 		if (empty($response)){
 			CoreUtils::error_log(__METHOD__.": Empty response (HTTP $responseCode)\nURI: $requestURI\nResponse headers:\n$http_response_header\ncURL error: $curlError");
@@ -222,7 +222,7 @@ class DeviantArt {
 		catch (CURLRequestException $e){
 			if ($e->getCode() === 404)
 				throw new \RuntimeException('Image not found. The URL may be incorrect or the image has been deleted.', 404);
-			else throw new \RuntimeException("Image could not be retrieved (HTTP {$e->getCode()})", $e->getCode());
+			else throw new \RuntimeException("Image could not be retrieved; ".$e->getMessage(), $e->getCode());
 		}
 
 		return $data;
