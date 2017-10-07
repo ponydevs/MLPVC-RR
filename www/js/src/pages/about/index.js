@@ -50,7 +50,7 @@ $(function(){
             },
             ticks: {
 				autoSkip: true,
-                maxTicksLimit: 15,
+				autoSkipPadding: 10,
             },
         }],
         yAxes = [{
@@ -97,10 +97,10 @@ $(function(){
 						},
 					},
 				},
-				legend: legend,
+				legend,
 				scales: {
-					xAxes: xAxes,
-					yAxes: yAxes,
+					xAxes,
+					yAxes,
 				},
 			}
 		});
@@ -143,10 +143,10 @@ $(function(){
 						}
 					}
 				},
-				legend: legend,
+				legend,
 				scales: {
-					xAxes: xAxes,
-					yAxes: yAxes,
+					xAxes,
+					yAxes,
 				},
 			},
 		});
@@ -194,7 +194,7 @@ $(function(){
 						}
 					}
 				},
-				legend: legend,
+				legend,
 				scales: {
 					xAxes: [{
 			            type: 'time',
@@ -207,9 +207,10 @@ $(function(){
 			            },
 			            ticks: {
 							autoSkip: true,
+							autoSkipPadding: 10,
 			            },
 			        }],
-					yAxes: yAxes,
+					yAxes,
 				},
 			},
 		});

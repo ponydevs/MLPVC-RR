@@ -53,6 +53,26 @@
 
 				li:not(:first-child) { display: none }
 			}
+			#to-the-top {
+				display: block;
+				position: absolute;
+				z-index: 3;
+				top: 0;
+				right: -$HeaderHeight;
+				color: #fff;
+				opacity: 0;
+				transition: opacity .2s linear, right .2s linear;
+				width: $HeaderHeight;
+				height: $HeaderHeight;
+				cursor: pointer;
+				font-size: $HeaderHeight;
+				line-height: $HeaderHeight;
+
+				&.show {
+					opacity: 1;
+					right: 0;
+				}
+			}
 		}
 	}
 	#sidebar {
@@ -131,6 +151,9 @@
 
 			ul {
 				overflow: hidden;
+			}
+			#to-the-top {
+				display: none;
 			}
 		}
 	}
@@ -272,7 +295,7 @@ header {
 				&.sidebar-toggle {
 					$toggleSize: 45px;
 					position: relative;
-					margin: 2.5px;
+					margin: ($HeaderHeight - $toggleSize)/2;
 					width: $toggleSize;
 					height: $toggleSize;
 					cursor: pointer;

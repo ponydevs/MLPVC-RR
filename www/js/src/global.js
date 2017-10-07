@@ -452,6 +452,26 @@ $(function(){
 		disappearingHeaderHandler();
 	}
 
+	const $html = $('html');
+	const $toTheTop = $('#to-the-top').on('click',function(e){
+		e.preventDefault();
+
+		$html.stop().animate({scrollTop: 0}, 200);
+		$toTheTop.removeClass('show');
+	});
+	function checkToTop(){
+		if (!window.withinMobileBreakpoint() || $html.is(':animated'))
+			return;
+
+		const show = $html.scrollTop() !== 0;
+		if (!show && $toTheTop.hasClass('show'))
+			$toTheTop.removeClass('show');
+		else if (show && !$toTheTop.hasClass('show'))
+			$toTheTop.addClass('show');
+	}
+	$d.on('scroll',checkToTop);
+	checkToTop();
+
 	// WebSocket server connection
 	(function(){
 		let conn,
