@@ -27,7 +27,7 @@
 		"altorouter/altorouter": "1.2.0",
 		"restcord/restcord": "^0.1.4",
 		"erusev/parsedown": "^1.6",
-		"seinopsys/postgresql-database-class": "^2.0.5",
+		"seinopsys/postgresql-database-class": "^2.0.6",
 		"php-activerecord/php-activerecord": "dev-master",
 		"seinopsys/oauth2-deviantart": "^1.0",
 		"s1lentium/iptools": "^1.1",

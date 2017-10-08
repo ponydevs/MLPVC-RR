@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f2c8f5a70a2397a1324397bb89874089",
+    "content-hash": "8259c65713f5e7aa4c093994cb16fa07",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1234,12 +1234,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/phinx.git",
-                "reference": "57e6b6bffe83cc519e5c79eafd7e5aa9f52e3765"
+                "reference": "1ab1a34fa366818b92e03e681f4a7a2b486e74e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/57e6b6bffe83cc519e5c79eafd7e5aa9f52e3765",
-                "reference": "57e6b6bffe83cc519e5c79eafd7e5aa9f52e3765",
+                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/1ab1a34fa366818b92e03e681f4a7a2b486e74e2",
+                "reference": "1ab1a34fa366818b92e03e681f4a7a2b486e74e2",
                 "shasum": ""
             },
             "require": {
@@ -1303,7 +1303,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/phinx/tree/custom-columns"
             },
-            "time": "2017-09-25T13:53:58+00:00"
+            "time": "2017-10-08T20:05:20+00:00"
         },
         {
             "name": "s1lentium/iptools",
@@ -1399,16 +1399,16 @@
         },
         {
             "name": "seinopsys/postgresql-database-class",
-            "version": "v2.0.5",
+            "version": "v2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "2c7490144c8232c8f3d3dae40d2c637976723a3e"
+                "reference": "484dbbe005267d011ed91e8a1bbaeea8fcc170e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/2c7490144c8232c8f3d3dae40d2c637976723a3e",
-                "reference": "2c7490144c8232c8f3d3dae40d2c637976723a3e",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/484dbbe005267d011ed91e8a1bbaeea8fcc170e0",
+                "reference": "484dbbe005267d011ed91e8a1bbaeea8fcc170e0",
                 "shasum": ""
             },
             "require": {
@@ -1433,7 +1433,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2017-07-25T12:39:28+00:00"
+            "time": "2017-10-08T20:23:10+00:00"
         },
         {
             "name": "symfony/config",
