@@ -62,7 +62,7 @@ class ImageProvider {
 	 * @param string $pattern
 	 * @param string $name
 	 *
-	 * @return ImageProviderItem|bool
+	 * @return ImageProviderItem|false
 	 */
 	private static function _testProvider($url, $pattern, $name){
 		$match = [];

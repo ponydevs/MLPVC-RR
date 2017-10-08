@@ -299,6 +299,8 @@ class UserController extends Controller {
 		$itemsPerPage = 10;
 		$Pagination = new Pagination($paginationPath, $itemsPerPage);
 
+		/** @var $cnt int */
+		/** @var $data array */
 		switch ($params['type']){
 			case 'cms-provided':
 				$cnt = $User->getCMContributions();

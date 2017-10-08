@@ -7,9 +7,7 @@ use App\GlobalSettings;
 use App\Permission;
 use App\Response;
 
-/** @property $_setting array */
 class SettingController extends Controller {
-
 	public function __construct(){
 		parent::__construct();
 
