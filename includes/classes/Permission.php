@@ -37,7 +37,7 @@ class Permission {
 	 *
 	 * @return bool
 	 */
-	public static function sufficient($role, $compareAgainst = null){
+	public static function sufficient($role, $compareAgainst = null):bool {
 		if (!is_string($role)) return false;
 
 		if (empty($compareAgainst)){
@@ -49,7 +49,7 @@ class Permission {
 
 		$_target = self::ROLES[$role] ?? null;
 		if (!isset($_target))
-			throw new \Exception('Invalid role: '.$role);
+			throw new \RuntimeException('Invalid role: '.$role);
 		$targetRole = $role;
 
 		return self::ROLES[$checkRole] >= self::ROLES[$targetRole];

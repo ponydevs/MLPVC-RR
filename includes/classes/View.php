@@ -28,7 +28,7 @@ class View {
 		return $this->_requirePath();
 	}
 
-	public function getBreadcrumb(array $scope):NavBreadcrumb {
+	public function getBreadcrumb(array $scope):?NavBreadcrumb {
 		switch ($this->class){
 			case 'about':
 				$bc = new NavBreadcrumb('About');
@@ -98,7 +98,7 @@ class View {
 						$bc->setChild('Full List');
 					break;
 					case 'picker':
-						$bc = '';
+						$bc = null;
 					break;
 					case 'sprite':
 						/** @var $appearance \App\Models\Appearance */

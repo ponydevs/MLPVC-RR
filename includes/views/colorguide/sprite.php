@@ -1,5 +1,4 @@
 <?php
-use App\ColorGroups;
 use App\CoreUtils;
 /** @var $heading string */
 /** @var $Appearance \App\Models\Appearance */

@@ -822,7 +822,7 @@ class CoreUtils {
 				return '';
 
 			try {
-				$breadcrumb = $view->getBreadcrumb($scope);
+				$breadcrumb = $view->getBreadcrumb($scope) ?? '';
 			}
 			catch(\TypeError $e){}
 		}

@@ -691,10 +691,10 @@ HTML;
 			$Buttons[] = ['lock-open orange unlock', 'Unlock'];
 
 		$HTML .= "<div class='actions'>";
-		if (!$view_only)
+		if ($view_only === false)
 			$Buttons[] = ['export blue share', 'Share'];
 		if (!empty($Buttons)){
-			if ($view_only)
+			if ($view_only !== false)
 				$HTML .="<div><a href='$view_only' class='btn blue typcn typcn-arrow-forward'>View</a></div>";
 			else {
 				$regularButton = count($Buttons) <3;

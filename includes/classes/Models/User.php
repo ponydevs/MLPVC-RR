@@ -17,6 +17,7 @@ use App\NavBreadcrumb;
 use App\Pagination;
 use App\Permission;
 use App\Posts;
+use App\Response;
 use App\Time;
 use App\UserPrefs;
 use App\Users;

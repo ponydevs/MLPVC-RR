@@ -95,7 +95,6 @@ class UserSettingForm {
 			 $current_user = Auth::$user;
 		$this->_current_user = $current_user;
 		$this->_can_save = Auth::$signed_in && $this->_current_user->id === Auth::$user->id;
-		$this->_value = UserPrefs::get($setting_name, $this->_current_user);
 	}
 
 	private function _permissionCheck(string $check_name){
