@@ -8,7 +8,11 @@ use App\Exceptions\UnsupportedProviderException;
 use App\Models\CachedDeviation;
 
 class ImageProvider {
-	public $preview = false, $fullsize = false, $title = '', $provider, $id, $author;
+	/**
+	 * @var false|string
+	 */
+	public $preview = false, $fullsize = false;
+	public $title = '', $provider, $id, $author;
 	/**
 	 * May contain additional data alongside the ones provided by default
 	 *

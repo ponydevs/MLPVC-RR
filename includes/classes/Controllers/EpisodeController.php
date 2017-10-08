@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controllers;
-use ActiveRecord\RecordNotFound;
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
@@ -109,6 +108,8 @@ class EpisodeController extends Controller {
 		switch ($only){
 			case ONLY_REQUESTS: $rendered = Posts::getRequestsSection($posts); break;
 			case ONLY_RESERVATIONS: $rendered = Posts::getReservationsSection($posts); break;
+			default:
+				Response::fail('This should never happen');
 		}
 		Response::done(['render' => $rendered]);
 	}
@@ -132,7 +133,6 @@ class EpisodeController extends Controller {
 		$editing = $action === 'set';
 		if ($editing)
 			$this->_getEpisode($params);
-		$canEditID = !empty($this->_episode);
 
 		$update = [];
 		if (!$editing)
@@ -144,7 +144,6 @@ class EpisodeController extends Controller {
 			$isMovie = $update['season'] === 0;
 		$update['episode'] = Episodes::validateEpisode($isMovie);
 		$What = $isMovie ? 'Movie' : 'Episode';
-		$what = strtolower($What);
 
 		$EpisodeChanged = true;
 		$SeasonChanged = true;
@@ -164,12 +163,9 @@ class EpisodeController extends Controller {
 			}
 		}
 		else {
-			try {
-				$MatchingID = Episode::find_by_season_and_episode($update['season'], $update['episode']);
-				if (!empty($MatchingID))
-					Response::fail(($isMovie?'A movie':'An episode').' with the same '.($isMovie?'overall':'season and episode').' number already exists');
-			}
-			catch(RecordNotFound $e){ }
+			$MatchingID = Episode::find_by_season_and_episode($update['season'], $update['episode']);
+			if (!empty($MatchingID))
+				Response::fail(($isMovie?'A movie':'An episode').' with the same '.($isMovie?'overall':'season and episode').' number already exists');
 		}
 
 		if (!$isMovie)
@@ -184,12 +180,9 @@ class EpisodeController extends Controller {
 
 		$update['twoparter'] = !$isMovie  && isset($_POST['twoparter']);
 		if ($update['twoparter']){
-			try {
-				$nextPart = Episode::find_by_season_and_episode($update['season'], $update['episode']+1);
-				if (!empty($nextPart))
-					Response::fail("This episode cannot have two parts because {$nextPart->toURL()} already exists.");
-			}
-			catch(RecordNotFound $e){ }
+			$nextPart = Episode::find_by_season_and_episode($update['season'], $update['episode']+1);
+			if (!empty($nextPart))
+				Response::fail("This episode cannot have two parts because {$nextPart->toURL()} already exists.");
 		}
 
 		$update['title'] = (new Input('title',function(&$value, $range) use ($isMovie){
@@ -267,6 +260,7 @@ class EpisodeController extends Controller {
 		if (!$editing || $SeasonChanged || $EpisodeChanged){
 			if ($isMovie){
 				if ($EpisodeChanged){
+					/** @var $TagName string */
 					$TagName = CGUtils::normalizeEpisodeTagName("movie{$update['episode']}");
 					/** @var $MovieTag Tag */
 					$MovieTag = DB::$instance->where('name', $editing ? "movie{$OriginalEpisode}" : $TagName)->getOne('tags');
@@ -286,6 +280,7 @@ class EpisodeController extends Controller {
 				}
 			}
 			else if ($SeasonChanged || $EpisodeChanged){
+				/** @var $TagName string */
 				$TagName = CGUtils::normalizeEpisodeTagName("s{$update['season']}e{$update['episode']}");
 				$EpTag = DB::$instance->where('name', $editing ? CGUtils::normalizeEpisodeTagName("s{$OriginalSeason}e{$OriginalEpisode}") : $TagName)->getOne('tags');
 
@@ -548,8 +543,6 @@ class EpisodeController extends Controller {
 	private function _getGuideRelations($params){
 		$this->_getEpisode($params);
 
-		$CheckTag = [];
-
 		$EpTagIDs = $this->_episode->getTagIDs();
 		if (empty($EpTagIDs))
 			Response::fail('The episode has no associated tags!');
@@ -595,7 +588,6 @@ class EpisodeController extends Controller {
 			Response::fail('The episode has no associated tag(s)!');
 		/** @var $Tag Tag */
 		$Tag = DB::$instance->where('id', $EpTagIDs)->orderByLiteral('char_length(name)','DESC')->getOne('tags');
-		$UseID = $Tag->id;
 
 		if (!empty($AppearanceIDs)){
 			foreach ($AppearanceIDs as $appearance_id){
@@ -622,14 +614,14 @@ class EpisodeController extends Controller {
 	public function nextup(){
 		$NextEpisode = DB::$instance->where('airs > CURRENT_TIMESTAMP')->orderBy('airs')->getOne('episodes');
 		if (empty($NextEpisode))
-			Reponse::fail('No upcoming episode found');
+			Response::fail('No upcoming episode found');
 
 		Response::done($NextEpisode->to_array([
 			'only' => ['episode','airs','season','title'],
 		]));
 	}
 
-	public function prefill($params){
+	public function prefill(){
 		CSRFProtection::protect();
 
 		if (Permission::insufficient('staff'))

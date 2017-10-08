@@ -19,7 +19,7 @@ class UploadedFile {
 		'megabyte' => 1048576,
 	];
 
-	function __construct($data){
+	public function __construct($data){
 		foreach ($data as $k => $v){
 			if (!property_exists(__CLASS__, $k))
 				continue;

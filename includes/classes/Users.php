@@ -263,7 +263,7 @@ HTML;
 	<h2>{$privacy}Personal Color Guide{$whatBtn}</h2>
 HTML;
 
-		$UsedSlotCount = $User->getPCGAppearances(null,true);
+		$UsedSlotCount = $User->getPCGAppearanceCount();
 		$ThisUser = $sameUser?'You':'This user';
 		$showPrivate = $sameUser || Permission::sufficient('staff');
 		/** @var $pcgLimits array */

@@ -87,7 +87,7 @@ class UserSettingForm {
 		],
 	];
 
-	function __construct(string $setting_name, ?User $current_user = null){
+	public function __construct(string $setting_name, ?User $current_user = null){
 		if (!isset(UserPrefs::DEFAULTS[$setting_name]))
 			throw new Exception('Could not instantiate '.__CLASS__." for non-existant setting $setting_name");
 		$this->_setting_name = $setting_name;
@@ -159,7 +159,7 @@ class UserSettingForm {
 		}
 	}
 
-	function __toString(){
+	public function __toString(){
 		$map = self::INPUT_MAP[$this->_setting_name];
 		$input = $this->_getInput($map['type'], $map['options'] ?? null);
 		if ($input === '')
@@ -179,7 +179,7 @@ class UserSettingForm {
 HTML;
 	}
 
-	function render(){
+	public function render(){
 		echo (string) $this;
 	}
 }

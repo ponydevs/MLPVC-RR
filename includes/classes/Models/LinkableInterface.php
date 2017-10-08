@@ -8,12 +8,12 @@ interface LinkableInterface {
 	 *
 	 * @return string
 	 */
-	function toURL():string;
+	public function toURL():string;
 
 	/**
 	 * Returns an anchor with the public-facing URL and the model's name/label/ID as the text
 	 *
 	 * @return string
 	 */
-	function toAnchor():string;
+	public function toAnchor():string;
 }

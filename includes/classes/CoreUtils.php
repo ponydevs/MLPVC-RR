@@ -90,12 +90,13 @@ class CoreUtils {
 	/**
 	 * Renders the markup of an HTML notice
 	 *
-	 * @param string      $type   Notice type
-	 * @param string      $title  If $text is specified: Notice title
-	 *                            If $text is null: Notice body
-	 * @param string|null $text   Notice body
-	 *                            If there's no title, leave empty and use $title for body
-	 * @param bool        $center Whether to center the contents of the notice
+	 * @param string           $type   Notice type
+	 * @param string           $title  If $text is specified: Notice title
+	 *                                 If $text is null: Notice body
+	 * @param string|null|true $text   Notice body
+	 *                                 If there's no title, leave empty and use $title for body
+	 *                                 If $center is null: Defines centering
+	 * @param bool             $center Whether to center the contents of the notice
 	 *
 	 * @return string
 	 */
@@ -963,7 +964,7 @@ HTML;
 	 *
 	 * @return string
 	 */
-	public static function trim(string $str, bool $multiline = false, string $chars = " \t\n\r\0\x0B\xC2\xA0"){
+	public static function trim(string $str, bool $multiline = false, string $chars = " \t\n\r\0\x0B\xC2\xA0"):string {
 		$out = preg_replace(new RegExp(' +'),' ',trim($str, $chars));
 		if ($multiline)
 			$out = preg_replace(new RegExp('(\r\n|\r)'),"\n",$out);

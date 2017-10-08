@@ -73,11 +73,13 @@ class AdminController extends Controller {
 						}
 						else $by = null;
 					}
-					else {
+					else if (!empty($_GET['by'])){
 						try {
 							$ip = IP::parse($_GET['by']);
 						}
-						catch (\Throwable $e){ }
+						catch (\Throwable $e){
+							// If we don1t find a vaild IP adress then we just ignore the parameter
+						}
 						if ($ip !== null)
 							$ip = (string)$ip;
 					}
@@ -110,7 +112,7 @@ class AdminController extends Controller {
 		else $q[] = 'by='.CoreUtils::FIXPATH_EMPTY;
 
 		foreach ($whereArgs as $arg)
-			DB::$instance->where(...$arg);
+			DB::$instance->where($arg[0], $arg[1] ?? \PostgresDb::DBNULL);
 		$Pagination = new Pagination('admin/logs', 25, DB::$instance->count('log'));
 		$heading = 'Global logs';
 		if (!empty($title))
@@ -136,8 +138,8 @@ class AdminController extends Controller {
 				'Pagination' => $Pagination,
 				'LogItems' => $LogItems,
 				'type' => $type,
-				'by' => $by,
-				'ip' => $ip,
+				'by' => $by ?? null,
+				'ip' => $ip ?? null,
 			],
 		]);
 	}
@@ -322,7 +324,7 @@ class AdminController extends Controller {
 			$avatar = "<img src='{$member->avatar_url}' alt='user avatar' class='user-avatar'>";
 			$un = CoreUtils::escapeHTML($member->username);
 			$bound = !empty($member->user_id) ? 'class="bound"' : '';
-			$udata = "<span>{$member->name}</span><span>{$member->username}#{$member->discriminator}</span>";
+			$udata = "<span>{$member->name}</span><span>$un#{$member->discriminator}</span>";
 			$HTML .= <<<HTML
 <li id="member-{$member->id}" $bound>
 	$avatar
@@ -487,7 +489,7 @@ HTML;
 		]);
 	}
 
-	function ip($params){
+	public function ip($params){
 		$ip = $params['ip'];
 
 		try {

@@ -18,7 +18,7 @@ use ElephantIO\Exception\ServerConnectionFailureException;
  * @property User   $recipient
  */
 class Notification extends NSModel {
-	static $table_name = 'notifications';
+	public static $table_name = 'notifications';
 
 	public static $belongs_to = [
 		['recipient', 'class' => 'User'],

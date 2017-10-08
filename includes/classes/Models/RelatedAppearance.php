@@ -10,9 +10,9 @@ namespace App\Models;
  * @property Appearance $target    (Via relations)
  */
 class RelatedAppearance extends NSModel {
-	static $primary_key = ['source_id','target_id'];
+	public static $primary_key = ['source_id', 'target_id'];
 
-	static $belongs_to = [
+	public static $belongs_to = [
 		['source', 'class' => 'Appearance', 'foreign_key' => 'source_id'],
 		['target', 'class' => 'Appearance', 'foreign_key' => 'target_id'],
 	];

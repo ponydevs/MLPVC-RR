@@ -43,7 +43,7 @@ class AuthController extends Controller {
 				$this->_error('server_error');
 			}
 		}
-		catch(Exception $e){
+		catch(\Exception $e){
 			CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
 			$this->_error('server_error');
 		}
@@ -51,12 +51,13 @@ class AuthController extends Controller {
 
 		if (isset($_GET['error'])){
 			$err = $_GET['error'];
-			if (isset($_GET['error_description']))
+			if (isset($_GET['error_description'])){
 				$errdesc = $_GET['error_description'];
 
-			if ($err === 'user_banned')
-				$errdesc .= "\n\nIf you’d like to appeal your ban, please <a class='send-feedback'>contact us</a>.";
-			$this->_error($err, $errdesc);
+				if ($err === 'user_banned')
+					$errdesc .= "\n\nIf you’d like to appeal your ban, please <a class='send-feedback'>contact us</a>.";
+			}
+			$this->_error($err, $errdesc ?? null);
 		}
 
 		if (self::_isStateRndkey($_match)){

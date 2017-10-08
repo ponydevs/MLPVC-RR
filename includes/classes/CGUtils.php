@@ -36,7 +36,7 @@ class CGUtils {
 	/**
 	 * Response creator for typeahead.js
 	 *
-	 * @param string $str
+	 * @param string|array $str
 	 */
 	public static function autocompleteRespond($str){
 		header('Content-Type: application/json');
@@ -254,7 +254,7 @@ class CGUtils {
 	 *
 	 * @return string|false
 	 */
-	public static function checkEpisodeTagType(string $name):string {
+	public static function checkEpisodeTagType(string $name):?string {
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 
 		if (preg_match($EPISODE_ID_REGEX,$name,$_match))
@@ -349,7 +349,6 @@ HTML;
 			$SpriteWidth = $SpriteSize[WIDTH];
 			$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
 
-			$OutWidth = $SpriteRealWidth;
 			$OutHeight = $SpriteHeight;
 		}
 		else $SpriteRealWidth = 0;
@@ -361,15 +360,14 @@ HTML;
 		// Get color groups & calculate the space they take up
 		$ColorGroups = $Appearance->color_groups;
 		$CGCount = count($ColorGroups);
-		$CGFontSize = round($NameFontSize/1.25);
+		$CGFontSize = (int)round($NameFontSize/1.25);
 		$CGVerticalMargin = $NameVerticalMargin;
 		$GroupLabelBox = Image::saneGetTTFBox($CGFontSize, $FontFile, 'ABCDEFGIJKLMOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz');
 		$ColorNameBox = Image::saneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, 'AGIJKFagijkf');
-		$CGsHeight = $CGCount*($GroupLabelBox['height'] + ($CGVerticalMargin*2) + $ColorCircleSize);
 
 		// Get export time & size
 		$ExportTS = 'Generated at: '.Time::format(time(), Time::FORMAT_FULL);
-		$ExportFontSize = round($CGFontSize/1.5);
+		$ExportFontSize = (int)round($CGFontSize/1.5);
 		$ExportBox = Image::saneGetTTFBox($ExportFontSize, $FontFile, $ExportTS);
 
 		// Check how long & tall appearance name is, and set image width
@@ -398,7 +396,6 @@ HTML;
 
 		if (!empty($ColorGroups)){
 			$LargestX = 0;
-			$LargestLabel = '';
 			$AllColors = self::getColorsForEach($ColorGroups);
 			foreach ($ColorGroups as $cg){
 				$CGLabelBox = Image::saneGetTTFBox($CGFontSize, $FontFile, $cg->label);
@@ -408,7 +405,6 @@ HTML;
 
 				if ($CGLabelBox['width'] > $LargestX){
 					$LargestX = $CGLabelBox['width'];
-					$LargestLabel = $cg->label;
 				}
 
 				if (!empty($AllColors[$cg->id]))
@@ -431,7 +427,6 @@ HTML;
 						$TotalWidth = $ColorNameLeftOffset+$CNBox['width'];
 						if ($TotalWidth > $LargestX){
 							$LargestX = $TotalWidth;
-							$LargestLabel = $c->label;
 						}
 					};
 
@@ -539,8 +534,6 @@ HTML;
 				$allcolors[$hex][$opacity][] = [$x, $y];
 			}
 
-			$mapping = 0;
-
 			$currLine = null;
 			$lines = [];
 			$lastx = -2;
@@ -610,7 +603,7 @@ HTML;
 
 		$Map = self::getSpriteImageMap($AppearanceID);
 
-		$SizeFactor = round($size/300);
+		$SizeFactor = (int)round($size/300);
 		$PNG = Image::createTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
 		foreach ($Map['linedata'] as $line){
 			$rgb = RGBAColor::parse($Map['colors'][$line['colorid']]);
@@ -866,8 +859,8 @@ GPL;
 	/**
 	 * Performs an ElasticSearch search operation
 	 *
-	 * @param array       $body
-	 * @param $Pagination $Pagination
+	 * @param array      $body
+	 * @param Pagination $Pagination
 	 *
 	 * @return array
 	 */

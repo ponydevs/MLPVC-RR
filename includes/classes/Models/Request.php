@@ -10,6 +10,7 @@ use ActiveRecord\DateTime;
  * @property string   $requested_by
  * @property DateTime $requested_at
  * @property User     $requester
+ * @method static Request|Request[] find(...$args)
  */
 class Request extends Post {
 	public static $belongs_to = [

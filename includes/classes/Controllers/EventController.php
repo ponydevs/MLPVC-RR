@@ -41,6 +41,7 @@ class EventController extends Controller {
 			CoreUtils::notFound();
 		}
 
+		/** @var $Event Event */
 		$this->_event = $Event;
 	}
 
@@ -306,10 +307,10 @@ class EventController extends Controller {
 		catch (\Exception $e){ Response::fail('Deviation link issue: '.$e->getMessage()); }
 		if (!CoreUtils::isDeviationInClub($favme))
 			Response::fail('The deviation must be in the group gallery');
-		$data['result_favme'] = $favme;
+		$update['result_favme'] = $favme;
 
 
-		if (!DB::$instance->where('id', $this->_event->id)->update('events', $data))
+		if (!DB::$instance->where('id', $this->_event->id)->update('events', $update))
 			Response::dbError('Finalizing event failed');
 
 		Response::done();

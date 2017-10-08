@@ -30,8 +30,8 @@ class Session extends NSModel {
 		['user'],
 	];
 
-	static $after_create = ['make_known_ip'];
-	static $after_update = ['make_known_ip'];
+	public static $after_create = ['make_known_ip'];
+	public static $after_update = ['make_known_ip'];
 
 	public function get_expired(){
 		return $this->expires->getTimestamp() < time();

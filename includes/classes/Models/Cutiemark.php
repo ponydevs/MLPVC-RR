@@ -18,14 +18,14 @@ use App\Users;
  * @property int         $rotation
  * @property string|null $label
  * @property Appearance  $appearance     (Via relations)
- * @property int|null    $contributor_id (Via magic method)
+ * @property string|null $contributor_id (Via magic method)
  * @property User        $contributor    (Via magic method)
  * @method static Cutiemark find(int $id)
  * @method static Cutiemark[] find_by_sql($sql, $data = null)
  * @method static Cutiemark[] find_all_by_appearance_id(int $appearance_id)
  */
 class Cutiemark extends NSModel {
-	static $table_name = 'cutiemarks';
+	public static $table_name = 'cutiemarks';
 
 	public static $belongs_to = [
 		['appearance'],

@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controllers;
-use ActiveRecord\RecordNotFound;
 use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
@@ -221,7 +220,7 @@ class PostController extends Controller {
 				if (!DB::$instance->where('id', $this->_post->id)->update("{$thing}s", ['lock' => true]))
 					Response::dbError();
 
-				$postdata = Posts::approve($thing, $this->_post->id, !$isUserReserver ? $this->_post->reserved_by : null);
+				Posts::approve($thing, $this->_post->id, !$isUserReserver ? $this->_post->reserved_by : null);
 
 				$this->_post->lock = true;
 				$response = [
@@ -550,10 +549,7 @@ class PostController extends Controller {
 	public function _initPost($action, $params){
 		$thing = $params['thing'];
 
-		try {
-			$this->_post = $thing === 'request' ? Request::find($params['id']) : Reservation::find($params['id']);
-		}
-		catch (RecordNotFound $e){}
+		$this->_post = $thing === 'request' ? Request::find($params['id']) : Reservation::find($params['id']);
 		if (empty($this->_post) && $action !== 'locate')
 			Response::fail("There’s no $thing with the ID {$params['id']}");
 
@@ -652,7 +648,7 @@ class PostController extends Controller {
 		if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]['read_at']))
 			Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
 
-		$notifSent = Notification::send($this->_post->reserved_by, 'post-passon', [
+		Notification::send($this->_post->reserved_by, 'post-passon', [
 			'type' => $this->_post->kind,
 			'id' => $this->_post->id,
 			'user' => Auth::$user->id,
@@ -730,7 +726,6 @@ class PostController extends Controller {
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
-		$thing = $params['thing'];
 		$this->_initPost(null, $params);
 
 		// Link is already full size, we're done

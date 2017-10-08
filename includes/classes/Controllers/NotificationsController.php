@@ -65,7 +65,7 @@ class NotificationsController extends Controller {
 					/** @var $Post Post */
 					$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 					if (empty($Post)){
-						Posts::clearTransferAttempts($Post, $data['type'], 'del');
+						Posts::clearTransferAttempts($Post, 'del');
 						Response::fail("The {$data['type']} doesn’t exist or has been deleted");
 					}
 					if ($read_action === 'true'){
@@ -85,7 +85,7 @@ class NotificationsController extends Controller {
 							'reserved_at' => date('c'),
 						]);
 
-						Posts::clearTransferAttempts($Post, $data['type'], 'deny');
+						Posts::clearTransferAttempts($Post, 'deny');
 
 						Logs::logAction('res_transfer', [
 							'id' => $data['id'],

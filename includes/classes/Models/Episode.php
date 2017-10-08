@@ -30,8 +30,8 @@ use App\RegExp;
  * @method static Episode find_by_season_and_episode(int $season, int $episode)
  */
 class Episode extends NSModel implements LinkableInterface {
-	static $primary_key = ['season','episode'];
-	static $table_name = 'episodes';
+	public static $primary_key = ['season', 'episode'];
+	public static $table_name = 'episodes';
 
 	public static $has_many = [
 		['videos', 'class' => 'EpisodeVideo', 'foreign_key' => ['season','episode'], 'order' => 'provider asc, part asc']

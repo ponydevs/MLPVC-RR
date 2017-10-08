@@ -28,13 +28,11 @@ use App\Models\User;
 use App\Pagination;
 use App\Permission;
 use App\RegExp;
-use App\Reponse;
 use App\Response;
 use App\UploadedFile;
 use App\UserPrefs;
 use App\Appearances;
 use App\Tags;
-use App\ColorGroups;
 use App\Users;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
@@ -71,7 +69,7 @@ class ColorGuideController extends Controller {
 		$this->_personalGuide = isset($_POST['PERSONAL_GUIDE']);
 	}
 
-	/** @var User */
+	/** @var User|null|false */
 	private $_ownedBy;
 	/** @var bool */
 	private $_isOwnedByUser;
@@ -91,7 +89,6 @@ class ColorGuideController extends Controller {
 	/** @var \App\Models\Appearance */
 	private $_appearance;
 	public function _getAppearance($params, $set_properties = true){
-		$asFile = isset($params['ext']);
 		if (!isset($params['id']))
 			Response::fail('Missing appearance ID');
 		$this->_appearance = Appearance::find($params['id']);
@@ -119,7 +116,7 @@ class ColorGuideController extends Controller {
 			$this->_EQG = null;
 			$OwnerName = $this->_appearance->owner->name;
 			$this->_cgPath = "/@$OwnerName/cg";
-			$this->_isOwnedByUser = Auth::$signed_in && $this->_appearance->owner_id === Auth::$user->id;
+			$this->_isOwnedByUser = Auth::$signed_in && ($this->_appearance->owner_id === Auth::$user->id);
 		}
 	}
 
@@ -392,8 +389,8 @@ class ColorGuideController extends Controller {
 
 			$boolquery = new BoolQuery();
 			if (Permission::insufficient('staff'))
-				$boolquery->add(new TermQuery('private', false), BoolQuery::MUST);
-			$boolquery->add(new TermQuery('ishuman', $this->_EQG), BoolQuery::MUST);
+				$boolquery->add(new TermQuery('private', 'false'), BoolQuery::MUST);
+			$boolquery->add(new TermQuery('ishuman', $this->_EQG ? 'true' : 'false'), BoolQuery::MUST);
 			$search->addQuery($boolquery);
 
 			$search->setSource(false);
@@ -429,7 +426,6 @@ class ColorGuideController extends Controller {
 			if ($searching && $jsResponse)
 				Response::fail('The ElasticSearch server is currently down and search is not available, sorry for the inconvenience.<br>Please <a class="send-feedback">let us know</a> about this issue.', ['unavail' => true]);
 
-			$searching = false;
 			$SearchQuery = null;
 		    $_EntryCount = DB::$instance->where('ishuman',$this->_EQG)->where('id != 0')->count('appearances');
 
@@ -473,8 +469,7 @@ class ColorGuideController extends Controller {
 
 		$title = '';
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
-		$Ponies = [];
-	    $_EntryCount = $this->_ownedBy->getPCGAppearances(null, true);
+	    $_EntryCount = $this->_ownedBy->getPCGAppearanceCount();
 
 	    $Pagination = new Pagination("@{$this->_ownedBy->name}/cg", $AppearancesPerPage, $_EntryCount);
 	    $Ponies = $this->_ownedBy->getPCGAppearances($Pagination);
@@ -673,7 +668,7 @@ class ColorGuideController extends Controller {
 					Response::fail("You don’t have any slots. If you’d like to know how to get some, click the blue <strong class='color-darkblue'>What?</strong> button on your <a href='/u'>Account page</a> to learn more about this feature.");
 				}
 				if ($availSlots === 0){
-					$remain = Users::calculatePersonalCGNextSlot(Auth::$user->getPCGAppearances(null, true));
+					$remain = Users::calculatePersonalCGNextSlot(Auth::$user->getPCGAppearanceCount());
 					Response::fail("You don’t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'.');
 				}
 			}
@@ -722,7 +717,6 @@ class ColorGuideController extends Controller {
 					if ($this->_personalGuide)
 						Response::fail('You already have an appearance with the same name in your Personal Color Guide');
 
-					$eqg_url = $this->_EQG ? '/eqg':'';
 					Response::fail("An appearance <a href='{$dupe->toURL()}' target='_blank'>already esists</a> in the ".($this->_EQG?'EQG':'Pony').' guide with this exact name. Consider adding an identifier in backets or choosing a different name.');
 				}
 				if ($creating || $label !== $this->_appearance->label)
@@ -747,7 +741,6 @@ class ColorGuideController extends Controller {
 				if ($creating){
 					if ($this->_personalGuide || Permission::insufficient('staff')){
 						$data['owner_id'] = Auth::$user->id;
-						$ownerName = Auth::$user->name;
 					}
 					if (empty($data['owner_id'])){
 						$biggestOrder = DB::$instance->disableAutoClass()->where('ishuman', $data['ishuman'])->getOne('appearances','MAX("order") as "order"');
@@ -956,8 +949,6 @@ class ColorGuideController extends Controller {
 				if (!empty($this->_appearance->owner_id))
 					Response::fail('Relations are unavailable for appearances in personal guides');
 
-				$CheckTag = [];
-
 				$RelatedAppearances = $this->_appearance->related_appearances;
 				$RelatedAppearanceIDs = [];
 				foreach ($RelatedAppearances as $p)
@@ -1044,6 +1035,7 @@ class ColorGuideController extends Controller {
 					Response::fail('Appearances can only have a maximum of 4 cutie marks.');
 				/** @var $NewCMs Cutiemark[] */
 				$NewCMs = [];
+				$NewSVGs = [];
 				$NewIDs = [];
 				$labels = [];
 				foreach ($data as $i => $item){
@@ -1191,7 +1183,7 @@ class ColorGuideController extends Controller {
 
 					Logs::logAction('cm_delete',[
 						'appearance_id' => $this->_appearance->id,
-						'data' => Cutiemarks::convertDataForLogs($CMs),
+						'data' => Cutiemarks::convertDataForLogs($CurrentCMs),
 					]);
 
 					$CutieMarks = [];

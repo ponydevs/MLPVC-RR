@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
-/** @inheritdoc */
+/**
+ * @inheritdoc
+ * @method static Reservation|Reservation[] find(...$args)
+ */
 class Reservation extends Post {
 	public static $belongs_to = [
 		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],

@@ -4,7 +4,7 @@ use App\RGBAColor;
 use PHPUnit\Framework\TestCase;
 
 class RGBAColorTest extends TestCase {
-	function testParse(){
+	public function testParse(){
 		$result = RGBAColor::parse('#000000');
 		self::assertEquals(0, $result->red);
 		self::assertEquals(0, $result->green);
@@ -78,7 +78,7 @@ class RGBAColorTest extends TestCase {
 		self::assertEquals(0, $result);
 	}
 
-	function testToHex(){
+	public function testToHex(){
 		$result = new RGBAColor(234, 66, 139);
 		self::assertEquals('#EA428B', $result->toHex());
 
@@ -86,7 +86,7 @@ class RGBAColorTest extends TestCase {
 		self::assertEquals('#EA428B', $result->toHex());
 	}
 
-	function testToRGB(){
+	public function testToRGB(){
 		$result = new RGBAColor(234, 66, 139);
 		self::assertEquals('rgb(234,66,139)', $result->toRGB());
 
@@ -94,7 +94,7 @@ class RGBAColorTest extends TestCase {
 		self::assertEquals('rgb(234,66,139)', $result->toRGB());
 	}
 
-	function testToRGBA(){
+	public function testToRGBA(){
 		$result = new RGBAColor(234, 66, 139, 1);
 		self::assertEquals('rgba(234,66,139,1)', $result->toRGBA());
 
@@ -102,7 +102,7 @@ class RGBAColorTest extends TestCase {
 		self::assertEquals('rgba(234,66,139,0.5)', $result->toRGBA());
 	}
 
-	function testToString(){
+	public function testToString(){
 		$result = new RGBAColor(234, 66, 139, 1);
 		self::assertEquals('#EA428B', (string)$result);
 
@@ -113,7 +113,7 @@ class RGBAColorTest extends TestCase {
 		self::assertEquals('#B8E1FD', (string)$result);
 	}
 
-	function testInvert(){
+	public function testInvert(){
 		$result = new RGBAColor(0, 255, 0, 1);
 		self::assertEquals('#FF00FF', $result->invert()->toHex());
 

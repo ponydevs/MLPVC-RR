@@ -41,7 +41,7 @@ use App\Users;
  * @method static User find(...$args)
  */
 class User extends AbstractUser implements LinkableInterface {
-	static $table_name = 'users';
+	public static $table_name = 'users';
 
 	public static $has_many = [
 		['sessions', 'order' => 'lastvisit desc'],
@@ -221,12 +221,20 @@ class User extends AbstractUser implements LinkableInterface {
 		return $this->getApprovedFinishedRequestContributions();
 	}
 
-	public function getPCGAppearances(Pagination $Pagination = null, bool $countOnly = false){
-		$limit = isset($Pagination) ? $Pagination->getLimit() : null;
-		if (!$countOnly)
-			DB::$instance->orderBy('order');
+	public function getPCGAppearanceCount():int {
 		$return = Appearances::get(null, $limit, $this->id, $countOnly ? Appearances::COUNT_COL : '*');
-		return $countOnly ? (int)($return[0]['cnt'] ?? 0) : $return;
+		return (int)($return[0]['cnt'] ?? 0);
+	}
+
+	/**
+	 * @param Pagination $Pagination
+	 *
+	 * @return Appearance[]|null
+	 */
+	public function getPCGAppearances(Pagination $Pagination = null):?array {
+		$limit = isset($Pagination) ? $Pagination->getLimit() : null;
+		DB::$instance->orderBy('order');
+		return Appearances::get(null, $limit, $this->id, '*');
 	}
 
 	/**
@@ -251,7 +259,7 @@ class User extends AbstractUser implements LinkableInterface {
 				'available' => 0,
 			] : 0;
 		}
-		$usedSlots = $this->getPCGAppearances(null, true);
+		$usedSlots = $this->getPCGAppearanceCount();
 
 		$available = (int)($totalslots-$usedSlots);
 		if (!$returnArray)
