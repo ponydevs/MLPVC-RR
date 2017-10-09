@@ -223,7 +223,7 @@ class User extends AbstractUser implements LinkableInterface {
 	}
 
 	public function getPCGAppearanceCount():int {
-		$return = Appearances::get(null, $limit, $this->id, $countOnly ? Appearances::COUNT_COL : '*');
+		$return = Appearances::get(null, $limit, $this->id, '*');
 		return (int)($return[0]['cnt'] ?? 0);
 	}
 
