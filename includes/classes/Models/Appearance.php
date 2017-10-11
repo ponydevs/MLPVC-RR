@@ -337,7 +337,7 @@ HTML;
 	 * @return string
 	 */
 	public function getPendingPlaceholder():string {
-		return $this->isPrivate() ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".(isset($this->last_cleared) ? 'This appearance is currently undergoing maintenance and will be available again shortly &mdash; '.Time::tag($this->last_cleared) :  'This appearance will be finished soon, please check back later &mdash; '.Time::tag($this->added)).'</div>' : false;
+		return $this->isPrivate() ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".(isset($this->last_cleared) ? 'This appearance is currently undergoing maintenance and will be available again shortly &mdash; '.Time::tag($this->last_cleared) :  'This appearance will be finished soon, please check back later &mdash; '.Time::tag($this->added)).'</div>' : '';
 	}
 
 	/**
@@ -512,7 +512,7 @@ HTML;
 				]
 			);
 
-		return [ $Colors, $ColorGroups, $AllColors ];
+		return [ $Colors, $ColorGroups ?? null, $AllColors ?? null];
 	}
 
 	public function spriteHasColorIssues():bool {
@@ -622,7 +622,7 @@ HTML;
 			]);
 			$GroupID = $Group->id;
 			if (!$GroupID)
-				throw new \RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::$instance->getLastError()), ': ');
+				throw new \RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::$instance->getLastError(), ': '));
 
 			$ci = 1;
 			foreach ($ColorNames as $label){
@@ -630,7 +630,7 @@ HTML;
 					'group_id' => $GroupID,
 					'label' => $label,
 					'order' => $ci++,
-				]))->save()) throw new \RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::$instance->getLastError()), ': ');
+				]))->save()) throw new \RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::$instance->getLastError(), ': '));
 			}
 		}
 
