@@ -290,7 +290,6 @@ class CoreUtils {
 				if (!$beforestartdate){
 					$time = strtotime($Event->ends_at);
 				}
-				$airs = date('c', $time);
 				$month = date('M', $time);
 				$day = date('j', $time);
 				$Verbs = $beforestartdate ? 'Stars' : 'Ends';
@@ -968,7 +967,7 @@ HTML;
 	 *
 	 * @return float
 	 */
-	public static function average(...$numbers){
+	public static function average(array $numbers):float {
 		return array_sum($numbers)/count($numbers);
 	}
 

@@ -163,11 +163,11 @@ class CoreUtilsTest extends TestCase {
 	}
 
 	public function testAverage(){
-		$result = CoreUtils::average(1);
+		$result = CoreUtils::average([1]);
 		self::assertEquals(1, $result);
-		$result = CoreUtils::average(1,2);
+		$result = CoreUtils::average([1,2]);
 		self::assertEquals(1.5, $result);
-		$result = CoreUtils::average(1,2,3);
+		$result = CoreUtils::average([1,2,3]);
 		self::assertEquals(2, $result);
 	}
 

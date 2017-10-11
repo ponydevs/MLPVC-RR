@@ -12,16 +12,17 @@ class Image {
 	 * @return int[]
 	 * @throws \RuntimeException
 	 */
-	public static function checkType($tmp, $allowedMimeTypes){
+	public static function checkType($tmp, $allowedMimeTypes):array {
 		$imageSize = getimagesize($tmp);
 		if ($imageSize === false)
 			throw new \RuntimeException("getimagesize could not read $tmp");
 		/** @var $imageSize array */
 		if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes, true))
 			Response::fail('This type of image is now allowed: '.$imageSize['mime']);
-		list($width,$height) = $imageSize;
+		[$width, $height] = $imageSize;
 
-		if ($width + $height === 0) Response::fail('The uploaded file is not an image');
+		if ($width + $height === 0)
+			Response::fail('The uploaded file is not an image');
 
 		return [$width, $height];
 	}
@@ -35,7 +36,7 @@ class Image {
 	 * @param array $min
 	 * @param array $max
 	 */
-	public static function checkSize($path, $width, $height, $min, $max){
+	public static function checkSize($path, $width, $height, $min, $max):void {
 		$tooSmall = $width < $min[0] || $height < $min[1];
 		$tooBig = $width > $max[0] || $height > $max[1];
 		if ($tooSmall || $tooBig){
@@ -84,7 +85,7 @@ class Image {
 		if ($height === null)
 			$height = $width;
 
-		$png = Image::preserveAlpha(imagecreatetruecolor($width, $height), $transparency);
+		$png = self::preserveAlpha(imagecreatetruecolor($width, $height), $transparency);
 		imagefill($png, 0, 0, $transparency);
 		return $png;
 	}
@@ -117,8 +118,8 @@ class Image {
 	 * @param string|null $fill
 	 * @param string|int  $outline
 	 */
-	public static function drawSquare($image, $x, $y, $size, $fill, $outline){
-		if (!empty($fill) && is_string($fill)){
+	public static function drawSquare($image, $x, $y, $size, $fill, $outline):void {
+		if ($fill !== null && is_string($fill)){
 			$fill = RGBAColor::parse($fill);
 			$fill = imagecolorallocate($image, $fill->red, $fill->green, $fill->blue);
 		}
@@ -140,9 +141,9 @@ class Image {
 
 		$x2--; $y2--;
 
-		if (isset($fill))
+		if ($fill !== null)
 			imagefilledrectangle($image, $x, $y, $x2, $y2, $fill);
-		if (isset($outline))
+		if ($outline !== null)
 			imagerectangle($image, $x, $y, $x2, $y2, $outline);
 	}
 
@@ -156,8 +157,8 @@ class Image {
 	 * @param string|null $fill
 	 * @param string|int  $outline
 	 */
-	public static function drawCircle($image, $x, $y, $size, $fill, $outline){
-		if (!empty($fill) && is_string($fill)){
+	public static function drawCircle($image, $x, $y, $size, $fill, $outline):void {
+		if ($fill !== null && is_string($fill)){
 			$fill = RGBAColor::parse($fill);
 			$fill = imagecolorallocate($image, $fill->red, $fill->green, $fill->blue);
 		}
@@ -178,10 +179,10 @@ class Image {
 			$y2 = $y + $size;
 			$width = $height = $size;
 		}
-		$cx = CoreUtils::average($x,$x2);
-		$cy = CoreUtils::average($y,$y2);
+		$cx = CoreUtils::average([$x,$x2]);
+		$cy = CoreUtils::average([$y,$y2]);
 
-		if (isset($fill))
+		if ($fill !== null)
 			imagefilledellipse($image, $cx, $cy, $width, $height, $fill);
 		imageellipse($image, $cx, $cy, $width, $height, $outline);
 	}
@@ -201,7 +202,7 @@ class Image {
 	 *
 	 * @return array
 	 */
-	public static function writeOn($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile, $box = null, $yOffset = 0){
+	public static function writeOn($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile, $box = null, $yOffset = 0):array {
 		if (is_string($fontcolor))
 			$fontcolor = imagecolorallocate($image, 0, 0, 0);
 
@@ -227,7 +228,7 @@ class Image {
 	 *
 	 * @return array
 	 */
-	public static function saneGetTTFBox($fontsize, $fontfile, $text){
+	public static function saneGetTTFBox($fontsize, $fontfile, $text):array {
 		/*
 		    imagettfbbox returns (x,y):
 		    6,7--4,5
@@ -259,7 +260,7 @@ class Image {
 	 * @param int      $w
 	 * @param int      $h
 	 */
-	public static function copyExact($dest, $source, $x, $y, $w, $h){
+	public static function copyExact($dest, $source, $x, $y, $w, $h):void {
 		imagecopyresampled($dest, $source, $x, $y, $x, $y, $w, $h, $w, $h);
 	}
 
@@ -271,7 +272,7 @@ class Image {
 	 * @param string   $path
 	 * @param string   $FileRelPath
 	 */
-	public static function outputPNG($resource, $path, $FileRelPath){
+	public static function outputPNG($resource, $path, $FileRelPath):void {
 		self::_output($resource, $path, $FileRelPath, function($fp,$fd){ imagepng($fd, $fp, 9, PNG_NO_FILTER); }, 'png');
 	}
 
@@ -282,7 +283,7 @@ class Image {
 	 * @param string      $path
 	 * @param string      $FileRelPath
 	 */
-	public static function outputSVG($svgdata, $path, $FileRelPath){
+	public static function outputSVG($svgdata, $path, $FileRelPath):void {
 		self::_output($svgdata, $path, $FileRelPath, function($fp,$fd){ File::put($fp, $fd); }, 'svg+xml');
 	}
 
@@ -293,7 +294,7 @@ class Image {
 	 * @param callable $write_callback
 	 * @param string $content_type
 	 */
-	private static function _output($data, $path, $relpath, $write_callback, $content_type){
+	private static function _output($data, $path, $relpath, $write_callback, $content_type):void {
 		if ($data !== null){
 			CoreUtils::createFoldersFor($path);
 			$write_callback($path, $data);
@@ -320,7 +321,7 @@ class Image {
 	 * @param resource $BaseImage
 	 * @param array    $origin
 	 */
-	public static function calcRedraw(&$OutWidth, &$OutHeight, $WidthIncrease, $HeightIncrease, &$BaseImage, $origin){
+	public static function calcRedraw(&$OutWidth, &$OutHeight, $WidthIncrease, $HeightIncrease, &$BaseImage, $origin):void {
 		$Redraw = false;
 		if ($origin['x']+$WidthIncrease > $OutWidth){
 			$Redraw = true;
@@ -334,8 +335,8 @@ class Image {
 			$NewWidth = max($origin['x'],$OutWidth);
 			$NewHeight = max($origin['y'],$OutHeight);
 			// Create new base image since height will increase, and copy contents of old one
-			$NewBaseImage = Image::createTransparent($NewWidth, $NewHeight);
-			Image::copyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
+			$NewBaseImage = self::createTransparent($NewWidth, $NewHeight);
+			self::copyExact($NewBaseImage, $BaseImage, 0, 0, $OutWidth, $OutHeight);
 			imagedestroy($BaseImage);
 			$BaseImage = $NewBaseImage;
 			$OutWidth = $NewWidth;
