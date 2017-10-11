@@ -128,7 +128,7 @@ ga('send','pageview');
 	<header>
 		<nav><ul class="dragscroll">
 			<li class="sidebar-toggle"></li>
-			<?=CoreUtils::getNavigationHTML($fatalErrorPage, $scope, $view ?? null)?>
+			<?=CoreUtils::getNavigationHTML($fatalErrorPage)?>
 		</ul><div id="to-the-top" class="typcn typcn-arrow-up"></div></nav>
 	</header>
 

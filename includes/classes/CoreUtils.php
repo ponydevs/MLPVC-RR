@@ -256,10 +256,10 @@ class CoreUtils {
 		$HTML = [];
 		/** @var $UpcomingEpisodes Episode[] */
 		$UpcomingEpisodes = Episode::find('all', ['conditions' => "airs > NOW() AND airs < NOW() + INTERVAL '6 MONTH'", 'order' => 'airs asc']);
+		$i = 0;
 		if (!empty($UpcomingEpisodes)){
 			foreach ($UpcomingEpisodes as $i => $Episode){
 				$airtime = strtotime($Episode->airs);
-				$airs = date('c', $airtime);
 				$month = date('M', $airtime);
 				$day = date('j', $airtime);
 				$time = self::_eventTimeTag($airtime, $i);
@@ -293,7 +293,6 @@ class CoreUtils {
 				$airs = date('c', $time);
 				$month = date('M', $time);
 				$day = date('j', $time);
-				$diff = Time::difference(time(), $time);
 				$Verbs = $beforestartdate ? 'Stars' : 'Ends';
 				$timetag = self::_eventTimeTag($time, $i+$j);
 
@@ -338,17 +337,6 @@ class CoreUtils {
 			}
 		}
 		return Time::tag($timestamp);
-	}
-
-	/**
-	 * Removes excess tabs from HTML code
-	 *
-	 * @param string $HTML
-	 *
-	 * @return string
-	 */
-	private static function _clearIndentation($HTML){
-		return preg_replace(new RegExp('(\n|\r|\r\n)[\t ]*'), '$1', $HTML);
 	}
 
 	/**
@@ -424,13 +412,13 @@ class CoreUtils {
 		if ($all) return preg_replace_callback(new RegExp('((?:^|\s)[a-z])(\w+\b)?','i'), function($match){
 			return strtoupper($match[1]).strtolower($match[2]);
 		}, $str);
-		else return self::length($str) === 1 ? strtoupper($str) : strtoupper($str[0]).self::substring($str,1);
+		else return mb_strlen($str) === 1 ? strtoupper($str) : strtoupper($str[0]).mb_substr($str,1);
 	}
 
 	// Turns a file size ini setting value into bytes
 	private static function _shortSizeInBytes($size){
-		$unit = self::substring($size, -1);
-		$value = intval(self::substring($size, 0, -1), 10);
+		$unit = mb_substr($size, -1);
+		$value = intval(mb_substr($size, 0, -1), 10);
 		switch(strtoupper($unit)){
 			case 'G':
 				$value *= 1024;
@@ -704,10 +692,13 @@ class CoreUtils {
 					switch ($f){
 						case "\n":
 							$invalid[] = '\n';
+						break;
 						case "\r":
 							$invalid[] = '\r';
+						break;
 						case "\t":
 							$invalid[] = '\t';
+						break;
 						default:
 							$invalid[] = $f;
 					}
@@ -769,16 +760,12 @@ class CoreUtils {
 	 * Returns the HTML code of the main navigation in the header
 	 *
 	 * @param bool  $disabled
-	 * @param array $scope    Contains the variables passed to the current page
-	 * @param View  $view     Contains the view object that the current page was resolved by
 	 *
 	 * @return string
 	 */
-	public static function getNavigationHTML($disabled = false, array $scope = [], ?View $view = null){
+	public static function getNavigationHTML($disabled = false){
 		if (!empty(self::$NavHTML))
 			return self::$NavHTML;
-
-		$do = $view === null ? '' : $view->class;
 
 		// Navigation items
 		if (!$disabled){
@@ -818,13 +805,15 @@ class CoreUtils {
 		$breadcrumb = '';
 		// Navigation items
 		if (!$disabled){
-			if ($view == null)
+			if ($view === null)
 				return '';
 
 			try {
 				$breadcrumb = $view->getBreadcrumb($scope) ?? '';
 			}
-			catch(\TypeError $e){}
+			catch(\TypeError $e){
+				$breadcrumb = '';
+			}
 		}
 		else $breadcrumb = (new NavBreadcrumb('HTTP 503'))->setChild(new NavBreadcrumb('Service Temporarily Unavailable'));
 
@@ -863,7 +852,7 @@ class CoreUtils {
 		foreach ($UsefulLinks as $l){
 			$href = "href='".self::aposEncode($l->url)."'";
 			if ($l->url[0] === '#')
-				$href .= " class='action--".self::substring($l->url,1)."'";
+				$href .= " class='action--".mb_substr($l->url,1)."'";
 			$title = self::aposEncode($l->title);
 			$label = htmlspecialchars_decode($l->label);
 			$cansee = Permission::ROLES_ASSOC[$l->minrole];
@@ -891,7 +880,7 @@ HTML;
 	 * @return string
 	 */
 	public static function posess($w, bool $sOnly = false){
-		$s = '’'.(self::substring($w, -1) !== 's'?'s':'');
+		$s = '’'.(mb_substr($w, -1) !== 's'?'s':'');
 		if ($sOnly)
 			return $s;
 		return $w.$s;
@@ -909,7 +898,7 @@ HTML;
 	public static function makePlural($w, int $in = 0, $prep = false):string {
 		$ret = ($prep?"$in ":'');
 		if ($in !== 1 && $w[-1] === 'y' && !in_array(strtolower($w),self::$_endsWithYButStillPlural,true))
-			return $ret.self::substring($w,0,-1).'ies';
+			return $ret.mb_substr($w,0,-1).'ies';
 		return $ret.$w.($in !== 1 && !in_array(strtolower($w),self::$_uncountableWords,true) ?'s':'');
 	}
 
@@ -992,7 +981,7 @@ HTML;
 	 */
 	public static function isDeviationInClub($DeviationID){
 		if (!is_int($DeviationID))
-			$DeviationID = intval(self::substring($DeviationID, 1), 36);
+			$DeviationID = intval(mb_substr($DeviationID, 1), 36);
 
 		try {
 			$DiFiRequest = HTTP::legitimateRequest("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
@@ -1072,14 +1061,6 @@ HTML;
 		return "$HTML</table>";
 	}
 
-	public static function substring(...$args){
-		return mb_substr(...$args);
-	}
-
-	public static function length(...$args){
-		return mb_strlen(...$args);
-	}
-
 	/**
 	 * Cut a string to the specified length
 	 *
@@ -1088,9 +1069,9 @@ HTML;
 	 *
 	 * @return string
 	 */
-	public static function cutoff(string $str, $len){
-		$strlen = self::length($str);
-		return $strlen > $len ? self::trim(self::substring($str, 0, $len-1)).'…' : $str;
+	public static function cutoff(string $str, $len):string {
+		$strlen = mb_strlen($str);
+		return $strlen > $len ? self::trim(mb_substr($str, 0, $len-1)).'…' : $str;
 	}
 
 	public static function socketEvent(string $event, array $data){
@@ -1122,7 +1103,7 @@ HTML;
 	 */
 	public static function set(&$on, $key, $value){
 		if (is_object($on))
-			$on->$key = $value;
+			$on->{$key} = $value;
 		else if (is_array($on))
 			$on[$key] = $value;
 		else throw new \RuntimeException('$on is of invalid type ('.gettype($on).')');

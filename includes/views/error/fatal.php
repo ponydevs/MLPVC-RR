@@ -12,7 +12,7 @@ function strip_trace(string $msg):string {
 
 $customCSS = ['/scss/min/theme.css'];
 foreach ($customCSS as $k => $el)
-	$customCSS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
+	$customCSS[$k] .= '?'.filemtime(APPATH.mb_substr($el,1));
 $scope = []; ?>
 <div id="content">
 <?php
@@ -43,7 +43,7 @@ switch($errcause){
 echo CoreUtils::exportVars(['ServiceUnavailableError' => true]);
 $customJS = ['/js/min/moment.js', '/js/min/shared-utils.js', '/js/min/global.js', '/js/min/dialog.js'];
 foreach ($customJS as $k => $el)
-	$customJS[$k] .= '?'.filemtime(APPATH.CoreUtils::substring($el,1));
+	$customJS[$k] .= '?'.filemtime(APPATH.mb_substr($el,1));
 $mainContent = ob_get_clean();
 // Since we're setting the content explicitly we don't want any views to load
 unset($view);

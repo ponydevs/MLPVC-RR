@@ -81,8 +81,8 @@ class DeviantArt {
 		$responseCode = curl_getinfo($r, CURLINFO_HTTP_CODE);
 		$headerSize = curl_getinfo($r, CURLINFO_HEADER_SIZE);
 
-		$responseHeaders = rtrim(CoreUtils::substring($response, 0, $headerSize));
-		$response = CoreUtils::substring($response, $headerSize);
+		$responseHeaders = rtrim(mb_substr($response, 0, $headerSize));
+		$response = mb_substr($response, $headerSize);
 		$http_response_header = array_map('rtrim',explode("\n",$responseHeaders));
 		$curlError = curl_error($r);
 		curl_close($r);
@@ -439,7 +439,7 @@ class DeviantArt {
 	}
 
 	public static function favmeHttpsUrl(string $favme_id):string {
-		return 'https://www.deviantart.com/art/REDIRECT-'.intval(CoreUtils::substring($favme_id, 1), 36);
+		return 'https://www.deviantart.com/art/REDIRECT-'.intval(mb_substr($favme_id, 1), 36);
 	}
 
 	public static function trimOutgoingGateFromUrl(string $url):string {
@@ -502,6 +502,6 @@ class DeviantArt {
 	public static function nomralizeStashID($id){
 		$normalized = ltrim($id, '0');
 
-		return CoreUtils::length($normalized) < 12 ? '0'.$normalized : $normalized;
+		return mb_strlen($normalized) < 12 ? '0'.$normalized : $normalized;
 	}
 }

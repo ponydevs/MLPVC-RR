@@ -94,7 +94,7 @@ class Input {
 				$this->_source = $_source;
 		}
 		$_SRC = $GLOBALS[$this->_source];
-		if (!isset($_SRC[$key]) || (is_string($_SRC[$key]) && CoreUtils::length($_SRC[$key]) === 0))
+		if (!isset($_SRC[$key]) || (is_string($_SRC[$key]) && mb_strlen($_SRC[$key]) === 0))
 			$result = empty($o[self::IS_OPTIONAL]) ? self::ERROR_MISSING : self::ERROR_NONE;
 		else {
 			if ($this->_source === '_FILES')
@@ -171,7 +171,7 @@ class Input {
 					return self::ERROR_INVALID;
 				global $REWRITE_REGEX;
 				if (stripos($this->_origValue, ABSPATH) === 0)
-					$this->_origValue = CoreUtils::substring($this->_origValue, CoreUtils::length(ABSPATH)-1);
+					$this->_origValue = mb_substr($this->_origValue, mb_strlen(ABSPATH)-1);
 				if (!preg_match($REWRITE_REGEX,$this->_origValue) && !preg_match(new RegExp('^#[a-z\-]+$'),$this->_origValue)){
 					if (self::checkStringLength($this->_origValue, $this->_range, $code))
 						return $code;
@@ -234,7 +234,7 @@ class Input {
 	}
 
 	public static function checkStringLength($value, $range, &$code = self::ERROR_NONE){
-		$code = self::_numberInRange(CoreUtils::length($value), $range);
+		$code = self::_numberInRange(mb_strlen($value), $range);
 		return $code;
 	}
 	public static function checkNumberRange($value, $range, &$code = self::ERROR_NONE){

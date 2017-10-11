@@ -169,7 +169,7 @@ class CGUtils {
 			return self::grabImage($path,$allowedMimeTypes,$min,$max);
 		$file = $_FILES[$key];
 		$tmp = $file['tmp_name'];
-		if (CoreUtils::length($tmp) < 1)
+		if (empty($tmp))
 			Response::fail('File upload failed; Reason unknown');
 
 		[$width, $height] = Image::checkType($tmp, $allowedMimeTypes);
@@ -774,7 +774,7 @@ GPL;
 			$dbcolor = DB::$instance->where('hex', $color->toHex())->where('group_id', $CMColorGroup->id)->get(Color::$table_name);
 
 			if ($dbcolor === null || count($dbcolor) !== 1)
-				return sprintf('<!--#/%s-->',CoreUtils::substring($color->toHexa(), 1));
+				return sprintf('<!--#/%s-->', mb_substr($color->toHexa(), 1));
 
 			$id = '@'.$dbcolor[0]->id;
 			if ($color->isTransparent())

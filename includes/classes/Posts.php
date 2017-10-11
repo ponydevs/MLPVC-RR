@@ -369,7 +369,7 @@ HTML;
 	 * @return string
 	 */
 	private static function _getForm($type){
-		$Type = strtoupper($type[0]).CoreUtils::substring($type,1);
+		$Type = strtoupper($type[0]).mb_substr($type,1);
 		$optional = $type === 'reservation' ? 'optional, ' : '';
 		$optreq = $type === 'reservation' ? '' : 'required';
 

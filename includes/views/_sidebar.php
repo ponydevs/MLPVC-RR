@@ -9,7 +9,7 @@ use App\UserPrefs;
 /** @var $view \App\View */
 /** @var $CurrentEpisode \App\Models\Episode */ ?>
 	<div class='mobile-nav'>
-		<nav><ul><?=CoreUtils::getNavigationHTML(($view->name ?? null) === 'fatalerr', $scope, $view ?? null)?></ul></nav>
+		<nav><ul><?=CoreUtils::getNavigationHTML(($view->name ?? null) === 'fatalerr')?></ul></nav>
 	</div>
 	<div class='logged-in provider-<?=UserPrefs::get('p_avatarprov')?>'>
 		<?php

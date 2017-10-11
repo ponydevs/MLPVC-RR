@@ -302,8 +302,8 @@ class Image {
 		}
 
 		$filePortion = strtok($relpath,'?');
-		$fpl = CoreUtils::length($filePortion);
-		$params = CoreUtils::length($relpath) > $fpl ? '&'.CoreUtils::substring($relpath, $fpl+1) : '';
+		$fpl = mb_strlen($filePortion);
+		$params = mb_strlen($relpath) > $fpl ? '&'.mb_substr($relpath, $fpl+1) : '';
 		CoreUtils::fixPath("$filePortion?t=".filemtime($path).$params);
 		header("Content-Type: image/$content_type");
 		readfile($path);

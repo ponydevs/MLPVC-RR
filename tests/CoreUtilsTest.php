@@ -173,7 +173,7 @@ class CoreUtilsTest extends TestCase {
 
 	public function testCutoff(){
 		$result = CoreUtils::cutoff('This is a long string', 10);
-		self::assertEquals(10, CoreUtils::length($result));
+		self::assertEquals(10, mb_strlen($result));
 		self::assertEquals('This is a…', $result);
 	}
 

@@ -354,7 +354,7 @@ class ColorGuideController extends Controller {
 		catch (NoNodesAvailableException|ServerErrorResponseException $e){
 			$elasticAvail = false;
 		}
-		$searching = !empty($_GET['q']) && CoreUtils::length(CoreUtils::trim($_GET['q'])) > 0;
+		$searching = !empty($_GET['q']) && mb_strlen(CoreUtils::trim($_GET['q'])) > 0;
 		$jsResponse = CoreUtils::isJSONExpected();
 		if ($elasticAvail){
 			$search = new ElasticsearchDSL\Search();
@@ -1785,7 +1785,7 @@ HTML;
 				Response::fail("You must specify a color name $index");
 			$label = CoreUtils::trim($c['label']);
 			CoreUtils::checkStringValidity($label, "Color $index name", INVERSE_PRINTABLE_ASCII_PATTERN);
-			$ll = CoreUtils::length($label);
+			$ll = mb_strlen($label);
 			if ($ll < 3 || $ll > 30)
 				Response::fail("The color name must be between 3 and 30 characters in length $index");
 			$append->label = $label;

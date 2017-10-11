@@ -46,8 +46,8 @@ class HTTP {
 		$responseCode = curl_getinfo($r, CURLINFO_HTTP_CODE);
 		$headerSize = curl_getinfo($r, CURLINFO_HEADER_SIZE);
 
-		$responseHeaders = rtrim(CoreUtils::substring($response, 0, $headerSize));
-		$response = CoreUtils::substring($response, $headerSize);
+		$responseHeaders = rtrim(mb_substr($response, 0, $headerSize));
+		$response = mb_substr($response, $headerSize);
 		$curlError = curl_error($r);
 		curl_close($r);
 

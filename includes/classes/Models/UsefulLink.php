@@ -40,7 +40,7 @@ class UsefulLink extends OrderedModel {
 		}
 		else $title = '';
 
-		$href = $this->url[0] === '#' ? "class='action--".CoreUtils::substring($this->url,1)."'" : "href='".CoreUtils::aposEncode($this->url)."'";
+		$href = $this->url[0] === '#' ? "class='action--".mb_substr($this->url,1)."'" : "href='".CoreUtils::aposEncode($this->url)."'";
 
 		return "<li id='s-ufl-{$this->id}'><a $href $title>{$this->label}</a></li>";
 	}

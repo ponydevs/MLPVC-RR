@@ -418,8 +418,8 @@ class Logs {
 			if (is_null($v))
 				continue;
 
-			$thing = CoreUtils::substring($k, 3);
-			$type = CoreUtils::substring($k, 0, 3);
+			$thing = mb_substr($k, 3);
+			$type = mb_substr($k, 0, 3);
 			if (!isset($newOld[$thing]))
 				$newOld[$thing] = [];
 			$newOld[$thing][$type] = $thing === 'twoparter' ? !!$v : $v;
