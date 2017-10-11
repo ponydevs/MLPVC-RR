@@ -264,8 +264,10 @@ class Input {
 			if (isset($this->_range[1]))
 				$message = str_replace('@max', $this->_range[1], $message);
 		}
-		if ($this->_silentFail)
-			return CoreUtils::error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
+		if ($this->_silentFail){
+			CoreUtils::error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
+			return;
+		}
 		if ($this->_respond)
 			Response::fail($message);
 		throw new \Exception($message);
