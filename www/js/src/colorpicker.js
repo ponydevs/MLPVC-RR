@@ -30,7 +30,7 @@
 			return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
 	    },
 		guid = () => (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4()),
-		isMac = typeof navigator.userAgent === 'string' && /(macos|iphone|os ?x|ip[ao]d)/i.test(navigator.userAgent);
+		isMac = typeof window.navigator.userAgent === 'string' && /(macos|iphone|os ?x|ip[ao]d)/i.test(window.navigator.userAgent);
 
 
 	class Pixel {

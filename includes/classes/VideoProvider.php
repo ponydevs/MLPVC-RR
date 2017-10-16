@@ -53,6 +53,8 @@ class VideoProvider {
 			case 'dm':
 				$url = $urlOnly ? "http://dai.ly/$video->id" : "https://www.dailymotion.com/embed/video/$video->id?related=0&quality=1080&highlight=2C73B1";
 			break;
+			default:
+				throw new \RuntimeException("Unrecognized provider: {$video->provider}");
 		}
 
 		return $urlOnly ? $url : "<iframe async defer allowfullscreen src='$url'></iframe>";

@@ -47,7 +47,6 @@ class View {
 						$bc->setActive();
 				}
 				return $bc;
-			break;
 			case 'admin':
 				$bc = new NavBreadcrumb('Admin Area', '/admin');
 				switch ($this->method){
@@ -73,7 +72,6 @@ class View {
 						$bc->setActive();
 				}
 				return $bc;
-			break;
 			case 'colorguide':
 				$eqg = $scope['EQG'] ?? false;
 				$bc = new NavBreadcrumb(($eqg?'EQG ':'').'Color Guide', '/cg'.($eqg?'/eqg':''));
@@ -117,10 +115,8 @@ class View {
 						$bc->setActive();
 				}
 				return $bc;
-			break;
 			case 'components':
 				return new NavBreadcrumb('Components',null,true);
-			break;
 			case 'episode':
 				switch ($this->method){
 					case 'list':
@@ -157,7 +153,6 @@ class View {
 						$bc->setActive();
 				}
 				return $bc;
-			break;
 			case 'event':
 				switch ($this->method){
 					case 'list':
@@ -194,7 +189,6 @@ class View {
 				}
 				else $bc->setActive();
 				return $bc;
-			break;
 		}
 	}
 }

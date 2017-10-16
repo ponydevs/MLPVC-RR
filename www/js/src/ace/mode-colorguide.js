@@ -3,7 +3,7 @@ ace.define("ace/mode/colorguide",["require","exports","ace/mode/colorguide_highl
 	"use strict";
 	let oop = require("../lib/oop");
 
-	function Mode(){
+	const Mode = function(){
 		this.HighlightRules = function() {
 			this.$rules = {
 				start: [
@@ -83,7 +83,7 @@ ace.define("ace/mode/colorguide",["require","exports","ace/mode/colorguide_highl
 			};
 		};
 		oop.inherits(this.HighlightRules, require("./text_highlight_rules").TextHighlightRules);
-	}
+	};
 	oop.inherits(Mode, require("./text").Mode);
 
 	Mode.prototype.getNextLineIndent = () => '';

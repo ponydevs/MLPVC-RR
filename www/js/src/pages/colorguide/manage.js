@@ -1741,8 +1741,7 @@ $(function(){
 							)
 						);
 
-						// jshint -W031
-						new Sortable($cgs.get(0), {
+						Sortable.create($cgs.get(0), {
 							ghostClass: "moving",
 							scroll: false,
 							animation: 150,
