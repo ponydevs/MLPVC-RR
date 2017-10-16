@@ -121,14 +121,12 @@ class View {
 				switch ($this->method){
 					case 'list':
 						return new NavBreadcrumb('Episodes & Movies',null,true);
-					break;
 					case 'view':
 						if (!isset($scope['CurrentEpisode']))
 							return new NavBreadcrumb('Home',null,true);
 						/** @var $ep \App\Models\Episode */
 						$ep = $scope['CurrentEpisode'];
 						return (new NavBreadcrumb($ep->is_movie ? 'Movies' : 'Episodes', $ep->is_movie ? '/movies' : '/episodes'))->setChild($scope['heading']);
-					break;
 				}
 			break;
 			case 'error':
@@ -157,10 +155,8 @@ class View {
 				switch ($this->method){
 					case 'list':
 						return new NavBreadcrumb('Events',null,true);
-					break;
 					case 'index':
 						return (new NavBreadcrumb('Events', '/events'))->setChild($scope['heading']);
-					break;
 				}
 			break;
 			case 'user':
