@@ -256,7 +256,7 @@ HTML;
 			return '';
 
 		$HTML = '';
-		$privacy = $sameUser ? Users::PROFILE_SECTION_PRIVACY_LEVEL[$sectionIsPrivate ? 'staff' : 'public'] : '';
+		$privacy = $sameUser ? self::PROFILE_SECTION_PRIVACY_LEVEL[$sectionIsPrivate ? 'staff' : 'public'] : '';
 		$whatBtn = $sameUser ? ' <button class="personal-cg-say-what typcn typcn-info-large darkblue">What?</button>':'';
 		$HTML .= <<<HTML
 <section class="personal-cg">
@@ -271,8 +271,7 @@ HTML;
 		$nSlots = CoreUtils::makePlural('slot',$pcgLimits['totalslots'],PREPEND_NUMBER);
 		if ($showPrivate){
 			$ApprovedFinishedRequests = $pcgLimits['postcount'];
-			$SlotCount = $pcgLimits['totalslots'];
-			$ToNextSlot = Users::calculatePersonalCGNextSlot($ApprovedFinishedRequests);
+			$ToNextSlot = self::calculatePersonalCGNextSlot($ApprovedFinishedRequests);
 
 			$has = $sameUser?'have':'has';
 			$nRequests = CoreUtils::makePlural('request',$ApprovedFinishedRequests,PREPEND_NUMBER);
@@ -328,7 +327,7 @@ HTML;
 		if (empty($contribs))
 			return '';
 
-		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
+		$privacy = $sameUser? self::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
 		$cachedur = User::CONTRIB_CACHE_DURATION / Time::IN_SECONDS['hour'];
 		$cachedur = CoreUtils::makePlural('hour', $cachedur, PREPEND_NUMBER);
 		$HTML = "<section class='contributions'><h2>{$privacy}Contributions <span class='typcn typcn-info-large' title='This data is updated every {$cachedur}'></h2>\n<ul>";
@@ -511,6 +510,8 @@ HTML;
 <td>$deviation</td>
 HTML;
 				break;
+				default:
+					$TR = '';
 			}
 
 			$TABLE .= "<tr>$TR</tr>";

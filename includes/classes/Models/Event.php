@@ -79,17 +79,14 @@ class Event extends NSModel implements LinkableInterface {
 			case 'member':
 			case 'staff':
 				return Permission::sufficient($this->entry_role, $user->role);
-			break;
 			case 'spec_discord':
 				return $user->isDiscordMember();
-			break;
 			case 'spec_illustrator':
 			case 'spec_inkscape':
 			case 'spec_ponyscape':
 				$reqapp = explode('_',$this->entry_role)[1];
 				$vapp = UserPrefs::get('p_vectorapp');
-				return  !empty($vapp) && $vapp === $reqapp;
-			break;
+				return !empty($vapp) && $vapp === $reqapp;
 		}
 	}
 

@@ -54,7 +54,7 @@ class ColorGroup extends OrderedModel {
 	 * Remove the colors in this group without removing the group itself
 	 */
 	public function wipeColors(){
-        $colors = Color::delete_all([
+        Color::delete_all([
             'conditions' => [ 'group_id' => $this->id ],
         ]);
 	}

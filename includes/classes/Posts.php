@@ -434,17 +434,17 @@ HTML;
 	}
 
 	/**
-	 * @param Post        $Post
-	 * @param string|null $sent_by
-	 * @param string      $cols
+	 * @param Post      $Post
+	 * @param User|null $sent_by
+	 * @param string    $cols
 	 *
 	 * @return array|null
 	 */
-	public static function getTransferAttempts(Post $Post, $sent_by = null, $cols = 'read_at,sent_at'){
+	public static function getTransferAttempts(Post $Post, ?User $sent_by = null, $cols = 'read_at,sent_at'){
 		if ($Post->reserved_by !== null)
 			DB::$instance->where('recipient_id', $Post->reserved_by);
 		if (!empty($sent_by))
-			DB::$instance->where("data->>'user'", $sent_by);
+			DB::$instance->where("data->>'user'", $sent_by->id);
 		return DB::$instance
 			->where('type', 'post-passon')
 			->where("data->>'type'", $Post->kind)
@@ -462,9 +462,9 @@ HTML;
 	];
 
 	/**
-	 * @param Post        $Post
-	 * @param string      $reason
-	 * @param User        $sent_by
+	 * @param Post      $Post
+	 * @param string    $reason
+	 * @param User|null $sent_by
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -601,7 +601,9 @@ HTML;
 		$label = self::_getPostLabel($Request);
 		$time_ago = Time::tag($Request->posted_at);
 		$cat = self::REQUEST_TYPES[$Request->type];
-		$reserve = Permission::sufficient('member') ? self::getPostReserveButton($Request, null, false) : "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
+		$reserve = Permission::sufficient('member')
+			? self::getPostReserveButton($Request->reserver, false)
+			: "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
 		return <<<HTML
 <li id="request-{$Request->id}">
 	<div class="image screencap">
@@ -619,15 +621,14 @@ HTML;
 	}
 
 	/**
-	 * @param Post      $Post
-	 * @param User|null $reservedBy
-	 * @param bool      $view_only
+	 * @param User|null   $reservedBy
+	 * @param bool|string $view_only
 	 *
 	 * @return string
 	 */
-	public static function getPostReserveButton(Post $Post, $reservedBy, $view_only):string {
+	public static function getPostReserveButton($reservedBy, $view_only):string {
 		if (empty($reservedBy))
-			return Permission::sufficient('member') && !$view_only ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
+			return Permission::sufficient('member') && $view_only === false ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 		else {
 			$dAlink = $reservedBy->toAnchor(User::WITH_AVATAR);
 			$vectorapp = $reservedBy->getVectorAppClassName();
@@ -657,14 +658,14 @@ HTML;
 	 * @return string
 	 */
 	private static function _getPostActions($Post, $view_only, bool $hide_reserver_status = true):string {
-		$By = $hide_reserver_status ? false : $Post->reserver;
+		$By = $hide_reserver_status ? null : $Post->reserver;
 		$requestedByUser = $Post->is_request && Auth::$signed_in && $Post->requested_by === Auth::$user->id;
 		$isNotReserved = empty($By);
 		$sameUser = Auth::$signed_in && $Post->reserved_by === Auth::$user->id;
 		$CanEdit = (empty($Post->lock) && Permission::sufficient('staff')) || Permission::sufficient('developer') || ($requestedByUser && $isNotReserved);
 		$Buttons = [];
 
-		$HTML = self::getPostReserveButton($Post, $By, $view_only);
+		$HTML = self::getPostReserveButton($By, $view_only);
 		if (!empty($Post->reserved_by)){
 			$staffOrSameUser = ($sameUser && Permission::sufficient('member')) || Permission::sufficient('staff');
 			if (!$Post->finished){

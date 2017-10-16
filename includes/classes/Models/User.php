@@ -461,11 +461,9 @@ class User extends AbstractUser implements LinkableInterface {
 	];
 
 	/**
-	 * @param bool $requests
-	 *
 	 * @return array
 	 */
-	private function _getPendingPostsArgs(bool $requests):array {
+	private function _getPendingPostsArgs():array {
 		return [
 			'all', [
 				'conditions' => [
@@ -480,14 +478,14 @@ class User extends AbstractUser implements LinkableInterface {
 	 * @return Reservation[] All reservations from the databae that the user posted but did not finish yet
 	 */
 	private function _getPendingReservations(){
-		return Reservation::find(...$this->_getPendingPostsArgs(false));
+		return Reservation::find(...$this->_getPendingPostsArgs());
 	}
 
 	/**
 	 * @return Request[] All requests from the databae that the user reserved but did not finish yet
 	 */
 	private function _getPendingRequestReservations(){
-		return Request::find(...$this->_getPendingPostsArgs(true));
+		return Request::find(...$this->_getPendingPostsArgs());
 	}
 
 	/**
@@ -503,7 +501,6 @@ class User extends AbstractUser implements LinkableInterface {
 		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
 
 		if ($staffVisitingMember || ($isMember && $sameUser)){
-			$cols = '';
 			$PendingReservations = $this->_getPendingReservations();
 			$PendingRequestReservations = $this->_getPendingRequestReservations();
 			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
@@ -572,8 +569,6 @@ HTML;
 	</div>
 </li>
 HTML;
-						// Clearing variable set via reference by the toLink method call
-						unset($_);
 					}
 					$HTML .= "<ul>$LIST</ul>";
 				}
@@ -615,7 +610,6 @@ HTML;
 	}
 
 	public function getAwaitingApprovalHTML(bool $sameUser, bool $wrap = WRAP):string {
-		$cols = 'id, season, episode, deviation_id';
 		/** @var $AwaitingApproval \App\Models\Post[] */
 		$AwaitingApproval = array_merge(
 			$this->_getNotApprovedRequests(),

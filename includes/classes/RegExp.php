@@ -35,7 +35,7 @@ class RegExp {
 
 	private function _escape(string $pattern, string $delimiter):string {
 		$d = $delimiter === '~' ? '@' : '~';
-		return preg_replace("$d([^\\\\])(".preg_quote($delimiter).")$d","$1\\\\$2",$pattern);
+		return preg_replace("$d([^\\\\])(".preg_quote($delimiter, $d).")$d","$1\\\\$2",$pattern);
 	}
 
 	/**
@@ -57,7 +57,7 @@ class RegExp {
 	 * @return string|array
 	 */
 	public function replace(string $with, string $in, int $limit = -1, int &$count = null){
-		return preg_replace($this->__toString(),$with, $in, $limit = -1, $count);
+		return preg_replace($this->__toString(),$with, $in, $limit, $count);
 	}
 
 	/**

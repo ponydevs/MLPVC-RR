@@ -70,7 +70,7 @@ class NotificationsController extends Controller {
 					}
 					if ($read_action === 'true'){
 						if ($Post->reserved_by !== Auth::$user->id){
-							Posts::clearTransferAttempts($Post, 'perm', Auth::$user->id);
+							Posts::clearTransferAttempts($Post, 'perm', Auth::$user);
 							Response::fail('You are not allowed to transfer this reservation');
 						}
 

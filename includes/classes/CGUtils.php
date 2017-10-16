@@ -165,8 +165,10 @@ class CGUtils {
 		$min = [$minwidth,$minheight];
 		$max = [$maxwidth,$maxheight];
 
-		if (!isset($_FILES[$key]))
-			return self::grabImage($path,$allowedMimeTypes,$min,$max);
+		if (!isset($_FILES[$key])){
+			self::grabImage($path,$allowedMimeTypes,$min,$max);
+			return;
+		}
 		$file = $_FILES[$key];
 		$tmp = $file['tmp_name'];
 		if (empty($tmp))
@@ -314,7 +316,6 @@ HTML;
 		if (file_exists($OutputPath))
 			Image::outputPNG(null,$OutputPath,$FileRelPath);
 
-		$OutWidth = 0;
 		$OutHeight = 0;
 		$SpriteWidth = $SpriteHeight = 0;
 		$SpriteRightMargin = 10;
@@ -359,7 +360,6 @@ HTML;
 
 		// Get color groups & calculate the space they take up
 		$ColorGroups = $Appearance->color_groups;
-		$CGCount = count($ColorGroups);
 		$CGFontSize = (int)round($NameFontSize/1.25);
 		$CGVerticalMargin = $NameVerticalMargin;
 		$GroupLabelBox = Image::saneGetTTFBox($CGFontSize, $FontFile, 'ABCDEFGIJKLMOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz');

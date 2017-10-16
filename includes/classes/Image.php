@@ -179,8 +179,8 @@ class Image {
 			$y2 = $y + $size;
 			$width = $height = $size;
 		}
-		$cx = CoreUtils::average([$x,$x2]);
-		$cy = CoreUtils::average([$y,$y2]);
+		$cx = (int)CoreUtils::average([$x,$x2]);
+		$cy = (int)CoreUtils::average([$y,$y2]);
 
 		if ($fill !== null)
 			imagefilledellipse($image, $cx, $cy, $width, $height, $fill);

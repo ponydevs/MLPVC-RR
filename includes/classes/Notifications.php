@@ -62,7 +62,6 @@ class Notifications {
 					$url = $Post->toURL($Episode);
 				}
 				catch (RecordNotFound $e){
-					$Post = null;
 					$Episode = null;
 					$EpID = null;
 					$url = null;

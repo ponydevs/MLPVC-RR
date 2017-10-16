@@ -134,6 +134,7 @@ class Time {
 				return '';
 			$timestamp = $ts;
 		}
+		/** @var $timestamp int */
 
 		$datetime = self::format($timestamp);
 		$full = self::format($timestamp, self::FORMAT_FULL);

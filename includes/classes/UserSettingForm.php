@@ -144,23 +144,20 @@ class UserSettingForm {
 				$label = CoreUtils::escapeHTML($options['optg'], ENT_QUOTES);
 				$SELECT .= "<optgroup label='$label'>$OPTGROUP</optgroup>";
 				return "<select name='value' $disabled>$SELECT</select>";
-			break;
 			case 'number':
 				$min = isset($options['min']) ? "min='{$options['min']}'" : '';
 				$max = isset($options['max']) ? "max='{$options['max']}'" : '';
 				$value = CoreUtils::escapeHTML($value, ENT_QUOTES);
 				return "<input type='number' $min $max name='value' value='$value' step='1' $disabled>";
-			break;
 			case 'checkbox':
 				$checked = $value ? ' checked' : '';
 				return "<input type='checkbox' name='value' value='1' $checked $disabled>";
-			break;
 		}
 	}
 
 	public function __toString(){
 		$map = self::INPUT_MAP[$this->_setting_name];
-		$input = $this->_getInput($map['type'], $map['options'] ?? null);
+		$input = $this->_getInput($map['type'], $map['options'] ?? []);
 		if ($input === '')
 			return '';
 		$savebtn = $this->_can_save ? '<button class="save typcn typcn-tick green" disabled>Save</button>' : '';

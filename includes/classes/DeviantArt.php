@@ -245,7 +245,9 @@ class DeviantArt {
 			$response_body = $e->getResponseBody();
 			CoreUtils::error_log(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
 			try {
-				$data = JSON::decode($response_body);
+				if (is_array($response_body))
+					$data = $response_body;
+				else $data = JSON::decode($response_body);
 				$_GET['error'] = rawurlencode($data['error']);
 				$_GET['error_description'] = !empty($data['error_description']) ? $data['error_description'] : (self::OAUTH_RESPONSE[$data['error']] ?? '');
 			}

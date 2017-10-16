@@ -37,7 +37,7 @@ class UserController extends Controller {
 		else $User = Users::get($un, 'name');
 
 		if (empty($User)){
-			if (Auth::$signed_in && $User === false){
+			if (Auth::$signed_in && isset($User) && $User === false){
 				if (strpos(Auth::$session->scope, 'browse') !== false){
 					$MSG = 'User does not exist';
 					$SubMSG = 'Check the name for typos and try again';
@@ -239,7 +239,6 @@ class UserController extends Controller {
 			'target' => $targetUser->id,
 			'reason' => $reason
 		]);
-		$changes['role'] = Permission::ROLES_ASSOC[$changes['role']];
 
 		if ($action === 'banish')
 			Response::done();

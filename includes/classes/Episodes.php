@@ -255,7 +255,6 @@ class Episodes {
 
 		$Body = '';
 		$PathStart = '/episode/';
-		$displayed = false;
 		foreach ($Episodes as $Episode) {
 			$adminControls = Permission::insufficient('staff') ? '' : <<<HTML
 <span class='admincontrols'>
@@ -282,7 +281,6 @@ HTML;
 
 			$star = '';
 			if ($Episode->isLatest()){
-				$displayed = true;
 				$star = '<span class="typcn typcn-home" title="Curently visible on the homepage"></span> ';
 			}
 			if (!$Episode->aired)
@@ -318,7 +316,7 @@ HTML;
 		if (empty($Episode->score))
 			$Episode->updateScore();
 
-		$Score = preg_replace(new RegExp('^(\d+)\.0+$'),'$1',number_format($Episode->score,1));
+		$Score = preg_replace(new RegExp('^(\d+)\.0+$'),'$1',$Episode->score);
 		$ScorePercent = round(($Score/5)*1000)/10;
 
 		$HTML .= '<p>'.(!empty($Score) ? "This $thing is rated $Score/5 (<a class='detail'>Details</a>)" : 'Nopony voted yet.').'</p>';

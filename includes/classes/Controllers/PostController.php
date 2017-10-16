@@ -428,13 +428,14 @@ class PostController extends Controller {
 
 		if ($thing === 'request'){
 			$oldReserver = $this->_post->reserved_by;
-			foreach ($update as $k => $v)
-				$this->_post->{$k} = $v;
+			if (!empty($update))
+				foreach ($update as $k => $v)
+					$this->_post->{$k} = $v;
 			$response = [];
 			$suggested = isset($_POST['SUGGESTED']);
 			$fromProfile = isset($_POST['FROM_PROFILE']);
 			if ($suggested)
-				$response['button'] = Posts::getPostReserveButton($this->_post, User::find($this->_post->reserved_by), false);
+				$response['button'] = Posts::getPostReserveButton($this->_post->reserver, false);
 			else if (!$fromProfile && !$socketServerAvailable){
 				if ($action !== 'unreserve')
 					$response['li'] = Posts::getLi($this->_post);
