@@ -82,7 +82,8 @@
 				}),
 				complete: function(){
 					$this.removeClass('uploading');
-					$helper.removeAttr('data-progress');
+					if (opt.helper)
+						$helper.removeAttr('data-progress');
 					$input.val('');
 				}
 			};
