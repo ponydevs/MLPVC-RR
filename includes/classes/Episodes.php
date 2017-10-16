@@ -262,7 +262,7 @@ class Episodes {
 <button class='delete-episode typcn typcn-times red' title='Delete episode'></button>
 </span>
 HTML;
-			$SeasonEpisode = $DataID = '';
+
 			$title = $Episode->formatTitle(AS_ARRAY);
 			if (!$Episode->is_movie){
 				$href = $PathStart.$title['id'];
@@ -277,7 +277,6 @@ HTML;
 				$href = $Episode->toURL();
 				$SeasonEpisode = "<td class='episode' rowspan='2'>{$title['episode']}</td>";
 			}
-			$DataID = " data-epid='{$title['id']}'";
 
 			$star = '';
 			if ($Episode->isLatest()){
@@ -289,7 +288,7 @@ HTML;
 			$airs = Time::tag($Episode->airs, Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
 
 			$Body .= <<<HTML
-	<tr$DataID>
+	<tr data-epid='{$title['id']}'>
 		$SeasonEpisode
 		<td class='title'>$star<a href="$href">{$title['title']}</a>$adminControls</td>
 	</tr>
