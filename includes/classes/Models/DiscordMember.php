@@ -69,7 +69,7 @@ class DiscordMember extends AbstractUser {
 
 	public function guessDAUser():?string {
 		if ($this->user_id !== null)
-			return;
+			return null;
 
 		if (!empty(self::STAFF_BINDINGS["id-{$this->id}"]))
 			return $this->_checkDAUserBlacklist(self::STAFF_BINDINGS["id-{$this->id}"]);
@@ -93,7 +93,7 @@ class DiscordMember extends AbstractUser {
 		if (!empty($thirdGuess))
 			return $this->_checkDAUserBlacklist($thirdGuess->id);
 
-		return;
+		return null;
 	}
 
 	private function _checkDAUserBlacklist($id){
