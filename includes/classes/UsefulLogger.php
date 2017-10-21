@@ -11,7 +11,8 @@ class UsefulLogger extends Logger {
     public function addRecord($level, $message, array $context = array()){
         $context['ip'] = $_SERVER['REMOTE_ADDR'];
 		$context['referrer'] = $_SERVER['HTTP_REFERER'] ?? null;
-		$context['auth'] = Auth::$signed_in ? Auth::$user->to_array(['include' => [ 'session' => Auth::$session->id ]]) : null;
+	    /** @noinspection ClassConstantCanBeUsedInspection */
+	    $context['auth'] = class_exists('\App\Auth') && Auth::$signed_in ? Auth::$user->to_array(['include' => ['session' => Auth::$session->id ]]) : null;
         parent::addRecord($level, $message, $context);
     }
 }
