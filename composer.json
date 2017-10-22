@@ -33,7 +33,8 @@
 		"s1lentium/iptools": "^1.1",
 		"robmorgan/phinx": "dev-custom-columns",
 		"enshrined/svg-sanitize": "^0.7.2",
-		"monolog/monolog": "^1.23"
+		"monolog/monolog": "^1.23",
+		"seinopsys/rgbacolor": "1.*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "6.*",

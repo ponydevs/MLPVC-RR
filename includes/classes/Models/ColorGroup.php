@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\CoreUtils;
 use App\Permission;
-use App\RGBAColor;
 use App\UserPrefs;
+use SeinopSys\RGBAColor;
 
 /**
  * @inheritdoc

@@ -7,6 +7,7 @@ use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
 use App\Models\Logs\MajorChange;
+use SeinopSys\RGBAColor;
 
 class CGUtils {
 	const GROUP_TAG_IDS_ASSOC = [

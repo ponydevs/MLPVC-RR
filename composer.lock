@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b28af03243fd5f2365f4b80df5051ddc",
+    "content-hash": "1c537de0db3fa5ac5f8c90d5bba88c00",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1432,6 +1432,46 @@
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
             "time": "2017-10-08T20:23:10+00:00"
+        },
+        {
+            "name": "seinopsys/rgbacolor",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SeinopSys/RGBAColor.git",
+                "reference": "442027f02506ca75d904164833a18c40c531f2fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SeinopSys/RGBAColor/zipball/442027f02506ca75d904164833a18c40c531f2fb",
+                "reference": "442027f02506ca75d904164833a18c40c531f2fb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcre": "*",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "6.*"
+            },
+            "type": "class",
+            "autoload": {
+                "psr-4": {
+                    "SeinopSys\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "SeinopSys",
+                    "email": "seinopsys@gmail.com"
+                }
+            ],
+            "description": "A flexible class for parsing/storing color values",
+            "time": "2017-10-22T20:46:15+00:00"
         },
         {
             "name": "symfony/config",

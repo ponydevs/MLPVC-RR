@@ -12,11 +12,11 @@ use App\Episodes;
 use App\Models\Logs\MajorChange;
 use App\Permission;
 use App\RegExp;
-use App\RGBAColor;
 use App\Tags;
 use App\Time;
 use App\UserPrefs;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
+use SeinopSys\RGBAColor;
 
 /**
  * @property int                 $id

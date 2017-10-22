@@ -2,6 +2,8 @@
 
 namespace App;
 
+use SeinopSys\RGBAColor;
+
 class Image {
 	/**
 	 * Checks image type and returns an array containing the image width and height
