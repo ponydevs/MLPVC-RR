@@ -651,6 +651,20 @@ $(function(){
 					if ($entry.length)
 						$entry.refreshVoting();
 				}));
+				conn.on('devaction', wsdecoder(function(response){
+					console.log('[WS] DevAction', response);
+
+					if (typeof response.remoteAction === 'string'){
+						switch (response.remoteAction){
+							case "reload":
+								window.location.reload();
+							break;
+							case "message":
+								$.Dialog.info('Message from the developer', response.data.html);
+							break;
+						}
+					}
+				}));
 				conn.on('disconnect',function(){
 					auth = false;
 					console.log('[WS] %cDisconnected','color:red');
@@ -775,6 +789,16 @@ $(function(){
 						return cb(data);
 
 					console.log('[WS] DevQuery '+(data.status?'Success':'Fail'), data);
+				}));
+			};
+			dis.devaction = function(clientId, remoteAction, data = {}){
+				if (typeof conn === 'undefined')
+					return setTimeout(function(){
+						dis.devaction(clientId, remoteAction, data);
+					},2000);
+
+				conn.emit('devaction',{clientId, remoteAction, data},wsdecoder(function(data){
+					console.log('[WS] DevAction '+(data.status?'Success':'Fail'), data);
 				}));
 			};
 			dis.essentialElements = () => {
