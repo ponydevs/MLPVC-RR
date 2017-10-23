@@ -39,10 +39,11 @@ class Cutiemarks {
 	 * @return string
 	 */
 	public static function convertDataForLogs($CMs):string {
-		foreach ($CMs as $k => $v)
-			$CMs[$k] = $v->to_array([
-				'except' => 'appearance_id',
+		$out = [];
+		foreach ($CMs as $v)
+			$out[$v->id] = $v->to_array([
+				'except' => ['id','appearance_id'],
 			]);
-		return JSON::encode($CMs);
+		return JSON::encode($out);
 	}
 }

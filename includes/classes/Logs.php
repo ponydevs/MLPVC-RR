@@ -335,11 +335,11 @@ class Logs {
 					}
 				}
 
-				$olddata = !empty($data['olddata']) ? JSON::encode($data['olddata'], JSON_UNESCAPED_UNICODE) : '';
-				$newdata = !empty($data['newdata']) ? JSON::encode($data['newdata'], JSON_UNESCAPED_UNICODE) : '';
+				$olddata = !empty($data['olddata']) ? JSON::encode($data['olddata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '';
+				$newdata = !empty($data['newdata']) ? JSON::encode($data['newdata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '';
 				if ($olddata || $newdata){
 					$diff = self::diff($olddata, $newdata, 'block', new FineDiff\Granularity\Sentence());
-					$diff = preg_replace(new RegExp('(\S)(d[a-z\d]{6,})'),'$1<a href="http://fav.me/$2">$2</a>',$diff,1);
+					$diff = preg_replace(new RegExp('([^/>])(d[a-z\d]{6,})'),'$1<a href="http://fav.me/$2">$2</a>',$diff);
 					$details[] = ['Metadata changes', $diff];
 				}
 			break;
