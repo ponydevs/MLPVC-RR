@@ -274,6 +274,20 @@ $(function(){
 		}
 	}
 
+	const $knownIps = $('section.known-ips');
+
+	$knownIps.on('click', 'button', function(){
+		const $btn = $(this);
+		$btn.disable();
+		$.post(`/user/known-ips/${name}`, $.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail('Load full list of known IPs', this.message);
+
+			$knownIps.replaceWith(this.html);
+		})).fail(function(){
+			$btn.enable();
+		});
+	});
+
 	const
 		$settings = $('#settings'),
 		$slbl = $settings.find('form > label');

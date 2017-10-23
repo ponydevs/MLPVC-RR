@@ -398,4 +398,15 @@ class UserController extends Controller {
 
 		Response::done(['html' => $user->getAvatarWrap()]);
 	}
+
+	public function knownIps($params){
+		if (!isset($params['name']))
+			Response::fail('Missing username');
+
+		$user = Users::get($params['name'], 'name');
+		if (empty($user))
+			Response::fail('User not found');
+
+		Response::done(['html' => $user->getKnownIPsSection(true)]);
+	}
 }

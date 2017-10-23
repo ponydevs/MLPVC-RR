@@ -4,6 +4,7 @@ namespace App\Models;
 
 use ActiveRecord\DateTime;
 use App\Appearances;
+use App\Auth;
 use App\CachedFile;
 use App\CoreUtils;
 use App\DB;
@@ -138,6 +139,37 @@ class User extends AbstractUser implements LinkableInterface {
 		if (empty($vectorapp))
 			$vectorapp = $this->getVectorAppClassName();
 		return "<div class='avatar-wrap provider-{$this->avatar_provider}$vectorapp' data-for='{$this->name}'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
+	}
+
+	public function getKnownIPsSection(bool $showAll = false, ?bool $sameUser = null):string {
+		if (Permission::insufficient('staff'))
+			return '';
+
+		$KnownIPs = $this->known_ips;
+		if (empty($KnownIPs))
+			return '';
+
+		$IPs = [];
+		foreach ($KnownIPs as $ip){
+			if ($showAll || $ip->getFreshness() >= 0.9)
+				$IPs[] = $ip->toAnchor();
+		}
+		if (empty($IPs)){
+			$IPs[] = '<em>None</em>';
+		}
+		if ($sameUser === null)
+			$sameUser = Auth::$signed_in && Auth::$user->id === $this->id;
+		$privacy = $sameUser ? Users::PROFILE_SECTION_PRIVACY_LEVEL['staffonly']:'';
+		$showAllBtn = $showAll ? '' : '<button class="btn darkblue typcn typcn-eye">Show all</button>';
+		$list = implode(', ', $IPs);
+		$which = $showAll ? 'Known' : 'Recently used';
+		return <<<HTML
+	<section class="known-ips">
+		<h2>{$privacy}{$which} IP addresses</h2>
+		<div>$list</div>
+		$showAllBtn
+	</section>
+HTML;
 	}
 
 	public function getVectorAppClassName():string {

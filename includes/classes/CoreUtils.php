@@ -1307,6 +1307,13 @@ HTML;
 
 	public static function error_log(string $message){
 		global $logger;
+
+		if (defined('DISABLE_MONOLOG')){
+			/** @noinspection ForgottenDebugOutputInspection */
+			error_log($message);
+			return;
+		}
+
 		/** @var $logger Logger */
 		$logger->log(Logger::DEBUG, $message, [
 			'ip' => $_SERVER['REMOTE_ADDR'],

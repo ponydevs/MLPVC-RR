@@ -40,7 +40,8 @@ function monolog_setup(){
 	$handler->registerExceptionHandler();
 	$handler->registerFatalHandler();
 }
-monolog_setup();
+if (!defined('DISABLE_MONOLOG'))
+	monolog_setup();
 
 use App\About;
 use App\DB;

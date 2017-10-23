@@ -60,19 +60,7 @@ if ($sameUser || $isStaff){
 <?php
 	}
 }
-if ($isStaff){
-	$KnownIPs = $User->known_ips;
-	if (!empty($KnownIPs)){
-		$IPs = [];
-		foreach ($KnownIPs as $ip)
-			$IPs[] = $ip->toAnchor(); ?>
-	<section class="known-ips">
-		<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staffonly']:''?>Known IP addresses</h2>
-		<div><?=implode(', ',$IPs)?></div>
-	</section>
-<?php
-	}
-}
+echo $User->getKnownIPsSection();
 echo Users::getContributionsHTML($User, $sameUser);
 $isUserMember = Permission::sufficient('member', $User->role);
 if ($isUserMember)
