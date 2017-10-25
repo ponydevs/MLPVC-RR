@@ -106,7 +106,7 @@
 						return;
 					data[decodeURIComponent(el[0])] = decodeURIComponent(el[1]);
 				});
-				// USE data INSTEAD OF params FROM THIS POINT FORWARD
+				// USE data INSTEAD OF param FROM THIS POINT FORWARD
 			}
 
 			if (this.btnl)

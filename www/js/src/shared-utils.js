@@ -54,11 +54,11 @@
 			}
 		}
 		get(key){
-			let val = null;
+			let val;
 			try {
 				val = this.store.getItem(key);
 			}catch(e){}
-			return val;
+			return typeof val === 'undefined' ? null : val;
 		}
 		set(key, value){
 			try {
