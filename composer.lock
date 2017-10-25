@@ -1232,12 +1232,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/phinx.git",
-                "reference": "1ab1a34fa366818b92e03e681f4a7a2b486e74e2"
+                "reference": "2d4c4c54b194651e49f3b91e9eb4f9477f2df3d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/1ab1a34fa366818b92e03e681f4a7a2b486e74e2",
-                "reference": "1ab1a34fa366818b92e03e681f4a7a2b486e74e2",
+                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/2d4c4c54b194651e49f3b91e9eb4f9477f2df3d2",
+                "reference": "2d4c4c54b194651e49f3b91e9eb4f9477f2df3d2",
                 "shasum": ""
             },
             "require": {
@@ -1247,6 +1247,7 @@
                 "symfony/yaml": "~2.8|~3.0"
             },
             "require-dev": {
+                "cakephp/cakephp-codesniffer": "^3.0",
                 "phpunit/phpunit": "^4.8.26|^5.0"
             },
             "bin": [
@@ -1262,6 +1263,21 @@
                 "psr-4": {
                     "Test\\Phinx\\": "tests/Phinx"
                 }
+            },
+            "scripts": {
+                "check": [
+                    "@test",
+                    "@cs-check"
+                ],
+                "cs-check": [
+                    "phpcs --colors -p --standard=vendor/cakephp/cakephp-codesniffer/CakePHP ./src ./tests ./app"
+                ],
+                "cs-fix": [
+                    "phpcbf --colors --standard=vendor/cakephp/cakephp-codesniffer/CakePHP ./src ./tests ./app"
+                ],
+                "test": [
+                    "phpunit --colors=always"
+                ]
             },
             "license": [
                 "MIT"
@@ -1301,7 +1317,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/phinx/tree/custom-columns"
             },
-            "time": "2017-10-08T20:05:20+00:00"
+            "time": "2017-10-21T15:54:31+00:00"
         },
         {
             "name": "s1lentium/iptools",
