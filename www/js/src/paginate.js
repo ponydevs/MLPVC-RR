@@ -59,7 +59,6 @@
 
 			if (typeof $this.attr('href') === 'undefined'){
 				const limits = getLimits($this.closest('.pagination'));
-				console.log(limits);
 				return $.Dialog.request('Navigation',$GoToPageFormTemplate.clone(true,true),'Go to page', function($form){
 					$form.find('input:visible').attr('max', limits.maxPages).val(limits.pageNumber).get(0).select();
 				});
@@ -107,9 +106,7 @@
 						return;
 					data[decodeURIComponent(el[0])] = decodeURIComponent(el[1]);
 				});
-				//noinspection JSUnusedAssignment
-				params = undefined;
-				// USE data FROM THIS POINT FORWARD
+				// USE data INSTEAD OF params FROM THIS POINT FORWARD
 			}
 
 			if (this.btnl)

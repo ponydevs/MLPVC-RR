@@ -1,5 +1,5 @@
 /* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_PATTERN,Key,ace,Time */
-$(function(){
+(function($, undefined){
 	'use strict';
 
 	let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups, HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN,
@@ -968,7 +968,7 @@ $(function(){
 						deleted = $method.is(':disabled'),
 						method = $method.find('option:selected').attr('value'),
 						$clrid = $row.children('.clrid'),
-						id = $clrid.length ? $clrid.text().replace('ID:','') : void 0;
+						id = $clrid.length ? $clrid.text().replace('ID:','') : undefined;
 
 					switch (method){
 						case "hex":
@@ -1102,7 +1102,7 @@ $(function(){
 		destroySortable(){
 			if (typeof this.sortable !== 'undefined'){
 				this.sortable.destroy();
-				this.sortable = void 0;
+				this.sortable = undefined;
 			}
 		}
 		loadColorSelectFor($this, appeareance_id, appearance_name){
@@ -2097,4 +2097,4 @@ $(function(){
 			}));
 		});
 	});
-});
+})(jQuery);

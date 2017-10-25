@@ -355,7 +355,7 @@
 		 * @param {function}      handlerFunc
 		 */
 		segway(title = defaultTitles.reload, content = defaultContent.reload, btnText = 'Reload', handlerFunc = undefined){
-			if (typeof callback === 'undefined' && typeof btnText === 'function'){
+			if (typeof handlerFunc === 'undefined' && typeof btnText === 'function'){
 				handlerFunc = btnText;
 				btnText = 'Reload';
 			}

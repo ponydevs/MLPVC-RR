@@ -706,7 +706,6 @@ $(function(){
 						let data = { label: $label.val() };
 						if (type === 'request')
 							data.type = $type.val();
-						console.log(postdata.posted_at);
 						if (typeof postdata.posted_at === 'string'){
 							data.posted_at = new Date($posted_at.val());
 							if (isNaN(data.posted_at.getTime()))

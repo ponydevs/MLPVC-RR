@@ -247,7 +247,7 @@
 		constructor(){
 			this._settings = $.extend(true,{},availableSettings);
 
-			let storedSettings = {};
+			let storedSettings;
 			try {
 				storedSettings = JSON.parse($.LocalStorage.get(settingsLSKey));
 			}
@@ -1777,7 +1777,7 @@
 			});
 		}
 		setZoomOriginal(){
-			this._fitImageHandler((size, wide) => ({
+			this._fitImageHandler(size => ({
 				width: size.width,
 				height: size.height,
 				scale: 1,

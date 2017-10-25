@@ -91,11 +91,11 @@
 				let xhrobj = $.ajaxSettings.xhr();
 				if (xhrobj.upload)
 					xhrobj.upload.addEventListener('progress', event => {
-						if (!event.lengthComputable) return true;
+						if (!event.lengthComputable || !opt.helper) return true;
 
 						let complete = event.loaded || event.position,
 							total = event.total;
-						$helper.attr('data-progress', Math.round(complete / total * 100));
+							$helper.attr('data-progress', Math.round(complete / total * 100));
 					}, false);
 
 				return xhrobj;

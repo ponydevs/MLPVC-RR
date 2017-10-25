@@ -246,7 +246,6 @@ $(function(){
 					let $sel = $(this),
 						val = $sel.val(),
 						$els = $sel.parent().next().children().addClass('hidden');
-					console.log(val);
 					if (val)
 						$els.filter('.'+val).removeClass('hidden');
 				}),
