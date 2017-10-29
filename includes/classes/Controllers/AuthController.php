@@ -113,6 +113,8 @@ class AuthController extends Controller {
 	private function _error(?string $err, ?string $errdesc = null){
 		$rndkey = self::_isStateRndkey($match) ? $match[0] : null;
 
+		CoreUtils::error_log("DeviantArt authentication error ($err): $errdesc");
+
 		HTTP::statusCode(500);
 		CoreUtils::loadPage('ErrorController::auth', [
 			'title' => 'DeviantArt authentication error',
