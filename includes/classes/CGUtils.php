@@ -62,8 +62,11 @@ class CGUtils {
 			$previews = !empty(UserPrefs::get('cg_fulllstprev'));
 			if (!$GuideOrder){
 				$PrevFirstLetter = '';
+				$upcaseAZ = (string)new RegExp('^[A-Z]$');
 				foreach ($Appearances as $p){
 					$FirstLetter = strtoupper($p->label[0]);
+					if (!preg_match($upcaseAZ, $FirstLetter))
+						$FirstLetter = '#';
 					if (!is_numeric($FirstLetter) ? ($FirstLetter !== $PrevFirstLetter) : !is_numeric($PrevFirstLetter)){
 						if ($PrevFirstLetter !== ''){
 							$HTML .= '</ul></section>';
