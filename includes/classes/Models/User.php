@@ -323,6 +323,7 @@ HTML;
 		foreach ($this->pcg_appearances as $appearance){
 			PCGSlotHistory::makeRecord($this->id, 'appearance_add', null, [
 				'id' => $appearance->id,
+				'label' => $appearance->label,
 			], $appearance->added);
 		};
 

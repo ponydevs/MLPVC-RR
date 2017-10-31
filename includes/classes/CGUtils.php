@@ -326,7 +326,7 @@ HTML;
 			case 'appearance_del':
 				/** @var $appearance Appearance|null */
 				$appearance = Appearance::find($data['id']);
-				$label = "Appearance #{$data['id']}";
+				$label = "{$data['label']} (#{$data['id']})";
 				if (!empty($appearance))
 					return $appearance->toAnchorWithPreview();
 

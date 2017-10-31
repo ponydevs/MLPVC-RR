@@ -841,6 +841,15 @@ class ColorGuideController extends Controller {
 						'private' => $newAppearance->private,
 						'owner_id' => $newAppearance->owner_id,
 					]);
+
+					if ($newAppearance->owner_id !== null){
+						PCGSlotHistory::makeRecord($newAppearance->owner_id, 'appearance_add', null, [
+							'id' => $newAppearance->id,
+							'label' => $newAppearance->label,
+						]);
+						$newAppearance->owner->syncPCGSlotCount();
+					}
+
 					Response::done($response);
 				}
 

@@ -204,15 +204,14 @@ class UserController extends Controller {
 		if (empty($targetUser))
 			Response::fail('User not found');
 
-
 		$sameUser = $targetUser->id === Auth::$user->id;
 		$You = $sameUser ? 'You' : $targetUser->name;
 		$do = $sameUser ? 'do' : 'does';
 		$you = $sameUser ? 'you' : 'they';
 		$avail = $targetUser->getPCGAvailableSlots(false);
-		if ($avail > 0)
-			Response::done();
-		Response::fail("$You $do not have any available slots left, but $you can always fulfill some requests to get more.");
+		if ($avail < 1)
+			Response::fail("$You $do not have any available slots left, but $you can always fulfill some requests to get more.");
+		Response::done();
 	}
 
 	const CONTRIB_NAMES = [
