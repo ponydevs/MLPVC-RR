@@ -474,7 +474,7 @@ class ColorGuideController extends Controller {
 	public function personalGuide($params){
 		$this->_initPersonal($params);
 
-		if ($this->_ownedBy->canVisitorSeePCG())
+		if (!$this->_ownedBy->canVisitorSeePCG())
 			CoreUtils::noPerm();
 
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');

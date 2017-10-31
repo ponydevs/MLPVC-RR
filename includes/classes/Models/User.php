@@ -747,6 +747,6 @@ HTML;
 	}
 
 	public function canVisitorSeePCG():bool {
-		return !UserPrefs::get('p_hidepcg', $this) && (Auth::$signed_in && (Auth::$user->id === $this->id || Permission::sufficient('staff')));
+		return Permission::sufficient('staff') || (!UserPrefs::get('p_hidepcg', $this) && (Auth::$signed_in && Auth::$user->id === $this->id));
 	}
 }
