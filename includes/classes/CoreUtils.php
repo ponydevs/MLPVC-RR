@@ -149,7 +149,7 @@ class CoreUtils {
 		Users::authenticate();
 
 		self::loadPage('ErrorController::noPerm', [
-			'title' => '401',
+			'title' => '403',
 		]);
 	}
 
