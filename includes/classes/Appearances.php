@@ -76,7 +76,6 @@ class Appearances {
 			if ($permission)
 				$Actions .= "<button class='edit typcn typcn-pencil darkblue' title='Edit'></button>".
 				            ($Appearance->id!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
-			$safelabel = $Appearance->getSafeLabel();
 			$processedLabel = $Appearance->processLabel();
 			$privlock = $Appearance->private ? "<span class='typcn typcn-lock-closed color-orange'></span> " : '';
 			$HTML .= "<li id='p{$Appearance->id}'>$img<div><strong>$privlock<a href='{$Appearance->toURL()}'>$processedLabel</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
