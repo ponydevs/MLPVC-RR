@@ -75,6 +75,7 @@ $router->map('GET', '/u/[un:name]?',                   'UserController#profile')
 $router->map('GET', '/u/[uuid:uuid]',                  'UserController#profileByUuid');
 $router->map('GET', '/@[un:name]/contrib/[ad:type]/[i]?', 'UserController#contrib');
 $router->map('GET', '/@[un:name]/[cg]/[i]?',                               'ColorGuideController#personalGuide');
+$router->map('GET', '/@[un:name]/[cg]/slot-history/[i]?',                  'ColorGuideController#personalGuideSlotHistory');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]',                         'ColorGuideController#personalAppearancePage');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]-[adi]',                   'ColorGuideController#personalAppearancePage');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[adi]-[i:id]',                   'ColorGuideController#personalAppearancePage');
@@ -111,6 +112,7 @@ $router->map('POST', '/cg/colorgroup/list/[i:id]',           'ColorGuideControll
 $router->map('POST', '/cg/get-sprite-colors/[i:id]',         'ColorGuideController#getSpriteColors');
 $router->map('POST', '/cg/sanitizesvg/[i:id]',               'ColorGuideController#sanitizeSvg');
 $router->map('POST', '/@[un:name]/cg/slot-check',            'UserController#checkCGSlots');
+$router->map('POST', '/@[un:name]/cg/slot-history/recalc',   'ColorGuideController#personalGuideSlotRecalc');
 $router->map('POST', '/@[un:name]/cg/appearance/[ad:action]/[i:id]',  'ColorGuideController#appearanceAction');
 $router->map('POST', '/@[un:name]/cg/appearance/[make:action]',       'ColorGuideController#appearanceAction');
 $router->map('POST', '/@[un:name]/cg/colorgroup/[gsd:action]/[i:id]', 'ColorGuideController#colorGroupAction');
@@ -156,6 +158,8 @@ $router->map('POST', '/post/delete-request/[i:id]',          'PostController#del
 $router->map('POST', '/post/locate/[rrl:thing]/[i:id]',      'PostController#locate');
 $router->map('POST', '/preference/set/[au:key]',             'PreferenceController#set');
 $router->map('POST', '/preference/get/[au:key]',             'PreferenceController#get');
+$router->map('POST', '/@[un:name]/preference/set/[au:key]',  'PreferenceController#set');
+$router->map('POST', '/@[un:name]/preference/get/[au:key]',  'PreferenceController#get');
 $router->map('POST', '/setting/set/[au:key]',                'SettingController#set');
 $router->map('POST', '/setting/get/[au:key]',                'SettingController#get');
 $router->map('POST', '/user/suggestion',                     'UserController#suggestion');

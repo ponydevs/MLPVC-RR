@@ -25,21 +25,22 @@ use App\Users;
 
 /**
  * @inheritdoc
- * @property string         $role
- * @property DateTime       $signup_date
- * @property Session[]      $sessions         (Via relations)
- * @property Notification[] $notifications    (Via relations)
- * @property Event[]        $submitted_events (Via relations)
- * @property Event[]        $finalized_events (Via relations)
- * @property Appearance[]   $pcg_appearances  (Via relations)
- * @property DiscordMember  $discord_member   (Via relations)
- * @property Log[]          $logs             (Via relations)
- * @property DANameChange[] $name_changes     (Via relations)
- * @property Banish[]       $banishments      (Via relations)
- * @property Unbanish[]     $unbanishments    (Via relations)
- * @property KnownIP[]      $known_ips        (Via relations)
- * @property string         $rolelabel        (Via magic method)
- * @property string         $avatar_provider  (Via magic method)
+ * @property string           $role
+ * @property DateTime         $signup_date
+ * @property Session[]        $sessions         (Via relations)
+ * @property Notification[]   $notifications    (Via relations)
+ * @property Event[]          $submitted_events (Via relations)
+ * @property Event[]          $finalized_events (Via relations)
+ * @property Appearance[]     $pcg_appearances  (Via relations)
+ * @property DiscordMember    $discord_member   (Via relations)
+ * @property Log[]            $logs             (Via relations)
+ * @property DANameChange[]   $name_changes     (Via relations)
+ * @property Banish[]         $banishments      (Via relations)
+ * @property Unbanish[]       $unbanishments    (Via relations)
+ * @property KnownIP[]        $known_ips        (Via relations)
+ * @property PCGSlotHistory[] $pcg_slot_history (Via relations)
+ * @property string           $rolelabel        (Via magic method)
+ * @property string           $avatar_provider  (Via magic method)
  * @method static User find(...$args)
  */
 class User extends AbstractUser implements LinkableInterface {
@@ -56,6 +57,7 @@ class User extends AbstractUser implements LinkableInterface {
 		['banishments', 'class' => 'Logs\Banish', 'foreign_key' => 'target_id', 'order' => 'entryid desc'],
 		['unbanishments', 'class' => 'Logs\Unbanish', 'foreign_key' => 'target_id', 'order' => 'entryid desc'],
 		['known_ips', 'class' => 'KnownIP', 'order' => 'last_seen desc'],
+		['pcg_slot_history', 'class' => 'PCGSlotHistory', 'order' => 'created desc, id desc'],
 	];
 	public static $has_one = [
 		['discord_member'],
@@ -203,25 +205,36 @@ HTML;
 	/**
 	 * Update a user's role
 	 *
-	 * @param string $newgroup
+	 * @param string $newrole
 	 * @param bool   $skip_log
 	 *
 	 * @return bool
 	 * @throws \RuntimeException
 	 */
-	 public function updateRole(string $newgroup, bool $skip_log = false):bool {
-	    $this->role = $newgroup;
-	    $response = $this->save();
+	public function updateRole(string $newrole, bool $skip_log = false):bool {
+		$oldrole = (string)$this->role;
+		$this->role = $newrole;
+		$response = $this->save();
 
 		if ($response && !$skip_log){
 			Logs::logAction('rolechange', [
 				'target' => $this->id,
-				'oldrole' => $this->role,
-				'newrole' => $newgroup
+				'oldrole' => $oldrole,
+				'newrole' => $newrole
 			]);
 		}
+		$oldrole_is_staff = Permission::sufficient('staff', $oldrole);
+		$newrole_is_staff = Permission::sufficient('staff', $newrole);
+		if ($oldrole_is_staff && !$newrole_is_staff){
+			PCGSlotHistory::makeRecord($this->id, 'staff_leave');
+			$this->syncPCGSlotCount();
+		}
+		else if (!$oldrole_is_staff && $newrole_is_staff){
+			PCGSlotHistory::makeRecord($this->id, 'staff_join');
+			$this->syncPCGSlotCount();
+		}
 
-		return (bool)$response;
+		return $response;
 	}
 
 	/**
@@ -271,37 +284,63 @@ HTML;
 	}
 
 	/**
-	 * TODO Introduce a table and allow manually adding/removing slots + locking slot gains
-	 *
-	 * @param bool $throw
-	 * @param bool $returnArray
-	 *
-	 * @return int|array
+	 * @return int
 	 */
-	public function getPCGAvailableSlots(bool $throw = true, bool $returnArray = false){
-		$postcount = $this->getApprovedFinishedRequestCount(true);
-		$totalslots = floor($postcount/10);
-		if (Permission::sufficient('staff', $this->role))
-			$totalslots++;
-		if ($totalslots === 0){
-			if ($throw)
-				throw new NoPCGSlotsException();
-			return $returnArray ? [
-				'postcount' => $postcount,
-				'totalslots' => 0,
-				'available' => 0,
-			] : 0;
-		}
-		$usedSlots = $this->getPCGAppearanceCount();
+	public function getPCGSlotHistoryEntryCount():int {
+		return DB::$instance->where('user_id', $this->id)->count(PCGSlotHistory::$table_name);
+	}
 
-		$available = (int)($totalslots-$usedSlots);
-		if (!$returnArray)
-			return $available;
-		return [
-			'postcount' => $postcount,
-			'totalslots' => $totalslots,
-			'available' => $available,
-		];
+	/**
+	 * @param Pagination $Pagination
+	 *
+	 * @return PCGSlotHistory[]
+	 */
+	public function getPCGSlotHistoryEntries(Pagination $Pagination = null):?array {
+		$limit = isset($Pagination) ? $Pagination->getLimit() : null;
+		DB::$instance->orderBy('created','desc')->orderBy('id','desc');
+		return DB::$instance->where('user_id', $this->id)->get(PCGSlotHistory::$table_name, $limit);
+	}
+
+	/**
+	 * @param bool $throw
+	 *
+	 * @return float
+	 */
+	public function getPCGAvailableSlots(bool $throw = true):float {
+		$slotcount = UserPrefs::get('pcg_slots', $this);
+		if ($slotcount !== null){
+			if ($throw && $slotcount === 0)
+				throw new NoPCGSlotsException();
+			return (float)$slotcount;
+		}
+
+		// We need to calculate the available slots
+		DB::$instance->where('requested_by', $this->id, '!=');
+		/** @var $posts Request[] */
+		$posts = $this->getApprovedFinishedRequestContributions(false);
+		if (!empty($posts))
+			foreach ($posts as $post){
+				PCGSlotHistory::makeRecord($this->id, 'post_approved', null, [
+					'type' => $post->kind,
+					'id' => $post->id,
+				], $post->posted_at);
+			}
+
+		foreach ($this->pcg_appearances as $appearance){
+			PCGSlotHistory::makeRecord($this->id, 'appearance_add', null, [
+				'id' => $appearance->id,
+			], $appearance->added);
+		};
+
+		if (Permission::sufficient('staff', $this->role))
+			PCGSlotHistory::makeRecord($this->id, 'staff_member');
+
+		$this->syncPCGSlotCount();
+		return $this->getPCGAvailableSlots($throw);
+	}
+
+	public function syncPCGSlotCount(){
+		UserPrefs::set('pcg_slots', PCGSlotHistory::sum($this->id), $this);
 	}
 
 	const CONTRIB_CACHE_DURATION = Time::IN_SECONDS['hour'];
@@ -704,5 +743,11 @@ HTML;
 				(new NavBreadcrumb('Personal Color Guide', $this->toURL().'/cg'))->setActive($active)
 			)
 		);
+	}
+
+	public function getPCGSlotHistoryButtonHTML(?bool $showPrivate = null):string {
+		if ($showPrivate === null)
+			$showPrivate = (Auth::$signed_in && Auth::$user->id === $this->id) || Permission::sufficient('staff');
+		return $showPrivate ? "<a href='/@{$this->name}/cg/slot-history' class='btn darkblue typcn typcn-eye'>View slot history</a>" : '';
 	}
 }

@@ -1,0 +1,46 @@
+@import "../../vars";
+
+#history-entries {
+	margin: 0 auto;
+	border-collapse: collapse;
+	text-align: center;
+
+	th, td {
+		padding: 5px 10px;
+	}
+	tbody {
+		border: 2px solid black;
+
+		tr.change-pos {
+			background: $NGreenBG;
+			color: $NGreen;
+		}
+		tr.change-neg {
+			background: $NRedBG;
+			color: $NRed;
+		}
+
+		td {
+			&.amt {
+				font-family: $monospace;
+			}
+			pre {
+				text-align: left;
+				font-size: 14px;
+			}
+			a {
+				> * {
+					    vertical-align: text-top;
+				}
+				> .preview {
+					display: inline-block;
+					border: 1px solid black;
+					width: 1em;
+					height: 1em;
+					margin-right: .4em;
+					box-sizing: border-box;
+				}
+			}
+		}
+	}
+}

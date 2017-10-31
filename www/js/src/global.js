@@ -243,6 +243,21 @@ $(function(){
 				}));
 			});
 		});
+
+		$body.swipe($.throttle(10, function(direction, offset){
+			if (window.sidebarForcedVisible() || !$body.hasClass('sidebar-open'))
+				return;
+
+			const
+				offX = Math.abs(offset.x),
+				offY = Math.abs(offset.y),
+				minmove = Math.min($body.width()/2, 200);
+
+			if (direction.x !== 'left' || offX < minmove || offY > 75)
+				return;
+
+			$sbToggle.trigger('click');
+		}));
 	}
 
 	if ('serviceWorker' in navigator){

@@ -35,13 +35,7 @@ use App\Tags;
 		<button class='blue typcn typcn-document cg-reindex'>Re-index</button>
 <?  } ?>
 	</p>
-<?  if (Permission::sufficient('staff')){ ?>
-	<div class="notice warn tagediting">
-		<label>Limited editing</label>
-		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance’s page.</p>
-	</div>
-<?  }
-	$Universal = \App\Models\Appearance::find(0);
+<?  $Universal = \App\Models\Appearance::find(0);
 	if (!empty($Universal))
 		echo "<ul id='universal' class='appearance-list'>".Appearances::getHTML([$Universal], NOWRAP).'</ul>'; ?>
 <? if ($elasticAvail){ ?>

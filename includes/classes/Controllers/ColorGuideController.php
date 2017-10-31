@@ -21,6 +21,7 @@ use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
 use App\Models\Logs\MajorChange;
+use App\Models\PCGSlotHistory;
 use App\Models\RelatedAppearance;
 use App\Models\Tag;
 use App\Models\Tagged;
@@ -467,7 +468,6 @@ class ColorGuideController extends Controller {
 	public function personalGuide($params){
 		$this->_initPersonal($params);
 
-		$title = '';
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
 	    $_EntryCount = $this->_ownedBy->getPCGAppearanceCount();
 
@@ -476,7 +476,7 @@ class ColorGuideController extends Controller {
 
 		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}");
 		$heading = CoreUtils::posess($this->_ownedBy->name).' Personal Color Guide';
-		$title .= "Page {$Pagination->page} - $heading";
+		$title = "Page {$Pagination->page} - $heading";
 
 		$Pagination->respondIfShould(Appearances::getHTML($Ponies, NOWRAP), '#list');
 
@@ -497,6 +497,54 @@ class ColorGuideController extends Controller {
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
 		}
 		CoreUtils::loadPage('UserController::colorGuide', $settings);
+	}
+
+	public function personalGuideSlotHistory($params){
+		$this->_initPersonal($params);
+
+		if (!$this->_isOwnedByUser && Permission::insufficient('staff'))
+			CoreUtils::noPerm();
+
+		$EntriesPerPage = 20;
+	    $_EntryCount = $this->_ownedBy->getPCGSlotHistoryEntryCount();
+
+	    $Pagination = new Pagination("@{$this->_ownedBy->name}/cg/slot-history", $EntriesPerPage, $_EntryCount);
+	    $Entries = $this->_ownedBy->getPCGSlotHistoryEntries($Pagination);
+
+		CoreUtils::fixPath("{$this->_cgPath}/slot-history/{$Pagination->page}");
+		$heading = CoreUtils::posess($this->_ownedBy->name).' Personal Color Guide Slot History';
+		$title = "Page {$Pagination->page} - $heading";
+
+		$Pagination->respondIfShould(CGUtils::getPCGSlotHistoryHTML($Entries, NOWRAP), '#history-entries tbody');
+
+		$js = ['paginate'];
+		if (Permission::sufficient('developer'))
+			$js[] = true;
+		CoreUtils::loadPage('UserController::pcgSlots', [
+			'title' => $title,
+			'heading' => $heading,
+			'css' => [true],
+			'js' => $js,
+			'import' => [
+				'Entries' => $Entries,
+				'Pagination' => $Pagination,
+				'User' => $this->_ownedBy,
+				'isOwner' => $this->_isOwnedByUser,
+			],
+		]);
+	}
+
+	public function personalGuideSlotRecalc($params){
+		if (Permission::insufficient('developer'))
+			CoreUtils::noPerm();
+
+		$this->_initPersonal($params);
+
+		DB::$instance->where('user_id', $this->_ownedBy->id)->delete(PCGSlotHistory::$table_name);
+		UserPrefs::reset('pcg_slots', $this->_ownedBy);
+		$this->_ownedBy->getPCGAvailableSlots();
+
+		Response::done();
 	}
 
 	const CM_BASIC_COLS = 'id,favme,favme_rotation,preview_src,facing';
@@ -667,7 +715,7 @@ class ColorGuideController extends Controller {
 				catch (NoPCGSlotsException $e){
 					Response::fail("You don’t have any slots. If you’d like to know how to get some, click the blue <strong class='color-darkblue'>What?</strong> button on your <a href='/u'>Account page</a> to learn more about this feature.");
 				}
-				if ($availSlots === 0){
+				if ($availSlots < 1){
 					$remain = Users::calculatePersonalCGNextSlot(Auth::$user->getPCGAppearanceCount());
 					Response::fail("You don’t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'.');
 				}
@@ -866,6 +914,14 @@ class ColorGuideController extends Controller {
 					'private' => $this->_appearance->private,
 					'owner_id' => $this->_appearance->owner_id,
 				]);
+
+				if ($this->_appearance->owner_id !== null){
+					PCGSlotHistory::makeRecord($this->_appearance->owner_id, 'appearance_del', null, [
+						'id' => $this->_appearance->id,
+						'label' => $this->_appearance->label,
+					]);
+					$this->_appearance->owner->syncPCGSlotCount();
+				}
 
 				Response::success('Appearance removed');
 			break;

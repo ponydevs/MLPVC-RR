@@ -14,14 +14,9 @@ $isOwnerOrStaff = $isOwner || $isStaff; ?>
 	<h1><?=$heading?></h1>
 	<p>Unofficial colors maintained by <?=$User->toAnchor()?></p>
 <?  if ($isOwnerOrStaff){ ?>
-	<div class="notice warn tagediting">
-		<label>Limited editing</label>
-		<p>Editing tags or colors from the guide page does not work on mobile devices. If you want to edit those, please go the appearance’s page.</p>
-	</div>
-<?  } ?>
-<?  if ($isOwnerOrStaff){ ?>
 	<p class='align-center links'>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
+		<?=$User->getPCGSlotHistoryButtonHTML()?>
 	</p>
 <?  } ?>
 	<?=$Pagination . Appearances::getHTML($Ponies, WRAP, $isOwnerOrStaff) . $Pagination?>

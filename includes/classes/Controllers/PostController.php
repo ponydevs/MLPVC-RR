@@ -13,6 +13,7 @@ use App\Input;
 use App\Logs;
 use App\Models\CachedDeviation;
 use App\Models\Notification;
+use App\Models\PCGSlotHistory;
 use App\Models\Post;
 use App\Models\Request;
 use App\Models\Reservation;
@@ -21,6 +22,7 @@ use App\Permission;
 use App\Posts;
 use App\Response;
 use App\Time;
+use App\UserPrefs;
 use App\Users;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
@@ -194,6 +196,10 @@ class PostController extends Controller {
 				case 'reserve':
 					if ($thing !== 'request')
 						break;
+
+					if (!UserPrefs::get('a_reserve', Auth::$user))
+						Response::fail('You are not allowed to reserve requests');
+
 					if ($this->_post->broken)
 						Response::fail('Broken posts cannot be reserved.'.(Permission::sufficient('staff')?' Update the image or clear the broken status through the edit menu to make the post reservable.':''));
 
@@ -217,9 +223,6 @@ class PostController extends Controller {
 
 				CoreUtils::checkDeviationInClub($this->_post->deviation_id);
 
-				if (!DB::$instance->where('id', $this->_post->id)->update("{$thing}s", ['lock' => true]))
-					Response::dbError();
-
 				Posts::approve($thing, $this->_post->id, !$isUserReserver ? $this->_post->reserved_by : null);
 
 				$this->_post->lock = true;
@@ -240,6 +243,15 @@ class PostController extends Controller {
 				}
 				if ($isUserReserver)
 					$response['message'] .= ' '.self::CONTRIB_THANKS;
+
+				if (UserPrefs::get('a_pcgearn', $this->_post->reserver)){
+					PCGSlotHistory::makeRecord($this->_post->reserver->id, 'post_approved', null, [
+						'type' => $this->_post->kind,
+						'id' => $this->_post->id,
+					], $this->_post->posted_at);
+					$this->_post->reserver->syncPCGSlotCount();
+				}
+
 				Response::done($response);
 			break;
 			case 'unlock':
@@ -335,7 +347,7 @@ class PostController extends Controller {
 				if (!$isUserReserver && Permission::insufficient('staff'))
 					Response::fail();
 
-				$update = Posts::checkRequestFinishingImage($this->_post->reserved_by);
+				$update = Posts::checkPostFinishingImage($this->_post->reserved_by);
 
 				$finished_at = Posts::validateFinishedAt();
 				$update['finished_at'] = $finished_at !== null ? date('c', $finished_at) : date('c');
@@ -470,13 +482,17 @@ class PostController extends Controller {
 		$this->_authorize();
 
 		$thing = (new Input('what',function($value){
-			if (!in_array($value,Posts::TYPES))
+			if (!in_array($value,Posts::TYPES,true))
 				return Input::ERROR_INVALID;
 		}, [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_INVALID => 'Post type (@value) is invalid',
 			]
 		]))->out();
+
+		$pref = 'a_post'.substr($thing, 0, 3);
+		if (!UserPrefs::get($pref, Auth::$user))
+			Response::fail("You are not allowed to post {$thing}s");
 
 		if ($thing === 'reservation'){
 			if (Permission::insufficient('member'))
@@ -779,7 +795,7 @@ class PostController extends Controller {
 		if (!Permission::sufficient('staff'))
 			Response::fail();
 		$_POST['allow_overwrite_reserver'] = true;
-		$insert = Posts::checkRequestFinishingImage();
+		$insert = Posts::checkPostFinishingImage();
 		if (empty($insert['reserved_by']))
 			$insert['reserved_by'] = Auth::$user->id;
 

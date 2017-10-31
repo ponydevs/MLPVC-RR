@@ -49,9 +49,12 @@ $ZIndexBase: 21000;
 		display: inline-block;
 		text-align: left;
 	}
+	#dialogHeader {
+		text-align: center;
+	}
 	#dialogHeader, #dialogBox {
-		border-top-left-radius: 5px;
-		border-top-right-radius: 5px;
+		border-top-left-radius: 8px;
+		border-top-right-radius: 8px;
 	}
 	#dialogContent {
 		border: 1px solid $DefaultUIColor;
@@ -107,7 +110,7 @@ body.dialog-open {
 #dialogHeader {
 	font-weight: 200;
 	width: auto;
-	padding: 5px 8px;
+	padding: 8px;
 	font-size: 18px;
 	color: #fff;
 	background-color: $DefaultUIColor;

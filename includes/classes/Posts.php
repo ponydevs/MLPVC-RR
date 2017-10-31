@@ -191,13 +191,13 @@ class Posts {
 	}
 
 	/**
-	 * Checks the image which allows a request to be finished
+	 * Checks the image which allows a post to be finished
 	 *
 	 * @param string|null $ReserverID
 	 *
 	 * @return array
 	 */
-	public static function checkRequestFinishingImage($ReserverID = null){
+	public static function checkPostFinishingImage($ReserverID = null){
 		$deviation = (new Input('deviation','string', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Please specify a deviation URL',
@@ -286,7 +286,7 @@ class Posts {
 		foreach ($Arranged['unfinished'] as $g => $c)
 			$Groups .= "<div class='group' id='group-$g'><h3>".self::REQUEST_TYPES[$g].":</h3><ul>$c</ul></div>";
 
-		if (Permission::sufficient('user')){
+		if (Permission::sufficient('user') && UserPrefs::get('a_postreq', Auth::$user)){
 			$makeRq = '<button id="request-btn" class="green">Make a request</button>';
 			$reqForm = self::_getForm('request');
 		}
@@ -337,7 +337,7 @@ HTML;
 		if ($returnArranged)
 			return $Arranged;
 
-		if (Permission::sufficient('member')){
+		if (Permission::sufficient('member') && UserPrefs::get('a_postres', Auth::$user)){
 			$makeRes = '<button id="reservation-btn" class="green">Make a reservation</button>';
 			$resForm = self::_getForm('reservation');
 		}
@@ -628,14 +628,13 @@ HTML;
 	 */
 	public static function getPostReserveButton($reservedBy, $view_only):string {
 		if (empty($reservedBy))
-			return Permission::sufficient('member') && $view_only === false ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
-		else {
-			$dAlink = $reservedBy->toAnchor(User::WITH_AVATAR);
-			$vectorapp = $reservedBy->getVectorAppClassName();
-			if (!empty($vectorapp))
-				$vectorapp .= "' title='Uses ".$reservedBy->getVectorAppReadableName().' to make vectors';
-			return "<div class='reserver$vectorapp'>$dAlink</div>";
-		}
+			return Permission::sufficient('member') && $view_only === false && UserPrefs::get('a_reserve', Auth::$user) ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
+
+		$dAlink = $reservedBy->toAnchor(User::WITH_AVATAR);
+		$vectorapp = $reservedBy->getVectorAppClassName();
+		if (!empty($vectorapp))
+			$vectorapp .= "' title='Uses ".$reservedBy->getVectorAppReadableName().' to make vectors';
+		return "<div class='reserver$vectorapp'>$dAlink</div>";
 	}
 
 	/**

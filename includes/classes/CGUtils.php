@@ -7,6 +7,8 @@ use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
 use App\Models\Logs\MajorChange;
+use App\Models\PCGSlotHistory;
+use App\Models\Post;
 use SeinopSys\RGBAColor;
 
 class CGUtils {
@@ -303,6 +305,82 @@ HTML;
 				$HTML .= "<li>$appearance{$c->reason} - ".Time::tag($c->log->timestamp)."$initiator</li>";
 			};
 		return $wrap ? "<ul id='changes'>$HTML</ul>" : $HTML;
+	}
+
+	public static function processPCGSlotHistoryData(string $type, ?string $data):?string {
+		if ($data === null)
+			return '&mdash;';
+
+		$data = JSON::decode($data);
+		switch ($type){
+			case 'post_approved':
+			case 'post_removed':
+				/** @var $post Post|null */
+				$post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
+				$label = ucwords($data['type'])." #{$data['id']}";
+				if (!empty($post))
+					return $post->toAnchor($label);
+
+				return "$label <span class='color-red typcn typcn-trash' title='Deleted'></span>";
+			break;
+			case 'appearance_add':
+			case 'appearance_del':
+				/** @var $appearance Appearance|null */
+				$appearance = Appearance::find($data['id']);
+				$label = "Appearance #{$data['id']}";
+				if (!empty($appearance))
+					return $appearance->toAnchorWithPreview();
+
+				return "$label <span class='color-red typcn typcn-trash' title='Deleted'></span>";
+			break;
+			default:
+				return '<pre>'.htmlspecialchars(JSON::encode($data, JSON_PRETTY_PRINT)).'</pre>';
+		}
+	}
+
+	/**
+	 * Renders HTML of a user's slot history
+	 *
+	 * @param PCGSlotHistory[] $Entries
+	 * @param bool             $wrap
+	 *
+	 * @return string
+	 * @throws \Exception
+	 */
+	public static function getPCGSlotHistoryHTML(?array $Entries, bool $wrap = WRAP):string {
+		$HTML = '';
+		if (is_array($Entries))
+			foreach ($Entries as $entry){
+				$type = PCGSlotHistory::CHANGE_DESC[$entry->change_type];
+				$data = self::processPCGSlotHistoryData($entry->change_type, $entry->change_data);
+				$when = Time::tag($entry->created);
+				$dir = $entry->change_amount > 0 ? 'pos' : 'neg';
+				$amount = ($entry->change_amount > 0 ? "\u{2B}$entry->change_amount" : "\u{2212}".(-$entry->change_amount));
+
+				$HTML .= <<<HTML
+	<tr class="change-$dir">
+		<td>$type</td>
+		<td>$data</td>
+		<td class="amt">$amount</td>
+		<td><span class="typcn typcn-time"></span> $when</td>
+HTML;
+			};
+		if (!$wrap)
+			return $HTML;
+
+		return <<<HTML
+<div class="responsive-table">
+<table id='history-entries'>
+	<thead>
+		<th>Reason</th>
+		<th>Details</th>
+		<th>Amount</th>
+		<th>When</th>
+	</thead>
+	<tbody>$HTML</tbody>
+</table>
+</div>
+HTML;
 	}
 
 	/**

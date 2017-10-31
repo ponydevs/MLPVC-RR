@@ -37,6 +37,7 @@ class Logs {
 		'cm_modify' => 'Appearance CM edited',
 		'post_break' => 'Post image broken',
 		'post_fix' => 'Broken post restored',
+		'staff_limits' => 'Account limitation changed',
 	];
 
 	const FORCE_INITIATOR_WEBSERVER = true;
@@ -82,6 +83,7 @@ class Logs {
 	const
 		KEYCOLOR_INFO = 'blue',
 		KEYCOLOR_ERROR = 'red',
+		KEYCOLOR_SUCCESS = 'green',
 		SKIP_VALUE = [];
 
 	/**
@@ -348,6 +350,14 @@ class Logs {
 				/** @var $Post Request|Reservation */
 				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
+			break;
+			case 'staff_limits':
+				$details[] = ['For', User::find($data['user_id'])->toAnchor()];
+				$details[] = ['Limitation', UserSettingForm::INPUT_MAP[$data['setting']]['options']['desc']];
+				$icon = $data['allow'] ? 'tick' : 'times';
+				$text = $data['allow'] ? 'Now allowed' : 'Now disallowed';
+				$keyc = $data['allow'] ? self::KEYCOLOR_SUCCESS : self::KEYCOLOR_ERROR;
+				$details[] = ["<span class='typcn typcn-$icon'></span> $text", self::SKIP_VALUE, $keyc];
 			break;
 			default:
 				$details[] = ['<span class="typcn typcn-warning"></span> Couldn’t process details', 'No data processor defined for this entry type', self::KEYCOLOR_ERROR];

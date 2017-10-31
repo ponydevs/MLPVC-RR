@@ -165,8 +165,16 @@ class View {
 					/** @var $User \App\Models\User */
 					$User = $scope['User'];
 					if ($User instanceof User){
-						if ($this->method === 'colorguide')
-							return $User->getPCGBreadcrumb(true);
+						switch ($this->method){
+							case 'colorguide':
+								return $User->getPCGBreadcrumb(true);
+							case 'pcgslots':
+								$bc = $User->getPCGBreadcrumb();
+								$bc->end()->setChild(
+									 new NavBreadcrumb('Slot History', null, true)
+								);
+								return $bc;
+						}
 
 						$subbc = new NavBreadcrumb($User->name, $User->toURL());
 					}

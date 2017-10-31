@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Models\User;
-use PHPUnit\Runner\Exception;
 
 class UserSettingForm {
 	/** @var string */
@@ -85,16 +84,43 @@ class UserSettingForm {
 				'desc' => 'Reverse order of next/previous episode buttons',
 			],
 		],
+		'a_pcgearn' => [
+			'type' => 'checkbox',
+			'options' => [
+				'desc' => 'Can earn PCG slots (from finishing requests)',
+			]
+		],
+		'a_postreq' => [
+			'type' => 'checkbox',
+			'options' => [
+				'desc' => 'Can post requests',
+			]
+		],
+		'a_postres' => [
+			'type' => 'checkbox',
+			'options' => [
+				'desc' => 'Can post reservations',
+			]
+		],
+		'a_reserve' => [
+			'type' => 'checkbox',
+			'options' => [
+				'desc' => 'Can reserve requests',
+			]
+		],
 	];
 
-	public function __construct(string $setting_name, ?User $current_user = null){
+	public function __construct(string $setting_name, ?User $current_user = null, ?string $req_perm = null){
 		if (!isset(UserPrefs::DEFAULTS[$setting_name]))
-			throw new Exception('Could not instantiate '.__CLASS__." for non-existant setting $setting_name");
+			throw new \Exception('Could not instantiate '.__CLASS__." for non-existant setting $setting_name");
+		if (!isset(self::INPUT_MAP[$setting_name]))
+			throw new \Exception('Could not instantiate '.__CLASS__." for $setting_name: Missing INPUT_MAP entry");
 		$this->_setting_name = $setting_name;
 		if ($current_user === null && Auth::$signed_in)
 			 $current_user = Auth::$user;
 		$this->_current_user = $current_user;
-		$this->_can_save = Auth::$signed_in && $this->_current_user->id === Auth::$user->id;
+		$this->_can_save = ($req_perm === null && Auth::$signed_in && $this->_current_user->id === Auth::$user->id)
+		                   || ($req_perm !== null || Permission::sufficient($req_perm, $this->_current_user->role));
 	}
 
 	private function _permissionCheck(string $check_name){
@@ -165,8 +191,9 @@ class UserSettingForm {
 		if ($map['type'] === 'checkbox')
 			$content = "$input $content";
 		else $content .= " $input";
+		$prefix = Auth::$signed_in && Auth::$user === $this->_current_user->id ? '' : "/@{$this->_current_user->name}";
 		return <<<HTML
-			<form action="/preference/set/{$this->_setting_name}">
+			<form action="$prefix/preference/set/{$this->_setting_name}">
 				<label>
 					$content
 					$savebtn

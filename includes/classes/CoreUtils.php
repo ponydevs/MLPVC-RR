@@ -141,7 +141,7 @@ class CoreUtils {
 	}
 
 	/**
-	 * Display a 401 page
+	 * Display a 403 page
 	 */
 	public static function noPerm(){
 		HTTP::statusCode(403);
@@ -205,7 +205,7 @@ class CoreUtils {
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = ['moment', 'jquery.ba-throttle-debounce', 'shared-utils', 'inert', 'dialog', 'dragscroll', 'global'];
+		$DEFAULT_JS = ['moment', 'jquery.ba-throttle-debounce', 'jquery.swipe', 'shared-utils', 'inert', 'dialog', 'dragscroll', 'global'];
 		$customJS = [];
 		// Only add defaults when needed
 		if (!isset($options['default-js']) || $options['default-js'] === true)
@@ -889,16 +889,16 @@ HTML;
 	 * Appends 's' to the end of string if input is not 1
 	 *
 	 * @param string $w    Text to pluralize
-	 * @param int    $in   Number to base pluralization off of
+	 * @param float  $in   Number to base pluralization off of
 	 * @param bool   $prep Prepend number to text
 	 *
 	 * @return string
 	 */
-	public static function makePlural($w, int $in = 0, $prep = false):string {
+	public static function makePlural($w, float $in = 0, $prep = false):string {
 		$ret = ($prep?"$in ":'');
-		if ($in !== 1 && $w[-1] === 'y' && !in_array(strtolower($w),self::$_endsWithYButStillPlural,true))
+		if ($in !== 1.0 && $w[-1] === 'y' && !in_array(strtolower($w),self::$_endsWithYButStillPlural,true))
 			return $ret.mb_substr($w,0,-1).'ies';
-		return $ret.$w.($in !== 1 && !in_array(strtolower($w),self::$_uncountableWords,true) ?'s':'');
+		return $ret.$w.($in !== 1.0 && !in_array(strtolower($w),self::$_uncountableWords,true) ?'s':'');
 	}
 
 	/**
@@ -1320,5 +1320,14 @@ HTML;
 			'referrer' => $_SERVER['HTTP_REFERER'] ?? null,
 			'auth' => Auth::$signed_in ? Auth::$user->to_array(['include' => [ 'session' => Auth::$session->id ]]) : null,
 		]);
+	}
+
+	/**
+	 * @param float $n
+	 * @param int   $decimals
+	 * @return array
+	 */
+	public static function splitFloat(float $n, int $decimals = 1):array {
+		return explode('.', number_format($n, $decimals, '.', ''));
 	}
 }

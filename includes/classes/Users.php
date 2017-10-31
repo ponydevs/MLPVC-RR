@@ -250,7 +250,6 @@ HTML;
 	}
 
 	public static function getPersonalColorGuideHTML(User $User, bool $sameUser):string {
-
 		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $User);
 		if ($sectionIsPrivate && (!$sameUser && Permission::insufficient('staff')))
 			return '';
@@ -263,44 +262,27 @@ HTML;
 	<h2>{$privacy}Personal Color Guide{$whatBtn}</h2>
 HTML;
 
-		$UsedSlotCount = $User->getPCGAppearanceCount();
-		$ThisUser = $sameUser?'You':'This user';
 		$showPrivate = $sameUser || Permission::sufficient('staff');
-		/** @var $pcgLimits array */
-		$pcgLimits = $User->getPCGAvailableSlots(false, true);
-		$nSlots = CoreUtils::makePlural('slot',$pcgLimits['totalslots'],PREPEND_NUMBER);
 		if ($showPrivate){
-			$ApprovedFinishedRequests = $pcgLimits['postcount'];
-			$ToNextSlot = self::calculatePersonalCGNextSlot($ApprovedFinishedRequests);
-
+			$ThisUser = $sameUser?'You':'This user';
+			[$availslots, $remainslots] = CoreUtils::splitFloat($User->getPCGAvailableSlots(false));
+			$remainslots = 10-$remainslots;
+			$nSlots = CoreUtils::makePlural('remaining slot',$availslots,PREPEND_NUMBER);
+			$rSlots = CoreUtils::makePlural('approved request',$remainslots,PREPEND_NUMBER);
 			$has = $sameUser?'have':'has';
-			$nRequests = CoreUtils::makePlural('request',$ApprovedFinishedRequests,PREPEND_NUMBER);
-			$grants = 'grant'.($ApprovedFinishedRequests!==1?'':'s');
-			$them = $sameUser?'you':'them';
-			$forStaff = Permission::sufficient('staff', $User->role) ? ' (staff members get a free slot)' : '';
-			$isnt = $ApprovedFinishedRequests !== 1 ? "aren't" : "isn't";
-			$their = $sameUser ? 'your' : 'their';
-			$privateStatus = "$ThisUser $has finished $nRequests (that $isnt $their own) on the site, which $grants $them $nSlots$forStaff. ";
+			$is = $sameUser?'are':'is';
+			$HTML .= "<div class='personal-cg-progress'><p>$ThisUser $has $nSlots and $is $rSlots away from getting another.</p></div>";
 		}
-		else $privateStatus = '';
-		$unused = $UsedSlotCount === 0;
-		$is = ($sameUser?'are':'is').($unused&&!$showPrivate?'n\'t':'');
-		$goal = $sameUser?" and $is ".CoreUtils::makePlural('request',$ToNextSlot,PREPEND_NUMBER).' away from getting another':'';
-		$publicStatus = "$ThisUser $is currently using ".($showPrivate ? CoreUtils::makePlural('slot',$UsedSlotCount,PREPEND_NUMBER) : ($UsedSlotCount===0?'any of their slots':"$UsedSlotCount out of their $nSlots"))."$goal.";
-		$HTML .= <<<HTML
-	<div class="personal-cg-progress">
-		<p>$privateStatus$publicStatus</p>
-	</div>
-HTML;
+
 		$PersonalColorGuides = $User->pcg_appearances;
-		if (count($PersonalColorGuides) > 0 || $sameUser){
+		if ($sameUser || count($PersonalColorGuides) > 0){
 			$HTML .= "<ul class='personal-cg-appearances'>";
 			foreach ($PersonalColorGuides as $p)
 				$HTML .= '<li>'.$p->toAnchorWithPreview().'</li>';
 			$HTML .= '</ul>';
 		}
 		$Action = $sameUser ? 'Manage' : 'View';
-		$HTML .= "<p><a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a></p>";
+		$HTML .= "<p><a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a>".$User->getPCGSlotHistoryButtonHTML($showPrivate).'</p>';
 		$HTML .= '</section>';
 
 		return $HTML;

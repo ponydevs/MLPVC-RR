@@ -18,6 +18,11 @@ class UserPrefs extends GlobalSettings {
 		'p_hidepcg' => 0,
 		'ep_noappprev' => 0,
 		'ep_revstepbtn' => 0,
+		'a_pcgearn' => 1,
+		'a_postreq' => 1,
+		'a_postres' => 1,
+		'a_reserve' => 1,
+		'pcg_slots' => null,
 	];
 
 	/**
@@ -66,9 +71,16 @@ class UserPrefs extends GlobalSettings {
 			$for = Auth::$user;
 		}
 
-		if (!isset(static::DEFAULTS[$key]))
+		if (!array_key_exists($key, static::DEFAULTS))
 			Response::fail("Key $key is not allowed");
 		$default = static::DEFAULTS[$key];
+
+		if (preg_match(new RegExp('^a_'),$key))
+			Logs::logAction('staff_limits', [
+				'setting' => $key,
+				'allow' => $value,
+				'user_id' => $for->id,
+			]);
 
 		if (UserPref::has($key, $for)){
 			$pref = UserPref::find_for($key, $for);
@@ -78,12 +90,19 @@ class UserPrefs extends GlobalSettings {
 		}
 		else if ($value != $default){
 			return (new UserPref([
-				'user_id' => Auth::$user->id,
+				'user_id' => $for->id,
 				'key' => $key,
 				'value' => $value,
 			]))->save();
 		}
 		else return true;
+	}
+
+	public static function reset(string $key, ?User $for = null):bool {
+		if (!array_key_exists($key, static::DEFAULTS))
+			Response::fail("Key $key is not allowed");
+
+		return self::set($key, static::DEFAULTS[$key], $for);
 	}
 
 	/**
@@ -123,8 +142,18 @@ class UserPrefs extends GlobalSettings {
 				$value = $value ? 1 : 0;
 			break;
 
-			case 'discord_token':
-				Response::fail("You cannot change the $key setting");
+			case 'a_pcgearn':
+			case 'a_postreq':
+			case 'a_postres':
+			case 'a_reserve':
+				if (Permission::insufficient('staff'))
+					Response::fail("You cannot change the $key setting");
+
+				$value = $value ? 1 : 0;
+			break;
+
+			case 'pcg_slots':
+				Response::fail("$key is an internal setting and cannot be modified by users");
 		}
 
 		return $value;
