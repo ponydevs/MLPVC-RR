@@ -176,8 +176,6 @@ class UserController extends Controller {
 			Response::fail('You cannot modify your own group');
 		if (!Permission::sufficient($targetUser->role))
 			Response::fail('You can only modify the group of users who are in the same or a lower-level group than you');
-		if ($targetUser->role === 'ban')
-			Response::fail('This user is banished, and must be un-banished before changing their group.');
 
 		$newgroup = (new Input('newrole',function($value){
 			if (empty(Permission::ROLES_ASSOC[$value]))
@@ -194,64 +192,6 @@ class UserController extends Controller {
 		$targetUser->updateRole($newgroup);
 
 		Response::done();
-	}
-
-	private function _banishAction($params, bool $banish){
-		CSRFProtection::protect();
-		if (Permission::insufficient('staff'))
-			Response::fail();
-
-		if (!isset($params['name']))
-			Response::fail('Missing username');
-
-		$Action = ($banish ? 'Ban' : 'Un-ban').'ish';
-		$action = strtolower($Action);
-
-		$targetUser = Users::get($params['name'], 'name');
-		if (empty($targetUser))
-			Response::fail('User not found');
-
-		if ($targetUser->id === Auth::$user->id)
-			Response::fail("You cannot $action yourself");
-		if (Permission::sufficient('staff', $targetUser->role))
-			Response::fail("You cannot $action people within the assistant or any higher group");
-		if ($action === 'banish' ? $targetUser->role === 'ban' : $targetUser->role !== 'ban')
-			Response::fail("This user has already been {$action}ed");
-
-		$reason = (new Input('reason','string', [
-			Input::IN_RANGE => [5,255],
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'Please specify a reason',
-				Input::ERROR_RANGE => 'Reason length must be between @min and @max characters'
-			]
-		]))->out();
-
-		if ($action === 'banish')
-			$targetUser->updateRole('ban', true);
-		else {
-			$clubRole = $targetUser->getClubRole();
-			if ($clubRole !== null)
-				$targetUser->updateRole($clubRole, true);
-			else $targetUser->updateRole('user', true);
-		}
-
-		Logs::logAction($action, [
-			'target' => $targetUser->id,
-			'reason' => $reason
-		]);
-
-		if ($action === 'banish')
-			Response::done();
-
-		Response::success("We welcome {$targetUser->name} back with open hooves!");
-	}
-
-	public function banish($params){
-		$this->_banishAction($params, true);
-	}
-
-	public function unbanish($params){
-		$this->_banishAction($params, false);
 	}
 
 	public function checkCGSlots($params){

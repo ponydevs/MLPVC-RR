@@ -56,7 +56,7 @@ $(function(){
 					<option value='' selected style='display:none'>Select one</option>
 					<optgroup label="Available roles">`;
 			$.each(ROLES_ASSOC, (name, label) => {
-				if (name === 'guest' || name === 'ban')
+				if (name === 'guest')
 					return;
 				roleSelect += `<option value="${name}">${label}</option>`;
 			});

@@ -2,7 +2,6 @@
 <?php
 use App\Auth;
 use App\CoreUtils;
-use App\Models\Logs\Banish;
 use App\Models\User;
 use App\Permission;
 use App\Time;
@@ -31,14 +30,8 @@ else {
 			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->toDALink()?>"><?=str_replace(' fill="#FFF"','',\App\File::get(APPATH.'img/da-logo.svg'))?></a><?=$User->getVectorAppIcon()?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server as @".CoreUtils::escapeHTML($discordmember->name)."'>":''?></h1>
 			<p><?php
 echo "<span class='rolelabel'>{$User->rolelabel}</span>";
-if ($canEdit){
-	echo ' <button id="change-role" class="blue typcn typcn-spanner'.($User->role==='ban'?' hidden':'').'" title="Change '.CoreUtils::posess($User->name).' group"></button>';
-	$BanLabel = ($User->role==='ban'?'Un-ban':'Ban').'ish';
-	$Icon = $User->role==='ban'?'world':'weather-night';
-	if (Permission::sufficient('staff', $User->role))
-		$Icon .= ' hidden';
-	echo ' <button id="ban-toggle" class="darkblue typcn typcn-'.$Icon.' '.strtolower($BanLabel).'" title="'."$BanLabel user".'"></button>';
-}
+if ($canEdit)
+	echo ' <button id="change-role" class="blue typcn typcn-spanner" title="Change '.CoreUtils::posess($User->name).' role"></button>';
 if (Permission::sufficient('developer'))
 	echo " &bullet; <span class='userid'>{$User->id}</span>", !empty($discordmember->id) ? " &bullet; <span class='discid'>{$discordmember->id}</span>" : '';
 			?></p>
@@ -70,34 +63,6 @@ if (Auth::$signed_in)
 	echo $User->getPendingReservationsHTML($sameUser, $isUserMember);
 if ($isUserMember)
 	echo $User->getAwaitingApprovalHTML($sameUser); ?>
-		<section class="bans">
-			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:''?>Banishment history</h2>
-			<ul><?php
-$Actions = ['Banish', 'Un-banish'];
-$Banishes = $User->banishments;
-if (!empty($Banishes)){
-	$Unbanishes = $User->unbanishments;
-	if (!empty($Unbanishes)){
-		$Banishes = array_merge($Banishes,$Unbanishes);
-		usort($Banishes, function(Banish $a, Banish $b){
-			$a = strtotime($a->log['timestamp']);
-			$b = strtotime($b->log['timestamp']);
-			return $a > $b ? -1 : ($a < $b ? 1 : 0);
-		});
-		unset($Unbanishes);
-	}
-
-	$displayInitiator = $isStaff;
-
-	foreach ($Banishes as $b){
-		$initiator = $displayInitiator ? $b->log->actor : null;
-		$reason = htmlspecialchars($b->reason);
-		$action = strtolower($Actions[$b instanceof Banish ? 0 : 1]);
-		echo "<li class='$action'><blockquote>{$reason}</blockquote> - ".(isset($initiator)?$initiator->toAnchor().' ':'').Time::tag($b->log->timestamp).'</li>';
-	}
-}
-			?></ul>
-		</section>
 	</div>
 	<div id="settings" class="section-container"><?php
 	if ($sameUser || $isStaff){ ?>
@@ -159,7 +124,7 @@ if ($canEdit){
 	$ROLES = [];
 	if ($canEdit){
 		$_Roles = Permission::ROLES_ASSOC;
-		unset($_Roles['guest'], $_Roles['ban']);
+		unset($_Roles['guest']);
 		foreach ($_Roles as $name => $label){
 			if (Permission::insufficient($name, Auth::$user->role))
 				continue;

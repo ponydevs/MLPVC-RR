@@ -11,8 +11,6 @@ use App\DB;
 use App\DeviantArt;
 use App\Exceptions\NoPCGSlotsException;
 use App\Logs;
-use App\Models\Logs\Banish;
-use App\Models\Logs\Unbanish;
 use App\Models\Logs\DANameChange;
 use App\NavBreadcrumb;
 use App\Pagination;
@@ -35,8 +33,6 @@ use App\Users;
  * @property DiscordMember    $discord_member   (Via relations)
  * @property Log[]            $logs             (Via relations)
  * @property DANameChange[]   $name_changes     (Via relations)
- * @property Banish[]         $banishments      (Via relations)
- * @property Unbanish[]       $unbanishments    (Via relations)
  * @property KnownIP[]        $known_ips        (Via relations)
  * @property PCGSlotHistory[] $pcg_slot_history (Via relations)
  * @property string           $rolelabel        (Via magic method)
@@ -54,8 +50,6 @@ class User extends AbstractUser implements LinkableInterface {
 		['pcg_appearances', 'class' => 'Appearance', 'foreign_key' => 'owner_id'],
 		['logs', 'class' => 'Logs\Log', 'foreign_key' => 'initiator'],
 		['name_changes', 'class' => 'Logs\DANameChange', 'order' => 'entryid asc'],
-		['banishments', 'class' => 'Logs\Banish', 'foreign_key' => 'target_id', 'order' => 'entryid desc'],
-		['unbanishments', 'class' => 'Logs\Unbanish', 'foreign_key' => 'target_id', 'order' => 'entryid desc'],
 		['known_ips', 'class' => 'KnownIP', 'order' => 'last_seen desc'],
 		['pcg_slot_history', 'class' => 'PCGSlotHistory', 'order' => 'created desc, id desc'],
 	];

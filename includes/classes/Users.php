@@ -196,9 +196,10 @@ HTML;
 		}
 
 		if (!empty(Auth::$user->id)){
-			if (Auth::$user->role === 'ban')
+			// TODO When re-implementing banning, this could be re-used
+			/* if (Auth::$user->role === 'ban')
 				Session::table()->delete(['user' => Auth::$user->id]);
-			else {
+			else { */
 				if (!Auth::$session->expired)
 					$tokenvalid = true;
 				else {
@@ -220,7 +221,7 @@ HTML;
 						Auth::$session->save();
 					}
 				}
-			}
+			//}
 		}
 		else Cookie::delete('access', Cookie::HTTPONLY);
 	}

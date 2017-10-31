@@ -129,32 +129,6 @@
 				}
 			}
 		}
-		.bans ul {
-			margin: 0;
-			padding: 0;
-			list-style: none;
-
-			&:empty:before {
-				content: "This user has no banishments on record.";
-			}
-
-			li {
-				display: block;
-				blockquote {
-					margin: 0;
-					padding: 3px;
-					display: inline-block;
-				}
-				&.banish blockquote {
-					color: $NRed;
-					background-color: $NRedBG;
-				}
-				&.un-banish blockquote {
-					color: $NGreen;
-					background-color: $NGreenBG;
-				}
-			}
-		}
 		.pending-reservations, .awaiting-approval {
 			ul { @extend %post-ul }
 		}

@@ -262,7 +262,8 @@ class DeviantArt {
 
 		/** @var $User Models\User */
 		$User = User::find($userdata['userid']);
-		if (isset($User->role) && $User->role === 'ban'){
+		// TODO When re-implementing banning, this can be re-used
+		/* if (isset($User->role) && $User->role === 'ban'){
 			$_GET['error'] = 'user_banned';
 			$BanReason = DB::$instance
 				->where('target', $User->id)
@@ -272,7 +273,7 @@ class DeviantArt {
 				$_GET['error_description'] = $BanReason['reason'];
 
 			return null;
-		}
+		} */
 
 		$UserID = strtolower($userdata['userid']);
 		$UserData = [

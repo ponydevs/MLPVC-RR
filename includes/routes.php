@@ -165,8 +165,6 @@ $router->map('POST', '/setting/get/[au:key]',                'SettingController#
 $router->map('POST', '/user/suggestion',                     'UserController#suggestion');
 $router->map('POST', '/user/sessiondel/[i:id]',              'UserController#sessionDel');
 $router->map('POST', '/user/setgroup/[un:name]',             'UserController#setGroup');
-$router->map('POST', '/user/banish/[un:name]',               'UserController#banish');
-$router->map('POST', '/user/un-banish/[un:name]',            'UserController#unbanish');
 $router->map('POST', '/user/awaiting-approval/[un:name]',    'UserController#awaitingApproval');
 $router->map('POST', '/user/avatar-wrap/[un:name]',          'UserController#avatarWrap');
 $router->map('POST', '/user/known-ips/[un:name]',            'UserController#knownIps');

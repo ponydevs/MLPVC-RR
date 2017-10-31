@@ -9,7 +9,6 @@ $(function(){
 		currRole = $currRole.text().trim(),
 		$RoleModFormTemplate = $.mk('form').attr('id','rolemod').html('<select name="newrole" required><optgroup label="Possible roles"></optgroup></select>'),
 		$OptGrp = $RoleModFormTemplate.find('optgroup'),
-		$banToggle = $('#ban-toggle'),
 		$changeRole = $('#change-role');
 
 	$.each(window.ROLES, (name,label) => {
@@ -38,41 +37,5 @@ $(function(){
 				}));
 			});
 		});
-	});
-	$banToggle.on('click',function(){
-		let Action = ($banToggle.hasClass('un-banish') ? 'Un-ban' : 'Ban')+'ish',
-			action = Action.toLowerCase(),
-			title = Action+'ing '+name+(action === 'banish' ? ' to the moon':'');
-		$.Dialog.request(
-			title,
-			$.mk('form',`${action}-form`).html(
-				`<p>${Action}ing ${name} will ${
-					action === 'banish'
-					? "immediately sign them out of every session and won’t allow them to log in again. Please, only do this if it’s absolutely necessary."
-					: "allow them to sign in to the site again."
-				}</p>
-				<p>You must provide a reason (5-255 chars.) for the ${action.replace(/ish$/,'')} which will be added to the log entry and appear in the user’s banishment history.</p>
-				<input type="text" name="reason" placeholder="Enter a reason" required pattern="^.{5,255}$" value="${Action}ing because ">
-				${action === 'banish'?'<img src="/img/pre-ban.svg" alt="Sad twilight">':''}`
-			),
-			Action,
-			$form => {
-				$form.on('submit', function(e){
-					e.preventDefault();
-
-					let data = $(this).mkData();
-					$.Dialog.wait(false, 'Gathering the Elements of Harmony');
-
-					$.post(`/user/${action}/${name}`, data, $.mkAjaxHandler(function(){
-						if (!this.status) return $.Dialog.fail(title,this.message);
-
-						let message = this.message;
-						if (action === 'banish')
-							message = '<p>What had to be done, has been done.</p><img src="/img/post-ban.svg">';
-						$.DIalog.segway(title, message);
-					}));
-				});
-			}
-		);
 	});
 });

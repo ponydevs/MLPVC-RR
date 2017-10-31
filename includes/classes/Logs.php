@@ -19,8 +19,6 @@ class Logs {
 		'episode_modify' => 'Episode modified',
 		'rolechange' => 'User group change',
 		'userfetch' => 'Fetch user details',
-		'banish' => 'User banished',
-		'unbanish' => 'User unbanished',
 		'post_lock' => 'Post approved',
 		'major_changes' => 'Major appearance update',
 		'req_delete' => 'Request deleted',
@@ -156,11 +154,6 @@ class Logs {
 			break;
 			case 'userfetch':
 				$details[] = ['User', User::find($data['userid'])->toAnchor()];
-			break;
-			case 'banish':
-			case 'unbanish':
-				$details[] = ['User', User::find($data['target_id'])->toAnchor()];
-				$details[] = ['Reason', CoreUtils::escapeHTML($data['reason'])];
 			break;
 			case 'post_lock':
 				/** @var $Post Request|Reservation */

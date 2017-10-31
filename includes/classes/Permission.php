@@ -4,7 +4,6 @@ namespace App;
 
 class Permission {
 	const ROLES_ASSOC = [
-		'ban'       => 'Banished User',
 		'guest'     => 'Guest',
 		'user'      => 'DeviantArt User',
 		'member'    => 'Club Member',
@@ -14,7 +13,6 @@ class Permission {
 		'developer' => 'Site Developer',
 	];
 	const ROLES = [
-		'ban'       => 0,
 		'guest'     => 1,
 		'user'      => 2,
 		'member'    => 3,
@@ -30,7 +28,7 @@ class Permission {
 	 * Compares the currenlty logged in user's role to the one specified
 	 * A "true" retun value means that the user meets the required role or surpasses it.
 	 * If user isn't logged in, and $compareAgainst is missing, returns false
-	 * If $compareAgainst isn't missing, compare it to $role
+	 * If $compareAgainst is set then $role is used as the current user's role
 	 *
 	 * @param string      $role
 	 * @param string|null $compareAgainst
