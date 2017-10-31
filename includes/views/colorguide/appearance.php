@@ -32,9 +32,10 @@ use App\Tags;
 	$FileModTime = '?t='.CoreUtils::filemtime($RenderPath); ?>
 	<div id="p<?=$Appearance->id?>" class="section-container">
 		<div class='align-center'>
-			<a class='btn link typcn typcn-image' href='/cg/v/<?="{$Appearance->id}p.png$FileModTime"?>' target='_blank'>View as PNG</a>
+			<a class='btn link typcn typcn-image' href='/cg/v/<?="{$Appearance->id}p.png$FileModTime".(!empty($_GET['token']) ? "&token={$_GET['token']}" : '')?>' target='_blank'>View as PNG</a>
 			<button class='getswatch typcn typcn-brush teal'>Download swatch file</button>
 <?  if ($isOwner || Permission::sufficient('staff')){ ?>
+			<button class='blue share typcn typcn-export' data-private="<?=$Appearance->private?1:0?>" data-url="<?=rtrim(ABSPATH,'/').$Appearance->toURL().($Appearance->private ? "?token={$Appearance->token}" : '')?>">Share</button>
 			<button class='darkblue edit typcn typcn-pencil'>Edit metadata</button>
 <?php   if ($Appearance->id){ ?>
 			<button class='red delete typcn typcn-trash'>Delete apperance</button>

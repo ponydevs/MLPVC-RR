@@ -29,6 +29,7 @@ use SeinopSys\RGBAColor;
  * @property DateTime            $last_cleared
  * @property bool                $ishuman
  * @property bool                $private
+ * @property string              $token
  * @property Cutiemark[]         $cutiemarks          (Via relations)
  * @property ColorGroup[]        $color_groups        (Via relations)
  * @property User|null           $owner               (Via relations)
@@ -120,7 +121,7 @@ class Appearance extends NSModel implements LinkableInterface {
 	public function getSpriteURL(int $size = self::SPRITE_SIZES['REGULAR'], string $fallback = ''):string {
 		$fpath = SPRITE_PATH."{$this->id}.png";
 		if (file_exists($fpath))
-			return "/cg/v/{$this->id}s.png?s=$size&t=".filemtime($fpath);
+			return "/cg/v/{$this->id}s.png?s=$size&t=".filemtime($fpath).(!empty($_GET['token']) ? "&token={$_GET['token']}" : '');
 		return $fallback;
 	}
 
@@ -314,9 +315,23 @@ class Appearance extends NSModel implements LinkableInterface {
 HTML;
 	}
 
+	public function veirfyToken(?string $token = null){
+		if ($token === null){
+			if (!isset($_GET['token']))
+				return false;
+			$token = $_GET['token'];
+		}
+
+		return hash_equals($this->token, $token);
+	}
+
 	public function isPrivate(bool $ignoreStaff = false):bool {
 		$isPrivate = !empty($this->private);
-		if (!$ignoreStaff && (Permission::sufficient('staff') || (Auth::$signed_in ? $this->owner_id === Auth::$user->id : false)))
+		if (!$ignoreStaff && (
+			Permission::sufficient('staff')
+			|| (Auth::$signed_in ? $this->owner_id === Auth::$user->id : false)
+			|| ($this->owner_id !== null && $this->veirfyToken())
+		))
 			$isPrivate = false;
 		return $isPrivate;
 	}
@@ -363,12 +378,15 @@ HTML;
 		if ($facing === null)
 			$facing = 'left';
 		$path = str_replace(['#','@'],[$this->id, $facing],CGUtils::CMDIR_SVG_PATH);
-		return "/cg/v/{$this->id}f.svg?facing=$facing".($ts?'&t='.CoreUtils::filemtime($path):'');
+		return "/cg/v/{$this->id}f.svg?facing=$facing".
+			($ts?'&t='.CoreUtils::filemtime($path):'').
+			(!empty($_GET['token']) ? "&token={$_GET['token']}" : '');
 	}
 
 	public function toURL():string {
 		$safeLabel = $this->getSafeLabel();
-		$owner = $this->owner_id !== null ? '/@'.User::find($this->owner_id)->name : '';
+		$pcg = $this->owner_id !== null;
+		$owner = $pcg ? '/@'.User::find($this->owner_id)->name : '';
 		return "$owner/cg/v/{$this->id}-$safeLabel";
 	}
 

@@ -96,7 +96,7 @@ class Cutiemark extends NSModel {
 	 * @return string|null
 	 */
 	public function getRenderedRelativeURL():?string {
-		return "/cg/cutiemark/{$this->id}.svg";
+		return "/cg/cutiemark/{$this->id}.svg".(!empty($_GET['token']) ? "?token={$_GET['token']}" : '');
 	}
 
 	/**
@@ -104,7 +104,8 @@ class Cutiemark extends NSModel {
 	 * @return string|null
 	 */
 	public function getRenderedURL():?string {
-		return $this->getRenderedRelativeURL().'?t='.CoreUtils::filemtime($this->getRenderedFilePath());
+		return $this->getRenderedRelativeURL().'?t='.CoreUtils::filemtime($this->getRenderedFilePath()).
+			(!empty($_GET['token']) ? "&token={$_GET['token']}" : '');
 	}
 
 	/**
@@ -126,6 +127,7 @@ class Cutiemark extends NSModel {
 		$facing = $this->facing !== null ? 'Facing '.CoreUtils::capitalize($this->facing) : 'Symmetrical';
 		$facingSVG = $this->getFacingSVGURL();
 		$preview = CoreUtils::aposEncode($this->getRenderedURL());
+		$token = !empty($_GET['token']) ? "?token={$_GET['token']}" : '';
 
 		$canEdit = Permission::sufficient('staff') || (Auth::$signed_in && $this->appearance->owner_id === Auth::$user->id);
 		$hasLabel = $this->label !== null;
@@ -133,10 +135,10 @@ class Cutiemark extends NSModel {
 		$title = "<span class='title'>$id".($hasLabel ? CoreUtils::escapeHTML($this->label) : $facing).'</span>';
 		$subtitle = $hasLabel ? "\n<span class='subtitle'>$facing</span>" : '';
 
-		$links = "<a href='/cg/cutiemark/download/{$this->id}' class='btn link typcn typcn-download'>SVG</a>";
+		$links = "<a href='/cg/cutiemark/download/{$this->id}$token' class='btn link typcn typcn-download'>SVG</a>";
 		if ($canEdit){
 			$who = ($this->appearance->owner_id !== null ? 'Owner and ' : '').'Staff';
-			$links .= "<a href='/cg/cutiemark/download/{$this->id}?source' class='btn orange typcn typcn-download' title='Download the original file as uploaded ($who only)'></a>";
+			$links .= "<a href='/cg/cutiemark/download/{$this->id}{$token}&source' class='btn orange typcn typcn-download' title='Download the original file as uploaded ($who only)'></a>";
 		}
 		if (($this->favme ?? null) !== null)
 			$links .= "<a href='http://fav.me/{$this->favme}' class='btn btn-da typcn'>Source</a>";

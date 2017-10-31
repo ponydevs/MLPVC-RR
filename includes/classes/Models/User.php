@@ -735,7 +735,7 @@ HTML;
 	public function getPCGBreadcrumb($active = false){
 		return (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'))->setChild(
 			(new NavBreadcrumb($this->name, $this->toURL()))->setChild(
-				(new NavBreadcrumb('Personal Color Guide', $this->toURL().'/cg'))->setActive($active)
+				(new NavBreadcrumb('Personal Color Guide', ($this->canVisitorSeePCG() ? $this->toURL().'/cg' : null)))->setActive($active)
 			)
 		);
 	}
@@ -744,5 +744,9 @@ HTML;
 		if ($showPrivate === null)
 			$showPrivate = (Auth::$signed_in && Auth::$user->id === $this->id) || Permission::sufficient('staff');
 		return $showPrivate ? "<a href='/@{$this->name}/cg/slot-history' class='btn darkblue typcn typcn-eye'>View slot history</a>" : '';
+	}
+
+	public function canVisitorSeePCG():bool {
+		return !UserPrefs::get('p_hidepcg', $this) && (Auth::$signed_in && (Auth::$user->id === $this->id || Permission::sufficient('staff')));
 	}
 }

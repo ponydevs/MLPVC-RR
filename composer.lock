@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c537de0db3fa5ac5f8c90d5bba88c00",
+    "content-hash": "00704bf0192019a953ab5d895b627ce7",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1228,23 +1228,23 @@
         },
         {
             "name": "robmorgan/phinx",
-            "version": "dev-custom-columns",
+            "version": "dev-edge",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/phinx.git",
-                "reference": "2d4c4c54b194651e49f3b91e9eb4f9477f2df3d2"
+                "reference": "c3af02454f8a9f522d201df0095f8ea516cb28d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/2d4c4c54b194651e49f3b91e9eb4f9477f2df3d2",
-                "reference": "2d4c4c54b194651e49f3b91e9eb4f9477f2df3d2",
+                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/c3af02454f8a9f522d201df0095f8ea516cb28d0",
+                "reference": "c3af02454f8a9f522d201df0095f8ea516cb28d0",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4",
-                "symfony/config": "~2.8|~3.0",
-                "symfony/console": "~2.8|~3.0",
-                "symfony/yaml": "~2.8|~3.0"
+                "symfony/config": "~2.8|~3.0|~4.0",
+                "symfony/console": "~2.8|~3.0|~4.0",
+                "symfony/yaml": "~2.8|~3.0|~4.0"
             },
             "require-dev": {
                 "cakephp/cakephp-codesniffer": "^3.0",
@@ -1315,9 +1315,9 @@
                 "phinx"
             ],
             "support": {
-                "source": "https://github.com/SeinopSys/phinx/tree/custom-columns"
+                "source": "https://github.com/SeinopSys/phinx/tree/edge"
             },
-            "time": "2017-10-21T15:54:31+00:00"
+            "time": "2017-10-31T17:55:00+00:00"
         },
         {
             "name": "s1lentium/iptools",

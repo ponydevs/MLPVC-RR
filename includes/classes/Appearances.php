@@ -78,7 +78,8 @@ class Appearances {
 				            ($Appearance->id!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
 			$safelabel = $Appearance->getSafeLabel();
 			$processedLabel = $Appearance->processLabel();
-			$HTML .= "<li id='p{$Appearance->id}'>$img<div><strong><a href='$personalp/cg/{$eqgp}v/{$Appearance->id}-$safelabel'>$processedLabel</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
+			$privlock = $Appearance->private ? "<span class='typcn typcn-lock-closed color-orange'></span> " : '';
+			$HTML .= "<li id='p{$Appearance->id}'>$img<div><strong>$privlock<a href='{$Appearance->toURL()}'>$processedLabel</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 		}
 		else {
 			if (empty($_MSG))

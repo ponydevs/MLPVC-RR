@@ -162,6 +162,9 @@ class ColorGuideController extends Controller {
 			$this->_initialize($params);
 		$this->_getAppearance($params);
 
+		if ($this->_appearance->isPrivate())
+			CoreUtils::notFound();
+
 		switch ($params['ext']){
 			case 'png':
 				switch ($params['type']){
@@ -212,6 +215,9 @@ class ColorGuideController extends Controller {
 			$this->_isOwnedByUser = false;
 			$this->_initCGPath();
 		}
+
+		if ($this->_appearance->private && $this->_appearance->isPrivate())
+			CoreUtils::notFound();
 
 		$SafeLabel = $this->_appearance->getSafeLabel();
 		CoreUtils::fixPath("$this->_cgPath/v/{$this->_appearance->id}-$SafeLabel");
@@ -467,6 +473,9 @@ class ColorGuideController extends Controller {
 
 	public function personalGuide($params){
 		$this->_initPersonal($params);
+
+		if ($this->_ownedBy->canVisitorSeePCG())
+			CoreUtils::noPerm();
 
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
 	    $_EntryCount = $this->_ownedBy->getPCGAppearanceCount();
@@ -2159,7 +2168,7 @@ HTML;
 
 	public function cutiemarkView($params){
 		$cutiemark = Cutiemark::find($params['id']);
-		if (empty($cutiemark))
+		if (empty($cutiemark) || $cutiemark->appearance->isPrivate())
 			CoreUtils::notFound();
 
 		CGUtils::renderCMSVG($cutiemark);
@@ -2167,7 +2176,7 @@ HTML;
 
 	public function cutiemarkDownload($params){
 		$cutiemark = Cutiemark::find($params['id']);
-		if (empty($cutiemark))
+		if (empty($cutiemark) || $cutiemark->appearance->isPrivate())
 			CoreUtils::notFound();
 
 		$source = isset($_REQUEST['source']) && Permission::sufficient('staff');

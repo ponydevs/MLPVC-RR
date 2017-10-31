@@ -359,7 +359,7 @@ HTML;
 	<tr class="change-$dir">
 		<td>$type</td>
 		<td>$data</td>
-		<td class="amt">$amount</td>
+		<td>$amount</td>
 		<td><span class="typcn typcn-time"></span> $when</td>
 HTML;
 			};
@@ -367,7 +367,7 @@ HTML;
 			return $HTML;
 
 		return <<<HTML
-<div class="responsive-table">
+<div class="">
 <table id='history-entries'>
 	<thead>
 		<th>Reason</th>
@@ -377,7 +377,6 @@ HTML;
 	</thead>
 	<tbody>$HTML</tbody>
 </table>
-</div>
 HTML;
 	}
 
