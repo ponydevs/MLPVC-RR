@@ -322,7 +322,6 @@ HTML;
 					return $post->toAnchor($label);
 
 				return "$label <span class='color-red typcn typcn-trash' title='Deleted'></span>";
-			break;
 			case 'appearance_add':
 			case 'appearance_del':
 				/** @var $appearance Appearance|null */
@@ -332,7 +331,6 @@ HTML;
 					return $appearance->toAnchorWithPreview();
 
 				return "$label <span class='color-red typcn typcn-trash' title='Deleted'></span>";
-			break;
 			default:
 				return '<pre>'.htmlspecialchars(JSON::encode($data, JSON_PRETTY_PRINT)).'</pre>';
 		}

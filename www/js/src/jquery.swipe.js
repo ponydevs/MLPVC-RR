@@ -4,7 +4,7 @@
 (function($){
 	'use strict';
 
-	$.fn.swipe = function(callback, filter){
+	$.fn.swipe = function(callback){
 		let touchDown = false,
 			originalPosition = null,
 			$el = $(this);
