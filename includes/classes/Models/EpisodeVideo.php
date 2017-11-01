@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\CoreUtils;
+use App\JSON;
+use App\Response;
 use App\Time;
 use App\VideoProvider;
 
@@ -31,10 +33,15 @@ class EpisodeVideo extends NSModel {
 				return false;
 		}
 
-		$url = VideoProvider::getEmbed($this, VideoProvider::URL_ONLY);
-		if ($this->provider === 'yt')
-			$url = "http://www.youtube.com/oembed?url=$url";
-		$broken = !CoreUtils::isURLAvailable($url);
+		switch ($this->provider){
+			case 'yt':
+				$url = VideoProvider::getEmbed($this, VideoProvider::URL_ONLY);
+				$broken = !CoreUtils::isURLAvailable('http://www.youtube.com/oembed?url='.urlencode($url));
+			break;
+			case 'dm':
+				$broken = !CoreUtils::isURLAvailable("https://api.dailymotion.com/video/{$this->id}");
+			break;
+		}
 
 		if (!$broken){
 			$this->not_broken_at = date('c');

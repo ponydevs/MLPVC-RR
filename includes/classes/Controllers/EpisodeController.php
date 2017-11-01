@@ -518,7 +518,7 @@ class EpisodeController extends Controller {
 		$this->_getEpisode($params);
 
 		$removed = 0;
-		foreach ($this->_episode->videos as $video){
+		foreach ($this->_episode->videos as $k => $video){
 			if (!$video->isBroken())
 				continue;
 
@@ -530,6 +530,7 @@ class EpisodeController extends Controller {
 				'provider' => $video->provider,
 				'id' => $video->id,
 			]);
+			unset($this->_episode->videos[$k]);
 		}
 
 		if ($removed === 0)
