@@ -223,7 +223,7 @@ class PostController extends Controller {
 
 				CoreUtils::checkDeviationInClub($this->_post->deviation_id);
 
-				Posts::approve($thing, $this->_post->id, !$isUserReserver ? $this->_post->reserved_by : null);
+				Posts::approve($thing, $this->_post->id);
 
 				$this->_post->lock = true;
 				$response = [
@@ -244,14 +244,6 @@ class PostController extends Controller {
 				if ($isUserReserver)
 					$response['message'] .= ' '.self::CONTRIB_THANKS;
 
-				if (UserPrefs::get('a_pcgearn', $this->_post->reserver)){
-					PCGSlotHistory::makeRecord($this->_post->reserver->id, 'post_approved', null, [
-						'type' => $this->_post->kind,
-						'id' => $this->_post->id,
-					], $this->_post->posted_at);
-					$this->_post->reserver->syncPCGSlotCount();
-				}
-
 				Response::done($response);
 			break;
 			case 'unlock':
@@ -265,6 +257,11 @@ class PostController extends Controller {
 
 				$this->_post->lock = false;
 				$this->_post->save();
+
+				PCGSlotHistory::makeRecord($this->_post->reserved_by, 'post_unapproved', null, [
+					'type' => $this->_post->kind,
+					'id' => $this->_post->id,
+				]);
 
 				try {
 					CoreUtils::socketEvent('post-update',[

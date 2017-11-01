@@ -314,7 +314,7 @@ HTML;
 		$data = JSON::decode($data);
 		switch ($type){
 			case 'post_approved':
-			case 'post_removed':
+			case 'post_unapproved':
 				/** @var $post Post|null */
 				$post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				$label = ucwords($data['type'])." #{$data['id']}";

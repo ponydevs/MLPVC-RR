@@ -1078,7 +1078,8 @@ HTML;
 			'context' => [
 				'http' => [
 					'header' => 'Cookie: access='.urlencode(WS_SERVER_KEY)
-				]
+				],
+				'ssl' => defined('SOCKET_SSL_CTX') ? SOCKET_SSL_CTX : [],
 			]
 		]));
 

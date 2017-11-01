@@ -317,7 +317,7 @@ HTML;
 				PCGSlotHistory::makeRecord($this->id, 'post_approved', null, [
 					'type' => $post->kind,
 					'id' => $post->id,
-				], $post->posted_at);
+				], $post->approval_entry->timestamp);
 			}
 
 		foreach ($this->pcg_appearances as $appearance){

@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Episode;
 use App\Models\Notification;
+use App\Models\PCGSlotHistory;
 use App\Models\Post;
 use App\Models\Request;
 use App\Models\Reservation;
@@ -714,11 +715,8 @@ HTML;
 	 *
 	 * @param string $type         request/reservation
 	 * @param int    $id           post id
-	 * @param string $notifyUserID id of user to notify
-	 *
-	 * @return array
 	 */
-	public static function approve($type, $id, $notifyUserID = null){
+	public static function approve($type, $id){
 		if (!DB::$instance->where('id', $id)->update("{$type}s", ['lock' => true]))
 			Response::dbError();
 
@@ -727,10 +725,19 @@ HTML;
 			'id' => $id
 		];
 		Logs::logAction('post_lock',$postdata);
-		if (!empty($notifyUserID))
-			Notification::send($notifyUserID, 'post-approved', $postdata);
 
-		return $postdata;
+		/** @var $Post Post */
+		$Post = DB::$instance->where('id', $id)->getOne("{$type}s");
+		if (UserPrefs::get('a_pcgearn', $Post->reserver)){
+			PCGSlotHistory::makeRecord($Post->reserver->id, 'post_approved', null, [
+				'type' => $Post->kind,
+				'id' => $Post->id,
+			]);
+			$Post->reserver->syncPCGSlotCount();
+		}
+
+		if ($Post->reserved_by !== Auth::$user->id)
+			Notification::send($Post->reserved_by, 'post-approved', $postdata);
 	}
 
 	public static function checkReserveAs(&$update){

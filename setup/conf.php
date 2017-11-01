@@ -26,3 +26,4 @@
 
 	// Development
 	//define('MAINTENANCE_START', strtotime(''));
+	define('SOCKET_SSL_CTX', [ 'verify_peer' => false ]);

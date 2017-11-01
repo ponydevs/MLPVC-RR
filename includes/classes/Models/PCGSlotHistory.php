@@ -22,7 +22,7 @@ class PCGSlotHistory extends NSModel {
 	// true = +, false = -
 	const VALID_CHANGE_TYPES = [
 		'post_approved' => true,
-		'post_removed' => false,
+		'post_unapproved' => false,
 		'staff_member' => true, // Assigned on initial import to avoid showing a "joined" entry out of nowhere
 		'staff_join' => true,
 		'staff_leave' => false,
@@ -34,7 +34,7 @@ class PCGSlotHistory extends NSModel {
 
 	const CHANGE_DESC = [
 		'post_approved' => 'Post approved',
-		'post_removed' => 'Post removed',
+		'post_unapproved' => 'Post un-approved',
 		'staff_member' => 'Being staff',
 		'staff_join' => 'Joined staff',
 		'staff_leave' => 'Left staff',

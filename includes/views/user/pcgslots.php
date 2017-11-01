@@ -8,7 +8,7 @@ use App\Tags;
 /** @var $User \App\Models\User */
 /** @var $isOwner bool */ ?>
 <div id="content">
-	<h1><?=$heading?></h1>
+	<h1><?=$User->toAnchor().CoreUtils::posess($User->name, true)?> Slot History</h1>
 	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
 
 <?php   if (\App\Permission::sufficient('developer')){ ?>
