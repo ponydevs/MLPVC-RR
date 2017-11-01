@@ -41,6 +41,8 @@ class EpisodeVideo extends NSModel {
 			case 'dm':
 				$broken = !CoreUtils::isURLAvailable("https://api.dailymotion.com/video/{$this->id}");
 			break;
+			default:
+				throw new \RuntimeException("No breakage check defined for provider {$this->provider}");
 		}
 
 		if (!$broken){
