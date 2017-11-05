@@ -507,10 +507,9 @@ $(function(){
 	let postHashRegex = /^#(request|reservation)-\d+$/,
 		showdialog = location.hash.length > 1 && postHashRegex.test(location.hash);
 
-	if (showdialog){
+	if (showdialog)
 		$.Dialog.wait('Scroll post into view', 'Waiting for images to load');
-		directLinkHandler();
-	}
+	directLinkHandler();
 
 	let reloading = {};
 	$.fn.reloadLi = function(log = true, callback = undefined){

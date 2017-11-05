@@ -44,7 +44,7 @@ class PostController extends Controller {
 		$thing = $params['thing'];
 		$this->_initPost(null, $params);
 
-		if (!isset($this->_post->deviation_id) && !DeviantArt::isImageAvailable($this->_post->fullsize, [404])){
+		if ($this->_post->deviation_id === null && (!DeviantArt::isImageAvailable($this->_post->fullsize, [404]) || !DeviantArt::isImageAvailable($this->_post->preview, [404]))){
 			$update = ['broken' => 1 ];
 			if ($this->_post->is_request && $this->_post->reserved_by !== null){
 				$oldreserver = $this->_post->reserved_by;

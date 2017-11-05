@@ -76,7 +76,8 @@ CREATE TABLE appearances (
     private boolean DEFAULT false NOT NULL,
     owner_id uuid,
     last_cleared timestamp with time zone DEFAULT now(),
-    notes_rend text
+    notes_rend text,
+    token uuid DEFAULT uuid_generate_v4() NOT NULL
 );
 
 
@@ -541,40 +542,6 @@ ALTER TABLE log__appearances_entryid_seq OWNER TO "mlpvc-rr";
 --
 
 ALTER SEQUENCE log__appearances_entryid_seq OWNED BY log__appearances.entryid;
-
-
---
--- Name: log__banish; Type: TABLE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE TABLE log__banish (
-    entryid integer NOT NULL,
-    target_id uuid NOT NULL,
-    reason character varying(255) NOT NULL
-);
-
-
-ALTER TABLE log__banish OWNER TO "mlpvc-rr";
-
---
--- Name: log__banish_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE SEQUENCE log__banish_entryid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE log__banish_entryid_seq OWNER TO "mlpvc-rr";
-
---
--- Name: log__banish_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
---
-
-ALTER SEQUENCE log__banish_entryid_seq OWNED BY log__banish.entryid;
 
 
 --
@@ -1197,23 +1164,25 @@ ALTER SEQUENCE log__rolechange_entryid_seq OWNED BY log__rolechange.entryid;
 
 
 --
--- Name: log__unbanish; Type: TABLE; Schema: public; Owner: mlpvc-rr
+-- Name: log__staff_limits; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE TABLE log__unbanish (
+CREATE TABLE log__staff_limits (
     entryid integer NOT NULL,
-    target_id uuid NOT NULL,
-    reason character varying(255) NOT NULL
+    setting character varying(50) NOT NULL,
+    allow boolean NOT NULL,
+    user_id uuid NOT NULL
 );
 
 
-ALTER TABLE log__unbanish OWNER TO "mlpvc-rr";
+ALTER TABLE log__staff_limits OWNER TO "mlpvc-rr";
 
 --
--- Name: log__unbanish_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+-- Name: log__staff_limits_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
 --
 
-CREATE SEQUENCE log__unbanish_entryid_seq
+CREATE SEQUENCE log__staff_limits_entryid_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1221,13 +1190,13 @@ CREATE SEQUENCE log__unbanish_entryid_seq
     CACHE 1;
 
 
-ALTER TABLE log__unbanish_entryid_seq OWNER TO "mlpvc-rr";
+ALTER TABLE log__staff_limits_entryid_seq OWNER TO "mlpvc-rr";
 
 --
--- Name: log__unbanish_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+-- Name: log__staff_limits_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER SEQUENCE log__unbanish_entryid_seq OWNED BY log__unbanish.entryid;
+ALTER SEQUENCE log__staff_limits_entryid_seq OWNED BY log__staff_limits.entryid;
 
 
 --
@@ -1356,6 +1325,44 @@ ALTER TABLE notifications_id_seq OWNER TO "mlpvc-rr";
 --
 
 ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
+
+
+--
+-- Name: pcg_slot_history; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE pcg_slot_history (
+    id integer NOT NULL,
+    user_id uuid NOT NULL,
+    change_type character varying(15) NOT NULL,
+    change_data jsonb,
+    change_amount real NOT NULL,
+    created timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE pcg_slot_history OWNER TO "mlpvc-rr";
+
+--
+-- Name: pcg_slot_history_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE pcg_slot_history_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE pcg_slot_history_id_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: pcg_slot_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE pcg_slot_history_id_seq OWNED BY pcg_slot_history.id;
 
 
 --
@@ -1719,13 +1726,6 @@ ALTER TABLE ONLY log__appearances ALTER COLUMN entryid SET DEFAULT nextval('log_
 
 
 --
--- Name: log__banish entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__banish ALTER COLUMN entryid SET DEFAULT nextval('log__banish_entryid_seq'::regclass);
-
-
---
 -- Name: log__cg_modify entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1845,10 +1845,10 @@ ALTER TABLE ONLY log__rolechange ALTER COLUMN entryid SET DEFAULT nextval('log__
 
 
 --
--- Name: log__unbanish entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+-- Name: log__staff_limits entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY log__unbanish ALTER COLUMN entryid SET DEFAULT nextval('log__unbanish_entryid_seq'::regclass);
+ALTER TABLE ONLY log__staff_limits ALTER COLUMN entryid SET DEFAULT nextval('log__staff_limits_entryid_seq'::regclass);
 
 
 --
@@ -1870,6 +1870,13 @@ ALTER TABLE ONLY log__video_broken ALTER COLUMN entryid SET DEFAULT nextval('log
 --
 
 ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notifications_id_seq'::regclass);
+
+
+--
+-- Name: pcg_slot_history id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY pcg_slot_history ALTER COLUMN id SET DEFAULT nextval('pcg_slot_history_id_seq'::regclass);
 
 
 --
@@ -2028,14 +2035,6 @@ ALTER TABLE ONLY log__appearances
 
 
 --
--- Name: log__banish log__banish_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__banish
-    ADD CONSTRAINT log__banish_pkey PRIMARY KEY (entryid);
-
-
---
 -- Name: log__cg_modify log__cg_modify_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2172,11 +2171,11 @@ ALTER TABLE ONLY log__rolechange
 
 
 --
--- Name: log__unbanish log__unbanish_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+-- Name: log__staff_limits log__staff_limits_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
-ALTER TABLE ONLY log__unbanish
-    ADD CONSTRAINT log__unbanish_pkey PRIMARY KEY (entryid);
+ALTER TABLE ONLY log__staff_limits
+    ADD CONSTRAINT log__staff_limits_pkey PRIMARY KEY (entryid);
 
 
 --
@@ -2209,6 +2208,14 @@ ALTER TABLE ONLY log
 
 ALTER TABLE ONLY notifications
     ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pcg_slot_history pcg_slot_history_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY pcg_slot_history
+    ADD CONSTRAINT pcg_slot_history_pkey PRIMARY KEY (id);
 
 
 --
@@ -2376,13 +2383,6 @@ CREATE INDEX log__appearance_modify_appearance_id ON log__appearance_modify USIN
 
 
 --
--- Name: log__banish_target_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
---
-
-CREATE INDEX log__banish_target_id ON log__banish USING btree (target_id);
-
-
---
 -- Name: log__cg_modify_appearance_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2450,13 +2450,6 @@ CREATE INDEX log__major_changes_appearance_id ON log__major_changes USING btree 
 --
 
 CREATE INDEX log__rolechange_target ON log__rolechange USING btree (target);
-
-
---
--- Name: log__unbanish_target_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
---
-
-CREATE INDEX log__unbanish_target_id ON log__unbanish USING btree (target_id);
 
 
 --
@@ -2680,27 +2673,11 @@ ALTER TABLE ONLY known_ips
 
 
 --
--- Name: log__banish log__banish_target_id; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__banish
-    ADD CONSTRAINT log__banish_target_id FOREIGN KEY (target_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
 -- Name: log__da_namechange log__da_namechange_user_id; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
 ALTER TABLE ONLY log__da_namechange
     ADD CONSTRAINT log__da_namechange_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
--- Name: log__unbanish log__unbanish_target_id; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY log__unbanish
-    ADD CONSTRAINT log__unbanish_target_id FOREIGN KEY (target_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
