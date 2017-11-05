@@ -136,7 +136,7 @@ $(function(){
 
 			$.Dialog.wait(false, 'Signing out');
 
-			$.post('/da-auth/signout?everywhere',{username:name},$.mkAjaxHandler(function(){
+			$.post('/da-auth/signout?everywhere',{name},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Navigation.reload(true);

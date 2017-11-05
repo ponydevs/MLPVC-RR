@@ -68,7 +68,8 @@ class AuthController extends Controller {
 	}
 
 	public function signout(){
-		if (!Auth::$signed_in) Response::success("You've already signed out");
+		if (!Auth::$signed_in)
+			Response::success("You've already signed out");
 		CSRFProtection::protect();
 
 		$unlink = isset($_REQUEST['unlink']);
@@ -84,7 +85,7 @@ class AuthController extends Controller {
 		if (isset($_REQUEST['everywhere'])){
 			$col = 'user_id';
 			$val = Auth::$user->id;
-			$username = Users::validateName('username', null, true);
+			$username = Users::validateName('name');
 			if ($username !== null){
 				if ($unlink || !Permission::sufficient('staff'))
 					Response::fail();

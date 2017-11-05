@@ -293,7 +293,7 @@ HTML;
 		return 10-($postcount % 10);
 	}
 
-	public static function validateName($key, $errors, $method_get = false, $silent_fail = false){
+	public static function validateName($key, $errors = null, $method_get = false, $silent_fail = false){
 		return (new Input($key,'username', [
 			Input::IS_OPTIONAL => true,
 			Input::SOURCE => $method_get ? 'GET' : 'POST',
