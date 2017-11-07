@@ -303,9 +303,10 @@ HTML;
 	public function getPCGAvailableSlots(bool $throw = true):float {
 		$slotcount = UserPrefs::get('pcg_slots', $this);
 		if ($slotcount !== null){
-			if ($throw && $slotcount === 0)
+			$slotcount = (float)$slotcount;
+			if ($throw && $slotcount === 0.0)
 				throw new NoPCGSlotsException();
-			return (float)$slotcount;
+			return $slotcount;
 		}
 
 		// We need to calculate the available slots
