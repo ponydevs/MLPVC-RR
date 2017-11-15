@@ -715,7 +715,7 @@ HTML;
 			FROM color_groups cg
 			LEFT JOIN colors c on c.group_id = cg.id
 			WHERE cg.appearance_id = ?
-			ORDER BY cg.label ASC, c.label ASC', [$this->id]);
+			ORDER BY cg.order ASC, c.label ASC', [$this->id]);
 
 		$ColorMapping = [];
 		foreach ($Colors as $row){
