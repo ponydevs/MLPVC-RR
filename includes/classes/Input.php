@@ -23,9 +23,10 @@ class Input {
 		'timestamp' => true,
 		'epid' => true,
 		'svg_file' => true,
+		'role' => true,
 	];
 
-	const
+	public const
 		IS_OPTIONAL = 'optional',
 		SILENT_FAILURE = 'silent',
 		CUSTOM_ERROR_MESSAGES = 'errors',
@@ -226,6 +227,10 @@ class Input {
 							return $result;
 					break;
 				}
+			break;
+			case 'role':
+				if (empty(Permission::ROLES_ASSOC[$this->_origValue]))
+					return self::ERROR_INVALID;
 			break;
 		}
 

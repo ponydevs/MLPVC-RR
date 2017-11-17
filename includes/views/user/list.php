@@ -14,7 +14,7 @@ if (!empty($Users)){
 	foreach ($Users as $u){
 		if (!isset($Arranged[$u->role])) $Arranged[$u->role] = [];
 
-		$Arranged[$u->role][] = $u;
+		$Arranged[$u->maskedRole()][] = $u;
 	}
 	foreach (array_reverse(Permission::ROLES) as $r => $v){
 		if (empty($Arranged[$r])) continue;

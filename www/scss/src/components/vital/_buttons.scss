@@ -1,18 +1,15 @@
-button, .btn, input[type=button] {
+$btnpadding: 3px;
+button, .btn, input[type=button], .inline-btn {
 	position: relative;
 	display: inline-block;
-	margin: 5px 2.5px;
+	$hmargin: 2px;
+	margin-left: $hmargin;
+	margin-right: $hmargin;
 	$border: 2px;
 	border: $border solid transparent;
 	border-radius: 3px;
-	color: #fff;
-	background-color: #777;
-	$vpadding: 3px;
-	padding: $vpadding 5px;
-	font-family: $RegularFont;
-	$fontsize: 17px;
-	font-size: $fontsize;
-	line-height: $fontsize;
+	padding-left: $btnpadding;
+	padding-right: $btnpadding;
 	text-decoration: none;
 	user-select: none;
 	opacity: .85;
@@ -20,12 +17,30 @@ button, .btn, input[type=button] {
 	box-sizing: border-box;
 	transform-origin: 50% 50%;
 	-webkit-appearance: none;
-	vertical-align: bottom;
+	will-change: transform;
 
 	&::-moz-focus-inner {
 		padding: 0 !important;
 		border: 0 none !important;
 	}
+
+	&:hover, &:focus { opacity: 1 }
+	&:focus { border-color: rgba(black, .3) }
+	&:active { transform: scale(.98) }
+}
+button, .btn, input[type=button] {
+	$vmargin: 5px;
+	margin-top: $vmargin;
+	margin-bottom: $vmargin;
+	color: #fff;
+	background-color: #777;
+	padding-top: $btnpadding;
+	padding-bottom: $btnpadding;
+	font-family: $RegularFont;
+	$fontsize: 17px;
+	font-size: $fontsize;
+	line-height: $fontsize;
+	vertical-align: bottom;
 
 	&.large {
 		$fontsize: 22px;
@@ -68,7 +83,7 @@ button, .btn, input[type=button] {
 		color: lighten($LinkHoverLight,5) !important;
 		background-color: $Link !important;
 	}
-	&:hover, &:focus { opacity: 1 }
-	&:focus { border-color: rgba(black, .2) }
-	&:active { transform: scale(.98) }
+}
+.inline-btn {
+	background: rgba(black, .1);
 }

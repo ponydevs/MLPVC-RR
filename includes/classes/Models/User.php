@@ -10,12 +10,14 @@ use App\CoreUtils;
 use App\DB;
 use App\DeviantArt;
 use App\Exceptions\NoPCGSlotsException;
+use App\GlobalSettings;
 use App\Logs;
 use App\Models\Logs\DANameChange;
 use App\NavBreadcrumb;
 use App\Pagination;
 use App\Permission;
 use App\Posts;
+use App\RegExp;
 use App\Response;
 use App\Time;
 use App\UserPrefs;
@@ -749,5 +751,13 @@ HTML;
 
 	public function canVisitorSeePCG():bool {
 		return Permission::sufficient('staff') || (!UserPrefs::get('p_hidepcg', $this) && (Auth::$signed_in && Auth::$user->id === $this->id));
+	}
+
+	public function maskedRole():string {
+		return $this->role !== 'developer' ? $this->role : GlobalSettings::get('dev_rolelabel');
+	}
+
+	public function maskedRoleLabel():string {
+		return Permission::ROLES_ASSOC[$this->maskedRole()];
 	}
 }

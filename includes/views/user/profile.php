@@ -11,6 +11,7 @@ use App\Users;
 /** @var $User User */
 /** @var $sameUser bool */
 /** @var $canEdit bool */
+/** @var $devOnDev bool */
 /** @var $Sessions \App\Models\Session[] */
 /** @var $CurrentSession \App\Models\Session|null */
 
@@ -29,7 +30,9 @@ else {
 		<div class="title">
 			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->toDALink()?>"><?=str_replace(' fill="#FFF"','',\App\File::get(APPATH.'img/da-logo.svg'))?></a><?=$User->getVectorAppIcon()?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server as @".CoreUtils::escapeHTML($discordmember->name)."'>":''?></h1>
 			<p><?php
-echo "<span class='rolelabel'>{$User->rolelabel}</span>";
+echo "<span class='rolelabel'>{$User->maskedRoleLabel()}</span>";
+if ($devOnDev)
+	echo ' <span id="change-dev-role-mask" class="inline-btn typcn typcn-edit" title="Change developer\'s displayed role"></span>';
 if ($canEdit)
 	echo ' <button id="change-role" class="blue typcn typcn-spanner" title="Change '.CoreUtils::posess($User->name).' role"></button>';
 if (Permission::sufficient('developer'))
@@ -120,7 +123,7 @@ if ($isUserMember)
 </div>
 
 <?php
-if ($canEdit){
+if ($canEdit || $devOnDev){
 	$ROLES = [];
 	if ($canEdit){
 		$_Roles = Permission::ROLES_ASSOC;
@@ -131,6 +134,8 @@ if ($canEdit){
 			$ROLES[$name] = $label;
 		}
 	}
+	else if ($devOnDev)
+		$ROLES = Permission::ROLES_ASSOC;
 	echo CoreUtils::exportVars([
 		'ROLES' => $ROLES,
 	]);

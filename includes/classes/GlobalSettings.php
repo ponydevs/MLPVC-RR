@@ -8,6 +8,7 @@ class GlobalSettings {
 	const DEFAULTS = [
 		'reservation_rules' => '',
 		'about_reservations' => '',
+		'dev_rolelabel' => 'developer',
 	];
 
 	/**

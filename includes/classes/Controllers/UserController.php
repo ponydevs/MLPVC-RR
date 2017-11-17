@@ -6,6 +6,7 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
 use App\DeviantArt;
+use App\GlobalSettings;
 use App\HTTP;
 use App\Input;
 use App\Logs;
@@ -56,13 +57,14 @@ class UserController extends Controller {
 					$SubMSG = "If this user $exists, sign in to import their details.";
 				}
 			}
-			$canEdit = $sameUser = false;
+			$canEdit = $sameUser = $devOnDev = false;
 		}
 		else {
-			$sameUser = Auth::$signed_in && $User->id === Auth::$user->id;
-			$canEdit = !$sameUser && Permission::sufficient('staff') && Permission::sufficient($User->role);
 			$pagePath = "/@{$User->name}";
 			CoreUtils::fixPath($pagePath);
+			$sameUser = Auth::$signed_in && $User->id === Auth::$user->id;
+			$canEdit = !$sameUser && Permission::sufficient('staff') && Permission::sufficient($User->role);
+			$devOnDev = Permission::sufficient('developer') && Permission::sufficient('developer', $User->role);
 		}
 
 		$CurrentSessionID = null;
@@ -83,6 +85,7 @@ class UserController extends Controller {
 				'User' => $User,
 				'canEdit' => $canEdit,
 				'sameUser' => $sameUser,
+				'devOnDev' => $devOnDev,
 				'Sessions' => $Sessions ?? null,
 			],
 		];
@@ -92,7 +95,7 @@ class UserController extends Controller {
 			$settings['import']['MSG'] = $MSG;
 		if ($SubMSG !== null)
 			$settings['import']['SubMSG'] = $SubMSG;
-		if ($canEdit)
+		if ($canEdit || $devOnDev)
 			$settings['js'][] = 'pages/user/manage';
 		$showSuggestions = $sameUser;
 		if ($showSuggestions){
@@ -160,7 +163,7 @@ class UserController extends Controller {
 		Response::success('Session successfully removed');
 	}
 
-	public function setGroup($params){
+	public function setRole($params){
 		CSRFProtection::protect();
 		if (Permission::insufficient('staff'))
 			Response::fail();
@@ -177,19 +180,33 @@ class UserController extends Controller {
 		if (!Permission::sufficient($targetUser->role))
 			Response::fail('You can only modify the group of users who are in the same or a lower-level group than you');
 
-		$newgroup = (new Input('newrole',function($value){
-			if (empty(Permission::ROLES_ASSOC[$value]))
-				return Input::ERROR_INVALID;
-		}, [
+		$newrole = (new Input('newrole','role', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'The new group is not specified',
 				Input::ERROR_INVALID => 'The specified group (@value) does not exist',
 			]
 		]))->out();
-		if ($targetUser->role === $newgroup)
+		if ($targetUser->role === $newrole)
 			Response::done(['already_in' => true]);
 
-		$targetUser->updateRole($newgroup);
+		$targetUser->updateRole($newrole);
+
+		Response::done();
+	}
+
+	public function setDevRoleMask(){
+		CSRFProtection::protect();
+		if (Permission::insufficient('developer'))
+			Response::fail();
+
+		$newrole = (new Input('newrole','role', [
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_MISSING => 'The new group is not specified',
+				Input::ERROR_INVALID => 'The specified group (@value) does not exist',
+			]
+		]))->out();
+
+		GlobalSettings::set('dev_rolelabel', $newrole);
 
 		Response::done();
 	}
