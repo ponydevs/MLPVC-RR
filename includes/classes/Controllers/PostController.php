@@ -659,8 +659,8 @@ class PostController extends Controller {
 
 		$PreviousAttempts = Posts::getTransferAttempts($this->_post, Auth::$user);
 
-		if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]['read_at']))
-			Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]['sent_at']).', please wait for them to respond.');
+		if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]->read_at))
+			Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]->sent_at).', please wait for them to respond.');
 
 		Notification::send($this->_post->reserved_by, 'post-passon', [
 			'type' => $this->_post->kind,

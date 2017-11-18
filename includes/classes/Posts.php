@@ -439,7 +439,7 @@ HTML;
 	 * @param User|null $sent_by
 	 * @param string    $cols
 	 *
-	 * @return array|null
+	 * @return Notification[]|null
 	 */
 	public static function getTransferAttempts(Post $Post, ?User $sent_by = null, $cols = 'read_at,sent_at'){
 		if ($Post->reserved_by !== null)
