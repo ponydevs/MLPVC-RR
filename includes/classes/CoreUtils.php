@@ -1321,7 +1321,11 @@ HTML;
 			'referrer' => $_SERVER['HTTP_REFERER'] ?? null,
 			'request_uri' => $_SERVER['REQUEST_URI'],
 			'post_data' => $_POST,
-			'auth' => Auth::$signed_in ? Auth::$user->to_array(['include' => [ 'session' => Auth::$session->id ]]) : null,
+			'auth' => Auth::$signed_in ? [
+				'id' => Auth::$user->id,
+				'name' => Auth::$user->name,
+				'session' => Auth::$session->id,
+			] : null,
 		]);
 	}
 
