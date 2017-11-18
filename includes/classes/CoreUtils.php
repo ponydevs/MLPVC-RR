@@ -1319,6 +1319,8 @@ HTML;
 		$logger->log(Logger::DEBUG, $message, [
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'referrer' => $_SERVER['HTTP_REFERER'] ?? null,
+			'request_uri' => $_SERVER['REQUEST_URI'],
+			'post_data' => $_POST,
 			'auth' => Auth::$signed_in ? Auth::$user->to_array(['include' => [ 'session' => Auth::$session->id ]]) : null,
 		]);
 	}
