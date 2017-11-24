@@ -88,6 +88,7 @@ class Browser {
 	const BROWSER_MAXTHON = 'Maxthon'; // http://maxthon.com/
 	const BROWSER_FFFOCUS = 'Firefox Focus'; // https://www.mozilla.org/en-US/firefox/focus/
 	const BROWSER_YANDEX = 'Yandex Browser'; // https://browser.yandex.com/
+	const BROWSER_SILK = 'Silk';
 
 	const BROWSER_NETSCAPE_NAVIGATOR = 'Netscape Navigator'; // http://browser.netscape.com/ (DEPRECATED)
 	const BROWSER_GALEON = 'Galeon'; // http://galeon.sourceforge.net/ (DEPRECATED)
@@ -108,6 +109,7 @@ class Browser {
 	const PLATFORM_NETBSD = 'NetBSD';
 	const PLATFORM_ANDROID = 'Android';
 	const PLATFORM_CHROMEOS = 'Chrome OS';
+	const PLATFORM_KINDLE = 'Amazon Kindle';
 
 	const OPERATING_SYSTEM_UNKNOWN = 'unknown';
 
@@ -341,6 +343,7 @@ class Browser {
 			$this->checkBrowserFirefox() ||
 			$this->checkBrowserMaxthon() ||
 			$this->checkBrowserYandex() ||
+			$this->checkBrowserSilk() ||
 			$this->checkBrowserChrome() ||
 			$this->checkBrowserOmniWeb() ||
 			$this->checkBrowserSafari() ||
@@ -718,6 +721,21 @@ class Browser {
 		if (preg_match('~\bYaBrowser\/([\d.]+)~',$this->_agent,$match)){
 			$this->setVersion($match[1]);
 			$this->setBrowser(self::BROWSER_YANDEX);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the browser is Silk or not
+	 * @return boolean True if the browser is Silk otherwise false
+	 */
+	protected function checkBrowserSilk(){
+		if (preg_match('~\bSilk\/([\d.]+)~',$this->_agent,$match)){
+			$this->setVersion($match[1]);
+			$this->setBrowser(self::BROWSER_SILK);
 
 			return true;
 		}
@@ -1294,7 +1312,9 @@ class Browser {
 			$this->_platform = self::PLATFORM_OSX;
 		}
 		else if (stripos($this->_agent, 'android') !== false){
-			$this->_platform = self::PLATFORM_ANDROID;
+			if (stripos($this->_agent, 'KFFOWI') !== false)
+				$this->_platform = self::PLATFORM_KINDLE;
+			else $this->_platform = self::PLATFORM_ANDROID;
 		}
 		else if (stripos($this->_agent, 'linux') !== false){
 			$this->_platform = self::PLATFORM_LINUX;

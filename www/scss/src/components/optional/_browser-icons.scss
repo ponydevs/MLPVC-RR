@@ -42,6 +42,9 @@
 	&.browser-yandexbrowser#{$before} {
 		background-image: url(/img/browser/yandexbrowser.png);
 	}
+	&.browser-silk#{$before} {
+		background-image: url(/img/browser/silk.png);
+	}
 }
 @mixin if-browser-has-icon {
 	&.browser-chrome,
@@ -54,7 +57,8 @@
 	&.browser-palemoon,
 	&.browser-maxthon,
 	&.browser-firefoxfocus,
-	&.browser-yandexbrowser {
+	&.browser-yandexbrowser,
+	&.browser-silk {
 		@content;
 	}
 }
