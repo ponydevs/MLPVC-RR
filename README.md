@@ -78,7 +78,7 @@ After some time, the idea of moving the old PNG color guide into an easier to us
  - [Opera](http://fav.me/dacngnh) by [masemj](http://masemj.deviantart.com/) ([designed](http://fav.me/d52qnaw) by [ParallaxMLP](http://parallaxmlp.deviantart.com/))
  - [Safari](http://fav.me/dadu3l9) by [masemj](http://masemj.deviantart.com/) ([designed](http://fav.me/d530knp) by [ParallaxMLP](http://parallaxmlp.deviantart.com/))
  - Vivaldi from [Vivaldi Press Kit](https://vivaldi.com/press/)
- - Maxthon, Pale Moon, Firefox Focus, Yandex Browser & Silk from [alrra/browser-logos](https://github.com/alrra/browser-logos/)
+ - Maxthon, Pale Moon, Firefox Focus, Yandex Browser, Silk & Samsung Internet from [alrra/browser-logos](https://github.com/alrra/browser-logos/)
  
 [**Blending Reverser**](https://mlpvc-rr.ml/cg/blending-reverse) built with the help of [Pirill-Poveniy](https://pirill-poveniy.deviantart.com) and [Parcly-Taxel](https://parcly-taxel.deviantart.com)<br>
 **Coding, design & hosting:** [SeinopSys](https://github.com/SeinopSys)

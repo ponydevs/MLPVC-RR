@@ -45,6 +45,9 @@
 	&.browser-silk#{$before} {
 		background-image: url(/img/browser/silk.png);
 	}
+	&.browser-samsunginternet#{$before} {
+		background-image: url(/img/browser/samsunginternet.png);
+	}
 }
 @mixin if-browser-has-icon {
 	&.browser-chrome,
@@ -58,7 +61,8 @@
 	&.browser-maxthon,
 	&.browser-firefoxfocus,
 	&.browser-yandexbrowser,
-	&.browser-silk {
+	&.browser-silk,
+	&.browser-samsunginternet {
 		@content;
 	}
 }
