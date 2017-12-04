@@ -22,7 +22,7 @@
 		"wisembly/elephant.io": "^3.3.0",
 		"ezyang/htmlpurifier": "^4.8",
 		"cogpowered/finediff": "0.3.*",
-		"elasticsearch/elasticsearch": "~5.0",
+		"elasticsearch/elasticsearch": "~6.0",
 		"ongr/elasticsearch-dsl": ">=2.2",
 		"altorouter/altorouter": "1.2.0",
 		"restcord/restcord": "^0.1.4",
