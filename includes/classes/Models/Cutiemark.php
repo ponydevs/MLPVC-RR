@@ -138,7 +138,8 @@ class Cutiemark extends NSModel {
 		$links = "<a href='/cg/cutiemark/download/{$this->id}$token' class='btn link typcn typcn-download'>SVG</a>";
 		if ($canEdit){
 			$who = ($this->appearance->owner_id !== null ? 'Owner and ' : '').'Staff';
-			$links .= "<a href='/cg/cutiemark/download/{$this->id}{$token}&source' class='btn orange typcn typcn-download' title='Download the original file as uploaded ($who only)'></a>";
+			$source = ($token ? "$token&" : '?').'source';
+			$links .= "<a href='/cg/cutiemark/download/{$this->id}$source' class='btn orange typcn typcn-download' title='Download the original file as uploaded ($who only)'></a>";
 		}
 		if (($this->favme ?? null) !== null)
 			$links .= "<a href='http://fav.me/{$this->favme}' class='btn btn-da typcn'>Source</a>";
