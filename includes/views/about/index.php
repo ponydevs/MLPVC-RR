@@ -87,11 +87,12 @@ else echo CoreUtils::notice('warn','This section went missing due to a bug, and 
 
 	$HTML = '';
 	foreach ($commands as $command => $handler){
+		$origCommand = $command;
 		if ($handler !== true)
 			$command = $handler($command);
 		# Trim lines longer than 512 characters (usually sourcemaps)
 		$output = preg_replace(new \App\RegExp('^(.{512}).+$','m'),'$1…',shell_exec($command));
-		$HTML .= rtrim('<strong>$ '.CoreUtils::escapeHTML($command)."</strong>\n".CoreUtils::escapeHTML($output))."\n";
+		$HTML .= rtrim('<strong>$ '.CoreUtils::escapeHTML($origCommand)."</strong>\n".CoreUtils::escapeHTML($output))."\n";
 	}
 	echo rtrim($HTML);
 
