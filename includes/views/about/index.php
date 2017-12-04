@@ -73,7 +73,7 @@ else echo CoreUtils::notice('warn','This section went missing due to a bug, and 
 	<section>
 		<h2>How do I know you're not hiding anything?</h2>
 		<div>
-			<p>Refer to the output below. If there were any hidden files or changes not present in the repository, you would be able to see it here.</p>
+			<p>Refer to the output below. If there were any hidden files or changes not present in the repository, you would be able to see them here.</p>
 			<pre id="proof"><code><?php
 
 	$commands = [
