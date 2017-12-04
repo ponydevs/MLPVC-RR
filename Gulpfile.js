@@ -2,27 +2,9 @@
 let cl = console.log,
 	stripAnsi = require('strip-ansi'),
 	chalk = require('chalk');
-console.log = console.writeLine = function () {
-	let args = [].slice.call(arguments);
-	if (args.length){
-		if (/^(\[\d{2}:\d{2}:\d{2}]|Using|Finished)/.test(args[0]))
-			return;
-		else if (args[0] === 'Starting'){
-			args = ['[' + chalk.green('gulp') + '] ' + stripAnsi(args[1]).replace(/^'(.*)'.*$/,'$1') + ': ' + chalk.magenta('start')];
-		}
-	}
-	return cl.apply(console, args);
-};
-let stdoutw = process.stdout.write;
-process.stdout.write = console.write = function(str){
-	let out = [].slice.call(arguments).join(' ');
-	if (/\[.*?\d{2}.*?:.*?]/.test(out))
-		return;
-	stdoutw.call(process.stdout, out);
-};
 
 let toRun = process.argv.slice(2).slice(-1)[0] || 'default'; // Works only if task name is the last param
-console.writeLine('Starting Gulp task "'+toRun+'"');
+console.log('Starting Gulp task "'+toRun+'"');
 let require_list = ['gulp'];
 if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
 	require_list.push.apply(require_list, [
@@ -56,23 +38,23 @@ if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
 }
 else if (toRun === 'pgsort' || toRun == 'one_time_transform')
 	require_list.push('fs');
-console.write('(');
+process.stdout.write('(');
 for (let i= 0,l=require_list.length; i<l; i++){
 	let v = require_list[i],
 		key = v.replace(/^gulp-([a-z-]+)$/, '$1').replace(/-(\w)/,function(_, a){
 			return a.toUpperCase();
 		});
 	global[key] = require(v);
-	console.write(' '+v);
+	process.stdout.write(' '+v);
 }
-console.writeLine(" )\n");
+console.log(" )\n");
 
 let workingDir = __dirname;
 
 function Logger(prompt){
 	let $p = '['+chalk.blue(prompt)+'] ';
 	this.log = function(message){
-		console.writeLine($p+message);
+		console.log($p+message);
 	};
 	this.error = function(message){
 		if (typeof message === 'string'){

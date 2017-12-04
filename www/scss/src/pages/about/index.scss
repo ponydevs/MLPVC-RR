@@ -161,3 +161,14 @@
 #supported-providers {
 	q { font-style: italic }
 }
+
+#proof {
+	overflow: auto;
+	width: 100%;
+	max-height: 20vh;
+	padding: 10px;
+	margin-top: 10px;
+	box-sizing: border-box;
+
+	@include l33th4x;
+}

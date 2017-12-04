@@ -156,7 +156,8 @@ $ColorPalette:
 $NoScrollbar: false;
 @mixin l33th4x($scrollbar:true){
 	$Lime: #0c0;
-	background: #000;
+	$Black: #000;
+	background: $Black;
 	color: $Lime;
 
 	@if ($scrollbar == true){
@@ -175,6 +176,7 @@ $NoScrollbar: false;
 			&:hover { background-color: rgba($Lime, .8) }
 			&:active { background-color: rgba($Lime, .9) }
 		}
+		&::-webkit-scrollbar-corner { background-color: $Black }
 	}
 }
 
