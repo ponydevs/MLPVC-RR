@@ -670,11 +670,10 @@ HTML;
 	 * @param string|null $size
 	 */
 	public static function renderSpritePNG($CGPath, $AppearanceID, $size = null){
-		if ($size !== null){
+		if ($size !== null)
 			$size = intval($size, 10);
-			if (!in_array($size, Appearance::SPRITE_SIZES, true))
-				$size = 600;
-		}
+		if (!in_array($size, Appearance::SPRITE_SIZES, true))
+			$size = 600;
 		$outsize = $size === Appearance::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
 
 		$OutputPath = FSPATH."cg_render/appearance/{$AppearanceID}/sprite$outsize.png";
