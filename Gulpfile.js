@@ -120,7 +120,7 @@ let JSL = new Logger('js'),
 			pipe = pipe.pipe(sourcemaps.init());
 		pipe = pipe
 				.pipe(babel({
-					presets: ['es2015']
+					presets: ['env']
 				}))
 				.pipe(uglify({
 					output: {
