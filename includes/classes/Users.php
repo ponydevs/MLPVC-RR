@@ -218,6 +218,7 @@ HTML;
 					Auth::$signed_in = true;
 					if (time() - strtotime(Auth::$session->lastvisit) > Time::IN_SECONDS['minute']){
 						Auth::$session->lastvisit = date('c');
+						Auth::$session->detect_browser();
 						Auth::$session->save();
 					}
 				}

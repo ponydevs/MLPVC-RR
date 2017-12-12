@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
+use App\CoreUtils;
 
 /**
  * @property int      $id
@@ -39,6 +40,12 @@ class Session extends NSModel {
 
 	public function make_known_ip(){
 		KnownIP::record(null, $this->user_id, $this->lastvisit);
+	}
+
+	public function detect_browser(?string $ua = null){
+		foreach (CoreUtils::detectBrowser($ua) as $k => $v)
+			if (!empty($v))
+				$this->{$k} = $v;
 	}
 }
 
