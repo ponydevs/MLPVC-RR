@@ -103,7 +103,7 @@ class Event extends NSModel implements LinkableInterface {
 	}
 
 	public function getEntryRoleName():string {
-		return in_array($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC[$this->entry_role]) : self::SPECIAL_ENTRY_ROLES[$this->entry_role];
+		return \in_array($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC[$this->entry_role]) : self::SPECIAL_ENTRY_ROLES[$this->entry_role];
 	}
 
 	public function isFinalized(){
@@ -134,7 +134,7 @@ class Event extends NSModel implements LinkableInterface {
 			if (empty($HighestScoringEntries))
 				$HTML .= CoreUtils::notice('info','<span class="typcn typcn-times"></span> No entries match the win criteria, thus the event ended without a winner');
 			else {
-				$HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner',count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
+				$HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner', \count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
 				foreach ($HighestScoringEntries as $entry){
 					$title = CoreUtils::escapeHTML($entry->title);
 					$preview = isset($entry->prev_full) ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";

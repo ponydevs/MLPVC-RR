@@ -277,7 +277,7 @@ HTML;
 		}
 
 		$PersonalColorGuides = $User->pcg_appearances;
-		if ($sameUser || count($PersonalColorGuides) > 0){
+		if ($sameUser || \count($PersonalColorGuides) > 0){
 			$HTML .= "<ul class='personal-cg-appearances'>";
 			foreach ($PersonalColorGuides as $p)
 				$HTML .= '<li>'.$p->toAnchorWithPreview().'</li>';

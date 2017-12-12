@@ -41,7 +41,7 @@ class NavBreadcrumb {
 	 * @return self
 	 */
 	public function setChild($ch, bool $activate = false):NavBreadcrumb {
-		if (is_string($ch)){
+		if (\is_string($ch)){
 			$ch = new self($ch);
 			$activate = true;
 		}

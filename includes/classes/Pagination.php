@@ -35,10 +35,10 @@ class Pagination {
 	private function guessPage(){
 		$path = explode('/',substr(strtok($_SERVER['REQUEST_URI'],'?'), 1));
 		// We need at least 2 elements to paginate
-		if (empty($path) || count($path) < 2)
+		if (empty($path) || \count($path) < 2)
 			return;
 
-		$lastPart = array_slice($path, -1)[0];
+		$lastPart = \array_slice($path, -1)[0];
 		if (is_numeric($lastPart))
 			$this->page = max((int) $lastPart, 1);
 	}

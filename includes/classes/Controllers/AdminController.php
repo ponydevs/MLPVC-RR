@@ -105,7 +105,7 @@ class AdminController extends Controller {
 			}
 		}
 		else if (isset($ip)){
-			$whereArgs[] = ['ip', in_array($ip, Logs::LOCALHOST_IPS, true) ? Logs::LOCALHOST_IPS : $ip];
+			$whereArgs[] = ['ip', \in_array($ip, Logs::LOCALHOST_IPS, true) ? Logs::LOCALHOST_IPS : $ip];
 			$q[] = "by=$ip";
 			$title .= ($type === null?'Entries ':'')."from $ip ";
 		}
@@ -150,7 +150,7 @@ class AdminController extends Controller {
 		if (!isset($params['id']) || !is_numeric($params['id']))
 			Response::fail('Entry ID is missing or invalid');
 
-		$entry = intval($params['id'], 10);
+		$entry = \intval($params['id'], 10);
 
 		$MainEntry = DB::$instance->where('entryid', $entry)->getOne('log');
 		if (empty($MainEntry))
@@ -188,7 +188,7 @@ class AdminController extends Controller {
 		if (!$creating){
 			if (!isset($_GET['linkid']) || !is_numeric($_GET['linkid']))
 				CoreUtils::notFound();
-			$linkid = intval($_GET['linkid'],10);
+			$linkid = \intval($_GET['linkid'],10);
 			$Link = UsefulLink::find($linkid);
 			if (empty($Link))
 				Response::fail('The specified link does not exist');
@@ -409,7 +409,7 @@ HTML;
 
 			$usrids[] = $ins->id;
 
-			if (!empty($ins->nick) || (isset($member['roles']) && count($member['roles']) > 1))
+			if (!empty($ins->nick) || (isset($member['roles']) && \count($member['roles']) > 1))
 				$ins->guessDAUser();
 			$ins = $ins->to_array([
 				'except' => ['name','avatar_url'],
@@ -425,7 +425,7 @@ HTML;
 			else DiscordMember::create($ins);
 		}
 
-		if (count($usrids) > 0)
+		if (\count($usrids) > 0)
 			DB::$instance->where("id NOT IN ('".implode("','",$usrids)."')");
 		DB::$instance->delete('discord_members');
 	}
@@ -499,14 +499,14 @@ HTML;
 			CoreUtils::notFound();
 		}
 
-		if (in_array($ip, Logs::LOCALHOST_IPS, true))
+		if (\in_array($ip, Logs::LOCALHOST_IPS, true))
 			$ip = 'localhost';
 
 		CoreUtils::fixPath("/admin/ip/$ip");
 
 		$knownIPs = KnownIP::find_all_by_ip($ip);
 		$Users = [];
-		if (count($knownIPs) > 0){
+		if (\count($knownIPs) > 0){
 			foreach ($knownIPs as $knownIP){
 				$user = $knownIP->user;
 				if (!empty($user))

@@ -16,7 +16,7 @@ class View {
 		$name = strtolower(preg_replace(new RegExp('List$'),'-list',$name));
 		if (!preg_match(new RegExp('^(?:\\\\?app\\\\controllers\\\\)?([a-z]+)controller::([a-z-]+)$'), $name, $match))
 			throw new \RuntimeException('Could not resolve view based on value '.$name);
-		[$class, $method] = array_slice($match, 1, 2);
+		[$class, $method] = \array_slice($match, 1, 2);
 		return [$class, $method];
 	}
 

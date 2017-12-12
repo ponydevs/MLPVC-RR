@@ -128,7 +128,7 @@ class Time {
 	public static function tag($timestamp, bool $extended = false, string $allowDyntime = self::TAG_ALLOW_DYNTIME, ?int $now = null):string {
 		if ($timestamp instanceof DateTime)
 			$timestamp = $timestamp->getTimestamp();
-		else if (is_string($timestamp)){
+		else if (\is_string($timestamp)){
 			$ts = strtotime($timestamp);
 			if ($ts === false)
 				return '';

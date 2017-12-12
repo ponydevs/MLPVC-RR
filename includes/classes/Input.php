@@ -73,7 +73,7 @@ class Input {
 			$this->_validator = function($value) use ($type){
 				return $type->match($value) ? self::ERROR_NONE : self::ERROR_INVALID;
 			};
-		else if (is_callable($type))
+		else if (\is_callable($type))
 			$this->_validator = $type;
 		else {
 			/** @var $type string */
@@ -82,7 +82,7 @@ class Input {
 		}
 		$this->_type = $type;
 
-		if (!is_string($key))
+		if (!\is_string($key))
 			$this->_outputError('Input key missing or invalid');
 		$this->_key = $key;
 
@@ -95,7 +95,7 @@ class Input {
 				$this->_source = $_source;
 		}
 		$_SRC = $GLOBALS[$this->_source];
-		if (!isset($_SRC[$key]) || (is_string($_SRC[$key]) && mb_strlen($_SRC[$key]) === 0))
+		if (!isset($_SRC[$key]) || (\is_string($_SRC[$key]) && mb_strlen($_SRC[$key]) === 0))
 			$result = empty($o[self::IS_OPTIONAL]) ? self::ERROR_MISSING : self::ERROR_NONE;
 		else {
 			if ($this->_source === '_FILES')
@@ -122,7 +122,7 @@ class Input {
 	private function _validate(){
 		if ($this->_validator !== null){
 			$call_params = [&$this->_origValue, $this->_range];
-			$vaildation_result = call_user_func_array($this->_validator, $call_params);
+			$vaildation_result = \call_user_func_array($this->_validator, $call_params);
 			if ($vaildation_result !== null)
 				return $vaildation_result;
 
@@ -131,9 +131,9 @@ class Input {
 		}
 		switch ($this->_type){
 			case 'bool':
-				if (!in_array($this->_origValue, ['1', '0', 'true', 'false', 'on', 'off'], false))
+				if (!\in_array($this->_origValue, ['1', '0', 'true', 'false', 'on', 'off'], false))
 					return self::ERROR_INVALID;
-				$this->_origValue = in_array($this->_origValue, ['1', 'true', 'on'], false);
+				$this->_origValue = \in_array($this->_origValue, ['1', 'true', 'on'], false);
 			break;
 			case 'int':
 			case 'vote':
@@ -151,24 +151,24 @@ class Input {
 			break;
 			case 'text':
 			case 'string':
-				if (!is_string($this->_origValue))
+				if (!\is_string($this->_origValue))
 					return self::ERROR_INVALID;
 				if (self::checkStringLength($this->_origValue, $this->_range, $code))
 					return $code;
 			break;
 			case 'uuid':
-				if (!is_string($this->_origValue) || !preg_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$','i'), $this->_origValue))
+				if (!\is_string($this->_origValue) || !preg_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$','i'), $this->_origValue))
 					return self::ERROR_INVALID;
 
 				$this->_origValue = strtolower($this->_origValue);
 			break;
 			case 'username':
 				global $USERNAME_REGEX;
-				if (!is_string($this->_origValue) || !$USERNAME_REGEX->match($this->_origValue))
+				if (!\is_string($this->_origValue) || !$USERNAME_REGEX->match($this->_origValue))
 					return self::ERROR_INVALID;
 			break;
 			case 'url':
-				if (!is_string($this->_origValue))
+				if (!\is_string($this->_origValue))
 					return self::ERROR_INVALID;
 				global $REWRITE_REGEX;
 				if (stripos($this->_origValue, ABSPATH) === 0)
@@ -181,10 +181,10 @@ class Input {
 				}
 			break;
 			case 'int[]':
-				if (!is_string($this->_origValue) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_origValue))
+				if (!\is_string($this->_origValue) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_origValue))
 					return self::ERROR_INVALID;
 
-				$this->_origValue = array_map('intval',explode(',',$this->_origValue));
+				$this->_origValue = array_map('\intval',explode(',',$this->_origValue));
 			break;
 			case 'json':
 				try {

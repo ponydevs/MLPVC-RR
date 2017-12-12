@@ -19,7 +19,7 @@ class Image {
 		if ($imageSize === false)
 			throw new \RuntimeException("getimagesize could not read $tmp");
 		/** @var $imageSize array */
-		if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes, true))
+		if (\is_array($allowedMimeTypes) && !\in_array($imageSize['mime'], $allowedMimeTypes, true))
 			Response::fail('This type of image is now allowed: '.$imageSize['mime']);
 		[$width, $height] = $imageSize;
 
@@ -121,16 +121,16 @@ class Image {
 	 * @param string|int  $outline
 	 */
 	public static function drawSquare($image, $x, $y, $size, $fill, $outline):void {
-		if ($fill !== null && is_string($fill)){
+		if ($fill !== null && \is_string($fill)){
 			$fill = RGBAColor::parse($fill);
 			$fill = imagecolorallocate($image, $fill->red, $fill->green, $fill->blue);
 		}
-		if (is_string($outline)){
+		if (\is_string($outline)){
 			$outline = RGBAColor::parse($outline);
 			$outline = imagecolorallocate($image, $outline->red, $outline->green, $outline->blue);
 		}
 
-		if (is_array($size)){
+		if (\is_array($size)){
 			/** @var $size int[] */
 			$x2 = $x + $size[0];
 			$y2 = $y + $size[1];
@@ -160,16 +160,16 @@ class Image {
 	 * @param string|int  $outline
 	 */
 	public static function drawCircle($image, $x, $y, $size, $fill, $outline):void {
-		if ($fill !== null && is_string($fill)){
+		if ($fill !== null && \is_string($fill)){
 			$fill = RGBAColor::parse($fill);
 			$fill = imagecolorallocate($image, $fill->red, $fill->green, $fill->blue);
 		}
-		if (is_string($outline)){
+		if (\is_string($outline)){
 			$outline = RGBAColor::parse($outline);
 			$outline = imagecolorallocate($image, $outline->red, $outline->green, $outline->blue);
 		}
 
-		if (is_array($size)){
+		if (\is_array($size)){
 			/** @var $size int[] */
 			[$width,$height] = $size;
 			$x2 = $x + $width;
@@ -205,7 +205,7 @@ class Image {
 	 * @return array
 	 */
 	public static function writeOn($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile, $box = null, $yOffset = 0):array {
-		if (is_string($fontcolor))
+		if (\is_string($fontcolor))
 			$fontcolor = imagecolorallocate($image, 0, 0, 0);
 
 		if (empty($box)){

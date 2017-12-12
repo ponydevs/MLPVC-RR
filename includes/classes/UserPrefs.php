@@ -122,7 +122,7 @@ class UserPrefs extends GlobalSettings {
 				$thing = 'Color Guide items per page';
 				if (!is_numeric($value))
 					throw new \RuntimeException("$thing must be a number");
-				$value = intval($value, 10);
+				$value = \intval($value, 10);
 				if ($value < 7 || $value > 20)
 					throw new \RuntimeException("$thing must be between 7 and 20");
 			break;

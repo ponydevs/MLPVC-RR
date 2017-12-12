@@ -572,7 +572,7 @@ HTML;
 		if ($staffVisitingMember || ($isMember && $sameUser)){
 			$PendingReservations = $this->_getPendingReservations();
 			$PendingRequestReservations = $this->_getPendingRequestReservations();
-			$TotalPending = count($PendingReservations)+count($PendingRequestReservations);
+			$TotalPending = \count($PendingReservations)+ \count($PendingRequestReservations);
 			$hasPending = $TotalPending > 0;
 		}
 		else {
@@ -684,7 +684,7 @@ HTML;
 			$this->_getNotApprovedRequests(),
 			$this->_getNotApprovedReservations()
 		);
-		$AwaitCount = count($AwaitingApproval);
+		$AwaitCount = \count($AwaitingApproval);
 		$them = $AwaitCount!==1?'them':'it';
 		$YouHave = self::YOU_HAVE[(int)$sameUser];
 		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';

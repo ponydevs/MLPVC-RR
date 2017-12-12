@@ -36,7 +36,7 @@ class Permission {
 	 * @return bool
 	 */
 	public static function sufficient($role, $compareAgainst = null):bool {
-		if (!is_string($role)) return false;
+		if (!\is_string($role)) return false;
 
 		if (empty($compareAgainst)){
 			if (!Auth::$signed_in)

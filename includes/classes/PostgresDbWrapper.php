@@ -23,7 +23,7 @@ class PostgresDbWrapper extends \PostgresDb {
 	public function whereEp($s, $e = null){
 		if ($e === null){
 			if (!$s instanceof Episode)
-				throw new \InvalidArgumentException(__METHOD__.' expects parameter 1 to be an instance of '.Episode::class.' (because parameter 2 is null), '.gettype($s).' given');
+				throw new \InvalidArgumentException(__METHOD__.' expects parameter 1 to be an instance of '.Episode::class.' (because parameter 2 is null), '.\gettype($s).' given');
 			parent::where('season', $s->season);
 			parent::where('episode', $s->episode);
 		}
@@ -59,8 +59,8 @@ class PostgresDbWrapper extends \PostgresDb {
 		}
 
 		$execResult = parent::_execStatement($stmt);
-		$isarray = is_array($execResult);
-		if ($isarray && count($execResult) > 0)
+		$isarray = \is_array($execResult);
+		if ($isarray && \count($execResult) > 0)
 			$check = $execResult[0];
 		else $check = $execResult;
 

@@ -32,7 +32,7 @@ class Response {
 		$response = ['status' => $status];
 		if (!empty($message))
 			$response['message'] = $message;
-		if (!empty($data) && is_array($data))
+		if (!empty($data) && \is_array($data))
 			$response = array_merge($data, $response);
 		$mask = JSON_UNESCAPED_SLASHES;
 		if ($prettyPrint)

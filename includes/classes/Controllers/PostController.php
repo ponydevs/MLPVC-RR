@@ -369,7 +369,7 @@ class PostController extends Controller {
 				}
 				if ($thing === 'request' && $this->_post->requested_by !== null && $this->_post->requested_by !== Auth::$user->id){
 					$notifSent = Notification::send($this->_post->requester->id, 'post-finished', $postdata);
-					$message .= "<p><strong>{$this->_post->requester->name}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.</p>'.(is_string($notifSent)?"<div class='notice fail'><strong>Error:</strong> $notifSent</div>":'');
+					$message .= "<p><strong>{$this->_post->requester->name}</strong> ".($notifSent === 0?'has been notified':'will receive a notification shortly').'.</p>'.(\is_string($notifSent)?"<div class='notice fail'><strong>Error:</strong> $notifSent</div>":'');
 				}
 
 				try {
@@ -479,7 +479,7 @@ class PostController extends Controller {
 		$this->_authorize();
 
 		$thing = (new Input('what',function($value){
-			if (!in_array($value,Posts::TYPES,true))
+			if (!\in_array($value,Posts::TYPES,true))
 				return Input::ERROR_INVALID;
 		}, [
 			Input::CUSTOM_ERROR_MESSAGES => [
@@ -498,7 +498,7 @@ class PostController extends Controller {
 		}
 
 		$Image = $this->_checkImage();
-		if (!is_object($Image)){
+		if (!\is_object($Image)){
 			CoreUtils::error_log("Getting post image failed\n".var_export($Image, true));
 			Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
 		}
@@ -567,7 +567,7 @@ class PostController extends Controller {
 		if (empty($this->_post) && $action !== 'locate')
 			Response::fail("There’s no $thing with the ID {$params['id']}");
 
-		if (!empty($this->_post->lock) && Permission::insufficient('developer') && !in_array($action,['unlock','lazyload','locate'],true))
+		if (!empty($this->_post->lock) && Permission::insufficient('developer') && !\in_array($action,['unlock', 'lazyload', 'locate'],true))
 			Response::fail('This post has been approved and cannot be edited or removed.');
 	}
 
@@ -757,7 +757,7 @@ class PostController extends Controller {
 
 		try {
 			$fullsize = DeviantArt::getDownloadURL($StashItem->id, 'sta.sh');
-			if (!is_string($fullsize)){
+			if (!\is_string($fullsize)){
 				if ($fullsize === 404){
 					$StashItem->delete();
 					DB::$instance->where('preview', $StashItem->preview)->orWhere('fullsize', $StashItem->fullsize)->update('requests', [

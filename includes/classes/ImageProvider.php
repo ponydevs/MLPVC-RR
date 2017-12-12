@@ -25,9 +25,9 @@ class ImageProvider {
 		if (!empty($url)){
 			$provider = self::getProvider(DeviantArt::trimOutgoingGateFromUrl(CoreUtils::trim($url)));
 			if (!empty($reqProv)){
-				if (!is_array($reqProv))
+				if (!\is_array($reqProv))
 					$reqProv = [$reqProv];
-				if (!in_array($provider->name, $reqProv, true))
+				if (!\in_array($provider->name, $reqProv, true))
 					throw new MismatchedProviderException($provider->name);
 			}
 			$this->provider = $provider->name;

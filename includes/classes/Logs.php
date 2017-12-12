@@ -55,7 +55,7 @@ class Logs {
 
 		if (isset($data)){
 			foreach ($data as $k => $v)
-				if (is_bool($v))
+				if (\is_bool($v))
 					$data[$k] = $v ? 1 : 0;
 
 			$refid = DB::$instance->insert("log__$reftype",$data,'entryid');
@@ -418,7 +418,7 @@ class Logs {
 		$newOld = [];
 		unset($data['entryid'], $data['target']);
 		foreach ($data as $k => $v){
-			if (is_null($v))
+			if (\is_null($v))
 				continue;
 
 			$thing = mb_substr($k, 3);
@@ -447,7 +447,7 @@ class Logs {
 	 */
 	public static function getTbody($LogItems):string {
 		$HTML = '';
-		if (count($LogItems) > 0) foreach ($LogItems as $item){
+		if (\count($LogItems) > 0) foreach ($LogItems as $item){
 			if (!empty($item['initiator'])){
 				$inituser = User::find($item['initiator']);
 				if (empty($inituser))
@@ -462,7 +462,7 @@ class Logs {
 			}
 			else $inituser = '<a class="search-user typcn typcn-zoom" title="Search for all entries by this user"></a> <spac class="name">Web server</spac>';
 
-			$ip = in_array(strtolower($item['ip']), self::LOCALHOST_IPS, true) ? 'localhost' : $item['ip'];
+			$ip = \in_array(strtolower($item['ip']), self::LOCALHOST_IPS, true) ? 'localhost' : $item['ip'];
 			$ownIP = $item['ip'] === $_SERVER['REMOTE_ADDR'];
 			$strongIP = $ownIP ? "<strong title='Your current IP'>$ip</strong>" : $ip;
 			$ip = "<a class='typcn typcn-zoom search-ip".($ownIP?' your-ip':'')."' title='Search for all entries from this IP'></a> <a  class='typcn typcn-info-large' href='/admin/ip/$ip'></a> <span class='address'>$strongIP</span>";

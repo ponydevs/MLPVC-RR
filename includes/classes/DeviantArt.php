@@ -72,7 +72,7 @@ class DeviantArt {
 		if (!empty($postdata)){
 			$query = [];
 			foreach($postdata as $k => $v) $query[] = urlencode($k).'='.urlencode($v);
-			$curl_opt[CURLOPT_POST] = count($postdata);
+			$curl_opt[CURLOPT_POST] = \count($postdata);
 			$curl_opt[CURLOPT_POSTFIELDS] = implode('&', $query);
 		}
 		curl_setopt_array($r, $curl_opt);
@@ -182,7 +182,7 @@ class DeviantArt {
 
 			if (!preg_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
 				$fullsize_attempt = self::getDownloadURL($ID, $type);
-				if (is_string($fullsize_attempt))
+				if (\is_string($fullsize_attempt))
 					$insert['fullsize'] = $fullsize_attempt;
 			}
 
@@ -211,7 +211,7 @@ class DeviantArt {
 	 * @return array
 	 */
 	public static function oEmbed($ID, $type = null){
-		if (empty($type) || !in_array($type, ['fav.me', 'sta.sh'], true))
+		if (empty($type) || !\in_array($type, ['fav.me', 'sta.sh'], true))
 			$type = 'fav.me';
 
 		if ($type === 'sta.sh')
@@ -245,7 +245,7 @@ class DeviantArt {
 			$response_body = $e->getResponseBody();
 			CoreUtils::error_log(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
 			try {
-				if (is_array($response_body))
+				if (\is_array($response_body))
 					$data = $response_body;
 				else $data = JSON::decode($response_body);
 				$_GET['error'] = rawurlencode($data['error']);
@@ -442,7 +442,7 @@ class DeviantArt {
 	}
 
 	public static function favmeHttpsUrl(string $favme_id):string {
-		return 'https://www.deviantart.com/art/REDIRECT-'.intval(mb_substr($favme_id, 1), 36);
+		return 'https://www.deviantart.com/art/REDIRECT-'.\intval(mb_substr($favme_id, 1), 36);
 	}
 
 	public static function trimOutgoingGateFromUrl(string $url):string {

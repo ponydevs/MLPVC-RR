@@ -29,7 +29,7 @@ class MajorChange extends AbstractEntryType {
 	public static function get($PonyID, $count = null){
 		$LIMIT = '';
 		if (isset($count)){
-			$LIMIT = is_string($count) ? $count : "LIMIT $count";
+			$LIMIT = \is_string($count) ? $count : "LIMIT $count";
 		}
 		$WHERE = isset($PonyID) ? "WHERE cm.appearance_id = $PonyID" : '';
 		$query = DB::$instance->setModel('Logs\MajorChange')->query(

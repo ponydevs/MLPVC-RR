@@ -43,7 +43,7 @@ class CGUtils {
 	 */
 	public static function autocompleteRespond($str){
 		header('Content-Type: application/json');
-		if (is_array($str))
+		if (\is_array($str))
 			$str = JSON::encode($str);
 		die($str);
 	}
@@ -230,14 +230,14 @@ class CGUtils {
 
 		$_match = [];
 		if (preg_match($EPISODE_ID_REGEX,$tag,$_match)){
-			$season = intval($_match[1], 10);
+			$season = \intval($_match[1], 10);
 			if ($season === 0)
 				return false;
-			$episode = intval($_match[2], 10);
+			$episode = \intval($_match[2], 10);
 			$name = 's'.CoreUtils::pad($season).'e'.CoreUtils::pad($episode);
 			$episodeIsRange = !empty($_match[3]);
 			if ($episodeIsRange){
-				$episodeTo = intval($_match[3], 10);
+				$episodeTo = \intval($_match[3], 10);
 				if ($episodeTo-1 !== $episode)
 					return false;
 
@@ -247,7 +247,7 @@ class CGUtils {
 			return $name;
 		}
 		if (preg_match($MOVIE_ID_REGEX,$tag,$_match)){
-			$movie = intval($_match[1], 10);
+			$movie = \intval($_match[1], 10);
 			if ($movie <= 0)
 				return false;
 			return "movie$movie";
@@ -293,7 +293,7 @@ HTML;
 		$seeInitiator = Permission::sufficient('staff');
 		/** @var $PonyCache Appearance[] */
 		$HTML = '';
-		if (is_array($Changes))
+		if (\is_array($Changes))
 			foreach ($Changes as $c){
 				$initiator = $appearance = '';
 				if ($seeInitiator){
@@ -347,7 +347,7 @@ HTML;
 	 */
 	public static function getPCGSlotHistoryHTML(?array $Entries, bool $wrap = WRAP):string {
 		$HTML = '';
-		if (is_array($Entries))
+		if (\is_array($Entries))
 			foreach ($Entries as $entry){
 				$type = PCGSlotHistory::CHANGE_DESC[$entry->change_type];
 				$data = self::processPCGSlotHistoryData($entry->change_type, $entry->change_data);
@@ -538,7 +538,7 @@ HTML;
 	// Generate appearance facing image (CM background)
 	public static function renderCMFacingSVG($CGPath, Appearance $appearance){
 		$facing = $_GET['facing'] ?? 'left';
-		if (!in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
+		if (!\in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
 			Response::fail('Invalid facing value specified!');
 
 		$OutputPath = str_replace(['#','@'],[$appearance->id,$facing],self::CMDIR_SVG_PATH);
@@ -671,8 +671,8 @@ HTML;
 	 */
 	public static function renderSpritePNG($CGPath, $AppearanceID, $size = null){
 		if ($size !== null)
-			$size = intval($size, 10);
-		if (!in_array($size, Appearance::SPRITE_SIZES, true))
+			$size = \intval($size, 10);
+		if (!\in_array($size, Appearance::SPRITE_SIZES, true))
 			$size = 600;
 		$outsize = $size === Appearance::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
 
@@ -742,7 +742,7 @@ XML;
 
 		$SVG = '';
 		$PreviewColors = $Appearance->preview_colors;
-		$colorCount = count($PreviewColors);
+		$colorCount = \count($PreviewColors);
 		switch ($colorCount){
 			case 0:
 				$SVG .= '<rect fill="#FFFFFF" width="2" height="2"/><rect fill="#EFEFEF" width="1" height="1"/><rect fill="#EFEFEF" width="1" height="1" x="1" y="1"/>';
@@ -854,7 +854,7 @@ GPL;
 			/** @var $dbcolor Color[] */
 			$dbcolor = DB::$instance->where('hex', $color->toHex())->where('group_id', $CMColorGroup->id)->get(Color::$table_name);
 
-			if ($dbcolor === null || count($dbcolor) !== 1)
+			if ($dbcolor === null || \count($dbcolor) !== 1)
 				return sprintf('<!--#/%s-->', mb_substr($color->toHexa(), 1));
 
 			$id = '@'.$dbcolor[0]->id;

@@ -225,13 +225,14 @@ $NoScrollbar: false;
 	display: inline-block;
 	height: 1em;
 	width: 1em;
-	vertical-align: middle;
 	border: 1px solid black;
 	box-sizing: border-box;
 	margin-right: .2em;
 }
 
 %appearance-ul {
+	display: flex;
+	align-items: center;
 	font-size: 1.2em;
 	font-weight: bold;
 	color: black;
@@ -240,14 +241,20 @@ $NoScrollbar: false;
 	list-style: none;
 
 	li {
-		display: inline-block;
+		display: inline-flex;
 		margin: 1px 0;
 
 		&:not(:last-child){
 			margin-right: 1em;
 		}
 
-		.preview { @extend %appearance-preview }
+		> a {
+			display: inline-flex;
+			align-items: center;
+
+			.preview { @extend %appearance-preview }
+			> .typcn { margin-right: .2em }
+		}
 	}
 }
 %resp-embed-wrap {

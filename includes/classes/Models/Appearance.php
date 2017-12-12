@@ -304,7 +304,7 @@ class Appearance extends NSModel implements LinkableInterface {
 			);
 		}
 		$List = implode(', ',$List);
-		$N_episodes = CoreUtils::makePlural($this->ishuman ? 'movie' : 'episode',count($EpTagsOnAppearance),PREPEND_NUMBER);
+		$N_episodes = CoreUtils::makePlural($this->ishuman ? 'movie' : 'episode', \count($EpTagsOnAppearance),PREPEND_NUMBER);
 		$hide = '';
 
 		return <<<HTML
@@ -366,6 +366,19 @@ HTML;
 		return "/cg/v/{$this->id}p.svg?t=".CoreUtils::filemtime($path);
 	}
 
+	public function getPreviewHTML():string {
+		$locked = $this->owner_id !== null && $this->private;
+
+		if ($this->isPrivate(true))
+			$preview = "<span class='typcn typcn-".($locked?'lock-closed':'time').' color-'.($locked?'orange':'darkblue')."'></span> ";
+		else {
+			$preview = $this->getPreviewURL();
+			$preview = "<img src='$preview' class='preview' alt=''>";
+		}
+
+		return $preview;
+	}
+
 	/**
 	 * @see CGUtils::renderCMFacingSVG()
 	 *
@@ -397,8 +410,7 @@ HTML;
 	}
 
 	public function toAnchorWithPreview():string {
-		$preview = $this->getPreviewURL();
-		$preview = "<img src='$preview' class='preview'>";
+		$preview = $this->getPreviewHTML();
 		$label = $this->processLabel();
 		$link = $this->toURL();
 		return "<a href='$link'>$preview<span>$label</span></a>";
@@ -415,10 +427,14 @@ HTML;
 
 	public function getRelatedHTML():string {
 		$LINKS = '';
-		if (count($this->related_appearances) === 0)
+		if (\count($this->related_appearances) === 0)
 			return $LINKS;
-		foreach ($this->related_appearances as $r)
-			$LINKS .= '<li>'.$r->target->toAnchorWithPreview().'</li>';
+		foreach ($this->related_appearances as $r){
+			if (!$r->target->hidden())
+				$LINKS .= '<li>'.$r->target->toAnchorWithPreview().'</li>';
+		}
+		if (empty($LINKS))
+			return $LINKS;
 		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
 	}
 
@@ -698,7 +714,7 @@ HTML;
 					$success[] = CoreUtils::deleteFile($file);
 			}
 		}
-		return !in_array(false, $success, true);
+		return !\in_array(false, $success, true);
 	}
 
 	const DEFAULT_COLOR_MAPPING = [
@@ -738,5 +754,9 @@ HTML;
 		if ($this->notes_src === null)
 			$this->notes_rend = null;
 		else $this->notes_rend = self::_processNotes($this->notes_src);
+	}
+
+	public function hidden(bool $ignoreStaff = false):bool {
+		return $this->owner_id !== null && $this->private && $this->isPrivate($ignoreStaff);
 	}
 }

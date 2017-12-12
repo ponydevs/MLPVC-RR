@@ -120,7 +120,7 @@ class Posts {
 
 		if ($thing === 'request'){
 			$type = (new Input('type',function($value){
-				if (!in_array($value, ['chr', 'obj', 'bg']))
+				if (!\in_array($value, ['chr', 'obj', 'bg']))
 					return Input::ERROR_INVALID;
 			}, [
 				Input::IS_OPTIONAL => true,
@@ -264,7 +264,7 @@ class Posts {
 
 		$loaders = $Requests === null;
 
-		if (!empty($Requests) && is_array($Requests)){
+		if (!empty($Requests) && \is_array($Requests)){
 			foreach ($Requests as $Request){
 				$HTML = !$returnArranged ? self::getLi($Request,false,false,$lazyload) : $Request;
 
@@ -326,7 +326,7 @@ HTML;
 
 		$loaders = $Reservations === null;
 
-		if (is_array($Reservations)){
+		if (\is_array($Reservations)){
 			foreach ($Reservations as $Reservation){
 				$k = ($Reservation->finished?'':'un').'finished';
 				if (!$returnArranged)
@@ -698,7 +698,7 @@ HTML;
 			if ($view_only !== false)
 				$HTML .="<div><a href='$view_only' class='btn blue typcn typcn-arrow-forward'>View</a></div>";
 			else {
-				$regularButton = count($Buttons) <3;
+				$regularButton = \count($Buttons) <3;
 				foreach ($Buttons as $b){
 					$WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".CoreUtils::aposEncode($b[1])."'>");
 					$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button>";

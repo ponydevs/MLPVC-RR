@@ -149,7 +149,7 @@ class EventController extends Controller {
 		}
 
 		$entry_role = (new Input('entry_role',function($value){
-			if (!in_array($value, Event::REGULAR_ENTRY_ROLES) && empty(Event::SPECIAL_ENTRY_ROLES[$value]))
+			if (!\in_array($value, Event::REGULAR_ENTRY_ROLES) && empty(Event::SPECIAL_ENTRY_ROLES[$value]))
 				return Input::ERROR_INVALID;
 		},[
 			Input::CUSTOM_ERROR_MESSAGES => [
@@ -160,7 +160,7 @@ class EventController extends Controller {
 		$update['entry_role'] = $entry_role;
 
 		$vote_role = (new Input('vote_role',function($value){
-			if (!in_array($value, Event::REGULAR_ENTRY_ROLES))
+			if (!\in_array($value, Event::REGULAR_ENTRY_ROLES))
 				return Input::ERROR_INVALID;
 		},[
 			Input::CUSTOM_ERROR_MESSAGES => [
@@ -329,7 +329,7 @@ class EventController extends Controller {
 			Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
 
 		if (!empty($this->_event->max_entries)){
-			$entrycnt = count(Auth::$user->getEntriesFor($this->_event, 'entryid'));
+			$entrycnt = \count(Auth::$user->getEntriesFor($this->_event, 'entryid'));
 			if ($entrycnt >= $this->_event->max_entries)
 				Response::fail("You've used all of your entries for this event. If you want to change your entry, edit it instead.");
 			$remain = $this->_event->max_entries - $entrycnt;
@@ -436,7 +436,7 @@ class EventController extends Controller {
 		if (!isset($params['entryid']))
 			Response::fail('Entry ID is missing or invalid');
 
-		$this->_entry = DB::$instance->where('entryid', intval($params['entryid'], 10))->getOne(EventEntry::$table_name);
+		$this->_entry = DB::$instance->where('entryid', \intval($params['entryid'], 10))->getOne(EventEntry::$table_name);
 		if (empty($this->_entry) || ($action === 'manage' && !Permission::sufficient('staff') && $this->_entry->submitted_by !== Auth::$user->id))
 			Response::fail('The requested entry could not be found or you are not allowed to edit it');
 
@@ -486,7 +486,7 @@ class EventController extends Controller {
 
 		if (!empty($changes)){
 			// Do not change edit time if only entry title is changed
-			if (!(count($changes) === 1 && array_key_exists('title', $changes)))
+			if (!(\count($changes) === 1 && array_key_exists('title', $changes)))
 				$changes['last_edited'] = date('c');
 			$entry->update_attributes($changes);
 		}

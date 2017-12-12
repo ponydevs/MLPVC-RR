@@ -40,7 +40,7 @@ class NotificationsController extends Controller {
 	}
 
 	public function markRead($params){
-		$nid = intval($params['id'], 10);
+		$nid = \intval($params['id'], 10);
 		/** @var $Notif Notification */
 		$Notif = Notification::find($nid);
 		if (empty($Notif) || $Notif->recipient_id !== Auth::$user->id)

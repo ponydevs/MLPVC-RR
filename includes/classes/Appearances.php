@@ -107,7 +107,7 @@ class Appearances {
 			$Tagged[$row->appearance_id][] = $row->tag_id;
 		foreach ($Appearances as $p){
 			if (!empty($Tagged[$p->id])){
-				if (count($Tagged[$p->id]) > 1)
+				if (\count($Tagged[$p->id]) > 1)
 					usort($Tagged[$p->id],function($a,$b) use ($GroupTagIDs){
 						return array_search($a, $GroupTagIDs, true) - array_search($b, $GroupTagIDs, true);
 					});
@@ -144,7 +144,7 @@ class Appearances {
 		catch (ElasticNoNodesAvailableException|ElasticServerErrorResponseException $e){
 			$elasticAvail = false;
 		}
-		$list = is_string($ids) ? explode(',', $ids) : $ids;
+		$list = \is_string($ids) ? explode(',', $ids) : $ids;
 		foreach ($list as $i => $id){
 			$order = $i+1;
 			if (!DB::$instance->where('id', $id)->update('appearances', ['order' => $order]))
@@ -281,7 +281,7 @@ class Appearances {
 	 * @param string             $nag_id        ID of user to nag
 	 */
 	public static function clearSpriteColorIssueNotifications($appearance_id, string $action = 'clear', ?string $nag_id = self::SPRITE_NAG_USERID){
-		if (is_int($appearance_id))
+		if (\is_int($appearance_id))
 			$notifs = self::getSpriteColorIssueNotifications($appearance_id, $nag_id);
 		else $notifs = $appearance_id;
 		if (empty($notifs))

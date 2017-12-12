@@ -11,7 +11,7 @@ class About {
 			: CoreUtils::trim(preg_replace(new RegExp('^Distributor ID:\s+([^\n]+)\nRelease:\s+([^\n]+)\nCodename:\s+([^\n]+)\n?$'),'$1 $2 ($3)',shell_exec('lsb_release -irc')));
 	}
 	public static function getServerSoftware(){
-		return implode(' ',array_slice(preg_split('~[/ ]~',$_SERVER['SERVER_SOFTWARE']),0,2));
+		return implode(' ', \array_slice(preg_split('~[/ ]~', $_SERVER['SERVER_SOFTWARE']),0,2));
 	}
 	public static function getPHPVersion(){
 		return preg_replace('/^(\d+(?:\.\d+)*).*$/','$1',PHP_VERSION);

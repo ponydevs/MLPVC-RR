@@ -226,14 +226,14 @@ class Episode extends NSModel implements LinkableInterface {
 		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
 		if (preg_match($EPISODE_ID_REGEX, $id, $match))
 			return [
-				'season' => intval($match[1], 10),
-				'episode' => intval($match[2], 10),
+				'season' => \intval($match[1], 10),
+				'episode' => \intval($match[2], 10),
 				'twoparter' => !empty($match[3]),
 			];
 		else if (preg_match($MOVIE_ID_REGEX, $id, $match))
 			return [
 				'season' => 0,
-				'episode' => intval($match[1], 10),
+				'episode' => \intval($match[1], 10),
 				'twoparter' => false,
 			];
 		else return null;

@@ -41,16 +41,16 @@ class KnownIP extends NSModel implements LinkableInterface {
 			$vname = $k.'_seen';
 			$val = $$vname;
 			if ($val !== null){
-				if (is_string($val))
+				if (\is_string($val))
 					$data[$k.'_seen'] = date('c',strtotime($val));
-				else if (is_int($val))
+				else if (\is_int($val))
 					$data[$k.'_seen'] = date('c',$val);
 				else if ($val instanceof DateTime)
 					$data[$k.'_seen'] = date('c',$val->getTimestamp());
 			}
 		}
 
-		if (in_array($data['ip'], Logs::LOCALHOST_IPS, true))
+		if (\in_array($data['ip'], Logs::LOCALHOST_IPS, true))
 			$data['ip'] = 'localhost';
 
 		$existing = self::find_by_ip_and_user_id($data['ip'], $data['user_id']);

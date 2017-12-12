@@ -101,11 +101,11 @@ class CoreUtils {
 	 * @return string
 	 */
 	public static function notice($type, $title, $text = null, $center = false){
-		if (!in_array($type, self::$NOTICE_TYPES, true))
+		if (!\in_array($type, self::$NOTICE_TYPES, true))
 			throw new \RuntimeException("Invalid notice type $type");
 
-		if (!is_string($text)){
-			if (is_bool($text))
+		if (!\is_string($text)){
+			if (\is_bool($text))
 				$center = $text;
 			$text = $title;
 			$title = null;
@@ -216,7 +216,7 @@ class CoreUtils {
 		self::_checkAssets($options, $customJS, 'js/min', 'js', $view);
 
 		# Import variables
-		if (isset($options['import']) && is_array($options['import'])){
+		if (isset($options['import']) && \is_array($options['import'])){
 			$scope = $options['import'];
 			/** @noinspection ForeachSourceInspection */
 			foreach ($scope as $k => $v)
@@ -351,7 +351,7 @@ class CoreUtils {
 	 */
 	private static function _checkAssets(array $options, &$customType, string $relpath, string $ext, View $view){
 		if (isset($options[$ext])){
-			if (!is_array($options[$ext]))
+			if (!\is_array($options[$ext]))
 				throw new \RuntimeException("\$options[$ext] must be an array");
 			$customType = array_merge($customType, $options[$ext]);
 		}
@@ -417,7 +417,7 @@ class CoreUtils {
 	// Turns a file size ini setting value into bytes
 	private static function _shortSizeInBytes($size){
 		$unit = mb_substr($size, -1);
-		$value = intval(mb_substr($size, 0, -1), 10);
+		$value = \intval(mb_substr($size, 0, -1), 10);
 		switch(strtoupper($unit)){
 			case 'G':
 				$value *= 1024;
@@ -466,7 +466,7 @@ class CoreUtils {
 		/** @noinspection ES6ConvertVarToLetConst */
 		$HTML =  '<script>var ';
 		foreach ($export as $name => $value){
-			$type = gettype($value);
+			$type = \gettype($value);
 			switch (strtolower($type)){
 				case 'boolean':
 					$value = $value ? 'true' : 'false';
@@ -635,7 +635,7 @@ class CoreUtils {
 	 * @return bool Whether the folder was sucessfully created
 	 */
 	public static function createFoldersFor(string $path):bool {
-		$folder = dirname($path);
+		$folder = \dirname($path);
 		return !is_dir($folder) ? mkdir($folder,FOLDER_PERM,true) : true;
 	}
 
@@ -650,15 +650,15 @@ class CoreUtils {
 	 * @return string
 	 */
 	public static function arrayToNaturalString(array $list, string $append = 'and', string $separator = ',', $noescape = false):string {
-		if (is_string($list)) $list = explode($separator, $list);
+		if (\is_string($list)) $list = explode($separator, $list);
 
-		if (count($list) > 1){
+		if (\count($list) > 1){
 			$list_str = $list;
-			array_splice($list_str,count($list_str)-1,0,$append);
+			array_splice($list_str, \count($list_str)-1,0,$append);
 			$i = 0;
-			$maxDest = count($list_str)-3;
+			$maxDest = \count($list_str)-3;
 			while ($i < $maxDest){
-				if ($i === count($list_str)-1)
+				if ($i === \count($list_str)-1)
 					continue;
 				$list_str[$i] .= ',';
 				$i++;
@@ -687,7 +687,7 @@ class CoreUtils {
 			/** @var $fails string[][] */
 			$invalid = [];
 			foreach ($fails[0] as $f)
-				if (!in_array($f, $invalid, true)){
+				if (!\in_array($f, $invalid, true)){
 					switch ($f){
 						case "\n":
 							$invalid[] = '\n';
@@ -703,7 +703,7 @@ class CoreUtils {
 					}
 				}
 
-			$count = count($invalid);
+			$count = \count($invalid);
 			$s = $count!==1?'s':'';
 			$the_following = $count!==1?'the following':'an';
 			$Error = "$Thing (".self::escapeHTML($string).") contains $the_following invalid character$s: ".self::arrayToNaturalString($invalid);
@@ -896,9 +896,9 @@ HTML;
 	 */
 	public static function makePlural($w, float $in = 0, $prep = false):string {
 		$ret = ($prep?"$in ":'');
-		if ($in !== 1.0 && $w[-1] === 'y' && !in_array(strtolower($w),self::$_endsWithYButStillPlural,true))
+		if ($in !== 1.0 && $w[-1] === 'y' && !\in_array(strtolower($w),self::$_endsWithYButStillPlural,true))
 			return $ret.mb_substr($w,0,-1).'ies';
-		return $ret.$w.($in !== 1.0 && !in_array(strtolower($w),self::$_uncountableWords,true) ?'s':'');
+		return $ret.$w.($in !== 1.0 && !\in_array(strtolower($w),self::$_uncountableWords,true) ?'s':'');
 	}
 
 	/**
@@ -968,7 +968,7 @@ HTML;
 	 * @return float
 	 */
 	public static function average(array $numbers):float {
-		return array_sum($numbers)/count($numbers);
+		return array_sum($numbers)/ \count($numbers);
 	}
 
 	/**
@@ -979,8 +979,8 @@ HTML;
 	 * @return bool|int
 	 */
 	public static function isDeviationInClub($DeviationID){
-		if (!is_int($DeviationID))
-			$DeviationID = intval(mb_substr($DeviationID, 1), 36);
+		if (!\is_int($DeviationID))
+			$DeviationID = \intval(mb_substr($DeviationID, 1), 36);
 
 		try {
 			$DiFiRequest = HTTP::legitimateRequest("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
@@ -1079,7 +1079,7 @@ HTML;
 				'http' => [
 					'header' => 'Cookie: access='.urlencode(WS_SERVER_KEY)
 				],
-				'ssl' => defined('SOCKET_SSL_CTX') ? SOCKET_SSL_CTX : [],
+				'ssl' => \defined('SOCKET_SSL_CTX') ? SOCKET_SSL_CTX : [],
 			]
 		]));
 
@@ -1102,11 +1102,11 @@ HTML;
 	 * @param mixed  $value
 	 */
 	public static function set(&$on, $key, $value){
-		if (is_object($on))
+		if (\is_object($on))
 			$on->{$key} = $value;
-		else if (is_array($on))
+		else if (\is_array($on))
 			$on[$key] = $value;
-		else throw new \RuntimeException('$on is of invalid type ('.gettype($on).')');
+		else throw new \RuntimeException('$on is of invalid type ('.\gettype($on).')');
 	}
 
 	/**
@@ -1130,7 +1130,7 @@ HTML;
 		$available = curl_exec($ch) !== false;
 		$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if ($available === false && !empty($onlyFails))
-			$available = !in_array($responseCode, $onlyFails, false);
+			$available = !\in_array($responseCode, $onlyFails, false);
 		curl_close($ch);
 
 		return $available;
@@ -1309,7 +1309,7 @@ HTML;
 	public static function error_log(string $message){
 		global $logger;
 
-		if (defined('DISABLE_MONOLOG')){
+		if (\defined('DISABLE_MONOLOG')){
 			/** @noinspection ForgottenDebugOutputInspection */
 			error_log($message);
 			return;

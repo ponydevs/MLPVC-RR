@@ -85,7 +85,7 @@ class PCGSlotHistory extends NSModel {
 			$entry->change_data = JSON::encode($change_data);
 
 		if ($created !== null){
-			if (is_int($created))
+			if (\is_int($created))
 				$created = date('c', $created);
 			$entry->created = $created;
 		}

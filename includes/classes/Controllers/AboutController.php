@@ -27,7 +27,7 @@ class AboutController extends Controller {
 		if (isset($params['session'])){
 			if (Permission::insufficient('developer'))
 				CoreUtils::noPerm();
-			$SessionID = intval($params['session'], 10);
+			$SessionID = \intval($params['session'], 10);
 			/** @var $Session \App\Models\Session */
 			$Session = Session::find($SessionID);
 			if (!empty($Session))
@@ -67,7 +67,7 @@ class AboutController extends Controller {
 		CSRFProtection::protect();
 
 		$stat = strtolower(CoreUtils::trim($_GET['stat']));
-		if (!in_array($stat, self::STAT_TYPES, true))
+		if (!\in_array($stat, self::STAT_TYPES, true))
 			HTTP::statusCode(404, AND_DIE);
 
 		$cache = CachedFile::init(FSPATH."stats/$stat.json.gz", self::STAT_CHACHE_DURATION);
@@ -201,7 +201,7 @@ class AboutController extends Controller {
 						$i++;
 					}
 					Statistics::processUsageData($FinalRequests, $Dataset, $Labels);
-					$dsl = count($Dataset['data']);
+					$dsl = \count($Dataset['data']);
 					for ($i=1; $i<$dsl; $i++){
 						if ($Dataset['data'][$i] === 0 && $Dataset['data'][$i-1] > 0)
 							$Dataset['data'][$i] = $Dataset['data'][$i-1];
@@ -231,7 +231,7 @@ class AboutController extends Controller {
 						$i++;
 					}
 					Statistics::processUsageData($FinalReservations, $Dataset, $Labels);
-					$dsl = count($Dataset['data']);
+					$dsl = \count($Dataset['data']);
 					for ($i=1; $i<$dsl; $i++){
 						if ($Dataset['data'][$i] === 0 && $Dataset['data'][$i-1] > 0)
 							$Dataset['data'][$i] = $Dataset['data'][$i-1];

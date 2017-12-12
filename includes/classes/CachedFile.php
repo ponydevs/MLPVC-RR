@@ -23,20 +23,20 @@ class CachedFile {
 	 */
 	public function __construct(string $path, $max_age){
 		$this->_path = $path;
-		if (is_int($max_age))
+		if (\is_int($max_age))
 			$this->_max_age = $max_age;
-		else if (is_callable($max_age))
+		else if (\is_callable($max_age))
 			$this->_expiry_check = $max_age;
-		else throw new \InvalidArgumentException(__METHOD__.' $max_age should be int or callable, '.gettype($max_age).' given');
+		else throw new \InvalidArgumentException(__METHOD__.' $max_age should be int or callable, '.\gettype($max_age).' given');
 		$this->_guessType();
 	}
 
 	private function _guessType(){
 		$pathParts = explode('.',$this->_path);
-		$lastPart = strtolower(array_slice($pathParts, -1, 1)[0]);
+		$lastPart = strtolower(\array_slice($pathParts, -1, 1)[0]);
 		if ($lastPart === 'gz'){
 			$this->_gzip = true;
-			$ext = strtolower(array_slice($pathParts, -2, 1)[0]);
+			$ext = strtolower(\array_slice($pathParts, -2, 1)[0]);
 		}
 		else $ext = $lastPart;
 		switch ($ext){

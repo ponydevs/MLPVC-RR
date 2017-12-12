@@ -162,7 +162,7 @@ class ColorGuideController extends Controller {
 			$this->_initialize($params);
 		$this->_getAppearance($params);
 
-		if ($this->_appearance->isPrivate())
+		if ($this->_appearance->hidden())
 			CoreUtils::notFound();
 
 		switch ($params['ext']){
@@ -216,8 +216,8 @@ class ColorGuideController extends Controller {
 			$this->_initCGPath();
 		}
 
-		if ($this->_appearance->private && $this->_appearance->isPrivate())
-			CoreUtils::notFound();
+		if ($this->_appearance->hidden())
+			CoreUtils::noPerm();
 
 		$SafeLabel = $this->_appearance->getSafeLabel();
 		CoreUtils::fixPath("$this->_cgPath/v/{$this->_appearance->id}-$SafeLabel");
@@ -1105,7 +1105,7 @@ class ColorGuideController extends Controller {
 						Input::ERROR_INVALID => 'Cutie mark data (@value) is invalid',
 					]
 				]))->out();
-				if (count($data) > 4)
+				if (\count($data) > 4)
 					Response::fail('Appearances can only have a maximum of 4 cutie marks.');
 				/** @var $NewCMs Cutiemark[] */
 				$NewCMs = [];
@@ -1154,7 +1154,7 @@ class ColorGuideController extends Controller {
 						$facing = CoreUtils::trim($item['facing']);
 						if (empty($facing))
 							$facing = null;
-						else if (!in_array($facing,Cutiemarks::VALID_FACING_VALUES,true))
+						else if (!\in_array($facing,Cutiemarks::VALID_FACING_VALUES,true))
 							Response::fail('Body orientation "'.CoreUtils::escapeHTML($facing).'" is invalid');
 					}
 					else $facing = null;
@@ -1490,7 +1490,7 @@ class ColorGuideController extends Controller {
 		if (!$adding){
 			if (!isset($params['id']))
 				Response::fail('Missing tag ID');
-			$TagID = intval($params['id'], 10);
+			$TagID = \intval($params['id'], 10);
 			$Tag = Tag::find($TagID);
 			if (empty($Tag))
 				Response::fail('This tag does not exist');
@@ -1506,7 +1506,7 @@ class ColorGuideController extends Controller {
 
 				$tid = $Tag->synonym_of ?? $Tag->id;
 				$Uses = Tagged::by_tag($tid);
-				$UseCount = count($Uses);
+				$UseCount = \count($Uses);
 				if (!isset($_POST['sanitycheck']) && $UseCount > 0)
 					Response::fail('<p>This tag is currently used on '.CoreUtils::makePlural('appearance',$UseCount,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>', ['confirm' => true]);
 
@@ -1686,7 +1686,7 @@ HTML;
 
 			$Tagged = Tagged::by_tag($Tag->id);
 			foreach ($Tagged as $tg){
-				if (in_array($tg->appearance_id, $TaggedAppearanceIDs, true))
+				if (\in_array($tg->appearance_id, $TaggedAppearanceIDs, true))
 					continue;
 
 				if (!Tagged::make($Target->id, $tg->appearance_id)->save())
@@ -1726,7 +1726,7 @@ HTML;
 		if (!$adding){
 			if (empty($params['id']))
 				Response::fail('Missing color group ID');
-			$GroupID = intval($params['id'], 10);
+			$GroupID = \intval($params['id'], 10);
 			$Group = ColorGroup::find($GroupID);
 			if (empty($Group))
 				Response::fail("There’s no color group with the ID of $GroupID");
@@ -1915,7 +1915,7 @@ HTML;
 				/** @var $Affected Color[] */
 				$Affected = DB::$instance->where('id', $removedColorIDs)->get('colors');
 				foreach ($Affected as $color){
-					if (count((array) $color->dependant_colors) > 0){
+					if (\count((array) $color->dependant_colors) > 0){
 						$links = [];
 						foreach ($color->dependant_colors as $dep){
 							$arranged[$dep->appearance->id][$dep->group_id][$dep->id] = $dep;
@@ -2055,7 +2055,7 @@ HTML;
 					unset($arr['id']);
 				$group['colors'][] = $arr;
 			}
-			if (count($group['colors']) > 0)
+			if (\count($group['colors']) > 0)
 				$list[] = $group;
 		}
 		Response::done([ 'list' =>  $list ]);
@@ -2168,7 +2168,7 @@ HTML;
 
 	public function cutiemarkView($params){
 		$cutiemark = Cutiemark::find($params['id']);
-		if (empty($cutiemark) || $cutiemark->appearance->isPrivate())
+		if (empty($cutiemark) || $cutiemark->appearance->hidden())
 			CoreUtils::notFound();
 
 		CGUtils::renderCMSVG($cutiemark);
@@ -2176,7 +2176,7 @@ HTML;
 
 	public function cutiemarkDownload($params){
 		$cutiemark = Cutiemark::find($params['id']);
-		if (empty($cutiemark) || $cutiemark->appearance->isPrivate())
+		if (empty($cutiemark) || $cutiemark->appearance->hidden())
 			CoreUtils::notFound();
 
 		$source = isset($_REQUEST['source']) && Permission::sufficient('staff');

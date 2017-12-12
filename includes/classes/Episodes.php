@@ -108,7 +108,7 @@ class Episodes {
 	public static function loadPage($force = null, $serverSideRedirect = true, Post $LinkedPost = null){
 		if ($force instanceof Episode)
 			$CurrentEpisode = $force;
-		else if (is_string($force)){
+		else if (\is_string($force)){
 			$EpData = Episode::parseID($force);
 
 			if ($EpData['season'] === 0){
@@ -187,7 +187,7 @@ class Episodes {
 			$Videos = !empty($Videos['yt']) ? $Videos['yt'] : $Videos['dm'];
 			/** @var $Videos EpisodeVideo[] */
 
-			$Parts = count($Videos);
+			$Parts = \count($Videos);
 			foreach ($Videos as $v)
 				$embed .= "<div class='responsive-embed".($Episode->twoparter && $v->part!==1?' hidden':'')."'>".VideoProvider::getEmbed($v).'</div>';
 		}
@@ -267,7 +267,7 @@ HTML;
 			if (!$Episode->is_movie){
 				$href = $PathStart.$title['id'];
 				if ($Episode->twoparter)
-					$title['episode'] .= '-'.(intval($title['episode'],10)+1);
+					$title['episode'] .= '-'.(\intval($title['episode'],10)+1);
 				$SeasonEpisode = <<<HTML
 			<td class='season' rowspan='2'>{$title['season']}</td>
 			<td class='episode' rowspan='2'>{$title['episode']}</td>
@@ -348,26 +348,12 @@ HTML;
 
 			if (!empty($TaggedAppearances)){
 				$hidePreviews = UserPrefs::get('ep_noappprev');
-				$pages = CoreUtils::makePlural('page', count($TaggedAppearances));
+				$pages = CoreUtils::makePlural('page', \count($TaggedAppearances));
 				$HTML .= "<section class='appearances'><h2>Related <a href='/cg'>Color Guide</a> $pages</h2>";
-				$LINKS = '<ul>';
-				$isStaff = Permission::sufficient('staff');
-				foreach ($TaggedAppearances as $p){
-					$safeLabel = $p->getSafeLabel();
-					if ($p->isPrivate(true))
-						$preview = "<span class='typcn typcn-".($isStaff?'lock-closed':'time').' color-'.($isStaff?'orange':'darkblue')."'></span> ";
-					else {
-						if ($hidePreviews)
-							$preview = '';
-						else {
-							$preview = $p->getPreviewURL();
-							$preview = "<img src='$preview' class='preview' alt=''>";
-						}
-					}
-					$label = $p->processLabel();
-					$LINKS .= "<li><a href='/cg/v/{$p->id}-$safeLabel'>$preview$label</a></li>";
-				}
-				$HTML .= "$LINKS</ul></section>";
+				$LINKS = '';
+				foreach ($TaggedAppearances as $p)
+					$LINKS .= '<li>'.($hidePreviews ? $p->toAnchor() : $p->toAnchorWithPreview()).'</li>';
+				$HTML .= "<ul>$LINKS</ul></section>";
 			}
 		}
 		return $HTML;
