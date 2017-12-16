@@ -90,6 +90,7 @@ if ($isUserMember)
 		<section class="staff-limits">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Account limitations</h2>
 <?php	(new \App\UserSettingForm('a_pcgearn', $User, 'staff'))->render();
+		(new \App\UserSettingForm('a_pcgmake', $User, 'staff'))->render();
 		(new \App\UserSettingForm('a_postreq', $User, 'staff'))->render();
 		(new \App\UserSettingForm('a_postres', $User, 'staff'))->render();
 		(new \App\UserSettingForm('a_reserve', $User, 'staff'))->render(); ?>

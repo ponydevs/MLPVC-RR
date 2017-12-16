@@ -119,6 +119,9 @@ class PersonalGuideController extends ColorGuideController {
 		if (empty($targetUser))
 			Response::fail('User not found');
 
+		if (!UserPrefs::get('a_pcgmake', $targetUser))
+			Response::fail(Appearances::PCG_APPEARANCE_MAKE_DISABLED);
+
 		$avail = $targetUser->getPCGAvailablePoints(false);
 		if ($avail < 10){
 			$sameUser = $targetUser->id === Auth::$user->id;

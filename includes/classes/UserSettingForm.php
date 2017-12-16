@@ -90,6 +90,12 @@ class UserSettingForm {
 				'desc' => 'Can earn PCG slots (from finishing requests)',
 			]
 		],
+		'a_pcgmake' => [
+			'type' => 'checkbox',
+			'options' => [
+				'desc' => 'Can create PCG appearances',
+			]
+		],
 		'a_postreq' => [
 			'type' => 'checkbox',
 			'options' => [

@@ -10,6 +10,8 @@ use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServe
 
 class Appearances {
 	public const COUNT_COL = 'COUNT(*) as cnt';
+	public const PCG_APPEARANCE_MAKE_DISABLED = 'You are not allowed to create personal color guide appearances';
+
 	/**
 	 * @param bool      $EQG
 	 * @param int|int[] $limit

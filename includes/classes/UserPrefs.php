@@ -19,6 +19,7 @@ class UserPrefs extends GlobalSettings {
 		'ep_noappprev' => 0,
 		'ep_revstepbtn' => 0,
 		'a_pcgearn' => 1,
+		'a_pcgmake' => 1,
 		'a_postreq' => 1,
 		'a_postres' => 1,
 		'a_reserve' => 1,
@@ -149,6 +150,7 @@ class UserPrefs extends GlobalSettings {
 			break;
 
 			case 'a_pcgearn':
+			case 'a_pcgmake':
 			case 'a_postreq':
 			case 'a_postres':
 			case 'a_reserve':
