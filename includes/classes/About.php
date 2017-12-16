@@ -30,7 +30,7 @@ class About {
 		return $info['version']['number'];
 	}
 
-    const INI_BOOL_MAP = [
+    public const INI_BOOL_MAP = [
         1 => true,
 		'on' => true,
 		'true' => true,

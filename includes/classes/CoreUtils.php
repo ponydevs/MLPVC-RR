@@ -19,7 +19,7 @@ use enshrined\svgSanitize\Sanitizer;
 use Monolog\Logger;
 
 class CoreUtils {
-	const
+	public const
 		FIXPATH_EMPTY = '#';
 	/**
 	 * Forces an URL rewrite to the specified path
@@ -1088,7 +1088,7 @@ HTML;
 		$elephant->close();
 	}
 
-	const VECTOR_APPS = [
+	public const VECTOR_APPS = [
 		'' => '(don’t show)',
 		'illustrator' => 'Adobe Illustrator',
 		'inkscape' => 'Inkscape',
@@ -1207,7 +1207,7 @@ HTML;
 		return $data;
 	}
 
-	const USELESS_NODE_NAMES = [
+	public const USELESS_NODE_NAMES = [
 		'#text' => true,
 		'br' => true,
 	];
@@ -1316,7 +1316,7 @@ HTML;
 		}
 
 		/** @var $logger Logger */
-		$logger->log(Logger::DEBUG, $message, [
+		$logger->log(Logger::ERROR, $message, [
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'referrer' => $_SERVER['HTTP_REFERER'] ?? null,
 			'request_uri' => $_SERVER['REQUEST_URI'],
@@ -1329,12 +1329,7 @@ HTML;
 		]);
 	}
 
-	/**
-	 * @param float $n
-	 * @param int   $decimals
-	 * @return array
-	 */
-	public static function splitFloat(float $n, int $decimals = 1):array {
-		return explode('.', number_format($n, $decimals, '.', ''));
+	public static function responseSmiley(string $face):string {
+		return "<div class='align-center'><span class='sideways-smiley-face'>$face</span></div>";
 	}
 }

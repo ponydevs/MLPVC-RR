@@ -22,7 +22,7 @@ class ColorGroupController extends ColorGuideController {
 		global $HEX_COLOR_REGEX;
 
 		$this->_initPersonal($params, false);
-		if (Permission::insufficient('member'))
+		if (!Auth::$signed_in)
 			Response::fail();
 		$isStaff = Permission::sufficient('staff');
 

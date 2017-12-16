@@ -227,7 +227,7 @@ HTML;
 		else Cookie::delete('access', Cookie::HTTPONLY);
 	}
 
-	const PROFILE_SECTION_PRIVACY_LEVEL = [
+	public const PROFILE_SECTION_PRIVACY_LEVEL = [
 		'developer' => "<span class='typcn typcn-cog color-red' title='Visible to: developer'></span>",
 		'public' => "<span class='typcn typcn-world color-blue' title='Visible to: public'></span>",
 		'staff' => "<span class='typcn typcn-lock-closed' title='Visible to: you & group staff'></span>",
@@ -235,7 +235,7 @@ HTML;
 		'private' => "<span class='typcn typcn-lock-closed color-green' title='Visible to: you'></span>",
 	];
 
-	const YOU_HAVE = [
+	public const YOU_HAVE = [
 		1 => 'You have',
 		0 => 'This user has',
 	];
@@ -251,29 +251,25 @@ HTML;
 		return $User->getPendingReservationsHTML($sameUser, $isMember);
 	}
 
-	public static function getPersonalColorGuideHTML(User $User, bool $sameUser):string {
+	public static function getPersonalColorGuideHTML(User $User, bool $sameUser, bool $wrap = WRAP):string {
 		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $User);
 		if ($sectionIsPrivate && (!$sameUser && Permission::insufficient('staff')))
 			return '';
 
-		$HTML = '';
 		$privacy = $sameUser ? self::PROFILE_SECTION_PRIVACY_LEVEL[$sectionIsPrivate ? 'staff' : 'public'] : '';
 		$whatBtn = $sameUser ? ' <button class="personal-cg-say-what typcn typcn-info-large darkblue">What?</button>':'';
-		$HTML .= <<<HTML
-<section class="personal-cg">
-	<h2>{$privacy}Personal Color Guide{$whatBtn}</h2>
-HTML;
+		$HTML = "<h2>{$privacy}Personal Color Guide{$whatBtn}</h2>";
 
 		$showPrivate = $sameUser || Permission::sufficient('staff');
 		if ($showPrivate){
 			$ThisUser = $sameUser?'You':'This user';
-			[$availslots, $remainslots] = CoreUtils::splitFloat($User->getPCGAvailableSlots(false));
-			$remainslots = 10-$remainslots;
-			$nSlots = CoreUtils::makePlural('remaining slot',$availslots,PREPEND_NUMBER);
-			$rSlots = CoreUtils::makePlural('approved request',$remainslots,PREPEND_NUMBER);
+			$availPoints = $User->getPCGAvailablePoints(false);
+			$remainPoints = 10-($availPoints % 10);
+			$nSlots = CoreUtils::makePlural('remaining slot',floor($availPoints/10),PREPEND_NUMBER);
+			$nRequests = CoreUtils::makePlural('approved request',$remainPoints,PREPEND_NUMBER);
 			$has = $sameUser?'have':'has';
 			$is = $sameUser?'are':'is';
-			$HTML .= "<div class='personal-cg-progress'><p>$ThisUser $has $nSlots and $is $rSlots away from getting another.</p></div>";
+			$HTML .= "<div class='personal-cg-progress'><p>$ThisUser $has $nSlots and $is $nRequests away from getting another.</p></div>";
 		}
 
 		$PersonalColorGuides = $User->pcg_appearances;
@@ -284,10 +280,18 @@ HTML;
 			$HTML .= '</ul>';
 		}
 		$Action = $sameUser ? 'Manage' : 'View';
-		$HTML .= "<p><a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a>".$User->getPCGSlotHistoryButtonHTML($showPrivate).'</p>';
-		$HTML .= '</section>';
+		$slothistbtn = $User->getPCGPointHistoryButtonHTML($showPrivate);
+		$giftslotbtn = $User->getPCGSlotGiftButtonHTML();
+		$HTML .= <<<HTML
+<p>
+	<a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a>
+	$slothistbtn
+	$giftslotbtn
+</p>
+HTML;
+		$HTML .= '';
 
-		return $HTML;
+		return $wrap ? "<section class='personal-cg'>$HTML</section>" : $HTML;
 	}
 
 	public static function calculatePersonalCGNextSlot(int $postcount):int {
@@ -331,7 +335,7 @@ HTML;
 	}
 
 	//const NOPE = '<em>Nope</em>';
-	const NOPE = '<span class="typcn typcn-times"></span>';
+	public const NOPE = '<span class="typcn typcn-times"></span>';
 
 	private static function _contribItemFinished(Post $item):string {
 		if ($item->deviation_id === null)

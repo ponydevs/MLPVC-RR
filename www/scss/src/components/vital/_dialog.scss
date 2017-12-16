@@ -229,6 +229,13 @@ body.dialog-open {
 		user-select: all;
 	}
 
+	.large-number-input {
+		font-size: 28px;
+		max-width: 70px;
+		text-align: center;
+		margin: 10px auto;
+	}
+
 	/* Colors */
 	.blue     { color: $NBlue }
 	.darkblue { color: $NDarkBlue }

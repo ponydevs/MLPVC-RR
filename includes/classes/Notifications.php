@@ -6,11 +6,12 @@ use ActiveRecord\RecordNotFound;
 use App\CoreUtils;
 use App\Models\Appearance;
 use App\Models\Notification;
+use App\Models\PCGSlotGift;
 use App\Models\Post;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 class Notifications {
-	const
+	public const
 		ALL = 0,
 		UNREAD_ONLY = 1,
 		READ_ONLY = 2;
@@ -117,6 +118,32 @@ class Notifications {
 					$suffix = CoreUtils::posess($Appearance->label, true);
 					$HTML .= self::_getNotifElem("{$Appearance->toAnchor()}$suffix <a href='/cg/sprite/{$Appearance->id}'>sprite</a> is missing some colors", $n);
 				break;
+				case 'pcg-slot-gift':
+				case 'pcg-slot-accept':
+				case 'pcg-slot-reject':
+				case 'pcg-slot-refund':
+					$gift = PCGSlotGift::find($data['gift_id']);
+					if (empty($gift))
+						$HTML .= self::_getNotifElem('The gift referenced by this notification no longer exists.', $n);
+					else {
+						$nslots = CoreUtils::makePlural('Personal Color Guide slot', $gift->amount, PREPEND_NUMBER);
+						switch (explode('-', $n->type)[2]){
+							case 'gift':
+								$HTML .=  self::_getNotifElem("You've received a gift of $nslots from {$gift->sender->toAnchor()}", $n);
+							break;
+							case 'accept':
+								$HTML .=  self::_getNotifElem("Your gift of $nslots has been accepted by {$gift->receiver->toAnchor()}", $n);
+							break;
+							case 'reject':
+								$HTML .=  self::_getNotifElem("Your gift of $nslots has been rejected by {$gift->receiver->toAnchor()}, you were refunded", $n);
+							break;
+							case 'refund':
+								$refunder = Permission::sufficient('staff') ? $gift->refunder->toAnchor() : 'a staff member';
+								$HTML .=  self::_getNotifElem("Your gift of $nslots to {$gift->receiver->toAnchor()} has been refunded by $refunder", $n);
+							break;
+						}
+					}
+				break;
 				default:
 					$HTML .= "<li><code>Notification({$n->type})#{$n->id}</code> <span class='nobr'>&ndash; Missing handler</span></li>";
 			}
@@ -132,11 +159,11 @@ class Notifications {
 	 * @return string
 	 */
 	private static function _getNotifElem(string $html, Notification $n):string {
-		if (empty(Notification::$ACTIONABLE_NOTIF_OPTIONS[$n->type]))
+		if (empty(Notification::ACTIONABLE_NOTIF_OPTIONS[$n->type]))
 			$actions = "<span class='mark-read variant-green typcn typcn-tick' title='Mark read' data-id='{$n->id}'></span>";
 		else {
 			$actions = '';
-			foreach (Notification::$ACTIONABLE_NOTIF_OPTIONS[$n->type] as $value => $opt){
+			foreach (Notification::ACTIONABLE_NOTIF_OPTIONS[$n->type] as $value => $opt){
 				$confirm = !isset($opt['confirm']) || $opt['confirm'] !== false ? 'data-confirm' :'';
 				$action = isset($opt['action']) ? 'data-action="'.CoreUtils::aposEncode($opt['action']).'"' : '';
 				$actions .= "<span class='mark-read variant-{$opt['color']} typcn typcn-{$opt['icon']}' title='{$opt['label']}' data-id='{$n->id}' data-value='$value' $confirm $action></span>";
@@ -155,6 +182,14 @@ class Notifications {
 		}
 		catch (ServerConnectionFailureException $e){
 			CoreUtils::error_log("Notification server down!\n".$e->getMessage()."\n".$e->getTraceAsString());
+
+			// Attempt to mark as read if exists since users won't get a live update anyway if the server is down
+			$notif = Notification::find($NotifID);
+			if (!empty($notif)){
+				$notif->read_at = date('c');
+				$notif->save();
+			}
+
 			if (!$silent)
 				Response::fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
 		}

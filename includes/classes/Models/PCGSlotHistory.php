@@ -20,34 +20,41 @@ class PCGSlotHistory extends NSModel {
 	public static $table_name = 'pcg_slot_history';
 
 	// true = +, false = -
-	const VALID_CHANGE_TYPES = [
+	public const VALID_CHANGE_TYPES = [
 		'post_approved' => true,
 		'post_unapproved' => false,
 		'staff_member' => true, // Assigned on initial import to avoid showing a "joined" entry out of nowhere
 		'staff_join' => true,
 		'staff_leave' => false,
-		//'manual_give' => true,
-		//'manual_take' => false,
+		'gift_sent' => false, // Deducts from sender
+		'gift_accepted' => true, // Transfers to receiver
+		'gift_rejected' => true, // Refunds the sender
+		'gift_refunded' => true, // Refunds the sender
 		'appearance_del' => true,
 		'appearance_add' => false,
+		'free_trial' => true,
 	];
 
-	const CHANGE_DESC = [
+	public const CHANGE_DESC = [
 		'post_approved' => 'Post approved',
 		'post_unapproved' => 'Post un-approved',
 		'staff_member' => 'Being staff',
 		'staff_join' => 'Joined staff',
 		'staff_leave' => 'Left staff',
-		//'manual_give' => 'Manually given',
-		//'manual_take' => 'Manually taken',
+		'gift_sent' => 'Slots gifted',
+		'gift_accepted' => 'Gift accepted',
+		'gift_rejected' => 'Gift rejected',
+		'gift_refunded' => 'Gift refunded',
 		'appearance_del' => 'Appearance deleted',
 		'appearance_add' => 'Appearance added',
+		'free_trial' => 'Free slot',
 	];
 
-	const DEFAULT_CHANGE = [
-		'post' => 0.1,
-		'staff' => 1,
-		'appearance' => 1,
+	public const DEFAULT_CHANGE = [
+		'post' => 1,
+		'staff' => 10,
+		'appearance' => 10,
+		'free' => 10,
 	];
 
 	public static $belongs_to = [
@@ -57,12 +64,12 @@ class PCGSlotHistory extends NSModel {
 	/**
 	 * @param string            $user_id
 	 * @param string            $change_type
-	 * @param float|null        $change_amount
+	 * @param int|null          $change_amount
 	 * @param array|null        $change_data
 	 * @param int|DateTime|null $created
 	 * @return self
 	 */
-	public static function makeRecord(string $user_id, string $change_type, ?float $change_amount = null, ?array $change_data = null, $created = null):self {
+	public static function makeRecord(string $user_id, string $change_type, ?int $change_amount = null, ?array $change_data = null, $created = null):self {
 		$entry = new self();
 		$entry->user_id = $user_id;
 

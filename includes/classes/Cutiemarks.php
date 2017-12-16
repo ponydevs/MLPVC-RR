@@ -18,7 +18,7 @@ class Cutiemarks {
 		return DB::$instance->where('appearance_id', $Appearance->id)->get(Cutiemark::$table_name);
 	}
 
-	const VALID_FACING_VALUES = ['left','right'];
+	public const VALID_FACING_VALUES = ['left', 'right'];
 
 	/**
 	 * @param Cutiemark[] $CutieMarks

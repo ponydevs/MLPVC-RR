@@ -252,7 +252,7 @@ class Episode extends NSModel implements LinkableInterface {
 		return EpisodeVote::find_for($this, $user);
 	}
 
-	const
+	public const
 		PREVIOUS = '<',
 		NEXT = '>';
 	/**

@@ -44,6 +44,8 @@ use SeinopSys\RGBAColor;
  * @method static Appearance[] all(...$args)
  */
 class Appearance extends NSModel implements LinkableInterface {
+	public static $table_name = 'appearances';
+
 	public static $has_many = [
 		['cutiemarks', 'foreign_key' => 'appearance_id', 'order' => 'facing asc'],
 		['tags', 'through' => 'tagged'],
@@ -62,7 +64,7 @@ class Appearance extends NSModel implements LinkableInterface {
 			return [];
 
 		/** @var $arr Color[] */
-		$arr = DB::$instance->setModel('Color')->query(
+		$arr = DB::$instance->setModel(Color::class)->query(
 			'SELECT c.hex FROM colors c
 			LEFT JOIN color_groups cg ON c.group_id = cg.id
 			WHERE cg.appearance_id = ? AND c.hex IS NOT NULL
@@ -105,7 +107,7 @@ class Appearance extends NSModel implements LinkableInterface {
 		return Appearance::find('first', [ 'conditions' => $conds ]);
 	}
 
-	const SPRITE_SIZES = [
+	public const SPRITE_SIZES = [
 		'REGULAR' => 600,
 		'SOURCE' => 300,
 	];
@@ -282,7 +284,7 @@ class Appearance extends NSModel implements LinkableInterface {
 	 */
 	public function getRelatedEpisodesHTML($allowMovies = false){
 		/** @var $EpTagsOnAppearance Tag[] */
-		$EpTagsOnAppearance = DB::$instance->setModel('Tag')->query(
+		$EpTagsOnAppearance = DB::$instance->setModel(Tag::class)->query(
 			"SELECT t.name
 			FROM tagged tg
 			LEFT JOIN tags t ON tg.tag_id = t.id
@@ -586,7 +588,7 @@ HTML;
 			WHERE group_id IN (SELECT group_id FROM color_groups WHERE appearance_id = ?)$hexnull", [$this->id])['cnt'] ?? 0) > 0;
 	}
 
-	const
+	public const
 		PONY_TEMPLATE = [
 			'Coat' => [
 				'Outline',
@@ -671,7 +673,7 @@ HTML;
 		return $this;
 	}
 
-	const CLEAR_ALL = [
+	public const CLEAR_ALL = [
 		self::CLEAR_PALETTE,
 		self::CLEAR_PREVIEW,
 		self::CLEAR_CM,
@@ -679,7 +681,7 @@ HTML;
 		self::CLEAR_SPRITE,
 		self::CLEAR_SPRITE_SVG,
 	];
-	const
+	public const
 		CLEAR_PALETTE     = 'palette.png',
 		CLEAR_PREVIEW     = 'preview.svg',
 		CLEAR_CM          = '&cutiemark',
@@ -717,7 +719,7 @@ HTML;
 		return !\in_array(false, $success, true);
 	}
 
-	const DEFAULT_COLOR_MAPPING = [
+	public const DEFAULT_COLOR_MAPPING = [
 		'Coat Outline' => '#0D0D0D',
 		'Coat Shadow Outline' => '#000000',
 		'Coat Fill' => '#2B2B2B',

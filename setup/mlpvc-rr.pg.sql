@@ -75,7 +75,7 @@ CREATE TABLE appearances (
     added timestamp with time zone DEFAULT now(),
     private boolean DEFAULT false NOT NULL,
     owner_id uuid,
-    last_cleared timestamp with time zone DEFAULT now(),
+    last_cleared timestamp with time zone,
     notes_rend text,
     token uuid DEFAULT uuid_generate_v4() NOT NULL
 );

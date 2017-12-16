@@ -41,7 +41,7 @@ class DiscordMember extends AbstractUser {
 
 	// This array defines static bindings for Staff members to prevent fraud
 	// Prefixes are to prevent keys from converting to numbers
-	const STAFF_BINDINGS = [
+	public const STAFF_BINDINGS = [
 		'id-167355011754491904' => '0ed57486-fc42-a2b1-3092-8f74c7ec4921',
 		'id-135035980292947968' => '06af57df-8755-a533-8711-c66f0875209a',
 		'id-134863841006845952' => '3a3d7829-9021-91a6-d84a-a8c041102fdd',
@@ -55,7 +55,7 @@ class DiscordMember extends AbstractUser {
 	];
 
 	// List of DA user IDs we do not want to automatically bind to for whatever reason (e.g. ambigous name)
-	const BIND_BLACKLIST = [
+	public const BIND_BLACKLIST = [
 		'de07c6f1-cdbe-d154-47d4-1d7315688c95',
 		'ae90a347-25b4-a850-f7be-8399d16810ce',
 		'd401c282-16bc-525b-c689-86c657fdcc14',

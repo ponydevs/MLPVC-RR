@@ -9,7 +9,7 @@
 		$GoToPageFormTemplate = $.mk('form').attr('id','goto-page').html(
 			`<label>
 				<span>Enter page number</span>
-				<input type="number" min="1" step="1">
+				<input type="number" min="1" step="1" class="large-number-input">
 			</label>`
 		).on('submit', function(e){
 			e.preventDefault();

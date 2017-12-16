@@ -325,91 +325,6 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage(__METHOD__, $settings);
 	}
 
-	public function personalGuide($params){
-		$this->_initPersonal($params);
-
-		if (!$this->_ownedBy->canVisitorSeePCG())
-			CoreUtils::noPerm();
-
-		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
-	    $_EntryCount = $this->_ownedBy->getPCGAppearanceCount();
-
-	    $Pagination = new Pagination("@{$this->_ownedBy->name}/cg", $AppearancesPerPage, $_EntryCount);
-	    $Ponies = $this->_ownedBy->getPCGAppearances($Pagination);
-
-		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}");
-		$heading = CoreUtils::posess($this->_ownedBy->name).' Personal Color Guide';
-		$title = "Page {$Pagination->page} - $heading";
-
-		$Pagination->respondIfShould(Appearances::getHTML($Ponies, NOWRAP), '#list');
-
-		$settings = [
-			'title' => $title,
-			'heading' => $heading,
-			'css' => ['pages/colorguide/guide'],
-			'js' => ['jquery.qtip', 'jquery.ctxmenu', 'pages/colorguide/guide', 'paginate'],
-			'import' => [
-				'Ponies' => $Ponies,
-				'Pagination' => $Pagination,
-				'User' => $this->_ownedBy,
-				'isOwner' => $this->_isOwnedByUser,
-			],
-		];
-		if ($this->_isOwnedByUser || Permission::sufficient('staff')){
-			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
-			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
-		}
-		CoreUtils::loadPage('UserController::colorGuide', $settings);
-	}
-
-	public function personalGuideSlotHistory($params){
-		$this->_initPersonal($params);
-
-		if (!$this->_isOwnedByUser && Permission::insufficient('staff'))
-			CoreUtils::noPerm();
-
-		$EntriesPerPage = 20;
-	    $_EntryCount = $this->_ownedBy->getPCGSlotHistoryEntryCount();
-
-	    $Pagination = new Pagination("@{$this->_ownedBy->name}/cg/slot-history", $EntriesPerPage, $_EntryCount);
-	    $Entries = $this->_ownedBy->getPCGSlotHistoryEntries($Pagination);
-
-		CoreUtils::fixPath("{$this->_cgPath}/slot-history/{$Pagination->page}");
-		$heading = CoreUtils::posess($this->_ownedBy->name).' Personal Color Guide Slot History';
-		$title = "Page {$Pagination->page} - $heading";
-
-		$Pagination->respondIfShould(CGUtils::getPCGSlotHistoryHTML($Entries, NOWRAP), '#history-entries tbody');
-
-		$js = ['paginate'];
-		if (Permission::sufficient('developer'))
-			$js[] = true;
-		CoreUtils::loadPage('UserController::pcgSlots', [
-			'title' => $title,
-			'heading' => $heading,
-			'css' => [true],
-			'js' => $js,
-			'import' => [
-				'Entries' => $Entries,
-				'Pagination' => $Pagination,
-				'User' => $this->_ownedBy,
-				'isOwner' => $this->_isOwnedByUser,
-			],
-		]);
-	}
-
-	public function personalGuideSlotRecalc($params){
-		if (Permission::insufficient('developer'))
-			CoreUtils::noPerm();
-
-		$this->_initPersonal($params);
-
-		DB::$instance->where('user_id', $this->_ownedBy->id)->delete(PCGSlotHistory::$table_name);
-		UserPrefs::reset('pcg_slots', $this->_ownedBy);
-		$this->_ownedBy->getPCGAvailableSlots();
-
-		Response::done();
-	}
-
 	public function export(){
 		if (Permission::insufficient('developer'))
 			CoreUtils::noPerm();
@@ -557,7 +472,7 @@ class ColorGuideController extends Controller {
 	}
 
 	public function sanitizeSvg($params){
-		if (Permission::insufficient('member'))
+		if (!Auth::$signed_in)
 			Response::fail();
 
 		CSRFProtection::protect();

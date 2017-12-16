@@ -6,7 +6,7 @@ use ActiveRecord\DateTime;
 use Moment\Moment;
 
 class Time {
-	const IN_SECONDS = [
+	public const IN_SECONDS = [
 		'year' =>   31557600,
 		'month' =>  2592000,
 		'week' =>   604800,
@@ -16,7 +16,7 @@ class Time {
 		'second' => 1,
 	];
 
-	const SHORT_UINTS = [
+	public const SHORT_UINTS = [
 		'year' =>   'y',
 		'month' =>  'mo',
 		'week' =>   'w',
@@ -85,7 +85,7 @@ class Time {
 		return $out->getRelative();
 	}
 
-	const
+	public const
 		FORMAT_FULL = 'jS F Y, H:i:s T',
 		FORMAT_READABLE = 'readable';
 	/**
@@ -109,7 +109,7 @@ class Time {
 		return $ts;
 	}
 
-	const
+	public const
 		TAG_EXTENDED = true,
 		TAG_ALLOW_DYNTIME = 'yes',
 		TAG_NO_DYNTIME = 'no',

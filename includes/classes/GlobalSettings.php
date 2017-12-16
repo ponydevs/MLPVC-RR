@@ -5,7 +5,7 @@ namespace App;
 use App\Models\GlobalSetting;
 
 class GlobalSettings {
-	const DEFAULTS = [
+	public const DEFAULTS = [
 		'reservation_rules' => '',
 		'about_reservations' => '',
 		'dev_rolelabel' => 'developer',

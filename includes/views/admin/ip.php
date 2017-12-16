@@ -10,9 +10,9 @@
 		<a class='btn link typcn typcn-document-text' href="/admin/logs?by=<?=$ip?>">View Log Entries</a>
 	</p>
 
+<?  if (!empty($KnownIPs)){ ?>
 	<section>
-		<h2>Occurences</h2>
-<?  if (!empty($KnownIPs )){ ?>
+		<h2><?=\App\CoreUtils::makePlural('Occurence', count($KnownIPs), PREPEND_NUMBER)?></h2>
 		<ol><?
 		foreach ($KnownIPs as $knownIP){
 			$fs = \App\Time::tag($knownIP->first_seen);
@@ -28,8 +28,8 @@
 </li>
 HTML;
 		} ?></ol>
-<?	} ?>
 	</section>
+<?	} ?>
 	<section>
 		<h2>Users</h2>
 <?php

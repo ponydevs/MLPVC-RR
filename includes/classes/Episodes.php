@@ -9,7 +9,7 @@ use App\Models\EpisodeVote;
 use App\Models\Post;
 
 class Episodes {
-	const TITLE_CUTOFF = 26;
+	public const TITLE_CUTOFF = 26;
 	public static $ALLOWED_PREFIXES = [
 		'Equestria Girls' => 'EQG',
 		'My Little Pony' => 'MLP',
@@ -36,7 +36,7 @@ class Episodes {
 		return DB::$instance->getOne('episodes');
 	}
 
-	const ALLOW_MOVIES = true;
+	public const ALLOW_MOVIES = true;
 
 	private static $EP_CACHE = [];
 
@@ -197,7 +197,7 @@ class Episodes {
 		];
 	}
 
-	const
+	public const
 		VIDEO_PROVIDER_NAMES = [
 			'yt' => 'YouTube',
 			'dm' => 'Dailymotion',
@@ -339,7 +339,7 @@ HTML;
 		$EpTagIDs = $Episode->getTagIDs();
 		if (!empty($EpTagIDs)){
 			/** @var $TaggedAppearances Appearance[] */
-			$TaggedAppearances = DB::$instance->setModel('Appearance')->query(
+			$TaggedAppearances = DB::$instance->setModel(Appearance::class)->query(
 				'SELECT p.*
 				FROM tagged t
 				LEFT JOIN appearances p ON t.appearance_id = p.id

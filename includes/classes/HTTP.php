@@ -155,7 +155,7 @@ class HTTP {
 			die();
 	}
 
-	const
+	public const
 		REDIRECT_PERM = 301,
 		REDIRECT_TEMP = 302;
 

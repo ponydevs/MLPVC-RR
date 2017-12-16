@@ -8,6 +8,7 @@ use App\Models\ColorGroup;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
 use App\Models\Logs\Log;
+use App\Models\PCGSlotGift;
 use App\Models\Request;
 use App\Models\Reservation;
 use App\Models\User;
@@ -15,30 +16,32 @@ use cogpowered\FineDiff;
 
 class Logs {
 	public static $LOG_DESCRIPTION = [
-		'episodes' => 'Episode management',
-		'episode_modify' => 'Episode modified',
-		'rolechange' => 'User group change',
-		'userfetch' => 'Fetch user details',
-		'post_lock' => 'Post approved',
-		'major_changes' => 'Major appearance update',
-		'req_delete' => 'Request deleted',
-		'img_update' => 'Post image updated',
-		'res_overtake' => 'Overtook post reservation',
-		'appearances' => 'Appearance management',
-		'res_transfer' => 'Reservation transferred',
-		'cg_modify' => 'Color group modified',
-		'cgs' => 'Color group management',
-		'cg_order' => 'Color groups re-ordered',
-		'appearance_modify' => 'Appearance modified',
-		'da_namechange' => 'Username change detected',
-		'video_broken' => 'Broken video removed',
-		'cm_modify' => 'Appearance CM edited',
-		'post_break' => 'Post image broken',
-		'post_fix' => 'Broken post restored',
-		'staff_limits' => 'Account limitation changed',
+		#--------------------# (max length)
+		'episodes'             => 'Episode management',
+		'episode_modify'       => 'Episode modified',
+		'rolechange'           => 'User group change',
+		'userfetch'            => 'Fetch user details',
+		'post_lock'            => 'Post approved',
+		'major_changes'        => 'Major appearance update',
+		'req_delete'           => 'Request deleted',
+		'img_update'           => 'Post image updated',
+		'res_overtake'         => 'Overtook post reservation',
+		'appearances'          => 'Appearance management',
+		'res_transfer'         => 'Reservation transferred',
+		'cg_modify'            => 'Color group modified',
+		'cgs'                  => 'Color group management',
+		'cg_order'             => 'Color groups re-ordered',
+		'appearance_modify'    => 'Appearance modified',
+		'da_namechange'        => 'Username change detected',
+		'video_broken'         => 'Broken video removed',
+		'cm_modify'            => 'Appearance CM edited',
+		'post_break'           => 'Post image broken',
+		'post_fix'             => 'Broken post restored',
+		'staff_limits'         => 'Account limitation changed',
+		'pcg_gift_refund'      => 'Gifted slots refunded',
 	];
 
-	const FORCE_INITIATOR_WEBSERVER = true;
+	public const FORCE_INITIATOR_WEBSERVER = true;
 
 	/**
 	 * Logs a specific set of data (action) in the table belonging to the specified type
@@ -78,7 +81,7 @@ class Logs {
 		'del' => '<span class="color-red"><span class="typcn typcn-trash"></span> Delete</span>'
 	];
 
-	const
+	public const
 		KEYCOLOR_INFO = 'blue',
 		KEYCOLOR_ERROR = 'red',
 		KEYCOLOR_SUCCESS = 'green',
@@ -352,6 +355,13 @@ class Logs {
 				$keyc = $data['allow'] ? self::KEYCOLOR_SUCCESS : self::KEYCOLOR_ERROR;
 				$details[] = ["<span class='typcn typcn-$icon'></span> $text", self::SKIP_VALUE, $keyc];
 			break;
+			case 'pcg_gift_refund':
+				$gift = PCGSlotGift::find($data['gift_id']);
+				$details[] = ['Sender', $gift->sender->toAnchor()];
+				$details[] = ['Recipient', $gift->receiver->toAnchor()];
+				$details[] = ['Amount', CoreUtils::makePlural('slot', $gift->amount, PREPEND_NUMBER).' ('.CoreUtils::makePlural('point', $gift->amount*10, PREPEND_NUMBER).')'];
+				$details[] = ['Sent', Time::tag($gift->created_at)];
+			break;
 			default:
 				$details[] = ['<span class="typcn typcn-warning"></span> Couldn’t process details', 'No data processor defined for this entry type', self::KEYCOLOR_ERROR];
 				$details[] = ['Raw details', '<pre>'.var_export($data, true).'</pre>'];
@@ -434,9 +444,9 @@ class Logs {
 		return "<a href='".CoreUtils::aposEncode($url)."' ".($blank?'target="_blank" rel="noopener"':'').">$url</a>";
 	}
 
-	const LOCALHOST_IPS = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
+	public const LOCALHOST_IPS = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
 
-	const SEARCH_USER_LINK = '';
+	public const SEARCH_USER_LINK = '';
 
 	/**
 	 * Render log page <tbody> content
@@ -465,7 +475,7 @@ class Logs {
 			$ip = \in_array(strtolower($item['ip']), self::LOCALHOST_IPS, true) ? 'localhost' : $item['ip'];
 			$ownIP = $item['ip'] === $_SERVER['REMOTE_ADDR'];
 			$strongIP = $ownIP ? "<strong title='Your current IP'>$ip</strong>" : $ip;
-			$ip = "<a class='typcn typcn-zoom search-ip".($ownIP?' your-ip':'')."' title='Search for all entries from this IP'></a> <a  class='typcn typcn-info-large' href='/admin/ip/$ip'></a> <span class='address'>$strongIP</span>";
+			$ip = "<a class='typcn typcn-zoom search-ip".($ownIP?' your-ip':'')."' title='Search for all entries from this IP'></a> <a  class='typcn typcn-info-large' href='/admin/ip/$ip' title='View users associated with this IP'></a> <span class='address'>$strongIP</span>";
 
 			$event = self::$LOG_DESCRIPTION[$item['reftype']] ?? $item['reftype'];
 			if (isset($item['refid']))

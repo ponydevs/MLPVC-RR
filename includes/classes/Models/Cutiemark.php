@@ -57,7 +57,7 @@ class Cutiemark extends NSModel {
 		return FSPATH."cm_tokenized/{$this->id}.svg";
 	}
 
-	const SOURCE_FOLDER = FSPATH.'cm_source/';
+	public const SOURCE_FOLDER = FSPATH.'cm_source/';
 
 	public function getSourceFilePath(){
 		return self::SOURCE_FOLDER.$this->id.'.svg';
@@ -116,6 +116,18 @@ class Cutiemark extends NSModel {
 		return $this->appearance->getFacingSVGURL($this->facing);
 	}
 
+	public function getPreviewForAppearancePageListItem(){
+		$facingSVG = $this->getFacingSVGURL();
+		$preview = CoreUtils::aposEncode($this->getRenderedURL());
+		$rotate = $this->rotation !== 0 ? "transform:rotate({$this->rotation}deg)" : '';
+		return <<<HTML
+<div class="preview" style="background-image:url('{$facingSVG}')">
+	<div class="img" style="background-image:url('{$preview}');$rotate"></div>
+</div>
+HTML;
+
+	}
+
 
 	/**
 	 * @param bool $wrap
@@ -125,8 +137,7 @@ class Cutiemark extends NSModel {
 	 */
 	public function getListItemForAppearancePage($wrap = WRAP){
 		$facing = $this->facing !== null ? 'Facing '.CoreUtils::capitalize($this->facing) : 'Symmetrical';
-		$facingSVG = $this->getFacingSVGURL();
-		$preview = CoreUtils::aposEncode($this->getRenderedURL());
+		$preview = $this->getPreviewForAppearancePageListItem();
 		$token = !empty($_GET['token']) ? "?token={$_GET['token']}" : '';
 
 		$canEdit = Permission::sufficient('staff') || (Auth::$signed_in && $this->appearance->owner_id === Auth::$user->id);
@@ -150,12 +161,9 @@ class Cutiemark extends NSModel {
 			$madeby = "<span class='madeby'>By $userlink</span>";
 		}
 
-		$rotate = $this->rotation !== 0 ? "transform:rotate({$this->rotation}deg)" : '';
 		$content = <<<HTML
 $title$subtitle
-<div class="preview" style="background-image:url('{$facingSVG}')">
-	<div class="img" style="background-image:url('{$preview}');$rotate"></div>
-</div>
+$preview
 <div class="dl-links">$links</div>
 $madeby
 HTML;

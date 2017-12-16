@@ -14,7 +14,7 @@ use SeinopSys\OAuth2\Client\Provider\DeviantArtProvider;
 
 class DeviantArt {
 	// oAuth Error Response Messages \\
-	const OAUTH_RESPONSE = [
+	public const OAUTH_RESPONSE = [
 		'invalid_request' => 'The authorization request was not properly formatted.',
 		'unsupported_response_type' => 'The authorization server does not support obtaining an authorization code using this method.',
 		'unauthorized_client' => 'The authorization process did not complete. Please try again.',

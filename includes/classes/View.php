@@ -67,6 +67,9 @@ class View {
 					case 'wsdiag':
 						$bc->setChild('WebSocket Server Diagnostics');
 					break;
+					case 'pcgappearances':
+						$bc->setChild($scope['heading']);
+					break;
 					case 'index':
 					default:
 						$bc->setActive();

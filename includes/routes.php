@@ -38,6 +38,7 @@ $router->map('GET', '/admin/discord',                  'AdminController#discord'
 $router->map('GET', '/admin/usefullinks',              'AdminController#usefulLinks');
 $router->map('GET', '/admin/wsdiag',                   'AdminController#wsdiag');
 $router->map('GET', '/admin/ip/[ip:ip]',               'AdminController#ip');
+$router->map('GET', '/admin/pcg-appearances/[i]?',     'AdminController#pcgAppearances');
 $router->map('GET', '/blending',                       'ColorGuideController#blending');
 $router->map('GET', '/components',                     'ComponentsController#index');
 $router->map('GET',      '/[cg]/blending',                                      'ColorGuideController#blending');
@@ -74,8 +75,9 @@ $router->map('GET', '/@[un:name]',                     'UserController#profile')
 $router->map('GET', '/u/[un:name]?',                   'UserController#profile');
 $router->map('GET', '/u/[uuid:uuid]',                  'UserController#profileByUuid');
 $router->map('GET', '/@[un:name]/contrib/[ad:type]/[i]?', 'UserController#contrib');
-$router->map('GET', '/@[un:name]/[cg]/[i]?',                               'ColorGuideController#personalGuide');
-$router->map('GET', '/@[un:name]/[cg]/slot-history/[i]?',                  'ColorGuideController#personalGuideSlotHistory');
+$router->map('GET', '/@[un:name]/[cg]/[i]?',                               'PersonalGuideController#list');
+$router->map('GET', '/@[un:name]/[cg]/slot-history/[i]?',                  'PersonalGuideController#pointHistory');
+$router->map('GET', '/@[un:name]/[cg]/point-history/[i]?',                 'PersonalGuideController#pointHistory');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]',                         'AppearanceController#viewPersonal');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]-[adi]',                   'AppearanceController#viewPersonal');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[adi]-[i:id]',                   'AppearanceController#viewPersonal');
@@ -111,8 +113,8 @@ $router->map('POST', '/cg/colorgroup/appearance-list',       'ColorGroupControll
 $router->map('POST', '/cg/colorgroup/list/[i:id]',           'ColorGroupController#list');
 $router->map('POST', '/cg/get-sprite-colors/[i:id]',         'AppearanceController#getSpriteColors');
 $router->map('POST', '/cg/sanitizesvg/[i:id]',               'ColorGuideController#sanitizeSvg');
-$router->map('POST', '/@[un:name]/cg/slot-check',            'UserController#checkCGSlots');
-$router->map('POST', '/@[un:name]/cg/slot-history/recalc',   'ColorGuideController#personalGuideSlotRecalc');
+$router->map('POST', '/@[un:name]/cg/slot-check',            'PersonalGuideController#checkAvailSlots');
+$router->map('POST', '/@[un:name]/cg/point-history/recalc',  'PersonalGuideController#pointRecalc');
 $router->map('POST', '/@[un:name]/cg/appearance/[ad:action]/[i:id]',  'AppearanceController#action');
 $router->map('POST', '/@[un:name]/cg/appearance/[make:action]',       'AppearanceController#action');
 $router->map('POST', '/@[un:name]/cg/colorgroup/[gsd:action]/[i:id]', 'ColorGroupController#action');
@@ -169,3 +171,7 @@ $router->map('POST', '/user/setdevrolemask',                 'UserController#set
 $router->map('POST', '/user/awaiting-approval/[un:name]',    'UserController#awaitingApproval');
 $router->map('POST', '/user/avatar-wrap/[un:name]',          'UserController#avatarWrap');
 $router->map('POST', '/user/known-ips/[un:name]',            'UserController#knownIps');
+$router->map('POST', '/user/verify-giftable-slots',          'PersonalGuideController#verifyGiftableSlots');
+$router->map('POST', '/user/gift-pcg-slots/[un:name]',       'PersonalGuideController#giftSlots');
+$router->map('POST', '/user/pending-gifts/[un:name]',        'PersonalGuideController#getPendingSlotGifts');
+$router->map('POST', '/user/refund-gifts',                   'PersonalGuideController#refundSlotGifts');

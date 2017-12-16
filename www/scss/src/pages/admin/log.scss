@@ -119,7 +119,10 @@ $TableHeadingFontSize: 16px;
 		&.ip {
 			width: 27%;
 
-			.self { font-size: .8em }
+			> a {
+				padding: 2px;
+				background: rgba($Link, .1);
+			}
 		}
 		&.reftype {
 			width: 40%;

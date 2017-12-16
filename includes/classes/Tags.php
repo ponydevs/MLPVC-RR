@@ -6,7 +6,7 @@ use App\Models\Tag;
 
 class Tags {
 	// List of available tag types
-	const TAG_TYPES = [
+	public const TAG_TYPES = [
 		'app' => 'Clothing',
 		'cat' => 'Category',
 		'ep' => 'Episode',
@@ -45,7 +45,7 @@ class Tags {
 			DB::$instance->join('tagged','(tagged.tag_id = tags.id'.($showSynonymTags?' OR tagged.tag_id = tags.synonym_of':'').')','right',false);
 			DB::$instance->where('tagged.appearance_id',$PonyID);
 		}
-		return DB::$instance->setModel('Tag')->get('tags',$limit,'tags.*');
+		return DB::$instance->setModel(Tag::class)->get('tags',$limit,'tags.*');
 	}
 
 	/**

@@ -9,7 +9,7 @@ use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesA
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
 
 class Appearances {
-	const COUNT_COL = 'COUNT(*) as cnt';
+	public const COUNT_COL = 'COUNT(*) as cnt';
 	/**
 	 * @param bool      $EQG
 	 * @param int|int[] $limit
@@ -256,7 +256,7 @@ class Appearances {
 		Response::success('Re-index completed');
 	}
 
-	const SPRITE_NAG_USERID = '06af57df-8755-a533-8711-c66f0875209a';
+	public const SPRITE_NAG_USERID = '06af57df-8755-a533-8711-c66f0875209a';
 
 	/**
 	 * @param int    $appearance_id
@@ -289,5 +289,58 @@ class Appearances {
 
 		foreach ($notifs as $n)
 			Notifications::safeMarkRead($n->id, $action, true);
+	}
+
+	/**
+	 * @param Appearance[] $Appearances
+	 * @param bool $wrap
+	 *
+	 * @return string
+	 */
+	public static function getPCGListHTML($Appearances, bool $wrap = WRAP):string {
+		if (empty($Appearances))
+			$HTML = '<tr><td colspan="4" class="align-center"><em>No appearances to show</em></td></tr>';
+		else {
+			$HTML = '';
+			foreach ($Appearances as $appearance){
+				$applink = $appearance->toAnchorWithPreview();
+				$owner = $appearance->owner->toAnchor();
+				$created = Time::tag($appearance->added);
+				$private = $appearance->private ? '<span class="color-orange typcn typcn-lock-closed"></span>' : '<span class="typcn typcn-times"></span>';
+				if (\count($appearance->cutiemarks) === 0)
+					$cms = '<span class="typcn typcn-times"></span>';
+				else {
+					$cms = '';
+					foreach ($appearance->cutiemarks as $cm)
+						$cms.= "<a href='{$appearance->toURL()}'>{$cm->getPreviewForAppearancePageListItem()}</a>";
+				}
+				$spriteUrl = $appearance->getSpriteURL(Appearance::SPRITE_SIZES['SOURCE']);
+				$sprite = empty($spriteUrl) ? '<span class="typcn typcn-times"></span>' : "<a href='{$appearance->toURL()}'><img src='{$spriteUrl}' alt='Sprite image'></a>";
+				$HTML .= <<<HTML
+<tr>
+	<td class="pony-link">$applink</td>
+	<td>$owner</td>
+	<td>$created</td>
+	<td class="cutiemarks">$cms</td>
+	<td class="sprite">$sprite</td>
+</tr>
+HTML;
+			}
+
+		}
+
+		return $wrap ?
+			"<table id='pcg-appearances-table'>
+				<thead>
+					<tr>
+						<th>Appearance</th>
+						<th>Owner</th>
+						<th>Added</th>
+						<th>CMs</th>
+						<th>Sprite</th>
+					</tr>
+				</thead>
+				<tbody>$HTML</tbody>
+			</table>" : $HTML;
 	}
 }

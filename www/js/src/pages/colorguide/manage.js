@@ -51,7 +51,7 @@
 		$PonyEditorFormTemplate = $.mk('form','pony-editor')
 			.append(
 				`<label>
-					<span>Name (4-70 chars.)</span>
+					<span>Name (2-70 chars.)</span>
 					<input type="text" name="label" placeholder="Enter a name" pattern="${PRINTABLE_ASCII_PATTERN.replace('+', '{4,70}')}" required maxlength="70">
 				</label>
 				<div class="label">
@@ -112,11 +112,10 @@
 									const
 										ponyLabel = data.label,
 										$form = $.mk('form','selective-wipe').html(
-											`<p>Select which of the following items to clear below.</p>
+											`<p>Select which of the following actions to execute below.</p>
 											<label><input type="checkbox" name="wipe_cache"> Clear cached images</label>
 											<label><input type="checkbox" name="wipe_cm_tokenized"> Clear tokenized cutie mark</label>
 											<label><input type="checkbox" name="wipe_cm_source"> Clear cutie mark source file</label>
-											<label><input type="checkbox" name="wipe_cms"> Remove all cutie marks</label>
 											<label><input type="checkbox" name="wipe_sprite"> Clear sprite image</label>
 											<fieldset>
 												<legend>Color Groups</legend>
@@ -127,9 +126,10 @@
 													<label><input type="radio" name="wipe_colors" value="all"><span>Color groups</span></label>
 												</div>
 											</fieldset>
-											<label><input type="checkbox" name="wipe_notes"> Clear notes</label>`+
-											(PersonalGuide?'':`<label><input type="checkbox" name="wipe_tags"> Remove all tags</label>`)+
-											`<label><input type="checkbox" name="mkpriv"> Make private</label>`
+											<label><input type="checkbox" name="wipe_notes"> Clear notes</label>
+											${PersonalGuide?'':`<label><input type="checkbox" name="wipe_tags"> Remove all tags</label>`}
+											<label><input type="checkbox" name="mkpriv"> Make private</label>
+											<label><input type="checkbox" name="reset_priv_key"> Generate new private sharing key</label>`
 										);
 									$.Dialog.close();
 									$.Dialog.request('Selectively wipe data from '+ponyLabel, $form, 'Clear data', function(){
@@ -2041,7 +2041,7 @@
 				$.post(`${PGRq}/cg/appearance/delete/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
 					if (this.status){
 						$li.remove();
-						$.Dialog.success(title, this.message);
+						$.Dialog.success(title, this.message, PersonalGuide);
 
 						let path = window.location.pathname;
 						if ($list.children().length === 0)
@@ -2050,7 +2050,7 @@
 							$.Dialog.wait('Navigation', 'Loading page 1');
 							$.Navigation.visit(`${PGRq}/cg/1`);
 						}
-						else $.toPage(path,true,true);
+						else if (PersonalGuide) $.toPage(path,true,true);
 					}
 					else $.Dialog.fail(title, this.message);
 				}));

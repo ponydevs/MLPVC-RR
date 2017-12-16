@@ -8,7 +8,7 @@ use App\Exceptions\JSONParseException;
  * with defaults that make sense and parsing exceptions
  */
 class JSON {
-	const
+	public const
 		AS_OBJECT = false,
 		PRETTY_PRINT = true;
 	/**

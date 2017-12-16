@@ -34,12 +34,23 @@ class PostgresDbWrapper extends \PostgresDb {
 		return $this;
 	}
 
-	public function setModel(string $name){
-		$className = "\\App\\Models\\$name";
+	/**
+	 * Sets the output format to use the specified class with late property fetching for php-activerecord
+	 * Expects ModelName::class as the name argument, or the equivalent fully qualified model name.
+	 *
+	 * @param string $className Fully qualified class name
+	 *
+	 * @return self
+	 */
+	public function setModel(string $className){
+		if (strpos($className, 'App\\') !== 0)
+			$className = "App\\Models\\$className";
 		if (!class_exists($className))
 			throw new \RuntimeException("The model $className does not exist");
 
-		return $this->setClass($className, \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE);
+		$this->setClass($className, \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE);
+
+		return $this;
 	}
 
 	private $_nonexistantClassCache = [];

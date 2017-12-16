@@ -8,15 +8,19 @@ use App\Tags;
 /** @var $User \App\Models\User */
 /** @var $isOwner bool */ ?>
 <div id="content">
-	<h1><?=$User->toAnchor().CoreUtils::posess($User->name, true)?> Slot History</h1>
-	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
+	<h1><?=$heading?></h1>
+	<p>Displaying <?= $Pagination->itemsPerPage ?> items/page</p>
 
-<?php   if (\App\Permission::sufficient('developer')){ ?>
 	<div class="align-center">
+		<a href="<?=$User->toURL()?>" class="btn link typcn typcn-user">Profile page</a>
+<?php   if (\App\Permission::sufficient('staff')){
+			if (\App\Permission::sufficient('developer')){ ?>
 		<button class="orange typcn typcn-refresh" id="recalc-button">Recalculate</button>
+<?php       } ?>
+		<button class="blue typcn typcn-gift" id="pending-gifts-button">Pending gifts</button>
+<?php   } ?>
 	</div>
-<?php   }
-		echo $Pagination . CGUtils::getPCGSlotHistoryHTML($Entries) . $Pagination; ?>
+	<?= $Pagination . CGUtils::getPCGSlotHistoryHTML($Entries) . $Pagination; ?>
 </div>
 
 <?  echo CoreUtils::exportVars([

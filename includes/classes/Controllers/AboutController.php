@@ -59,7 +59,7 @@ class AboutController extends Controller {
 		]);
 	}
 
-	const
+	public const
 		STAT_TYPES = ['posts','approvals','alltimeposts'],
 		STAT_CHACHE_DURATION = 5*Time::IN_SECONDS['hour'];
 

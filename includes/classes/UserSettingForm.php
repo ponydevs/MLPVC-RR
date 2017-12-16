@@ -12,7 +12,7 @@ class UserSettingForm {
 	/** @var bool */
 	private $_can_save;
 
-	const INPUT_MAP = [
+	public const INPUT_MAP = [
 		'cg_itemsperpage' => [
 			'type' => 'number',
 			'options' => [

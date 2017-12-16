@@ -16,6 +16,7 @@ use ElephantIO\Exception\ServerConnectionFailureException;
  * @property string $read_at
  * @property string $read_action
  * @property User   $recipient
+ * @method static Notification find(int $id)
  */
 class Notification extends NSModel {
 	public static $table_name = 'notifications';
@@ -23,7 +24,7 @@ class Notification extends NSModel {
 	public static $belongs_to = [
 		['recipient', 'class' => 'User'],
 	];
-	public static $ACTIONABLE_NOTIF_OPTIONS = [
+	public const ACTIONABLE_NOTIF_OPTIONS = [
 		'post-passon' => [
 			'true' => [
 				'label' => 'Accept',
@@ -52,10 +53,26 @@ class Notification extends NSModel {
 				'color' => 'orange',
 				'action' => 'Ignore color issues',
 			],
-		]
+		],
+		'pcg-slot-gift' => [
+			'accept' => [
+				'label' => 'Accept',
+				'icon' => 'tick',
+				'color' => 'green',
+				'confirm' => true,
+				'action' => 'Accept gift',
+			],
+			'reject' => [
+				'label' => 'Reject',
+				'icon' => 'cancel',
+				'color' => 'red',
+				'confirm' => true,
+				'action' => 'Reject gift',
+			],
+		],
 	];
-	public static $_notifTypes = [
-	    //-------------| (max length)
+	public const NOTIF_TYPES = [
+	    #---------------# (max length)
 		'post-finished'   => true,
 		'post-approved'   => true,
 		'post-passon'     => true,
@@ -66,10 +83,14 @@ class Notification extends NSModel {
 		'post-passsnatch' => true,
 		'post-passperm'   => true,
 		'sprite-colors'   => true,
+		'pcg-slot-gift'   => true,
+		'pcg-slot-accept' => true,
+		'pcg-slot-reject' => true,
+		'pcg-slot-refund' => true,
 	];
 
 	public static function send(string $recipient_id, string $type, $data){
-		if (empty(self::$_notifTypes[$type]))
+		if (empty(self::NOTIF_TYPES[$type]))
 			throw new \RuntimeException("Invalid notification type: $type");
 
 		switch ($type) {

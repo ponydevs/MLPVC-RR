@@ -3,8 +3,8 @@
 namespace App;
 
 class Cookie {
-	const SESSION = 0;
-	const HTTPONLY = true;
+	public const SESSION = 0;
+	public const HTTPONLY = true;
 
 	public static function exists($name){
 		return isset($_COOKIE[$name]);

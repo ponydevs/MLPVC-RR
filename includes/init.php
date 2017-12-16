@@ -69,11 +69,9 @@ catch (Exception $e){
 	die(require INCPATH.'views/error/fatal.php');
 }
 
-DB::$instance = new PostgresDbWrapper(DB_NAME);
-
 try {
 	$conn = \Activerecord\Connection::instance();
-	DB::$instance->setConnection($conn->connection);
+	DB::$instance = PostgresDbWrapper::withConnection(DB_NAME, $conn->connection);
 }
 catch (Exception $e){
 	$errcause = 'db';

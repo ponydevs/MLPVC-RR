@@ -7,12 +7,13 @@ use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
 use App\Models\Logs\MajorChange;
+use App\Models\PCGSlotGift;
 use App\Models\PCGSlotHistory;
 use App\Models\Post;
 use SeinopSys\RGBAColor;
 
 class CGUtils {
-	const GROUP_TAG_IDS_ASSOC = [
+	public const GROUP_TAG_IDS_ASSOC = [
 		'pony' => [
 			6  => 'Mane Six & Spike',
 			45 => 'Cutie Mark Crusaders',
@@ -272,7 +273,7 @@ class CGUtils {
 		return null;
 	}
 
-	const CHANGES_SECTION = <<<HTML
+	public const CHANGES_SECTION = <<<HTML
 <section>
 	<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
 	@
@@ -308,8 +309,11 @@ HTML;
 	}
 
 	public static function processPCGSlotHistoryData(string $type, ?string $data):?string {
-		if ($data === null)
+		if ($data === null){
+			if ($type === 'free_trial')
+				return "This one's on the house";
 			return '&mdash;';
+		}
 
 		$data = JSON::decode($data);
 		switch ($type){
@@ -331,6 +335,24 @@ HTML;
 					return $appearance->toAnchorWithPreview();
 
 				return "$label <span class='color-red typcn typcn-trash' title='Deleted'></span>";
+			case 'gift_sent':
+			case 'gift_accepted':
+			case 'gift_rejected':
+			case 'gift_refunded':
+				$gift = PCGSlotGift::find($data['gift_id']);
+
+				switch (explode('_', $type)[1]){
+					case 'sent':
+						return empty($gift) ? 'Unkown recipient' : 'To '.$gift->receiver->toAnchor();
+					case 'accepted':
+						return empty($gift) ? 'Unkown sender' : 'From '.$gift->sender->toAnchor();
+					case 'rejected':
+						return empty($gift) ? 'Unkown recipient' : 'By '.$gift->receiver->toAnchor();
+					case 'refunded':
+						return (empty($gift) ? 'The receiver' : $gift->receiver->toAnchor()).' did not claim this gift'.
+							'<br>Refunded by '.(Permission::sufficient('staff') ? $gift->refunder->toAnchor() : 'a staff member');
+				}
+			break;
 			default:
 				return '<pre>'.htmlspecialchars(JSON::encode($data, JSON_PRETTY_PRINT)).'</pre>';
 		}
@@ -533,7 +555,7 @@ HTML;
 		Image::outputPNG($FinalBase, $OutputPath, $FileRelPath);
 	}
 
-	const CMDIR_SVG_PATH = FSPATH.'cg_render/appearance/#/cmdir-@.svg';
+	public const CMDIR_SVG_PATH = FSPATH.'cg_render/appearance/#/cmdir-@.svg';
 
 	// Generate appearance facing image (CM background)
 	public static function renderCMFacingSVG($CGPath, Appearance $appearance){
@@ -732,7 +754,7 @@ XML;
 		Image::outputSVG($SVG, $OutputPath, $FileRelPath);
 	}
 
-	const PREVIEW_SVG_PATH = FSPATH.'cg_render/appearance/#/preview.svg';
+	public const PREVIEW_SVG_PATH = FSPATH.'cg_render/appearance/#/preview.svg';
 
 	public static function renderPreviewSVG($CGPath, Appearance $Appearance){
 		$OutputPath = str_replace('#',$Appearance->id,self::PREVIEW_SVG_PATH);
@@ -933,7 +955,7 @@ GPL;
 		return CoreUtils::notice('warn','<span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn link typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.',true);
 	}
 
-	const ELASTIC_BASE = [
+	public const ELASTIC_BASE = [
 		'index' => 'appearances',
 	];
 

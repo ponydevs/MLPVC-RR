@@ -16,7 +16,7 @@ $isOwnerOrStaff = $isOwner || $isStaff; ?>
 <?  if ($isOwnerOrStaff){ ?>
 	<p class='align-center links'>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
-		<?=$User->getPCGSlotHistoryButtonHTML()?>
+		<?=$User->getPCGPointHistoryButtonHTML()?>
 	</p>
 <?  } ?>
 	<?=$Pagination . Appearances::getHTML($Ponies, WRAP, $isOwnerOrStaff) . $Pagination?>

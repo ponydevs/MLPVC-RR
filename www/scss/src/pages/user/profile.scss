@@ -107,10 +107,9 @@
 				margin: 10px 0;
 				padding: 0;
 				list-style: none;
-				display: block;
 
 				&:empty:before {
-					content: "You haven\2019t added any appearances to your Personal Color Guide yet. If you had, they would be visible here.";
+					content: "You haven\2019t added any appearances to your Personal Color Guide yet.";
 					font-style: italic;
 					opacity: .7;
 					font-size: 1em;
@@ -120,12 +119,8 @@
 					font-weight: normal;
 				}
 
-				li {
-					display: inline-block;
-
-					&:not(:last-child) {
-						margin-right: 10px;
-					}
+				li:not(:last-child) {
+					margin-right: 10px;
 				}
 			}
 		}

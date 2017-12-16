@@ -42,7 +42,7 @@ class VideoProvider {
 		}
 		throw new \Exception('Unsupported provider');
 	}
-	const URL_ONLY = true;
+	public const URL_ONLY = true;
 	public static function getEmbed(EpisodeVideo $video, bool $urlOnly = false):string {
 		$urlOnly = $urlOnly === self::URL_ONLY;
 

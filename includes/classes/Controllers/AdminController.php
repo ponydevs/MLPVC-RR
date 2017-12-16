@@ -1,22 +1,29 @@
 <?php
 
 namespace App\Controllers;
+use App\Appearances;
 use App\Auth;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
 use App\Input;
+use App\JSON;
 use App\Logs;
+use App\Models\Appearance;
 use App\Models\DiscordMember;
 use App\Models\KnownIP;
 use App\Models\UsefulLink;
 use App\Models\User;
+use App\Models\UserPref;
 use App\Pagination;
 use App\Permission;
+use App\PostgresDbWrapper;
 use App\Posts;
 use App\RegExp;
 use App\Response;
+use App\UserPrefs;
 use App\Users;
+use GuzzleHttp\Command\Guzzle\GuzzleClient;
 use IPTools\IP;
 use RestCord\DiscordClient;
 
@@ -392,12 +399,27 @@ HTML;
 	}
 
 	private function _getDiscordMemberList(bool $skip_binding = false){
-		// TODO If we ever surpass 1000 Discord server members this will bite me in the backside
 		$discord = new DiscordClient(['token' => DISCORD_BOT_TOKEN]);
-		$members = $discord->guild->listGuildMembers(['guild.id' => DISCORD_SERVER_ID,'limit' => 1000]);
+		$allMembers = [];
+		$after = 0;
+		$limit = 1000;
+		$cnt = 0;
+		while (true){
+			$members = $discord->guild->listGuildMembers(['guild.id' => DISCORD_SERVER_ID,'limit' => $limit, 'after' => $after])->toArray();
+			if (empty($members))
+				break;
+			if (!empty($members['retry_after'])){
+				CoreUtils::error_log("Discord rate limit hit, continuing in {$members['retry_after']} ms");
+				CoreUtils::msleep($members['retry_after']+100);
+				continue;
+			}
+			foreach ($members as $member)
+				$allMembers[] = $member;
+			$after = (int) $member['user']['id'];
+		}
 		$usrids = [];
 
-		foreach ($members as $member){
+		foreach ($allMembers as $member){
 			$ins = new DiscordMember([
 				'id' => $member['user']['id'],
 				'username' => $member['user']['username'],
@@ -523,6 +545,33 @@ HTML;
 				'Users' => $Users,
 				'nav_adminip' => true,
 			]
+		]);
+	}
+
+	private function _setupPcgAppearances():\PostgresDb {
+		return DB::$instance->where('owner_id IS NOT NULL');
+	}
+
+	public function pcgAppearances($params){
+		$Pagination = new Pagination('admin/pcg-appearances', 10, $this->_setupPcgAppearances()->count(Appearance::$table_name));
+
+		CoreUtils::fixPath("/admin/pcg-appearances/{$Pagination->page}");
+		$heading = 'All PCG Appearances';
+		$title = "Page $Pagination->page - $heading - Color Guide";
+
+		$Appearances = $this->_setupPcgAppearances()->orderBy('added','DESC')->get(Appearance::$table_name, $Pagination->getLimit());
+
+		$Pagination->respondIfShould(Appearances::getPCGListHTML($Appearances, NOWRAP), '#pcg-appearances-table tbody');
+
+		CoreUtils::loadPage(__METHOD__, [
+			'title' => $title,
+			'heading' => $heading,
+			'css' => [true],
+			'js' => ['paginate'],
+			'import' => [
+				'Appearances' => $Appearances,
+				'Pagination' => $Pagination,
+			],
 		]);
 	}
 }

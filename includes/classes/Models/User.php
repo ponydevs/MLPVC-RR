@@ -13,6 +13,7 @@ use App\Exceptions\NoPCGSlotsException;
 use App\GlobalSettings;
 use App\Logs;
 use App\Models\Logs\DANameChange;
+use App\Models\Logs\Log;
 use App\NavBreadcrumb;
 use App\Pagination;
 use App\Permission;
@@ -63,7 +64,7 @@ class User extends AbstractUser implements LinkableInterface {
 		return Permission::ROLES_ASSOC[$this->role] ?? 'Curious Pony';
 	}
 
-	const AVATAR_PROVIDERS = [
+	public const AVATAR_PROVIDERS = [
 		'deviantart' => 'DeviantArt',
 		'discord' => 'Discord',
 	];
@@ -92,7 +93,7 @@ class User extends AbstractUser implements LinkableInterface {
 		return "/@$this->name";
 	}
 
-	const WITH_AVATAR = true;
+	public const WITH_AVATAR = true;
 
 	/**
 	 * Local profile link generator
@@ -300,18 +301,20 @@ HTML;
 	/**
 	 * @param bool $throw
 	 *
-	 * @return float
+	 * @return int
 	 */
-	public function getPCGAvailableSlots(bool $throw = true):float {
+	public function getPCGAvailablePoints(bool $throw = true):int {
 		$slotcount = UserPrefs::get('pcg_slots', $this);
-		if ($slotcount !== null){
-			$slotcount = (float)$slotcount;
-			if ($throw && $slotcount === 0.0)
+		if ($slotcount !== 0){
+			$slotcount = (int)$slotcount;
+			if ($throw && $slotcount === 0)
 				throw new NoPCGSlotsException();
 			return $slotcount;
 		}
 
 		// We need to calculate the available slots
+		PCGSlotHistory::makeRecord($this->id, 'free_trial');
+
 		DB::$instance->where('requested_by', $this->id, '!=');
 		/** @var $posts Request[] */
 		$posts = $this->getApprovedFinishedRequestContributions(false);
@@ -328,20 +331,47 @@ HTML;
 				'id' => $appearance->id,
 				'label' => $appearance->label,
 			], $appearance->added);
-		};
+		}
 
-		if (Permission::sufficient('staff', $this->role))
-			PCGSlotHistory::makeRecord($this->id, 'staff_member');
+		/** @var $sentGifts PCGSlotGift[] */
+		$sentGifts = DB::$instance
+			->setModel(PCGSlotGift::class)
+			->query(
+				'SELECT DISTINCT * FROM pcg_slot_gifts
+				WHERE refunded_by IS NULL AND rejected = FALSE AND sender_id = ?', [$this->id]);
+		foreach ($sentGifts as $gift){
+			PCGSlotHistory::makeRecord($this->id, 'gift_sent', $gift->amount, [
+				'gift_id' => $gift->id,
+			], $gift->created_at);
+		}
+
+		/** @var $receivedGifts PCGSlotGift[] */
+		$receivedGifts = DB::$instance
+			->setModel(PCGSlotGift::class)
+			->query(
+				'SELECT DISTINCT * FROM pcg_slot_gifts
+				WHERE claimed = TRUE AND receiver_id = ?', [$this->id]);
+		foreach ($receivedGifts as $gift){
+			PCGSlotHistory::makeRecord($this->id, 'gift_accepted', $gift->amount, [
+				'gift_id' => $gift->id,
+			], $gift->updated_at);
+		}
 
 		$this->syncPCGSlotCount();
-		return $this->getPCGAvailableSlots($throw);
+		return $this->getPCGAvailablePoints($throw);
 	}
 
 	public function syncPCGSlotCount(){
 		UserPrefs::set('pcg_slots', PCGSlotHistory::sum($this->id), $this);
 	}
 
-	const CONTRIB_CACHE_DURATION = Time::IN_SECONDS['hour'];
+	public function recalculatePCGSlotHistroy(){
+		DB::$instance->where('user_id', $this->id)->delete(PCGSlotHistory::$table_name);
+		UserPrefs::reset('pcg_slots', $this);
+		$this->getPCGAvailablePoints(false);
+	}
+
+	public const CONTRIB_CACHE_DURATION = Time::IN_SECONDS['hour'];
 
 	public function getCachedContributions():array {
 		$cache = CachedFile::init(FSPATH."contribs/{$this->id}.json.gz", self::CONTRIB_CACHE_DURATION);
@@ -524,7 +554,7 @@ HTML;
 		return DB::$instance->where('submitted_by', $this->id)->where('eventid', $event->id)->get(EventEntry::$table_name,null,$cols);
 	}
 
-	const YOU_HAVE = [
+	public const YOU_HAVE = [
 		1 => 'You have',
 		0 => 'This user has',
 	];
@@ -651,7 +681,7 @@ HTML;
 		return $HTML;
 	}
 
-	const NOT_APPROVED_POST_COLS = 'id, season, episode, deviation_id';
+	public const NOT_APPROVED_POST_COLS = 'id, season, episode, deviation_id';
 
 	private function _getNotApprovedPostArgs(){
 		return [
@@ -743,10 +773,10 @@ HTML;
 		);
 	}
 
-	public function getPCGSlotHistoryButtonHTML(?bool $showPrivate = null):string {
+	public function getPCGPointHistoryButtonHTML(?bool $showPrivate = null):string {
 		if ($showPrivate === null)
 			$showPrivate = (Auth::$signed_in && Auth::$user->id === $this->id) || Permission::sufficient('staff');
-		return $showPrivate ? "<a href='/@{$this->name}/cg/slot-history' class='btn darkblue typcn typcn-eye'>View slot history</a>" : '';
+		return $showPrivate ? "<a href='/@{$this->name}/cg/point-history' class='btn link typcn typcn-eye'>Point history</a>" : '';
 	}
 
 	public function canVisitorSeePCG():bool {
@@ -759,5 +789,22 @@ HTML;
 
 	public function maskedRoleLabel():string {
 		return Permission::ROLES_ASSOC[$this->maskedRole()];
+	}
+
+	public function getPCGSlotGiftButtonHTML():string {
+		if (!Auth::$signed_in || Auth::$user->id === $this->id || Permission::insufficient('member', $this->role))
+			return '';
+
+		return "<button class='btn green typcn typcn-gift gift-pcg-slots'>Gift slots</a>";
+	}
+
+	/**
+	 * @return PCGSlotGift[]
+	 */
+	public function getPendingPCGSlotGifts(){
+		return DB::$instance->setModel(PCGSlotGift::class)->query(
+			'SELECT * FROM pcg_slot_gifts
+			WHERE refunded_by IS NULL AND rejected = FALSE AND claimed = FALSE AND receiver_id = ?
+			ORDER BY created_at ASC', [$this->id]);
 	}
 }

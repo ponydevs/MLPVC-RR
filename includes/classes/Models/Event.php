@@ -38,14 +38,14 @@ class Event extends NSModel implements LinkableInterface {
 		['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],
 	];
 
-	const EVENT_TYPES = [
+	public const EVENT_TYPES = [
 		'collab' => 'Collaboration',
 		'contest' => 'Contest',
 	];
 
-	const REGULAR_ENTRY_ROLES = ['user', 'member', 'staff'];
+	public const REGULAR_ENTRY_ROLES = ['user', 'member', 'staff'];
 
-	const SPECIAL_ENTRY_ROLES = [
+	public const SPECIAL_ENTRY_ROLES = [
 		'spec_discord' => 'Discord Server Members',
 		'spec_ai' => 'Illustrator Users',
 		'spec_inkscape' => 'Inkscape Users',
@@ -126,7 +126,7 @@ class Event extends NSModel implements LinkableInterface {
 		else {
 
 			/** @var $HighestScoringEntries EventEntry[] */
-			$HighestScoringEntries = DB::$instance->setModel('EventEntry')->query(
+			$HighestScoringEntries = DB::$instance->setModel(EventEntry::class)->query(
 				'SELECT * FROM '.EventEntry::$table_name.
 				'WHERE event_id = ? AND score > 0 AND score = (SELECT MAX(score) FROM '.EventEntry::$table_name.')
 				ORDER BY submitted_at ASC',[$this->id]);

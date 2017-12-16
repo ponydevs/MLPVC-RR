@@ -3,7 +3,7 @@
 namespace App;
 
 class Permission {
-	const ROLES_ASSOC = [
+	public const ROLES_ASSOC = [
 		'guest'     => 'Guest',
 		'user'      => 'DeviantArt User',
 		'member'    => 'Club Member',
@@ -12,7 +12,7 @@ class Permission {
 		'admin'     => 'Administrator',
 		'developer' => 'Site Developer',
 	];
-	const ROLES = [
+	public const ROLES = [
 		'guest'     => 1,
 		'user'      => 2,
 		'member'    => 3,

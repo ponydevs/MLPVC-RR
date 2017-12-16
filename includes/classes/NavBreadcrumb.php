@@ -74,7 +74,7 @@ class NavBreadcrumb {
 		return $this->active ? "<strong>$name</strong>" : ($this->enabled ? "<a href='{$this->link}'>$name</a>" : "<span>$name</span>");
 	}
 
-	const DIV = '<span class="div">/</span>';
+	public const DIV = '<span class="div">/</span>';
 
 	public function __toString():string {
 		$HTML = [];

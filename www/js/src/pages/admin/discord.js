@@ -125,7 +125,7 @@ $(function(){
 	$('#rerequest-members').on('click',function(e){
 		e.preventDefault();
 
-		$.Dialog.confirm('Re-request member list', 'You are about to update the member list. This will update the all locally data stored about the members except for the bindings. Continue?',function(sure){
+		$.Dialog.confirm('Re-request member list', 'You are about to update the member list. This will update the all locally stored data about the members except for the bindings. Continue?',function(sure){
 			if (!sure) return;
 
 			$.Dialog.wait(false);

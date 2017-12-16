@@ -13,7 +13,7 @@ class UploadedFile {
 		$error,
 		$size;
 
-	const SIZES = [
+	public const SIZES = [
 		'byte' => 1,
 		'kilobyte' => 1024,
 		'megabyte' => 1048576,

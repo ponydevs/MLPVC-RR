@@ -1,21 +1,22 @@
 /* globals DocReady,$sidebar,$content,HandleNav,Time,$w,$body */
 $(function(){
 	'use strict';
+	const name = $content.children('.briefing').find('.username').text().trim();
 
 	$('.personal-cg-say-what').on('click',function(e){
 		e.preventDefault();
 
 		$.Dialog.info('About Personal Color Guides',
-			`<p>We are forever grateful to our members who help others out by fulfilling their requests on our website. As a means of giving back, we're introducing Personal Color Guides. This is a place where you can store and share colors for any of your OCs, similar to our <a href="/cg/">Official Color Guide</a>.</p>
-			<p><em>&ldquo;So where’s the catch?&rdquo;</em> &mdash; you might ask. Everyone starts with 0 slots*, which they can increase by fulfilling requests on our website, then submitting them to the club and getting them approved. You'll get your first slot after you've fulfilled 10 requests, all of which got approved by our staff to the club gallery. After that, you will be granted an additional slot for every 10 requests you finish and we approve.</p>
-			<p><small>* Staff members get an honorary slot for free</small></p>
+			`<p>The Personal Color Guide is a place where you can store and share colors for any of your OCs, similar to our <a href="/cg/">Official Color Guide</a>. You have full control over the colors and other metadata for any OCs you add to the system, and you can chose to keep your PCG publicly visible on your profile or make individual appearances private and share them with only certain people using a direct link.</p>
+			<p><em>&ldquo;So where’s the catch?&rdquo;</em> &mdash; you might ask. Everyone starts with 1 slot (10 points), which lets you add a single OC to your personal guide. This limit can be increased by joining <a href="https://mlp-vectorclub.deviantart.com/">our group</a> on DeviantArt, then fulfilling requests on this website. You will be given a point for every request you finish and we approve. In order to get an additional slot, you will need 10 points, which means 10 requests.</p>
+			<p>If you have no use for your additional slots you may choose to give them away to other users - even non-members! The only restrictions are that only whole slots can be gifted and the free slot everyone starts out with cannot be gifted away. To share your hard-earned slots with others, simply visit their profile and clikck the <strong class="color-green"><span class="typcn typcn-gift"></span> Gift slots</strong> button under the Personal Color Guide section.</p>
 			<br>
 			<p><strong>However</strong>, there are a few things to keep in mind:</p>
 			<ul>
 				<li>You may only add characters made by you, for you, or characters you've purchased to your Personal Color Guide. If we're asked to remove someone else’s character from your guide we'll certainly comply.</li>
 				<li>Finished requests only count toward additional slots after they have been submitted to the group and have been accepted to the gallery. This is indicated by a tick symbol (<span class="color-green typcn typcn-tick"></span>) on the post throughout the site.</li>
 				<li>A finished request does not count towards additional slots if you were the one who requested it in the first place. We're not against this behaviour generally, but allowing this would defeat the purpose of this feature: encouraging members to help others.</li>
-				<li>Do not attempt to abuse the system in any way. Exploiting any bugs you may encounter instead of <a class="send-feedback">reporting them</a> will be sanctioned.</li>
+				<li>Do not attempt to abuse the system in any way. Exploiting any bugs you may encounter instead of <a class="send-feedback">reporting them</a> could result in us disabling your access to this feature.</li>
 			</ul>`
 		);
 	});
@@ -84,9 +85,62 @@ $(function(){
 		});
 	}
 
+	const $giftPCGSlots = $('.gift-pcg-slots');
+	if ($giftPCGSlots.length){
+		$giftPCGSlots.on('click',function(e){
+			e.preventDefault();
+
+			$.Dialog.wait('Gifting PCG slots to '+name, 'Checking your available slot count');
+
+			$.post('/user/verify-giftable-slots', $.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
+
+				const availableSlots = this.avail;
+
+				const $GiftForm = $.mk('form','pcg-slot-gift-form').append(
+					$.mk('label').append(
+						`<p>Choose how many slots you want to give</p>`,
+						$.mk('input').attr({
+							type: 'number',
+							name: 'amount',
+							min: 1,
+							max: availableSlots,
+							value: 1,
+							step: 1,
+							'class': 'large-number-input',
+						})
+					)
+				);
+				$.Dialog.request('Gifting PCG slots to '+name, $GiftForm, 'Continue', function($form){
+					$form.on('submit',function(e){
+						e.preventDefault();
+
+						const data = $form.mkData();
+						if (isNaN(data.amount) || data.amount < 1)
+							return $.Dialog.fail(false, 'Invaild amount entered');
+						data.amount = parseInt(data.amount, 10);
+						const
+							s = data.amount === 1 ? '' : 's',
+							are = data.amount === 1 ? 'is' : 'are';
+						$.Dialog.confirm(false, `<p>You are about to send <strong>${data.amount} slot${s}</strong> to <strong>${name}</strong>. The slots will be immediately removed from your account and a notification will be sent to ${name} where they can choose to accept or reject your gift.</p><p>If they reject, the slot${s} ${are} returned to you. You will be notified if they decide, and if they don't do so within <strong>2 weeks</strong> you may ask the staff to have your slot${s} refunded.</p><p>Are you sure?</p>`, [`Gift ${data.amount} slot${s} to ${name}`, 'Cancel'], sure => {
+							if (!sure) return;
+
+							$.Dialog.wait(false, 'Sending gift');
+
+							$.post('/user/gift-pcg-slots/'+name, data, $.mkAjaxHandler(function(){
+								if (!this.status) return $.Dialog.fail(false, this.message);
+
+								$.Dialog.success(false, this.message, true);
+							}));
+						});
+					});
+				});
+			}));
+		});
+	}
+
 	let $signoutBtn = $('#signout'),
 		$sessionList = $('.session-list'),
-		name = $content.children('.briefing').find('.username').text().trim(),
 		sameUser = name === $sidebar.children('.welcome').find('.un').text().trim();
 	$sessionList.find('button.remove').off('click').on('click', function(e){
 		e.preventDefault();

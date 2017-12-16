@@ -35,7 +35,7 @@ class ImageProvider {
 			$this->setUrls($provider->itemid);
 		}
 	}
-	const
+	public const
 		PROV_DA    = 'dA',
 		PROV_FAVME = 'fav.me',
 		PROV_STASH = 'sta.sh',

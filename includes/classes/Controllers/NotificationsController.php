@@ -12,6 +12,8 @@ use App\JSON;
 use App\Logs;
 use App\Models\Appearance;
 use App\Models\Notification;
+use App\Models\PCGSlotGift;
+use App\Models\PCGSlotHistory;
 use App\Notifications;
 use App\Posts;
 use App\Response;
@@ -55,7 +57,7 @@ class NotificationsController extends Controller {
 			]
 		]))->out();
 		if (!empty($read_action)){
-			if (empty(Notification::$ACTIONABLE_NOTIF_OPTIONS[$Notif->type][$read_action]))
+			if (empty(Notification::ACTIONABLE_NOTIF_OPTIONS[$Notif->type][$read_action]))
 				Response::fail("Invalid read action ($read_action) specified for notification type {$Notif->type}");
 			/** @var $data array */
 			$data = !empty($Notif->data) ? JSON::decode($Notif->data) : null;
@@ -118,6 +120,36 @@ class NotificationsController extends Controller {
 					if ($read_action === 'deny')
 						Response::success('The notification has been cleared, but it will reappear if the sprite image or the colors are updated.');
 					Response::done();
+				break;
+				case 'pcg-slot-gift':
+					$gift = PCGSlotGift::find($data['gift_id']);
+					if (empty($gift))
+						Response::fail('The sepcified gift does not exist. If you believe this is an error, please <a class="send-freedback">let us know</a>.');
+					if ($gift->receiver_id !== Auth::$user->id)
+						Response::fail('Only the recipient can accept or reject this gift.');
+					$giftArr = [ 'gift_id' => $gift->id ];
+					if ($read_action === 'reject'){
+						PCGSlotHistory::makeRecord($gift->sender_id, 'gift_rejected', $gift->amount, $giftArr);
+						$gift->sender->syncPCGSlotCount();
+						$gift->rejected = true;
+						$gift->save();
+						Notification::send($gift->sender_id, 'pcg-slot-reject', $giftArr);
+
+
+						Notifications::safeMarkRead($Notif->id, $read_action);
+						Response::done();
+					}
+					else {
+						PCGSlotHistory::makeRecord($gift->receiver_id, 'gift_accepted', $gift->amount, $giftArr);
+						$gift->receiver->syncPCGSlotCount();
+						$gift->claimed = true;
+						$gift->save();
+
+						Notification::send($gift->sender_id, 'pcg-slot-accept', $giftArr);
+
+						Notifications::safeMarkRead($Notif->id, $read_action);
+						Response::success('You now have '.CoreUtils::makePlural('available slot', floor($gift->receiver->getPCGAvailablePoints(false)/10), PREPEND_NUMBER).". If you want to create an appearance you can <a href='{$gift->receiver->toURL()}/cg'>click here</a> to go directly to your personal color guide.");
+					}
 				break;
 				default:
 					Notifications::safeMarkRead($Notif->id, $read_action);

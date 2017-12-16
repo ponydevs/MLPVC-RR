@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Exceptions\MismatchedProviderException;
 
 class Posts {
-	const
+	public const
 		TYPES = ['request', 'reservation'],
 		REQUEST_TYPES = [
 			'chr' => 'Characters',
@@ -454,7 +454,7 @@ HTML;
 			->get('notifications',null,$cols);
 	}
 
-	const TRANSFER_ATTEMPT_CLEAR_REASONS = [
+	public const TRANSFER_ATTEMPT_CLEAR_REASONS = [
 		'del' => 'the post was deleted',
 		'snatch' => 'the post was reserved by someone else',
 		'deny' => 'the post was transferred to someone else',
@@ -494,8 +494,8 @@ HTML;
 		}
 	}
 
-	const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it’s now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
-	const BROKEN = "<strong class='color-orange broken-note' title=\"The full size preview of this post was deemed unavailable and it is now marked as broken\"><span class='typcn typcn-plug'></span> Deemed broken</strong>";
+	public const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it’s now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
+	public const BROKEN = "<strong class='color-orange broken-note' title=\"The full size preview of this post was deemed unavailable and it is now marked as broken\"><span class='typcn typcn-plug'></span> Deemed broken</strong>";
 
 	/**
 	 * List ltem generator function for request & reservation generators

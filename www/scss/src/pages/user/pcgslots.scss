@@ -1,7 +1,7 @@
 @import "../../vars";
 
 #history-entries {
-	margin: 0 auto;
+	margin: 10px auto;
 	border-collapse: collapse;
 	text-align: center;
 
@@ -40,6 +40,31 @@
 					margin-right: .4em;
 					box-sizing: border-box;
 				}
+			}
+		}
+	}
+}
+
+#refund-gifts-form {
+	table {
+		width: 100%;
+		border-collapse: collapse;
+
+		th, td {
+			border: 1px solid;
+			padding: 10px;
+		}
+
+		.refund {
+			text-align: center;
+			transition: background-color .1s linear;
+			will-change: background-color;
+
+			&.unselected {
+				background: $NRedBG;
+			}
+			&.selected {
+				background: $NGreenBG;
 			}
 		}
 	}

@@ -21,18 +21,18 @@ class MajorChange extends AbstractEntryType {
 	/**
 	 * Gets the list of updates for an appearance
 	 *
-	 * @param int        $PonyID
-	 * @param string|int $count
+	 * @param int|null        $PonyID
+	 * @param string|int|null $count
 	 *
 	 * @return MajorChange|MajorChange[]
 	 */
-	public static function get($PonyID, $count = null){
+	public static function get(?int $PonyID, $count = null){
 		$LIMIT = '';
-		if (isset($count)){
+		if ($count !== null)
 			$LIMIT = \is_string($count) ? $count : "LIMIT $count";
-		}
-		$WHERE = isset($PonyID) ? "WHERE cm.appearance_id = $PonyID" : '';
-		$query = DB::$instance->setModel('Logs\MajorChange')->query(
+		$WHERE = $PonyID !== null ? "WHERE cm.appearance_id = $PonyID" : '';
+
+		$query = DB::$instance->setModel(__CLASS__)->query(
 			"SELECT cm.*
 			FROM log__major_changes cm
 			LEFT JOIN log l ON cm.entryid = l.refid AND l.reftype = 'major_changes'

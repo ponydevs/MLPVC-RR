@@ -7,7 +7,7 @@ use App\Models\User;
 
 class UserPrefs extends GlobalSettings {
 	/** @see process */
-	const DEFAULTS = [
+	public const DEFAULTS = [
 		'cg_itemsperpage' => 7,
 		'cg_hidesynon' => 0,
 		'cg_hideclrinfo' => 0,
@@ -22,8 +22,10 @@ class UserPrefs extends GlobalSettings {
 		'a_postreq' => 1,
 		'a_postres' => 1,
 		'a_reserve' => 1,
-		'pcg_slots' => null,
+		'pcg_slots' => 0,
 	];
+
+	public const STRICT_COMPARE = [];
 
 	/**
 	 * Gets a user preference item's value
@@ -82,13 +84,17 @@ class UserPrefs extends GlobalSettings {
 				'user_id' => $for->id,
 			]);
 
+		$strict = isset(self::STRICT_COMPARE[$key]);
+
 		if (UserPref::has($key, $for)){
 			$pref = UserPref::find_for($key, $for);
-			if ($value == $default)
+			unset(Users::$_PREF_CACHE[$for->id][$key]);
+			if ($strict ? $value === $default : $value == $default)
 				return $pref->delete();
 			else return $pref->update_attributes(['value' => $value]);
 		}
-		else if ($value != $default){
+		else if ($strict ? $value !== $default : $value != $default){
+			unset(Users::$_PREF_CACHE[$for->id][$key]);
 			return (new UserPref([
 				'user_id' => $for->id,
 				'key' => $key,

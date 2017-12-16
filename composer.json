@@ -34,7 +34,8 @@
 		"robmorgan/phinx": "dev-edge",
 		"enshrined/svg-sanitize": "^0.7.2",
 		"monolog/monolog": "^1.23",
-		"seinopsys/rgbacolor": "1.*"
+		"seinopsys/rgbacolor": "1.*",
+		"ramsey/uuid": "^3.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "6.*",

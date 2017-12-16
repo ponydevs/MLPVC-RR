@@ -49,7 +49,7 @@ abstract class Post extends NSModel implements LinkableInterface {
 	abstract public function get_is_reservation():bool;
 
 	public function get_approval_entry(){
-		return DB::$instance->setModel('Logs\Log')->querySingle(
+		return DB::$instance->setModel(Log::class)->querySingle(
 			"SELECT l.*
 			FROM log__post_lock pl
 			LEFT JOIN log l ON l.reftype = 'post_lock' AND l.refid = pl.entryid

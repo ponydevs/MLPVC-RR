@@ -58,10 +58,9 @@ if ($sameUser || $isStaff){
 }
 echo $User->getKnownIPsSection();
 echo Users::getContributionsHTML($User, $sameUser);
-$isUserMember = Permission::sufficient('member', $User->role);
-if ($isUserMember)
-	echo Users::getPersonalColorGuideHTML($User, $sameUser);
+echo Users::getPersonalColorGuideHTML($User, $sameUser);
 
+$isUserMember = Permission::sufficient('member', $User->role);
 if (Auth::$signed_in)
 	echo $User->getPendingReservationsHTML($sameUser, $isUserMember);
 if ($isUserMember)

@@ -45,6 +45,7 @@ use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
+use Ramsey\Uuid\Uuid;
 
 class AppearanceController extends ColorGuideController {
 	public function view($params){
@@ -133,7 +134,7 @@ class AppearanceController extends ColorGuideController {
 	public function action($params){
 		$this->_initPersonal($params, false);
 
-		if (Permission::insufficient('member'))
+		if (!Auth::$signed_in)
 			Response::fail();
 
 		$action = $params['action'];
@@ -144,15 +145,10 @@ class AppearanceController extends ColorGuideController {
 				Response::fail('You don’t have permission to add appearances to the official Color Guide');
 
 			if ($this->_personalGuide){
-				try {
-					$availSlots = Auth::$user->getPCGAvailableSlots();
-				}
-				catch (NoPCGSlotsException $e){
-					Response::fail("You don’t have any slots. If you’d like to know how to get some, click the blue <strong class='color-darkblue'>What?</strong> button on your <a href='/u'>Account page</a> to learn more about this feature.");
-				}
-				if ($availSlots < 1){
+				$availPoints = Auth::$user->getPCGAvailablePoints(false);
+				if ($availPoints < 10){
 					$remain = Users::calculatePersonalCGNextSlot(Auth::$user->getPCGAppearanceCount());
-					Response::fail("You don’t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'.');
+					Response::fail("You don’t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'. Visit <a href="/u">your profile</a> and click the <strong class="color-darkblue"><span class="typcn typcn-info-large"></span> What?</strong> button next to the Personal Color Guide heading for more information.');
 				}
 			}
 		}
@@ -183,7 +179,7 @@ class AppearanceController extends ColorGuideController {
 				];
 
 				$label = (new Input('label','string', [
-					Input::IN_RANGE => [4,70],
+					Input::IN_RANGE => [2,70],
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'Appearance name is missing',
 						Input::ERROR_RANGE => 'Appearance name must be beetween @min and @max characters long',
@@ -783,12 +779,6 @@ class AppearanceController extends ColorGuideController {
 				if ($wipe_cache)
 					$this->_execAction('clear-cache',null,true);
 
-				$wipe_cms = (new Input('wipe_cms','bool',[
-					Input::IS_OPTIONAL => true,
-				]))->out();
-				if ($wipe_cms)
-					$this->_execAction('delcms',null,true);
-
 				$wipe_cm_tokenized = (new Input('wipe_cm_tokenized','bool',[
 					Input::IS_OPTIONAL => true,
 				]))->out();
@@ -863,6 +853,12 @@ class AppearanceController extends ColorGuideController {
 				]))->out();
 				if ($mkpriv)
 					$update['private'] = 1;
+
+				$reset_priv_key = (new Input('reset_priv_key','bool',[
+					Input::IS_OPTIONAL => true,
+				]))->out();
+				if ($reset_priv_key)
+					$update['token'] = Uuid::uuid4();
 
 				if (!empty($update))
 					DB::$instance->where('id', $this->_appearance->id)->update('appearances',$update);

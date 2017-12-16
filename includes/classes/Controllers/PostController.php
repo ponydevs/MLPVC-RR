@@ -27,6 +27,13 @@ use App\Users;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 class PostController extends Controller {
+	public static $CONTRIB_THANKS;
+	public function __construct() {
+		parent::__construct();
+
+		self::$CONTRIB_THANKS = 'Thank you for your contribution!'.CoreUtils::responseSmiley(';)');
+	}
+
 	public function _authorize(){
 		if (!Auth::$signed_in)
 			Response::fail();
@@ -87,8 +94,6 @@ class PostController extends Controller {
 		if (($thing === 'request' && empty($this->_post->reserved_by) && $this->_post->requested_by === Auth::$user->id) || Permission::insufficient('staff'))
 			Response::fail();
 	}
-
-	const CONTRIB_THANKS = 'Thank you for your contribution!<div class="align-center"><span class="sideways-smiley-face">;)</span></div>';
 
 	public function action($params){
 		$this->_authorizeMember();
@@ -170,7 +175,7 @@ class PostController extends Controller {
 			break;
 			case 'locate':
 				if (empty($this->_post) || $this->_post->broken)
-					Response::fail("The post you were linked to has either been deleted or didn’t exist in the first place. Sorry.<div class='align-center'><span class='sideways-smiley-face'>:\</div>");
+					Response::fail('The post you were linked to has either been deleted or didn’t exist in the first place. Sorry.'.CoreUtils::responseSmiley(':\\'));
 
 				if (isset($_POST['SEASON']) && isset($_POST['EPISODE']) && $this->_post->ep->season === (int)$_POST['SEASON'] && $this->_post->ep->episode === (int)$_POST['EPISODE'])
 					Response::done([
@@ -242,7 +247,7 @@ class PostController extends Controller {
 					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 				if ($isUserReserver)
-					$response['message'] .= ' '.self::CONTRIB_THANKS;
+					$response['message'] .= ' '.self::$CONTRIB_THANKS;
 
 				Response::done($response);
 			break;
@@ -362,7 +367,7 @@ class PostController extends Controller {
 
 					Logs::logAction('post_lock',$postdata);
 					if ($isUserReserver)
-						$message .= self::CONTRIB_THANKS.' ';
+						$message .= self::$CONTRIB_THANKS.' ';
 					else Notification::send($this->_post->reserved_by, 'post-approved', $postdata);
 
 					$message .= "The post has been approved automatically because it's already in the club gallery.</p>";
@@ -835,7 +840,7 @@ class PostController extends Controller {
 		Response::success('Reservation added', ['id' => $Post->getID()]);
 	}
 
-	const SHARE_TYPE = [
+	public const SHARE_TYPE = [
 		'req' => 'request',
 		'res' => 'reservation',
 	];
