@@ -5,6 +5,7 @@ namespace App\Models;
 use App\CoreUtils;
 use App\DB;
 use App\JSON;
+use App\Notifications;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 /**
@@ -119,5 +120,9 @@ class Notification extends NSModel {
 		}
 
 		return 0;
+	}
+
+	public function safeMarkRead(?string $action = null, bool $silent = true){
+		Notifications::safeMarkRead($this->id, $action, $silent);
 	}
 }

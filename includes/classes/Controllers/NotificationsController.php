@@ -76,7 +76,7 @@ class NotificationsController extends Controller {
 							Response::fail('You are not allowed to transfer this reservation');
 						}
 
-						Notifications::safeMarkRead($Notif->id, $read_action);
+						$Notif->safeMarkRead($read_action);
 						Notification::send($data['user'], 'post-passallow', [
 							'id' => $data['id'],
 							'type' => $data['type'],
@@ -96,7 +96,7 @@ class NotificationsController extends Controller {
 						]);
 					}
 					else {
-						Notifications::safeMarkRead($Notif->id, $read_action);
+						$Notif->safeMarkRead($read_action);
 						Notification::send($data['user'], 'post-passdeny', [
 							'id' => $data['id'],
 							'type' => $data['type'],
@@ -136,7 +136,7 @@ class NotificationsController extends Controller {
 						Notification::send($gift->sender_id, 'pcg-slot-reject', $giftArr);
 
 
-						Notifications::safeMarkRead($Notif->id, $read_action);
+						$Notif->safeMarkRead($read_action);
 						Response::done();
 					}
 					else {
@@ -147,15 +147,15 @@ class NotificationsController extends Controller {
 
 						Notification::send($gift->sender_id, 'pcg-slot-accept', $giftArr);
 
-						Notifications::safeMarkRead($Notif->id, $read_action);
+						$Notif->safeMarkRead($read_action);
 						Response::success('You now have '.CoreUtils::makePlural('available slot', floor($gift->receiver->getPCGAvailablePoints(false)/10), PREPEND_NUMBER).". If you want to create an appearance you can <a href='{$gift->receiver->toURL()}/cg'>click here</a> to go directly to your personal color guide.");
 					}
 				break;
 				default:
-					Notifications::safeMarkRead($Notif->id, $read_action);
+					$Notif->safeMarkRead($read_action);
 			}
 		}
-		else Notifications::safeMarkRead($Notif->id);
+		else $Notif->safeMarkRead();
 
 		Response::done();
 	}

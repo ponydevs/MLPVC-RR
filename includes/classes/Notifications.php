@@ -115,8 +115,11 @@ class Notifications {
 				break;
 				case 'sprite-colors':
 					$Appearance = Appearance::find($data['appearance_id']);
-					$suffix = CoreUtils::posess($Appearance->label, true);
-					$HTML .= self::_getNotifElem("{$Appearance->toAnchor()}$suffix <a href='/cg/sprite/{$Appearance->id}'>sprite</a> is missing some colors", $n);
+					if (!empty($Appearance)){
+						$suffix = CoreUtils::posess($Appearance->label, true);
+						$HTML .= self::_getNotifElem("{$Appearance->toAnchor()}$suffix <a href='/cg/sprite/{$Appearance->id}'>sprite</a> is missing some colors", $n);
+					}
+					else $HTML .= self::_getNotifElem("An appearance's sprite was missing some colors, but since it's now deleted it doesn't really matter anymore", $n);
 				break;
 				case 'pcg-slot-gift':
 				case 'pcg-slot-accept':

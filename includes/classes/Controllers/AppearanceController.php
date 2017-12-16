@@ -21,11 +21,13 @@ use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
 use App\Models\Logs\MajorChange;
+use App\Models\Notification;
 use App\Models\PCGSlotHistory;
 use App\Models\RelatedAppearance;
 use App\Models\Tag;
 use App\Models\Tagged;
 use App\Models\User;
+use App\Notifications;
 use App\Pagination;
 use App\Permission;
 use App\RegExp;
@@ -317,7 +319,7 @@ class AppearanceController extends ColorGuideController {
 
 				$Tagged = Tags::getFor($this->_appearance->id, null, true);
 
-				if (!DB::$instance->where('id', $this->_appearance->id)->delete('appearances'))
+				if (!DB::$instance->where('id', $this->_appearance->id)->delete(Appearance::$table_name))
 					Response::dbError();
 
 				if ($this->_appearance->owner_id === null){
@@ -356,6 +358,14 @@ class AppearanceController extends ColorGuideController {
 					'private' => $this->_appearance->private,
 					'owner_id' => $this->_appearance->owner_id,
 				]);
+
+				/** @var $spriteColorNotifs Notification[] */
+				$spriteColorNotifs = DB::$instance
+					->where('type', 'sprite-colors')
+					->where("data->'appearance_id'", $this->_appearance->id)
+					->get(Notification::$table_name);
+				foreach ($spriteColorNotifs as $notif)
+					$notif->safeMarkRead();
 
 				if ($this->_appearance->owner_id !== null){
 					PCGSlotHistory::makeRecord($this->_appearance->owner_id, 'appearance_del', null, [

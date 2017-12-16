@@ -290,7 +290,7 @@ class Appearances {
 			return;
 
 		foreach ($notifs as $n)
-			Notifications::safeMarkRead($n->id, $action, true);
+			$n->safeMarkRead($action);
 	}
 
 	/**

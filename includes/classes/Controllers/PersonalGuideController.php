@@ -261,12 +261,13 @@ class PersonalGuideController extends ColorGuideController {
 			$gift->refunded_by = Auth::$user->id;
 			$gift->save();
 
+			/** @var $notif Notification */
 			$notif = DB::$instance
 				->where('recipient_id',$gift->receiver_id)
 				->where('type','pcg-slot-gift')
 				->where("data->'gift_id'", $gift->id)
 				->getOne(Notification::$table_name);
-			Notifications::safeMarkRead($notif->id, null, true);
+			$notif->safeMarkRead();
 
 			Logs::logAction('pcg_gift_refund', $giftIDArr);
 			Notification::send($gift->sender_id, 'pcg-slot-refund', $giftIDArr);

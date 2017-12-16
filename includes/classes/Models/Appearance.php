@@ -512,14 +512,16 @@ HTML;
 				$SortedColorGroups[$cg->id] = $cg;
 
 			$AllColors = CGUtils::getColorsForEach($ColorGroups);
-			foreach ($AllColors as $cg){
-				/** @var $cg Color[] */
-				foreach ($cg as $c)
-					$Colors[] = [
-						'hex' => $c->hex,
-						'label' => $SortedColorGroups[$c->group_id]->label.' | '.$c->label,
-						'mandatory' => $AppearanceID !== 0,
-					];
+			if (\count($AllColors) > 0){
+				foreach ($AllColors as $cg){
+					/** @var $cg Color[] */
+					foreach ($cg as $c)
+						$Colors[] = [
+							'hex' => $c->hex,
+							'label' => $SortedColorGroups[$c->group_id]->label.' | '.$c->label,
+							'mandatory' => $AppearanceID !== 0,
+						];
+				}
 			}
 		}
 		if ($this->owner_id === null)
