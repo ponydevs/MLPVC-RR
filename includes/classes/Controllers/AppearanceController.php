@@ -43,8 +43,6 @@ use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
 use ONGR\ElasticsearchDSL\Query\Compound\FunctionScoreQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
-use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
-use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Ramsey\Uuid\Uuid;
 
 class AppearanceController extends ColorGuideController {
@@ -320,18 +318,20 @@ class AppearanceController extends ColorGuideController {
 				if (!DB::$instance->where('id', $this->_appearance->id)->delete('appearances'))
 					Response::dbError();
 
-				try {
-					CoreUtils::elasticClient()->delete($this->_appearance->toElasticArray(true));
-				}
-				catch (ElasticMissing404Exception $e){
-					$message = JSON::decode($e->getMessage());
+				if ($this->_appearance->owner_id === null){
+					try {
+						CoreUtils::elasticClient()->delete($this->_appearance->toElasticArray(true));
+					}
+					catch (Missing404Exception $e){
+						$message = JSON::decode($e->getMessage());
 
-					// Eat error if appearance was not indexed
-					if ($message['found'] !== false)
-						throw $e;
-				}
-				catch (ElasticNoNodesAvailableException $e){
-					CoreUtils::error_log('ElasticSearch server was down when server attempted to remove appearance '.$this->_appearance->id);
+						// Eat error if appearance was not indexed
+						if (!isset($message['found']) || $message['found'] !== false)
+							throw $e;
+					}
+					catch (NoNodesAvailableException $e){
+						CoreUtils::error_log('ElasticSearch server was down when server attempted to remove appearance '.$this->_appearance->id);
+					}
 				}
 
 				if (!empty($Tagged))
