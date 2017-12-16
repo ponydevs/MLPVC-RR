@@ -41,7 +41,7 @@ class PCGSlotGift extends NSModel {
 
 	public function make_related_entries(){
 		// Deduct slots from sender immediately
-		PCGSlotHistory::makeRecord($this->sender_id, 'gift_sent', $this->amount, [ 'gift_id' => $this->id ]);
+		PCGSlotHistory::makeRecord($this->sender_id, 'gift_sent', $this->amount*10, [ 'gift_id' => $this->id ]);
 		Auth::$user->syncPCGSlotCount();
 
 		// Send notification
