@@ -663,7 +663,7 @@ class Browser {
 
 			return true;
 		}
-		if (stripos($this->_agent, 'OPR') !== false){
+		if (stripos($this->_agent, 'OPR') !== false && stripos($this->_agent, 'Chrome') === false){
 			$resultant = stristr($this->_agent, 'OPR');
 			if (preg_match('/\//', $resultant)){
 				$aresult = explode('/', str_replace('(', ' ', $resultant));
