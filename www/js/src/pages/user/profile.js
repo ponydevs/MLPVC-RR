@@ -13,7 +13,7 @@ $(function(){
 			<br>
 			<p><strong>However</strong>, there are a few things to keep in mind:</p>
 			<ul>
-				<li>You may only add characters made by you, for you, or characters you've purchased to your Personal Color Guide. If we're asked to remove someone else’s character from your guide we'll certainly comply.</li>
+				<li>You may only add characters made by you, for you, or characters you've purchased to your Personal Color Guide. If we're asked to remove someone else’s character from your guide we'll certainly comply. Please stick to species canon to the show, we're a pony community after all.</li>
 				<li>Finished requests only count toward additional slots after they have been submitted to the group and have been accepted to the gallery. This is indicated by a tick symbol (<span class="color-green typcn typcn-tick"></span>) on the post throughout the site.</li>
 				<li>A finished request does not count towards additional slots if you were the one who requested it in the first place. We're not against this behaviour generally, but allowing this would defeat the purpose of this feature: encouraging members to help others.</li>
 				<li>Do not attempt to abuse the system in any way. Exploiting any bugs you may encounter instead of <a class="send-feedback">reporting them</a> could result in us disabling your access to this feature.</li>
