@@ -755,7 +755,7 @@ HTML;
 		}
 	}
 
-	public static function validateImageURL(){
+	public static function validateImageURL():string {
 		return (new Input('image_url','string', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Please provide an image URL.',

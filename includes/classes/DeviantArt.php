@@ -390,7 +390,7 @@ class DeviantArt {
 			$memberlist = HTTP::legitimateRequest("http://mlp-vectorclub.deviantart.com/modals/memberlist/?offset=$off");
 			if (empty($memberlist['response']))
 				break;
-			$dom = new \DOMDocument();
+			$dom = new \DOMDocument('1.0', 'UTF-8');
 			$internalErrors = libxml_use_internal_errors(true);
 			$dom->loadHTML($memberlist['response']);
 			libxml_use_internal_errors($internalErrors);

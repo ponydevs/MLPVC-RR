@@ -278,6 +278,9 @@ class Input {
 		throw new \Exception($message);
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function out(){
 		return $this->_value;
 	}

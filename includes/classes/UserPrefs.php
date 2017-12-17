@@ -33,16 +33,17 @@ class UserPrefs extends GlobalSettings {
 	 *
 	 * @param string $key
 	 * @param User   $for
+	 * @param bool   $disable_cache
 	 *
 	 * @return mixed
 	 */
-	public static function get(string $key, ?User $for = null){
+	public static function get(string $key, ?User $for = null, bool $disable_cache = false){
 		if (empty($for) && Auth::$signed_in)
 			$for = Auth::$user;
 
 		$for_set = $for !== null && !empty($for->id);
 
-		if ($for_set && isset(Users::$_PREF_CACHE[$for->id][$key]))
+		if ($for_set && !$disable_cache && isset(Users::$_PREF_CACHE[$for->id][$key]))
 			return Users::$_PREF_CACHE[$for->id][$key];
 
 		$default = null;

@@ -13,6 +13,7 @@ class MuffinRatingController {
 			$ScorePercent = \intval($_GET['w'], 10);
 		$RatingFile = File::get(APPATH.'img/muffin-rating.svg');
 		header('Content-Type: image/svg+xml');
-		die(str_replace("width='100'", "width='$ScorePercent'", $RatingFile));
+		echo str_replace("width='100'", "width='$ScorePercent'", $RatingFile);
+		exit;
 	}
 }

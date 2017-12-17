@@ -552,7 +552,7 @@ HTML;
 		return DB::$instance->where('owner_id IS NOT NULL');
 	}
 
-	public function pcgAppearances($params){
+	public function pcgAppearances(){
 		$Pagination = new Pagination('admin/pcg-appearances', 10, $this->_setupPcgAppearances()->count(Appearance::$table_name));
 
 		CoreUtils::fixPath("/admin/pcg-appearances/{$Pagination->page}");

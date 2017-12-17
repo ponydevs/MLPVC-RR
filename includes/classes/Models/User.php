@@ -304,7 +304,7 @@ HTML;
 	 * @return int
 	 */
 	public function getPCGAvailablePoints(bool $throw = true):int {
-		$slotcount = UserPrefs::get('pcg_slots', $this);
+		$slotcount = UserPrefs::get('pcg_slots', $this, true);
 		if ($slotcount !== 0){
 			$slotcount = (int)$slotcount;
 			if ($throw && $slotcount === 0)

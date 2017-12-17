@@ -308,7 +308,6 @@ class Appearances {
 				$applink = $appearance->toAnchorWithPreview();
 				$owner = $appearance->owner->toAnchor();
 				$created = Time::tag($appearance->added);
-				$private = $appearance->private ? '<span class="color-orange typcn typcn-lock-closed"></span>' : '<span class="typcn typcn-times"></span>';
 				if (\count($appearance->cutiemarks) === 0)
 					$cms = '<span class="typcn typcn-times"></span>';
 				else {

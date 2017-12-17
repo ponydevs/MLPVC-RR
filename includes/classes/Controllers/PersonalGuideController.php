@@ -224,7 +224,7 @@ class PersonalGuideController extends ColorGuideController {
 		]);
 	}
 
-	public function refundSlotGifts($params){
+	public function refundSlotGifts(){
 		CSRFProtection::protect();
 
 		if (Permission::insufficient('staff'))

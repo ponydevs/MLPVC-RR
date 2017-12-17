@@ -8,6 +8,7 @@ use App\Models\Appearance;
 use App\Models\Notification;
 use App\Models\PCGSlotGift;
 use App\Models\Post;
+use App\Models\User;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 class Notifications {
@@ -76,7 +77,7 @@ class Notifications {
 					$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added to the club gallery", $n);
 				break;
 				case 'post-passon':
-					$userlink = Users::get($data['user'])->getProfileLink();
+					$userlink = Users::get($data['user'])->toAnchor();
 					$HTML .= self::_getNotifElem("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?", $n);
 				break;
 				case 'post-passdeny':
@@ -85,7 +86,7 @@ class Notifications {
 				case 'post-passdel':
 				case 'post-passsnatch':
 				case 'post-passperm':
-					$userlink = User::find($data['by'])->getProfileLink();
+					$userlink = Users::get($data['by'])->toAnchor();
 
 					$passaction = str_replace('post-pass','',$n->type);
 					switch($passaction){

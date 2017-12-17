@@ -582,7 +582,7 @@ class CoreUtils {
 		$sanitizer->removeRemoteReferences(true);
 		$sanitized = $sanitizer->sanitize($dirty_svg);
 
-		$unifier = new \DOMDocument();
+		$unifier = new \DOMDocument('1.0', 'UTF-8');
 		$unifier->loadXML($sanitized);
 		// Make sure we add the default colors of paths to the file to make them replaceable (unless they have a class)
 		$paths = $unifier->getElementsByTagName('path');
@@ -616,7 +616,7 @@ class CoreUtils {
 		if ($svg_data === false)
 			return Input::ERROR_INVALID;
 
-		$parser = new \DOMDocument();
+		$parser = new \DOMDocument('1.0', 'UTF-8');
 		libxml_use_internal_errors(true);
 		$parser->loadXML($svg_data);
 		libxml_use_internal_errors();

@@ -11,7 +11,7 @@ class CSRFProtection {
 	public static function detect(){
 		$CSRF = !isset($_POST[self::$_cookieKey]) || !Cookie::exists(self::$_cookieKey) || $_POST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
 		if (!POST_REQUEST && $CSRF)
-			Cookie::set(self::$_cookieKey,md5(time()+mt_rand()), Cookie::SESSION);
+			Cookie::set(self::$_cookieKey,bin2hex(random_bytes(16)), Cookie::SESSION);
 	}
 
 	/**
