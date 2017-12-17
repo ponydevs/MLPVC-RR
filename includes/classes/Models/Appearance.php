@@ -500,6 +500,28 @@ HTML;
 		]]);
 	}
 
+	public const STATIC_RELEVANT_COLORS = [
+		[
+			'hex' => '#D8D8D8',
+			'label' => 'Mannequin | Outline',
+			'mandatory' => false,
+		],
+		[
+            'hex' => '#E6E6E6',
+            'label' => 'Mannequin | Fill',
+			'mandatory' => false,
+		],
+		[
+            'hex' => '#BFBFBF',
+            'label' => 'Mannequin | Shadow Outline',
+			'mandatory' => false,
+		],
+		[
+            'hex' => '#CCCCCC',
+            'label' => 'Mannequin | Shdow Fill',
+			'mandatory' => false,
+		]
+	];
 	public function getSpriteRelevantColors():array {
 		$Colors = [];
 		foreach ([0, $this->id] as $AppearanceID){
@@ -525,30 +547,7 @@ HTML;
 			}
 		}
 		if ($this->owner_id === null)
-			$Colors = array_merge($Colors,
-				[
-					[
-						'hex' => '#D8D8D8',
-						'label' => 'Mannequin | Outline',
-						'mandatory' => false,
-					],
-					[
-		                'hex' => '#E6E6E6',
-		                'label' => 'Mannequin | Fill',
-						'mandatory' => false,
-					],
-					[
-		                'hex' => '#BFBFBF',
-		                'label' => 'Mannequin | Shadow Outline',
-						'mandatory' => false,
-					],
-					[
-		                'hex' => '#CCCCCC',
-		                'label' => 'Mannequin | Shdow Fill',
-						'mandatory' => false,
-					]
-				]
-			);
+			$Colors = array_merge($Colors, self::STATIC_RELEVANT_COLORS);
 
 		return [ $Colors, $ColorGroups ?? null, $AllColors ?? null];
 	}
