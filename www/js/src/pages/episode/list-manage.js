@@ -25,7 +25,7 @@ $(function(){
 			`<div class="label episode-only">
 				<span>Season, Episode & Overall #</span>
 				<div class=input-group-3>
-					<input type="number" min="1" max="8" name="season" placeholder="Season #" required>
+					<input type="number" min="1" max="9" name="season" placeholder="Season #" required>
 					<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>
 					<input type="number" min="1" max="255" name="no" placeholder="Overall #" required>
 				</div>

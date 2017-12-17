@@ -361,7 +361,7 @@ HTML;
 
 	public static function validateSeason($allowMovies = false){
 		return (new Input('season','int', [
-			Input::IN_RANGE => [$allowMovies ? 0 : 1, 8],
+			Input::IN_RANGE => [$allowMovies ? 0 : 1, 9],
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Season number is missing',
 				Input::ERROR_INVALID => 'Season number (@value) is invalid',

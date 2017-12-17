@@ -230,7 +230,7 @@ Episode tags must be in one of the following formats:
 <li>
 	<code>s<var>S</var>e<var>E<sub>1</sub></var>[-<var>E<sub>2</sub></var>]</code> where
 	<ul>
-		<li><var>S</var> ∈ <var>{1, 2, 3, &hellip; 8}</var></li>
+		<li><var>S</var> ∈ <var>{1, 2, 3, &hellip; 9}</var></li>
 		<li><var>E<sub>1</sub></var>, <var>E<sub>2</sub></var> ∈ <var>{1, 2, 3, &hellip; 26}</var></li>
 		<li>if specified: <var>E<sub>1</sub></var>+1 = <var>E<sub>2</sub></var></li>
 	</ul>
