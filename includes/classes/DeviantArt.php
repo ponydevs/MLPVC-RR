@@ -412,7 +412,7 @@ class DeviantArt {
 		$stafflist = JSON::decode(HTTP::legitimateRequest($requri)['response'], false);
 		$stafflist = $stafflist->DiFi->response->calls[0]->response->content->html;
 		$stafflist = str_replace('id="gmi-GAboutUsModule_Item"','',$stafflist);
-		$dom = new \DOMDocument();
+		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$dom->loadHTML($stafflist);
 		$xp = new \DOMXPath($dom);
 		$admins =  $xp->query('//div[@id="aboutus"]//div[@class="user-name"]');
