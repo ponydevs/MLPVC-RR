@@ -82,7 +82,7 @@ class UserController extends Controller {
 			'css' => [true],
 			'js' => [true],
 			'import' => [
-				'User' => $User,
+				'User' => $User ?? null,
 				'canEdit' => $canEdit,
 				'sameUser' => $sameUser,
 				'devOnDev' => $devOnDev,

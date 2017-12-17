@@ -76,7 +76,7 @@ class Notifications {
 					$HTML .= self::_getNotifElem("A <a href='$url'>post</a> you reserved under $EpID has been added to the club gallery", $n);
 				break;
 				case 'post-passon':
-					$userlink = User::find($data['user'])->getProfileLink();
+					$userlink = Users::get($data['user'])->getProfileLink();
 					$HTML .= self::_getNotifElem("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?", $n);
 				break;
 				case 'post-passdeny':
