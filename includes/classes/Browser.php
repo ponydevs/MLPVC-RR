@@ -36,7 +36,6 @@ class Browser {
 	private $_platform = '';
 	private $_browserName = '';
 	private $_version = '';
-	private $_isAol = false;
 	private $_isMobile = false;
 	private $_isTablet = false;
 	private $_isRobot = false;

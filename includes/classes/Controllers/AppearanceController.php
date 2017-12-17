@@ -928,11 +928,11 @@ class AppearanceController extends ColorGuideController {
 			'Coat Shadow Outline' => '#404433',
 			'Coat Fill' => '#70605D',
 			'Coat Shadow Fill' => '#6C7260',
-			'Eyes Top' => '#3B3B3B',
-			'Eyes Middle' => '#606060',
-			'Eyes Bottom' => '#BEBEBE',
-			'Eyes Highlight Top' => '#542727',
-			'Eyes Highlight Bottom' => '#7E3A3A',
+			'Iris Gradient Top' => '#3B3B3B',
+			'Iris Gradient Middle' => '#606060',
+			'Iris Gradient Bottom' => '#BEBEBE',
+			'Iris Highlight Top' => '#542727',
+			'Iris Highlight Bottom' => '#7E3A3A',
 			'Magic Aura' => '#B7B7B7',
 		];
 

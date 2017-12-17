@@ -912,6 +912,40 @@ ALTER SEQUENCE log__major_changes_entryid_seq OWNED BY log__major_changes.entryi
 
 
 --
+-- Name: log__pcg_gift_refund; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__pcg_gift_refund (
+    entryid integer NOT NULL,
+    gift_id integer NOT NULL
+);
+
+
+ALTER TABLE log__pcg_gift_refund OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__pcg_gift_refund_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__pcg_gift_refund_entryid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__pcg_gift_refund_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__pcg_gift_refund_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__pcg_gift_refund_entryid_seq OWNED BY log__pcg_gift_refund.entryid;
+
+
+--
 -- Name: log__post_break; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1325,6 +1359,47 @@ ALTER TABLE notifications_id_seq OWNER TO "mlpvc-rr";
 --
 
 ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
+
+
+--
+-- Name: pcg_slot_gifts; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE pcg_slot_gifts (
+    id integer NOT NULL,
+    sender_id uuid NOT NULL,
+    receiver_id uuid NOT NULL,
+    amount integer NOT NULL,
+    claimed boolean DEFAULT false NOT NULL,
+    rejected boolean DEFAULT false NOT NULL,
+    refunded_by uuid,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp without time zone
+);
+
+
+ALTER TABLE pcg_slot_gifts OWNER TO "mlpvc-rr";
+
+--
+-- Name: pcg_slot_gifts_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE pcg_slot_gifts_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE pcg_slot_gifts_id_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: pcg_slot_gifts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE pcg_slot_gifts_id_seq OWNED BY pcg_slot_gifts.id;
 
 
 --
@@ -1796,6 +1871,13 @@ ALTER TABLE ONLY log__major_changes ALTER COLUMN entryid SET DEFAULT nextval('lo
 
 
 --
+-- Name: log__pcg_gift_refund entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__pcg_gift_refund ALTER COLUMN entryid SET DEFAULT nextval('log__pcg_gift_refund_entryid_seq'::regclass);
+
+
+--
 -- Name: log__post_break entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1870,6 +1952,13 @@ ALTER TABLE ONLY log__video_broken ALTER COLUMN entryid SET DEFAULT nextval('log
 --
 
 ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notifications_id_seq'::regclass);
+
+
+--
+-- Name: pcg_slot_gifts id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY pcg_slot_gifts ALTER COLUMN id SET DEFAULT nextval('pcg_slot_gifts_id_seq'::regclass);
 
 
 --
@@ -2115,6 +2204,14 @@ ALTER TABLE ONLY log__major_changes
 
 
 --
+-- Name: log__pcg_gift_refund log__pcg_gift_refund_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__pcg_gift_refund
+    ADD CONSTRAINT log__pcg_gift_refund_pkey PRIMARY KEY (entryid);
+
+
+--
 -- Name: log__post_break log__post_break_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2208,6 +2305,14 @@ ALTER TABLE ONLY log
 
 ALTER TABLE ONLY notifications
     ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pcg_slot_gifts pcg_slot_gifts_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY pcg_slot_gifts
+    ADD CONSTRAINT pcg_slot_gifts_pkey PRIMARY KEY (id);
 
 
 --
@@ -2446,6 +2551,13 @@ CREATE INDEX log__major_changes_appearance_id ON log__major_changes USING btree 
 
 
 --
+-- Name: log__pcg_gift_refund_gift_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX log__pcg_gift_refund_gift_id ON log__pcg_gift_refund USING btree (gift_id);
+
+
+--
 -- Name: log__rolechange_target; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2478,6 +2590,27 @@ CREATE INDEX notifications_recipient_id ON notifications USING btree (recipient_
 --
 
 CREATE INDEX notifications_type ON notifications USING btree (type);
+
+
+--
+-- Name: pcg_slot_gifts_receiver_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX pcg_slot_gifts_receiver_id ON pcg_slot_gifts USING btree (receiver_id);
+
+
+--
+-- Name: pcg_slot_gifts_refunded_by; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX pcg_slot_gifts_refunded_by ON pcg_slot_gifts USING btree (refunded_by);
+
+
+--
+-- Name: pcg_slot_gifts_sender_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX pcg_slot_gifts_sender_id ON pcg_slot_gifts USING btree (sender_id);
 
 
 --
@@ -2681,6 +2814,14 @@ ALTER TABLE ONLY log__da_namechange
 
 
 --
+-- Name: log__pcg_gift_refund log__pcg_gift_refund_gift_id; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__pcg_gift_refund
+    ADD CONSTRAINT log__pcg_gift_refund_gift_id FOREIGN KEY (gift_id) REFERENCES pcg_slot_gifts(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
 -- Name: log log_initiator; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2694,6 +2835,30 @@ ALTER TABLE ONLY log
 
 ALTER TABLE ONLY notifications
     ADD CONSTRAINT notifications_recipient_id FOREIGN KEY (recipient_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: pcg_slot_gifts pcg_slot_gifts_receiver_id; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY pcg_slot_gifts
+    ADD CONSTRAINT pcg_slot_gifts_receiver_id FOREIGN KEY (receiver_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: pcg_slot_gifts pcg_slot_gifts_refunded_by; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY pcg_slot_gifts
+    ADD CONSTRAINT pcg_slot_gifts_refunded_by FOREIGN KEY (refunded_by) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: pcg_slot_gifts pcg_slot_gifts_sender_id; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY pcg_slot_gifts
+    ADD CONSTRAINT pcg_slot_gifts_sender_id FOREIGN KEY (sender_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
