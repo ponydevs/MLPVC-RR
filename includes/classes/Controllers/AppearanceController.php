@@ -427,6 +427,8 @@ class AppearanceController extends ColorGuideController {
 
 				switch ($action){
 					case 'setsprite':
+						if ($this->_appearance->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite'))
+							Response::fail('You are not allowed to upload sprite images on your own PCG appearances');
 						CGUtils::processUploadedImage('sprite', $finalpath, ['image/png'], [300], [700, 300]);
 						$this->_appearance->clearRenderedImages();
 

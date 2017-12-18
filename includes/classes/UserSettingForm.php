@@ -96,6 +96,12 @@ class UserSettingForm {
 				'desc' => 'Can create PCG appearances',
 			]
 		],
+		'a_pcgsprite' => [
+			'type' => 'checkbox',
+			'options' => [
+				'desc' => 'Can add sprites to PCG appearances',
+			]
+		],
 		'a_postreq' => [
 			'type' => 'checkbox',
 			'options' => [

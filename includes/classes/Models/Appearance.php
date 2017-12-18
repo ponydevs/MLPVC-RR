@@ -131,10 +131,14 @@ class Appearance extends NSModel implements LinkableInterface {
 	 * Returns the HTML for sprite images
 	 *
 	 * @param bool $canUpload
+	 * @param User $user
 	 *
 	 * @return string
 	 */
-	public function getSpriteHTML(bool $canUpload):string {
+	public function getSpriteHTML(bool $canUpload, ?User $user = null):string {
+		if (Auth::$signed_in && $this->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite'))
+			$canUpload = false;
+
 		$imgPth = $this->getSpriteURL();
 		if (!empty($imgPth)){
 			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($this->label)."'></a>";
