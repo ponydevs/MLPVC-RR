@@ -18,7 +18,6 @@ html, body, #wr {
 	padding: 0;
 }
 #wr {
-	display: table;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -26,8 +25,6 @@ html, body, #wr {
 	background: black;
 }
 #c {
-	display: table-cell;
-	vertical-align: middle;
 	display: flex;
 	flex-flow: column nowrap;
 	color: #fff; 

@@ -1316,17 +1316,7 @@ HTML;
 		}
 
 		/** @var $logger Logger */
-		$logger->log(Logger::ERROR, $message, [
-			'ip' => $_SERVER['REMOTE_ADDR'],
-			'referrer' => $_SERVER['HTTP_REFERER'] ?? null,
-			'request_uri' => $_SERVER['REQUEST_URI'],
-			'post_data' => $_POST,
-			'auth' => Auth::$signed_in ? [
-				'id' => Auth::$user->id,
-				'name' => Auth::$user->name,
-				'session' => Auth::$session->id,
-			] : null,
-		]);
+		$logger->log(Logger::ERROR, $message);
 	}
 
 	public static function responseSmiley(string $face):string {

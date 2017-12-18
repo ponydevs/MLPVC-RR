@@ -24,7 +24,7 @@ use Monolog\Formatter\LineFormatter;
 function monolog_setup(){
 	global $logger;
 	$formatter = new LineFormatter(LineFormatter::SIMPLE_FORMAT, LineFormatter::SIMPLE_DATE);
-	$formatter->includeStacktraces(true);
+	$formatter->includeStacktraces();
 
 	if (!defined('LOG_PATH'))
 		throw new RuntimeException('The LOG_PATH constant is not defined, please add it to your conf.php file');
