@@ -32,11 +32,12 @@ class PCGSlotGift extends NSModel {
 	];
 
 	public static function send(string $from, string $to, int $amount):PCGSlotGift {
-		return self::create([
-			'sender_id' => $from,
-			'receiver_id' => $to,
-			'amount' => $amount,
-		]);
+		$instance = new self();
+		$instance->sender_id = $from;
+		$instance->receiver_id = $to;
+		$instance->amount = $amount;
+		$instance->save();
+		return $instance;
 	}
 
 	public function make_related_entries(){

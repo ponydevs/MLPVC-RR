@@ -175,3 +175,5 @@ $router->map('POST', '/user/verify-giftable-slots',          'PersonalGuideContr
 $router->map('POST', '/user/gift-pcg-slots/[un:name]',       'PersonalGuideController#giftSlots');
 $router->map('POST', '/user/pending-gifts/[un:name]',        'PersonalGuideController#getPendingSlotGifts');
 $router->map('POST', '/user/refund-gifts',                   'PersonalGuideController#refundSlotGifts');
+$router->map('POST', '/user/give-pcg-points/[un:name]',      'PersonalGuideController#givePoints');
+$router->map('POST', '/user/get-deductable-points/[un:name]', 'PersonalGuideController#getDeductablePoints');

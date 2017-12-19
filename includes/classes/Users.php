@@ -282,11 +282,13 @@ HTML;
 		$Action = $sameUser ? 'Manage' : 'View';
 		$slothistbtn = $User->getPCGPointHistoryButtonHTML($showPrivate);
 		$giftslotbtn = $User->getPCGSlotGiftButtonHTML();
+		$givepointsbtn = $User->getPCGPointGiveButtonHTML();
 		$HTML .= <<<HTML
 <p>
 	<a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a>
 	$slothistbtn
 	$giftslotbtn
+	$givepointsbtn
 </p>
 HTML;
 		$HTML .= '';

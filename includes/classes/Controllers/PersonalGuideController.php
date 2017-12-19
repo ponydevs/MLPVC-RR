@@ -11,6 +11,7 @@ use App\DB;
 use App\Input;
 use App\Logs;
 use App\Models\Notification;
+use App\Models\PCGPointGrant;
 use App\Models\PCGSlotGift;
 use App\Models\PCGSlotHistory;
 use App\Notifications;
@@ -189,7 +190,6 @@ class PersonalGuideController extends ColorGuideController {
 			],
 		]))->out();
 
-
 		PCGSlotGift::send(Auth::$user->id, $target->id, $amount);
 
 		$nslots = CoreUtils::makePlural('slot', $amount, PREPEND_NUMBER);
@@ -274,5 +274,56 @@ class PersonalGuideController extends ColorGuideController {
 		}
 
 		Response::success('The selected gifts have been successfully refunded to their senders.');
+	}
+
+	public function getDeductablePoints($params){
+		CSRFProtection::protect();
+
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		Response::done([ 'amount' => Auth::$user->getPCGAvailablePoints(false)-10 ]);
+	}
+
+	public function givePoints($params){
+		CSRFProtection::protect();
+
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		$target = Users::get($params['name'], 'name');
+		if (empty($target))
+			Response::fail('The specified user does not exist');
+
+		$amount = (new Input('amount','int',[
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_MISSING => 'Amount of slots to give is missing',
+				Input::ERROR_INVALID => 'Amount of slots to give (@value) is invalid',
+				Input::ERROR_RANGE => 'Amount of slots to give must be between @min and @max',
+			],
+		]))->out();
+		if ($amount === 0)
+			Response::fail("You have to enter an integer that isn't 0");
+
+		$availableSlots = $target->getPCGAvailablePoints(false);
+		if ($availableSlots + $amount < 10)
+			Response::fail('This would cause the users points to go below 10');
+
+		$comment = (new Input('comment','string',[
+			Input::IS_OPTIONAL => true,
+			Input::IN_RANGE => [2, 140],
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_INVALID => 'Comment (@value) is invalid',
+				Input::ERROR_RANGE => 'Comment must be between @min and @max chars',
+			],
+		]))->out();
+		CoreUtils::checkStringValidity($comment, 'Comment', INVERSE_PRINTABLE_ASCII_PATTERN);
+
+		PCGPointGrant::grant($target->id, Auth::$user->id, $amount, $comment);
+
+		$nPoints = CoreUtils::makePlural('point', abs($amount), PREPEND_NUMBER);
+		$given = $amount > 0 ? 'given' : 'taken';
+		$to = $amount > 0 ? 'to' : 'from';
+		Response::success("You've successfully $given $nPoints $to {$target->name}");
 	}
 }

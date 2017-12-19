@@ -311,10 +311,12 @@ HTML;
 				throw new NoPCGSlotsException();
 			return $slotcount;
 		}
-
 		// We need to calculate the available slots
-		PCGSlotHistory::makeRecord($this->id, 'free_trial');
 
+		# Free slot for everyone
+		PCGSlotHistory::makeRecord($this->id, 'free_trial', null, null, strtotime('2017-12-16T13:36:59Z'));
+
+		# Grant points for approver requests
 		DB::$instance->where('requested_by', $this->id, '!=');
 		/** @var $posts Request[] */
 		$posts = $this->getApprovedFinishedRequestContributions(false);
@@ -326,6 +328,7 @@ HTML;
 				], $post->approval_entry->timestamp);
 			}
 
+		# Take slots for existing appearances
 		foreach ($this->pcg_appearances as $appearance){
 			PCGSlotHistory::makeRecord($this->id, 'appearance_add', null, [
 				'id' => $appearance->id,
@@ -333,6 +336,7 @@ HTML;
 			], $appearance->added);
 		}
 
+		# Take slots for sent gifts
 		/** @var $sentGifts PCGSlotGift[] */
 		$sentGifts = DB::$instance
 			->setModel(PCGSlotGift::class)
@@ -345,6 +349,7 @@ HTML;
 			], $gift->created_at);
 		}
 
+		# Give slots for received gifts
 		/** @var $receivedGifts PCGSlotGift[] */
 		$receivedGifts = DB::$instance
 			->setModel(PCGSlotGift::class)
@@ -356,6 +361,11 @@ HTML;
 				'gift_id' => $gift->id,
 			], $gift->updated_at);
 		}
+
+		# Apply manual point grants
+		$grantedPoints = PCGPointGrant::find('all', [ 'conditions' => ['receiver_id' => $this->id] ]);
+		foreach ($grantedPoints as $grantedPoint)
+			$grantedPoint->make_related_entries(false);
 
 		$this->syncPCGSlotCount();
 		return $this->getPCGAvailablePoints($throw);
@@ -792,10 +802,17 @@ HTML;
 	}
 
 	public function getPCGSlotGiftButtonHTML():string {
-		if (!Auth::$signed_in || Auth::$user->id === $this->id || Permission::insufficient('member', $this->role))
+		if (!Auth::$signed_in || Auth::$user->id === $this->id)
 			return '';
 
 		return "<button class='btn green typcn typcn-gift gift-pcg-slots'>Gift slots</a>";
+	}
+
+	public function getPCGPointGiveButtonHTML():string {
+		if (Permission::insufficient('staff'))
+			return '';
+
+		return "<button class='btn darkblue typcn typcn-plus give-pcg-points'>Give points</a>";
 	}
 
 	/**

@@ -108,10 +108,11 @@ $(function(){
 							value: 1,
 							step: 1,
 							'class': 'large-number-input',
+							required: true,
 						})
 					)
 				);
-				$.Dialog.request('Gifting PCG slots to '+name, $GiftForm, 'Continue', function($form){
+				$.Dialog.request(false, $GiftForm, 'Continue', function($form){
 					$form.on('submit',function(e){
 						e.preventDefault();
 
@@ -131,6 +132,67 @@ $(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$.Dialog.success(false, this.message, true);
+							}));
+						});
+					});
+				});
+			}));
+		});
+	}
+
+	const $givePCGPoints = $('.give-pcg-points');
+	if ($givePCGPoints.length){
+		$givePCGPoints.on('click',function(e){
+			e.preventDefault();
+
+			$.Dialog.wait('Giving PCG points to '+name, "Checking user's total points");
+
+			$.post('/user/get-deductable-points/'+name, $.mkAjaxHandler(function(){
+				const $GiveForm = $.mk('form','pcg-point-give-form').append(
+					$.mk('label').append(
+						`<p>Choose how many <strong>points</strong> you want to give. Enter a negative number to take points. You cannot take more points than what the user has, and the free slot cannot be taken away.</p><p><strong>Remember, 10 points = 1 slot!</strong></p>`,
+						$.mk('input').attr({
+							type: 'number',
+							name: 'amount',
+							step: 1,
+							min: -this.amount,
+							'class': 'large-number-input',
+							required: true,
+						})
+					),
+					$.mk('label').append(
+						`<p>Comment (optional, 2-140 chars.)</p>`,
+						$.mk('textarea').attr({
+							name: 'comment',
+							maxlength: 255,
+						})
+					)
+				);
+				$.Dialog.request(false, $GiveForm, 'Continue', function($form){
+					$form.on('submit',function(e){
+						e.preventDefault();
+
+						const data = $form.mkData();
+						if (isNaN(data.amount))
+							return $.Dialog.fail(false, 'Invaild amount entered');
+						data.amount = parseInt(data.amount, 10);
+						if (data.amount === 0)
+							return $.Dialog.fail(false, "You have to enter an integer that isn't 0");
+						const
+							absAmount = Math.abs(data.amount),
+							s = absAmount === 1 ? '' : 's',
+							giving = data.amount > 0,
+							give = giving ? 'give' : 'take',
+							to = giving ? 'to' : 'from';
+						$.Dialog.confirm(false, `<p>You are about to ${give} <strong>${absAmount} point${s}</strong> ${to} <strong>${name}</strong>. The point${s} will be ${give}n ${to} them immediately, and they will not receive any notification on the site.</p><p>Are you sure?</p>`, [`${$.capitalize(give)} ${absAmount} point${s} ${to} ${name}`, 'Cancel'], sure => {
+							if (!sure) return;
+
+							$.Dialog.wait(false, 'Giving points');
+
+							$.post('/user/give-pcg-points/'+name, data, $.mkAjaxHandler(function(){
+								if (!this.status) return $.Dialog.fail(false, this.message);
+
+								$.Dialog.segway(false, this.message);
 							}));
 						});
 					});

@@ -353,6 +353,13 @@ HTML;
 							'<br>Refunded by '.(Permission::sufficient('staff') ? $gift->refunder->toAnchor() : 'a staff member');
 				}
 			break;
+			case 'manual_give':
+			case 'manual_take':
+				$by = Users::get($data['by']);
+				$link = empty($by) ? 'an unknown user' : $by->toAnchor();
+				return 'By '.(Permission::sufficient('staff') ? $link : 'a staff member').
+					(!empty($data['comment'])?'<br><q>'.CoreUtils::escapeHTML($data['comment']).'</q>' : '');
+			break;
 			default:
 				return '<pre>'.htmlspecialchars(JSON::encode($data, JSON_PRETTY_PRINT)).'</pre>';
 		}

@@ -6,8 +6,6 @@ use App\DB;
 use App\JSON;
 
 /**
- * TODO Allow manually adding/removing slots with a "by" detail containing the name of the causing user
- *
  * @property int      $id
  * @property string   $user_id
  * @property string   $change_type
@@ -33,6 +31,8 @@ class PCGSlotHistory extends NSModel {
 		'appearance_del' => true,
 		'appearance_add' => false,
 		'free_trial' => true,
+		'manual_give' => true,
+		'manual_take' => false,
 	];
 
 	public const CHANGE_DESC = [
@@ -48,6 +48,8 @@ class PCGSlotHistory extends NSModel {
 		'appearance_del' => 'Appearance deleted',
 		'appearance_add' => 'Appearance added',
 		'free_trial' => 'Free slot',
+		'manual_give' => 'Manually given',
+		'manual_take' => 'Manually taken',
 	];
 
 	public const DEFAULT_CHANGE = [
