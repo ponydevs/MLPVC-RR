@@ -16,8 +16,7 @@ $(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load deviation '+favme, this.message);
 
 				$.loadImages(this.html).then(function($el){
-					$(el).replaceWith($el.css('opacity',0));
-					$el.animate({opacity:1},300);
+					$(el).replaceWith($el);
 				});
 			}));
 		});

@@ -479,13 +479,13 @@ $(function(){
 	});
 
 
-	const io = new IntersectionObserver(entries => {
+	const deviationIO = new IntersectionObserver(entries => {
 		entries.forEach(entry => {
 			if (!entry.isIntersecting)
 				return;
 
 			const el = entry.target;
-			io.unobserve(el);
+			deviationIO.unobserve(el);
 
 			const
 				postid = el.dataset.post.replace('-','/'),
@@ -495,14 +495,51 @@ $(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
 
 				$.loadImages(this.html).then(function($el){
-					$(el).closest('.image').replaceWith($el.css('opacity',0));
-					$el.animate({opacity:1},300);
+					$(el).closest('.image').replaceWith($el);
 				});
 			}));
 		});
 	});
+	const screencapIO = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (!entry.isIntersecting)
+				return;
 
-	$('.post-deviation-promise').each((_, el) => io.observe(el));
+			const el = entry.target;
+			screencapIO.unobserve(el);
+
+			const
+				$link = $.mk('a'),
+				image = new Image();
+			image.src = el.dataset.src;
+			$link.attr('href', el.dataset.href).append(image);
+
+			$(image).on('load', function(){
+				$(el).closest('.image').html($link);
+				$link.closest('li').rebindFluidbox();
+			});
+		});
+	});
+	const avatarIO = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (!entry.isIntersecting)
+				return;
+
+			const el = entry.target;
+			avatarIO.unobserve(el);
+
+			const image = new Image();
+			image.src = el.dataset.src;
+			image.classList = 'avatar';
+			$(image).on('load', function(){
+				$(el).replaceWith(image);
+			});
+		});
+	});
+
+	$('.post-deviation-promise').each((_, el) => deviationIO.observe(el));
+	$('.post-image-promise').each((_, el) => screencapIO.observe(el));
+	$('.user-avatar-promise').each((_, el) => avatarIO.observe(el));
 
 	let postHashRegex = /^#(request|reservation)-\d+$/,
 		showdialog = location.hash.length > 1 && postHashRegex.test(location.hash);

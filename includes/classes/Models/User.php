@@ -99,11 +99,16 @@ class User extends AbstractUser implements LinkableInterface {
 	 * Local profile link generator
 	 *
 	 * @param bool $with_avatar
+	 * @param bool $enablePromises
 	 *
 	 * @return string
 	 */
-	public function toAnchor(bool $with_avatar = false):string {
-		$avatar = $with_avatar ? "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> " : '';
+	public function toAnchor(bool $with_avatar = false, bool $enablePromises = false):string {
+		$avatar = $with_avatar ? (
+			$enablePromises
+			? "<div class='user-avatar-promise avatar' data-src='{$this->avatar_url}'></div>"
+			: "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> "
+		) : '';
 
 		return "<a href='{$this->toURL()}' class='da-userlink local".($with_avatar ? " with-avatar provider-{$this->avatar_provider}":'')."'>$avatar<span class='name'>{$this->name}</span></a>";
 	}

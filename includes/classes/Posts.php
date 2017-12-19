@@ -85,7 +85,7 @@ class Posts {
 			$className = '\\App\\Models\\'.($is_request ? 'Request' : 'Reservation');
 			if (!$is_request)
 				unset($Post['requested_by']);
-			$HTML .= self::getLi(new $className($Post), true, false, true);
+			$HTML .= self::getLi(new $className($Post), true, false, LAZYLOAD);
 		}
 		return $wrap ? "<ul>$HTML</ul>" : $HTML;
 	}
@@ -501,20 +501,24 @@ HTML;
 	 * List ltem generator function for request & reservation generators
 	 *
 	 * @param Request|Reservation $Post
-	 * @param bool                $view_only          Only show the "View" button
-	 * @param bool                $cachebust_url      Append a random string to the image URL to force a re-fetch
-	 * @param bool                $deviation_promises Output promise elements in place of cached deviation data
+	 * @param bool                $view_only      Only show the "View" button
+	 * @param bool                $cachebust_url  Append a random string to the image URL to force a re-fetch
+	 * @param bool                $enablePromises Output "promise" elements in place of all images (requires JS to display)
 	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public static function getLi($Post, bool $view_only = false, bool $cachebust_url = false, bool $deviation_promises = false):string {
+	public static function getLi($Post, bool $view_only = false, bool $cachebust_url = false, bool $enablePromises = false):string {
 		$ID = $Post->getID();
 		$alt = !empty($Post->label) ? CoreUtils::aposEncode($Post->label) : '';
 		$postlink = $Post->toURL();
 		$ImageLink = $view_only ? $postlink : $Post->fullsize;
 		$cachebust = $cachebust_url ? '?t='.time() : '';
-		$Image = "<div class='image screencap'><a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a></div>";
+		$Image = "<div class='image screencap'>".(
+			$enablePromises
+			? "<div class='post-image-promise' data-href='$ImageLink' data-src='{$Post->preview}$cachebust'></div>"
+			: "<a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a>"
+		).'</div>';
 		$post_label = self::_getPostLabel($Post);
 		$permalink = "<a href='$postlink'>".Time::tag($Post->posted_at).'</a>';
 		$isStaff = Permission::sufficient('staff');
@@ -543,7 +547,7 @@ HTML;
 				: '';
 			if ($Post->finished){
 				$approved = $Post->lock;
-				if ($deviation_promises){
+				if ($enablePromises){
 					$view_only_promise = $view_only ? "data-viewonly='$view_only'" : '';
 					$Image = "<div class='image deviation'><div class='post-deviation-promise' data-post='{$Post->getID()}' $view_only_promise></div></div>";
 				}
@@ -586,7 +590,7 @@ HTML;
 			$Image .= self::BROKEN;
 
 		$break = $Post->broken ? 'class="admin-break"' : '';
-		return "<li id='$ID' $break>$Image".self::_getPostActions($Post, $view_only ? $postlink : false, $hide_reserved_status).'</li>';
+		return "<li id='$ID' $break>$Image".self::_getPostActions($Post, $view_only ? $postlink : false, $hide_reserved_status, $enablePromises).'</li>';
 	}
 
 	/**
@@ -603,7 +607,7 @@ HTML;
 		$time_ago = Time::tag($Request->posted_at);
 		$cat = self::REQUEST_TYPES[$Request->type];
 		$reserve = Permission::sufficient('member')
-			? self::getPostReserveButton($Request->reserver, false)
+			? self::getPostReserveButton($Request->reserver, false, true)
 			: "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
 		return <<<HTML
 <li id="request-{$Request->id}">
@@ -624,14 +628,16 @@ HTML;
 	/**
 	 * @param User|null   $reservedBy
 	 * @param bool|string $view_only
+	 * @param bool        $forceAvailable
+	 * @param bool        $enablePromises
 	 *
 	 * @return string
 	 */
-	public static function getPostReserveButton($reservedBy, $view_only):string {
-		if (empty($reservedBy))
+	public static function getPostReserveButton($reservedBy, $view_only, bool $forceAvailable = false, bool $enablePromises = false):string {
+		if (empty($reservedBy) || $forceAvailable)
 			return Permission::sufficient('member') && $view_only === false && UserPrefs::get('a_reserve', Auth::$user) ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 
-		$dAlink = $reservedBy->toAnchor(User::WITH_AVATAR);
+		$dAlink = $reservedBy->toAnchor(User::WITH_AVATAR, $enablePromises);
 		$vectorapp = $reservedBy->getVectorAppClassName();
 		if (!empty($vectorapp))
 			$vectorapp .= "' title='Uses ".$reservedBy->getVectorAppReadableName().' to make vectors';
@@ -654,10 +660,11 @@ HTML;
 	 * @param false|string        $view_only            Only show the "View" button
      *                                                  Contains HREF attribute of button if string
 	 * @param bool                $hide_reserver_status
+	 * @param bool                $enablePromises
 	 *
 	 * @return string
 	 */
-	private static function _getPostActions($Post, $view_only, bool $hide_reserver_status = true):string {
+	private static function _getPostActions($Post, $view_only, bool $hide_reserver_status = true, bool $enablePromises):string {
 		$By = $hide_reserver_status ? null : $Post->reserver;
 		$requestedByUser = $Post->is_request && Auth::$signed_in && $Post->requested_by === Auth::$user->id;
 		$isNotReserved = empty($By);
@@ -665,7 +672,7 @@ HTML;
 		$CanEdit = (empty($Post->lock) && Permission::sufficient('staff')) || Permission::sufficient('developer') || ($requestedByUser && $isNotReserved);
 		$Buttons = [];
 
-		$HTML = self::getPostReserveButton($By, $view_only);
+		$HTML = self::getPostReserveButton($By, $view_only, false, $enablePromises);
 		if (!empty($Post->reserved_by)){
 			$staffOrSameUser = ($sameUser && Permission::sufficient('member')) || Permission::sufficient('staff');
 			if (!$Post->finished){

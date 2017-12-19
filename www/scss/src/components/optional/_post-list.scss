@@ -98,8 +98,16 @@
 					margin: 0 auto 10px;
 				}
 			}
-			&.screencap > a {
-				border: 1px solid;
+			&.screencap {
+				.post-image-promise {
+					@include loading-indicator(152px, 'wedges');
+					width: 268px;
+
+					margin: 0 auto 10px;
+				}
+				> a {
+					border: 1px solid;
+				}
 			}
 			&:not(.error) > a {
 				font-size: 0;
@@ -208,6 +216,10 @@
 					height: 40px;
 					width: 40px;
 					flex: 0 0 40px;
+
+					&.user-avatar-promise {
+						@include loading-indicator(40px, 'wedges');
+					}
 				}
 				.name {
 					flex: 1 1 auto;

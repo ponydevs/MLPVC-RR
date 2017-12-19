@@ -260,18 +260,6 @@ $(function(){
 		}));
 	}
 
-	if ('serviceWorker' in navigator){
-		window.addEventListener('load', function(){
-			navigator.serviceWorker.register('/sw.js').then(function(){
-				// Registration was successful
-				//console.log('ServiceWorker registration successful with scope: ', registration.scope);
-			}).catch(function(){
-				// registration failed :(
-				//console.log('ServiceWorker registration failed: ', err);
-			});
-		});
-	}
-
 	// Load footer
 	if (window.ServiceUnavailableError !== true)
 		$.get('/footer-git',$.mkAjaxHandler(function(){

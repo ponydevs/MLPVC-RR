@@ -7,6 +7,8 @@ use App\Auth;
 use App\CoreUtils;
 use App\DB;
 use App\Episodes;
+use App\Permission;
+use App\Posts;
 use App\RegExp;
 
 /**
@@ -71,6 +73,14 @@ class Episode extends NSModel implements LinkableInterface {
 
 	public function get_willair(){
 		return gmdate('c', $this->willairts);
+	}
+
+	public function getReservations(){
+		return Posts::get($this, ONLY_RESERVATIONS, Permission::sufficient('staff'));
+	}
+
+	public function getRequests(){
+		return Posts::get($this, ONLY_REQUESTS, Permission::sufficient('staff'));
 	}
 
 	/**

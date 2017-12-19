@@ -73,8 +73,8 @@ use App\Models\Episode;
 		</p>
 	</section>
 <?php   }
-		echo Posts::getReservationsSection(Posts::get($CurrentEpisode, ONLY_RESERVATIONS, Permission::sufficient('staff')),false,true);
-		echo Posts::getRequestsSection(Posts::get($CurrentEpisode, ONLY_REQUESTS, Permission::sufficient('staff')),false,true);
+		echo Posts::getReservationsSection($CurrentEpisode->getReservations(), false, LAZYLOAD);
+		echo Posts::getRequestsSection($CurrentEpisode->getRequests(), false, LAZYLOAD);
 		$export = [
 			'SEASON' => $CurrentEpisode->season,
 			'EPISODE' => $CurrentEpisode->episode,

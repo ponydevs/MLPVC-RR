@@ -41,6 +41,7 @@ define('RETURN_ARRANGED', true); // Posts::GetRequestsSection & Posts::GetReserv
 define('IS_REQUEST', true); // Posts::GetRequestsSection
 define('WITH_GIT_INFO', true); // CoreUtils::GetFooter
 define('RETURN_MAP', true); // CGUtils::RenderSpritePNG
+define('LAZYLOAD', true); // Posts::getLi
 
 // Color Guide constants \\
 define('DEFAULT_SPRITE', '/img/blank-pixel.png'); // \CG\Appearances::GetSpriteURL
