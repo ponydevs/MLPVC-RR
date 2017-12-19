@@ -282,7 +282,11 @@ class PersonalGuideController extends ColorGuideController {
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
-		Response::done([ 'amount' => Auth::$user->getPCGAvailablePoints(false)-10 ]);
+		$target = Users::get($params['name'], 'name');
+		if (empty($target))
+			Response::fail('The specified user does not exist');
+
+		Response::done([ 'amount' => $target->getPCGAvailablePoints(false)-10 ]);
 	}
 
 	public function givePoints($params){
