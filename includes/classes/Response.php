@@ -11,7 +11,6 @@ class Response {
 		self::_respond(false, $message, $data, $prettyPrint);
 	}
 
-	// TODO Create an arError equivalent for ActiveRecord
 	public static function dbError(string $message = '', bool $prettyPrint = false){
 		if (!empty($message))
 			$message .= ': ';
