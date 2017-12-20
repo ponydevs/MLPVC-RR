@@ -740,7 +740,7 @@
 					<span>Change reason (1-255 chars.)</span>
 					<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+','{1,255}')}" required disabled>
 				</label>
-				<p class="align-center">Each color must have a short (3-30 chars.) description.<br>The editor rounds RGB values: ≤3 to 0 and ≥252 to 255.<br>Rows that have a label will always be saved.</p>`,
+				<p class="align-center">Each color must have a short (3-30 chars.) description.${PersonalGuide?'<br>The editor rounds RGB values: ≤3 to 0 and ≥252 to 255.':''}<br>Rows that have a label will always be saved.</p>`,
 				$.mk('div').attr('class', 'btn-group').append(
 					this.$addBtn, this.$editorToggle
 				),
@@ -853,13 +853,14 @@
 			let val = $.RGBAColor.parse(input.value);
 			if (val !== null){
 				let $input = $(input);
-				$.each($.RGBAColor.COMPONENTS, function(_, channel){
-					const value = val[channel];
-					if (value <= 3)
-						val[channel] = 0;
-					else if (value >= 252)
-						val[channel] = 255;
-				});
+				if (!PersonalGuide)
+					$.each($.RGBAColor.COMPONENTS, function(_, channel){
+						const value = val[channel];
+						if (value <= 3)
+							val[channel] = 0;
+						else if (value >= 252)
+							val[channel] = 255;
+					});
 				val = val.toHex();
 				switch (e.type){
 					case 'paste':

@@ -207,8 +207,9 @@ class ColorGroupController extends ColorGuideController {
 				$hex = CoreUtils::trim($c['hex']);
 				if (!$HEX_COLOR_REGEX->match($hex, $_match))
 					Response::fail('Hex color '.CoreUtils::escapeHTML($hex)." is invalid, please leave empty or fix $index");
-				// FIXME Rounding should probably be disabled for PCG appearances
-				$append->hex = CGUtils::roundHex('#'.strtoupper($_match[1]));
+				$append->hex = '#'.strtoupper($_match[1]);
+				if ($Group->appearance->owner_id === null)
+					$append->hex = CGUtils::roundHex($append->hex);
 				$append->linked_to = null;
 			}
 
