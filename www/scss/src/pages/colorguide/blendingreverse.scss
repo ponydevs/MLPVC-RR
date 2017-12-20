@@ -19,7 +19,7 @@
 	}
 }
 
-#overlay .select-color > :last-child, #filter-override-color-wrap {
+#overlay .select-color > :last-child, #filter-override-color-wrap, #color-select > div {
 	display: inline-block;
 	@extend %colorful-input-wrap;
 
@@ -37,11 +37,10 @@
 	flex-flow: row wrap;
 	max-height: 60vh;
 	overflow: hidden;
-	border-width: 0 0 1px 1px;
+	border: 1px solid rgba(0,0,0,.2);
 
-	&, > *, > :first-child > * {
-		border-style: solid;
-		border-color: rgba(0,0,0,.2);
+	> *:first-child {
+		border-right: inherit;
 	}
 
 	> .section {
@@ -123,6 +122,38 @@
 		margin: 0 2.5%;
 	}
 }
+#reverse-what {
+	flex: 1 1 50%;
+	user-select: none;
+
+	label {
+		> input {
+			display: none;
+
+			&:checked + span {
+				background: #fff;
+				border-color: #000;
+			}
+		}
+		> span {
+			display: inline-block;
+			padding: 5px;
+			margin: 5px;
+			border: 1px solid #ccc;
+			background: #eee;
+			cursor: pointer;
+		}
+	}
+}
+#image-select {
+	flex: 1 1 50%;
+	button {
+		margin: 1px 0 0;
+	}
+}
+#color-select {
+	flex: 1 1 50%;
+}
 #overlay {
 	label {
 		display: block;
@@ -132,7 +163,7 @@
 		}
 
 		&.select-color input {
-			width: 200px;
+			width: 200px !important;
 		}
 	}
 }

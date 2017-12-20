@@ -38,13 +38,17 @@
 			</div>
 		</div>
 		<div class="section">
-			<!-- TODO Add selector functionality in JS -->
-			<div id="reverse-what" class="hidden">
-				<label><input type="radio" name="reverse-target" value="color"> Single color</label>
-				<label><input type="radio" name="reverse-target" value="image" checked> An image</label>
+			<div id="reverse-what">
+				<h2>Reverse filter on</h2>
+				<label><input type="radio" name="reverse-target" value="image" checked><span>Image</span></label>
+				<label><input type="radio" name="reverse-target" value="color"><span>Single color</span></label>
+			</div>
+			<div id="color-select" class="hidden">
+				<h2>Filtered Color</h2>
+				<div><input type="text"></div>
 			</div>
 			<div id="image-select">
-				<h2>Image</h2>
+				<h2>Filtered Image</h2>
 				<button class="blue typcn typcn-upload">Browse&hellip;</button>
 				<input type="file" class="hidden" accept=".png,.jpg,.jpeg,.bmp,image/png,image/jpeg,image/bmp">
 			</div>

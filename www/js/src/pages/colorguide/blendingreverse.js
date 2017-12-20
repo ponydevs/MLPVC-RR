@@ -74,7 +74,9 @@ $(function(){
 			this.$backupImage = $.mk('img');
 			this.backupImage = this.$backupImage.get(0);
 			this.overlayColor = new $.RGBAColor(255,0,255,0.75);
+			this.filteredColor = null;
 			this.haveImage = false;
+			this.targetType = 'image';
 			this.filterOverrideActive = false;
 			this.fileName = null;
 			this.selectedFilterColor = null;
@@ -116,6 +118,19 @@ $(function(){
 
 				this.$imageSelectFileInput.click();
 			});
+			this.$colorSelect = $('#color-select');
+			this.$colorSelectColorInput = this.$colorSelect.find('input').on('change', e => {
+				const newcolor =  $.RGBAColor.parse(e.target.value);
+				if (newcolor === null){
+					this.haveImage = false;
+					return;
+				}
+
+				e.target.value = newcolor;
+				this.filteredColor = newcolor;
+				this.haveImage = true;
+				this.updatePreview();
+			}).on('change input blur', MultiplyReverseForm.colorInputEventHandler);
 			this.$filterTypeSelect = $('#filter-type').children('select').on('change',() => {
 				this.updateFilterCandidateList();
 				this.updatePreview();
@@ -191,23 +206,7 @@ $(function(){
 				e.target.value = newcolor;
 				this.overlayColor = newcolor;
 				this.repaintOverlay();
-			}).on('change input blur',e => {
-				const
-					$el = $(e.target),
-					val = $.RGBAColor.parse(e.target.value);
-				if (val === null){
-					$el.css({
-						color: '',
-						backgroundColor: '',
-					});
-					return;
-				}
-
-				$el.css({
-					color: val.isLight() ? 'black' : 'white',
-					backgroundColor: val.toString(),
-				});
-			});
+			}).on('change input blur', MultiplyReverseForm.colorInputEventHandler);
 			this.$overlayColorInput.val(this.overlayColor.toString()).trigger('input');
 			$('#filter-override').find('input[type="checkbox"]').on('change input', e => {
 				this.filterOverrideActive = e.target.checked;
@@ -232,35 +231,23 @@ $(function(){
 
 				e.target.value = newcolor.toHex();
 				this.updateOverriddenFilterColor();
-			}).on('change input blur',e => {
-				const
-					$el = $(e.target),
-					val = $.RGBAColor.parse(e.target.value);
-				if (val === null){
-					$el.css({
-						color: '',
-						backgroundColor: '',
-					});
-					return;
-				}
+			}).on('change input blur', MultiplyReverseForm.colorInputEventHandler);
+			this.$reverseWhat = $('#reverse-what').on('click change','input', e => {
+				this.targetType = e.target.value;
 
-				$el.css({
-					color: val.isLight() ? 'black' : 'white',
-					backgroundColor: val.toHex(),
-				});
+				if (this.targetType !== 'image')
+					this.$imageSelect.addClass('hidden');
+				else this.$imageSelect.removeClass('hidden');
+
+				if (this.targetType !== 'color')
+					this.$colorSelect.addClass('hidden');
+				else this.$colorSelect.removeClass('hidden');
+
+				this.updatePreview();
 			});
 
 			this.addKnownValueInputRow(true);
 			this.addKnownValueInputRow();
-
-
-			/// DEBUG ///
-			this.addKnownValueInputRow();
-			this.addKnownValueInputRow();
-			const vals = ['#FF0000','rgb(170,0,0)','#00FF00','rgb(0,189,0)','#0000FF','rgb(0,0,184)','#FFFF00','rgb(170,189,0)'];
-			this.$knownColorsTbody.find('input').each((i, el) => {
-				$(el).val(vals[i]).trigger('blur');
-			});
 		}
 		isOverlayEnabled(){
 			return !this.$previewOverlayCanvas.hasClass('hidden');
@@ -313,6 +300,7 @@ $(function(){
 		}
 		addKnownValueInputRow(anchor = false){
 			const refclass = 'reference';
+			const knowColorCount = this.$knownColorsTbody.children().length;
 			this.$knownColorsTbody.append(
 				$.mk('tr').attr('class',anchor?refclass:'').append(
 					this.createKnownValueInput('original'),
@@ -358,18 +346,27 @@ $(function(){
 					)
 				)
 			);
-			if (this.$knownColorsTbody.children().length >= 2){
-				let $trs = this.$knownColorsTbody.children();
+			let $trs = this.$knownColorsTbody.children();
+			if (this.$knownColorsTbody.children().length > 2){
 				$trs.find('button.red').removeClass('hidden');
 				$trs.filter(':not(.reference)').find('button.red').enable();
 			}
+			else $trs.find('button.red').addClass('hidden');
 		}
 		redrawPreviewImage(){
+			const targetIsImage = this.targetType === 'image';
+			const width = targetIsImage ? this.backupImage.width : 192;
+			const height = targetIsImage ? this.backupImage.height : 108;
 			this.previewOverlayCanvas.width =
-			this.previewImageCanvas.width = this.backupImage.width;
+			this.previewImageCanvas.width = width;
 			this.previewOverlayCanvas.height =
-			this.previewImageCanvas.height = this.backupImage.height;
-			this.previewImageCtx.drawImage(this.backupImage, 0, 0);
+			this.previewImageCanvas.height = height;
+			if (this.targetType === 'image')
+				this.previewImageCtx.drawImage(this.backupImage, 0, 0);
+			else {
+				this.previewImageCtx.fillStyle = this.filteredColor;
+				this.previewImageCtx.fillRect(0, 0, width, height);
+			}
 			this.previewOverlayCtx.clearRect(0, 0, this.previewOverlayCanvas.width, this.previewOverlayCanvas.height);
 		}
 		repaintOverlay(){
@@ -444,7 +441,12 @@ $(function(){
 			this.$filterCandidates.empty();
 			this.selectedFilterColor = null;
 
-			this.$knownColorsTbody.children().each((_, el) => {
+			const $knownColors = this.$knownColorsTbody.children();
+
+			if ($knownColors.length < 2)
+				return;
+
+			$knownColors.each((_, el) => {
 				const
 					$tr = $(el),
 					$inputs = $tr.find('input:valid');
@@ -455,6 +457,9 @@ $(function(){
 					values[input.parentNode.className.split(' ')[1]].push($.RGBAColor.parse(input.value));
 				});
 			});
+
+			if (values.original.length < 2 || values.filtered.length < 2)
+				return;
 
 			const color = Math_NotEvenOnce[this.getFilterType()](values.original, values.filtered);
 
@@ -493,6 +498,24 @@ $(function(){
 				case 'normal':
 					return Blender.normalReverse;
 			}
+		}
+
+		static colorInputEventHandler(e){
+			const
+				$el = $(e.target),
+				val = $.RGBAColor.parse(e.target.value);
+			if (val === null){
+				$el.css({
+					color: '',
+					backgroundColor: '',
+				});
+				return;
+			}
+
+			$el.css({
+				color: val.isLight() ? 'black' : 'white',
+				backgroundColor: val.toHex(),
+			});
 		}
 	}
 
