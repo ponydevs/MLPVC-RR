@@ -265,10 +265,11 @@ $(function(){
 		if (!$form.length)
 			return;
 		let $formImgCheck = $form.find('.check-img'),
+			$submitBtn = $form.find('button.submit'),
 			$formImgPreview = $form.find('.img-preview'),
-			$formDescInput = $form.find('[name=label]'),
-			$formImgInput = $form.find('[name=image_url]'),
-			$formTitleInput = $form.find('[name=label]'),
+			$formDescInput = $form.find('input[name=label]'),
+			$formImgInput = $form.find('input[name=image_url]'),
+			$formLabelInput = $form.find('input[name=label]'),
 			$notice = $formImgPreview.children('.notice'),
 			noticeHTML = $notice.html(),
 			$previewIMG = $formImgPreview.children('img'),
@@ -320,8 +321,11 @@ $(function(){
 		function imgCheckDisabler(disable){
 			let prevurl = $formImgInput.data('prev-url'),
 				samevalue = typeof prevurl === 'string' && prevurl.trim() === $formImgInput.val().trim();
-			$formImgCheck.attr('disabled',disable === true || samevalue);
-			if (disable === true || samevalue) $formImgCheck.attr('title', 'You need to change the URL before chacking again.');
+			const checkDisabled = disable === true || samevalue;
+			$formImgCheck.attr('disabled', checkDisabled);
+			$submitBtn.attr('disabled', !checkDisabled);
+			if (checkDisabled)
+				$formImgCheck.attr('title', 'You need to change the URL before checking again.');
 			else $formImgCheck.removeAttr('title');
 
 			if (disable.type === 'keyup'){
@@ -346,6 +350,9 @@ $(function(){
 					$notice.prepend($.mk('p').attr('class','color-red').html(data.message)).show();
 					$previewIMG.hide();
 					$formImgCheck.enable();
+					if (typeof $formImgInput.data('prev-url') === 'string')
+						$submitBtn.enable();
+					else $submitBtn.disable();
 					return $.Dialog.close();
 				}
 
@@ -357,7 +364,7 @@ $(function(){
 
 						$formImgInput.data('prev-url', url);
 
-						if (!!data.title && !$formTitleInput.val().trim())
+						if (!!data.title && !$formLabelInput.val().trim())
 							$.Dialog.confirm(
 								'Confirm '+type+' title',
 								'The image you just checked had the following title:<br><br><p class="align-center"><strong>'+data.title+'</strong></p>'+
@@ -366,7 +373,7 @@ $(function(){
 								'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
 								function(sure){
 									if (!sure) return $form.find('input[name=label]').focus();
-									$formTitleInput.val(data.title);
+									$formLabelInput.val(data.title);
 									$.Dialog.close();
 								}
 							);
@@ -383,6 +390,9 @@ $(function(){
 						}
 						$.Dialog.fail(title,"There was an error while attempting to load the image. Make sure the URL is correct and try again!");
 						$formImgCheck.enable();
+						if (typeof $formImgInput.data('prev-url') === 'string')
+							$submitBtn.enable();
+						else $submitBtn.disable();
 					});
 				}
 				load(data, 0);

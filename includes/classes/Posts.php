@@ -384,12 +384,11 @@ HTML;
 			</label>
 			<label>
 				<span>Image URL</span>
-				<input type="text" name="image_url" pattern="^.{2,255}$" required>&nbsp;
-				<button type="button" class="check-img red typcn typcn-arrow-repeat">Check image</button><br>
+				<input type="text" name="image_url" pattern="^.{2,255}$" required>
 			</label>
 			<div class="img-preview">
 				<div class="notice info">
-					<p>Please click the <strong>Check image</strong> button after providing an URL to get a preview & verify if the link is correct.</p>
+					<p>Please click the <strong class="color-red"><span class="typcn typcn-arrow-repeat"></span> Check image</strong> button (at the end of the form) after providing an URL to get a preview & verify that the link is correct.</p>
 					<hr>
 					<p class="keep">You can use a link from any of the <a href="/about#supported-providers" target="_blank">suppported image providers</a>.</p>
 				</div>
@@ -428,7 +427,10 @@ HTML;
 		// TODO Add a check image button & disable the submit button
 		$HTML .= <<<HTML
 		</div>
-		<button class="green">Submit $type</button> <button type="reset">Cancel</button>
+		
+		<button class="green submit" disabled>Submit $type</button>
+		<button type="button" class="check-img red typcn typcn-arrow-repeat">Check image</button>
+		<button type="reset">Cancel</button>
 	</form>
 HTML;
 		return $HTML;

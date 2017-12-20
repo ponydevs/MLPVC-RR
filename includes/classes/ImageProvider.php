@@ -52,7 +52,7 @@ class ImageProvider {
 		'sta\.sh/([a-z\d]{10,})' => self::PROV_STASH,
 		'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => self::PROV_IMGUR,
 		'derpiboo(?:\.ru|ru\.org)/(\d+)' => self::PROV_DERPI,
-		'derpicdn\.net/img/(?:view|download)/\d{4}/\d{1,2}/\d{1,2}/(\d+)' => self::PROV_DERPI,
+		'derpicdn\.net/img/(?:(?:view|download)/)?\d{4}/\d{1,2}/\d{1,2}/(\d+)' => self::PROV_DERPI,
 		'prntscr\.com/([\da-z]+)' => self::PROV_LS,
 	];
 	private static $_allowedMimeTypes = ['image/png' => true, 'image/jpeg' => true, 'image/jpg' => true];
