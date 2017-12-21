@@ -120,7 +120,7 @@ class Posts {
 
 		if ($thing === 'request'){
 			$type = (new Input('type',function($value){
-				if (!\in_array($value, ['chr', 'obj', 'bg']))
+				if (!isset(self::REQUEST_TYPES[$value]))
 					return Input::ERROR_INVALID;
 			}, [
 				Input::IS_OPTIONAL => true,
@@ -577,7 +577,8 @@ HTML;
 					}
 					else $locked_at = '<em class="approve-date">Approval data unavilable</em>';
 				}
-				$Image .= $post_label.$posted_at.$reserved_at.$finished_at.$locked_at;
+				$post_type = $Post->is_request ? '<em>Posted in the <strong>'.self::REQUEST_TYPES[$Post->type].'</strong> section</em>' : '';
+				$Image .= $post_label.$posted_at.$post_type.$reserved_at.$finished_at.$locked_at;
 				if (!empty($Post->fullsize))
 					$Image .= "<a href='{$Post->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a>";
 			}
