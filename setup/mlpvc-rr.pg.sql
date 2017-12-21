@@ -1362,6 +1362,45 @@ ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 
 
 --
+-- Name: pcg_point_grants; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE pcg_point_grants (
+    id integer NOT NULL,
+    receiver_id uuid NOT NULL,
+    sender_id uuid NOT NULL,
+    amount integer NOT NULL,
+    comment character varying(140),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp without time zone
+);
+
+
+ALTER TABLE pcg_point_grants OWNER TO "mlpvc-rr";
+
+--
+-- Name: pcg_point_grants_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE pcg_point_grants_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE pcg_point_grants_id_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: pcg_point_grants_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE pcg_point_grants_id_seq OWNED BY pcg_point_grants.id;
+
+
+--
 -- Name: pcg_slot_gifts; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1955,6 +1994,13 @@ ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notification
 
 
 --
+-- Name: pcg_point_grants id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY pcg_point_grants ALTER COLUMN id SET DEFAULT nextval('pcg_point_grants_id_seq'::regclass);
+
+
+--
 -- Name: pcg_slot_gifts id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2305,6 +2351,14 @@ ALTER TABLE ONLY log
 
 ALTER TABLE ONLY notifications
     ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pcg_point_grants pcg_point_grants_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY pcg_point_grants
+    ADD CONSTRAINT pcg_point_grants_pkey PRIMARY KEY (id);
 
 
 --

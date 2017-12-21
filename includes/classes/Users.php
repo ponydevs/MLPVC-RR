@@ -305,6 +305,7 @@ HTML;
 			Input::IS_OPTIONAL => true,
 			Input::SOURCE => $method_get ? 'GET' : 'POST',
 			Input::SILENT_FAILURE => $silent_fail,
+			Input::NO_LOGGING => $silent_fail,
 			Input::CUSTOM_ERROR_MESSAGES => $errors ?? [
 				Input::ERROR_MISSING => 'Username (@value) is missing',
 				Input::ERROR_INVALID => 'Username (@value) is invalid',

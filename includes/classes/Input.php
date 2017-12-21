@@ -6,7 +6,7 @@ use App\CoreUtils;
 use App\Models\Episode;
 
 class Input {
-	private $_type, $_source, $_key, $_initValue, $_origValue, $_value, $_respond = true, $_validator, $_range, $_silentFail;
+	private $_type, $_source, $_key, $_initValue, $_origValue, $_value, $_respond = true, $_validator, $_range, $_silentFail, $_noLog;
 	private static $SUPPORTED_TYPES = [
 		'exists' => true,
 		'bool' => true,
@@ -29,6 +29,7 @@ class Input {
 	public const
 		IS_OPTIONAL = 'optional',
 		SILENT_FAILURE = 'silent',
+		NO_LOGGING = 'no_log',
 		CUSTOM_ERROR_MESSAGES = 'errors',
 		THROW_EXCEPTIONS = 'throw',
 		IN_RANGE = 'range',
@@ -63,8 +64,6 @@ class Input {
 	 * @param string                 $key
 	 * @param string|RegExp|callable $type
 	 * @param array                  $o
-	 *
-	 * @return Input
 	 */
 	public function __construct($key, $type, $o = null){
 		if (isset($o[self::THROW_EXCEPTIONS]))
@@ -87,6 +86,7 @@ class Input {
 		$this->_key = $key;
 
 		$this->_silentFail = isset($o[self::SILENT_FAILURE]) && $o[self::SILENT_FAILURE] === true;
+		$this->_noLog = $this->_silentFail && isset($o[self::NO_LOGGING]) && $o[self::NO_LOGGING] === true;
 
 		$this->_source = '_POST';
 		if (isset($o[self::SOURCE])){
@@ -270,7 +270,8 @@ class Input {
 				$message = str_replace('@max', $this->_range[1], $message);
 		}
 		if ($this->_silentFail){
-			CoreUtils::error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
+			if (!$this->_noLog)
+				CoreUtils::error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
 			return;
 		}
 		if ($this->_respond)

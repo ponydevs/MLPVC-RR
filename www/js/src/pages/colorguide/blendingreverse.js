@@ -300,7 +300,6 @@ $(function(){
 		}
 		addKnownValueInputRow(anchor = false){
 			const refclass = 'reference';
-			const knowColorCount = this.$knownColorsTbody.children().length;
 			this.$knownColorsTbody.append(
 				$.mk('tr').attr('class',anchor?refclass:'').append(
 					this.createKnownValueInput('original'),
@@ -347,7 +346,7 @@ $(function(){
 				)
 			);
 			let $trs = this.$knownColorsTbody.children();
-			if (this.$knownColorsTbody.children().length > 2){
+			if ($trs.length > 2){
 				$trs.find('button.red').removeClass('hidden');
 				$trs.filter(':not(.reference)').find('button.red').enable();
 			}
