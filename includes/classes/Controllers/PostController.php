@@ -85,7 +85,7 @@ class PostController extends Controller {
 		$section .= ' > ul';
 
 		Response::done([
-			'li' => Posts::getLi($this->_post, isset($_POST['FROM_PROFILE']), !isset($_POST['cache'])),
+			'li' => $this->_post->getLi(isset($_POST['FROM_PROFILE']), !isset($_POST['cache'])),
 			'section' => $section,
 		]);
 	}
@@ -171,7 +171,7 @@ class PostController extends Controller {
 					'reserved_by' => $update['reserved_by'] ?? null,
 				]);
 
-				Response::done(['li' => Posts::getLi($this->_post)]);
+				Response::done(['li' => $this->_post->getLi()]);
 			break;
 			case 'locate':
 				if (empty($this->_post) || $this->_post->broken)
@@ -195,7 +195,7 @@ class PostController extends Controller {
 		if ($this->_post->reserved_by === null){
 			switch ($action){
 				case 'unreserve':
-					Response::done(['li' => Posts::getLi($this->_post)]);
+					Response::done(['li' => $this->_post->getLi()]);
 				case 'finish':
 					Response::fail("This $thing has not been reserved by anypony yet");
 				case 'reserve':
@@ -241,7 +241,7 @@ class PostController extends Controller {
 					]);
 				}
 				catch (ServerConnectionFailureException $e){
-					$response['li'] = Posts::getLi($this->_post);
+					$response['li'] = $this->_post->getLi();
 				}
 				catch (\Exception $e){
 					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
@@ -393,9 +393,9 @@ class PostController extends Controller {
 			break;
 			case 'reserve':
 				if ($isUserReserver)
-					Response::fail("You've already reserved this $thing", ['li' => Posts::getLi($this->_post)]);
+					Response::fail("You've already reserved this $thing", ['li' => $this->_post->getLi()]);
 				if (!$this->_post->isOverdue())
-					Response::fail("This $thing has already been reserved by ".$this->_post->reserver->toAnchor(), ['li' => Posts::getLi($this->_post)]);
+					Response::fail("This $thing has already been reserved by ".$this->_post->reserver->toAnchor(), ['li' => $this->_post->getLi()]);
 				$overdue = [
 					'reserved_by' => $this->_post->reserved_by,
 					'reserved_at' => $this->_post->reserved_at,
@@ -452,7 +452,7 @@ class PostController extends Controller {
 				$response['button'] = Posts::getPostReserveButton($this->_post->reserver, false);
 			else if (!$fromProfile && !$socketServerAvailable){
 				if ($action !== 'unreserve')
-					$response['li'] = Posts::getLi($this->_post);
+					$response['li'] = $this->_post->getLi();
 				else $response['reload'] = true;
 			}
 			if ($fromProfile || $suggested)
@@ -725,7 +725,7 @@ class PostController extends Controller {
 			'newfullsize' => $Image->fullsize,
 		]);
 
-		Response::done($wasBroken ? ['li' => Posts::getLi($this->_post)] : ['preview' => $Image->preview]);
+		Response::done($wasBroken ? ['li' => $this->_post->getLi()] : ['preview' => $Image->preview]);
 	}
 
 	public function lazyload($params){

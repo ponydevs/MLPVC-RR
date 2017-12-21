@@ -246,7 +246,7 @@ class Appearance extends NSModel implements LinkableInterface {
 			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
 		$HideSynon = Permission::sufficient('staff') && UserPrefs::get('cg_hidesynon');
 		if (!empty($Tags)) foreach ($Tags as $t){
-			$isSynon = !empty($t->synonym_of);
+			$isSynon = $t->synonym_of !== null;
 			if ($isSynon && $HideSynon)
 				continue;
 			$class = " class='tag id-{$t->id}".($isSynon?' synonym':'').(!empty($t->type)?' typ-'.$t->type:'')."'";

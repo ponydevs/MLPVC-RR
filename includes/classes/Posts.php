@@ -85,7 +85,9 @@ class Posts {
 			$className = '\\App\\Models\\'.($is_request ? 'Request' : 'Reservation');
 			if (!$is_request)
 				unset($Post['requested_by']);
-			$HTML .= self::getLi(new $className($Post), true, false, LAZYLOAD);
+			/** @var $post Post */
+			$post = new $className($Post);
+			$HTML .= $post->getLi(true, false, LAZYLOAD);
 		}
 		return $wrap ? "<ul>$HTML</ul>" : $HTML;
 	}
@@ -266,7 +268,7 @@ class Posts {
 
 		if (!empty($Requests) && \is_array($Requests)){
 			foreach ($Requests as $Request){
-				$HTML = !$returnArranged ? self::getLi($Request,false,false,$lazyload) : $Request;
+				$HTML = !$returnArranged ? $Request->getLi(false, false, $lazyload) : $Request;
 
 				if (!$returnArranged){
 					if ($Request->finished)
@@ -330,7 +332,7 @@ HTML;
 			foreach ($Reservations as $Reservation){
 				$k = ($Reservation->finished?'':'un').'finished';
 				if (!$returnArranged)
-					$Arranged[$k] .= self::getLi($Reservation,false,false,$lazyload);
+					$Arranged[$k] .= $Reservation->getLi(false, false, $lazyload);
 				else $Arranged[$k][] = $Reservation;
 			}
 		}
@@ -500,103 +502,6 @@ HTML;
 	public const BROKEN = "<strong class='color-orange broken-note' title=\"The full size preview of this post was deemed unavailable and it is now marked as broken\"><span class='typcn typcn-plug'></span> Deemed broken</strong>";
 
 	/**
-	 * List ltem generator function for request & reservation generators
-	 *
-	 * @param Request|Reservation $Post
-	 * @param bool                $view_only      Only show the "View" button
-	 * @param bool                $cachebust_url  Append a random string to the image URL to force a re-fetch
-	 * @param bool                $enablePromises Output "promise" elements in place of all images (requires JS to display)
-	 *
-	 * @return string
-	 * @throws \Exception
-	 */
-	public static function getLi($Post, bool $view_only = false, bool $cachebust_url = false, bool $enablePromises = false):string {
-		$ID = $Post->getID();
-		$alt = !empty($Post->label) ? CoreUtils::aposEncode($Post->label) : '';
-		$postlink = $Post->toURL();
-		$ImageLink = $view_only ? $postlink : $Post->fullsize;
-		$cachebust = $cachebust_url ? '?t='.time() : '';
-		$Image = "<div class='image screencap'>".(
-			$enablePromises
-			? "<div class='post-image-promise' data-href='$ImageLink' data-src='{$Post->preview}$cachebust'></div>"
-			: "<a href='$ImageLink'><img src='{$Post->preview}$cachebust' alt='$alt'></a>"
-		).'</div>';
-		$post_label = self::_getPostLabel($Post);
-		$permalink = "<a href='$postlink'>".Time::tag($Post->posted_at).'</a>';
-		$isStaff = Permission::sufficient('staff');
-
-		$posted_at = '<em class="post-date">';
-		if ($Post->is_request){
-			$isRequester = Auth::$signed_in && $Post->requested_by === Auth::$user->id;
-			$isReserver = Auth::$signed_in && $Post->reserved_by === Auth::$user->id;
-			$overdue = Permission::sufficient('member') && $Post->isOverdue();
-
-			$posted_at .= "Requested $permalink";
-			if (Auth::$signed_in && ($isStaff || $isRequester || $isReserver))
-				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : $Post->requester->toAnchor());
-		}
-		else {
-			$overdue = false;
-			$posted_at .= "Reserved $permalink";
-		}
-		$posted_at .= '</em>';
-
-		$hide_reserved_status = $Post->reserved_by === null || ($overdue && !$isReserver && !$isStaff);
-		if ($Post->reserved_by !== null){
-			$reserved_by = $overdue && !$isReserver ? ' by '.$Post->reserver->toAnchor() : '';
-			$reserved_at = $Post->is_request && $Post->reserved_at !== null && !($hide_reserved_status && Permission::insufficient('staff'))
-				? "<em class='reserve-date'>Reserved <strong>".Time::tag($Post->reserved_at)."</strong>$reserved_by</em>"
-				: '';
-			if ($Post->finished){
-				$approved = $Post->lock;
-				if ($enablePromises){
-					$view_only_promise = $view_only ? "data-viewonly='$view_only'" : '';
-					$Image = "<div class='image deviation'><div class='post-deviation-promise' data-post='{$Post->getID()}' $view_only_promise></div></div>";
-				}
-				else $Image = $Post->getFinishedImage($view_only, $cachebust);
-				$finished_at = !empty($Post->finished_at)
-					? "<em class='finish-date'>Finished <strong>".Time::tag($Post->finished_at).'</strong></em>'
-					: '';
-				$locked_at = '';
-				if ($approved){
-					$LogEntry = $Post->approval_entry;
-					if (!empty($LogEntry)){
-						$approverIsNotReserver = $LogEntry->initiator !== null && $LogEntry->initiator !== $Post->reserved_by;
-						$approvedby = $isStaff && $LogEntry->initiator !== null
-							? ' by '.(
-								$approverIsNotReserver
-								? (
-									$Post->is_request && $LogEntry->initiator === $Post->requested_by
-									? 'the requester'
-									: $LogEntry->actor->toAnchor()
-								)
-								: 'the reserver'
-							)
-							: '';
-						$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag($LogEntry->timestamp)."</strong>$approvedby</em>" : '';
-					}
-					else $locked_at = '<em class="approve-date">Approval data unavilable</em>';
-				}
-				$post_type = $Post->is_request ? '<em>Posted in the <strong>'.self::REQUEST_TYPES[$Post->type].'</strong> section</em>' : '';
-				$Image .= $post_label.$posted_at.$post_type.$reserved_at.$finished_at.$locked_at;
-				if (!empty($Post->fullsize))
-					$Image .= "<a href='{$Post->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a>";
-			}
-			else $Image .= $post_label.$posted_at.$reserved_at;
-		}
-		else $Image .= $post_label.$posted_at;
-
-		if ($overdue && ($isStaff || $isReserver))
-			$Image .= self::CONTESTABLE;
-
-		if ($Post->broken)
-			$Image .= self::BROKEN;
-
-		$break = $Post->broken ? 'class="admin-break"' : '';
-		return "<li id='$ID' $break>$Image".self::_getPostActions($Post, $view_only ? $postlink : false, $hide_reserved_status, $enablePromises).'</li>';
-	}
-
-	/**
 	 * List ltem generator function for reservation suggestions
 	 * This function assumes that the post it's being used for is not reserved or it can be contested.
 	 *
@@ -606,7 +511,7 @@ HTML;
 	 */
 	public static function getSuggestionLi(Request $Request):string {
 		$escapedLabel = CoreUtils::aposEncode($Request->label);
-		$label = self::_getPostLabel($Request);
+		$label = $Request->getLabelHTML();
 		$time_ago = Time::tag($Request->posted_at);
 		$cat = self::REQUEST_TYPES[$Request->type];
 		$reserve = Permission::sufficient('member')
@@ -648,76 +553,100 @@ HTML;
 	}
 
 	/**
-	 * @param Post $Post
-	 *
-	 * @return string
-	 */
-	private static function _getPostLabel(Post $Post):string {
-		return !empty($Post->label) ? '<span class="label'.(strpos($Post->label,'"') !== false?' noquotes':'').'">'.$Post->processLabel().'</span>' : '';
-	}
-
-	/**
-	 * Generate HTML for post action buttons
-	 *
-	 * @param Request|Reservation $Post
-	 * @param false|string        $view_only            Only show the "View" button
-     *                                                  Contains HREF attribute of button if string
-	 * @param bool                $hide_reserver_status
+	 * @param Request|Reservation $post
+	 * @param bool                $view_only
+	 * @param bool                $cachebust_url
 	 * @param bool                $enablePromises
 	 *
 	 * @return string
 	 */
-	private static function _getPostActions($Post, $view_only, bool $hide_reserver_status = true, bool $enablePromises):string {
-		$By = $hide_reserver_status ? null : $Post->reserver;
-		$requestedByUser = $Post->is_request && Auth::$signed_in && $Post->requested_by === Auth::$user->id;
-		$isNotReserved = empty($By);
-		$sameUser = Auth::$signed_in && $Post->reserved_by === Auth::$user->id;
-		$CanEdit = (empty($Post->lock) && Permission::sufficient('staff')) || Permission::sufficient('developer') || ($requestedByUser && $isNotReserved);
-		$Buttons = [];
+	public static function getLi($post, bool $view_only, bool $cachebust_url, bool $enablePromises):string {
+		$ID = $post->getID();
+		$alt = !empty($post->label) ? CoreUtils::aposEncode($post->label) : '';
+		$postlink = $post->toURL();
+		$ImageLink = $view_only ? $postlink : $post->fullsize;
+		$cachebust = $cachebust_url ? '?t='.time() : '';
+		$HTML = "<div class='image screencap'>".(
+			$enablePromises
+				? "<div class='post-image-promise' data-href='$ImageLink' data-src='{$post->preview}$cachebust'></div>"
+				: "<a href='$ImageLink'><img src='{$post->preview}$cachebust' alt='$alt'></a>"
+			).'</div>';
+		$post_label = $post->getLabelHTML();
+		$permalink = "<a href='$postlink'>".Time::tag($post->posted_at).'</a>';
+		$isStaff = Permission::sufficient('staff');
 
-		$HTML = self::getPostReserveButton($By, $view_only, false, $enablePromises);
-		if (!empty($Post->reserved_by)){
-			$staffOrSameUser = ($sameUser && Permission::sufficient('member')) || Permission::sufficient('staff');
-			if (!$Post->finished){
-				if (!$sameUser && Permission::sufficient('member') && $Post->isTransferable() && !$Post->isOverdue())
-					$Buttons[] = ['user-add darkblue pls-transfer', 'Take on'];
-				if ($staffOrSameUser){
-					$Buttons[] = ['user-delete red cancel', 'Cancel Reservation'];
-					$Buttons[] = ['attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished'];
-				}
-			}
-			if ($Post->finished && !$Post->lock){
-				if (Permission::sufficient('staff'))
-					$Buttons[] = [(empty($Post->preview)?'trash delete-only red':'media-eject orange').' unfinish', empty($Post->preview)?'Delete':'Unfinish'];
-				if ($staffOrSameUser)
-					$Buttons[] = ['tick green check', 'Check'];
-			}
-		}
+		$posted_at = '<em class="post-date">';
+		if ($post->is_request){
+			$isRequester = Auth::$signed_in && $post->requested_by === Auth::$user->id;
+			$isReserver = Auth::$signed_in && $post->reserved_by === Auth::$user->id;
+			$displayOverdue = Permission::sufficient('member') && $post->isOverdue();
 
-		if (empty($Post->lock) && empty($Buttons) && (Permission::sufficient('staff') || ($requestedByUser && $isNotReserved)))
-			$Buttons[] = ['trash red delete', 'Delete'];
-		if ($CanEdit)
-			array_splice($Buttons,0,0, [['pencil darkblue edit', 'Edit']]);
-		if ($Post->lock && Permission::sufficient('staff'))
-			$Buttons[] = ['lock-open orange unlock', 'Unlock'];
-
-		$HTML .= "<div class='actions'>";
-		if ($view_only === false)
-			$Buttons[] = ['export blue share', 'Share'];
-		if (!empty($Buttons)){
-			if ($view_only !== false)
-				$HTML .="<div><a href='$view_only' class='btn blue typcn typcn-arrow-forward'>View</a></div>";
-			else {
-				$regularButton = \count($Buttons) <3;
-				foreach ($Buttons as $b){
-					$WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".CoreUtils::aposEncode($b[1])."'>");
-					$HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button>";
-				}
+			$posted_at .= "Requested $permalink";
+			if (Auth::$signed_in && ($isStaff || $isRequester || $isReserver)){
+				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : $post->requester->toAnchor());
 			}
 		}
-		$HTML .= '</div>';
+		else {
+			$displayOverdue = false;
+			$posted_at .= "Reserved $permalink";
+		}
+		$posted_at .= '</em>';
 
-		return $HTML;
+		$hide_reserved_status = $post->reserved_by === null || ($displayOverdue && !$isReserver && !$isStaff);
+		if ($post->reserved_by !== null){
+			$reserved_by = $displayOverdue && !$isReserver ? ' by '.$post->reserver->toAnchor() : '';
+			$reserved_at = $post->is_request && $post->reserved_at !== null && !($hide_reserved_status && Permission::insufficient('staff'))
+				? "<em class='reserve-date'>Reserved <strong>".Time::tag($post->reserved_at)."</strong>$reserved_by</em>"
+				: '';
+			if ($post->finished){
+				$approved = $post->lock;
+				if ($enablePromises){
+					$view_only_promise = $view_only ? "data-viewonly='$view_only'" : '';
+					$HTML = "<div class='image deviation'><div class='post-deviation-promise' data-post='{$post->getID()}' $view_only_promise></div></div>";
+				}
+				else $HTML = $post->getFinishedImage($view_only, $cachebust);
+				$finished_at = $post->finished_at !== null
+					? "<em class='finish-date'>Finished <strong>".Time::tag($post->finished_at).'</strong></em>'
+					: '';
+				$locked_at = '';
+				if ($approved){
+					$LogEntry = $post->approval_entry;
+					if (!empty($LogEntry)){
+						$approverIsNotReserver = $LogEntry->initiator !== null && $LogEntry->initiator !== $post->reserved_by;
+						$approvedby = $isStaff && $LogEntry->initiator !== null
+							? ' by '.(
+								$approverIsNotReserver
+								? (
+									$post->is_request && $LogEntry->initiator === $post->requested_by
+									? 'the requester'
+									: $LogEntry->actor->toAnchor()
+								)
+								: 'the reserver'
+							)
+							: '';
+						$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag($LogEntry->timestamp)."</strong>$approvedby</em>" : '';
+					}
+					else $locked_at = '<em class="approve-date">Approval data unavilable</em>';
+				}
+				$post_type = $post->is_request ? '<em>Posted in the <strong>'.self::REQUEST_TYPES[$post->type].'</strong> section</em>' : '';
+				$HTML .= $post_label.$posted_at.$post_type.$reserved_at.$finished_at.$locked_at;
+				if (!empty($post->fullsize)){
+					$HTML .= "<a href='{$post->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a>";
+				}
+			}
+			else $HTML .= $post_label.$posted_at.$reserved_at;
+		}
+		else $HTML .= $post_label.$posted_at;
+
+		if ($displayOverdue && ($isStaff || $isReserver))
+			$HTML .= self::CONTESTABLE;
+
+		if ($post->broken)
+			$HTML .= self::BROKEN;
+
+		$break = $post->broken ? 'class="admin-break"' : '';
+
+		return "<li id='$ID' $break>$HTML".$post->getActionsHTML($view_only ? $postlink : false, $hide_reserved_status, $enablePromises).'</li>';
 	}
 
 	/**

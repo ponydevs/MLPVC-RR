@@ -353,7 +353,7 @@ HTML;
 				Appearance::find($id)->updateIndex();
 
 			Tags::updateUses($Target->id);
-			Response::success('Tags successfully '.($merging?'merged':'synonymized'), $synoning || $merging ? ['target' => $Target] : null);
+			Response::success('Tags successfully '.($merging?'merged':'synonymized'), $synoning || $merging ? ['target' => $Target->to_array()] : null);
 		}
 
 		CoreUtils::notFound();
