@@ -310,13 +310,26 @@ HTML;
 	 */
 	public function getPCGAvailablePoints(bool $throw = true):int {
 		$slotcount = UserPrefs::get('pcg_slots', $this, true);
-		if ($slotcount !== 0){
+		if ($slotcount !== null){
 			$slotcount = (int)$slotcount;
 			if ($throw && $slotcount === 0)
 				throw new NoPCGSlotsException();
 			return $slotcount;
 		}
+
 		// We need to calculate the available slots
+		$this->recalculatePCGSlotHistroy();
+
+		return $this->getPCGAvailablePoints($throw);
+	}
+
+	public function syncPCGSlotCount(){
+		UserPrefs::set('pcg_slots', PCGSlotHistory::sum($this->id), $this);
+	}
+
+	public function recalculatePCGSlotHistroy(){
+		# Wipe old entries
+		DB::$instance->where('user_id', $this->id)->delete(PCGSlotHistory::$table_name);
 
 		# Free slot for everyone
 		PCGSlotHistory::makeRecord($this->id, 'free_trial', null, null, strtotime('2017-12-16T13:36:59Z'));
@@ -373,17 +386,6 @@ HTML;
 			$grantedPoint->make_related_entries(false);
 
 		$this->syncPCGSlotCount();
-		return $this->getPCGAvailablePoints($throw);
-	}
-
-	public function syncPCGSlotCount(){
-		UserPrefs::set('pcg_slots', PCGSlotHistory::sum($this->id), $this);
-	}
-
-	public function recalculatePCGSlotHistroy(){
-		DB::$instance->where('user_id', $this->id)->delete(PCGSlotHistory::$table_name);
-		UserPrefs::reset('pcg_slots', $this);
-		$this->getPCGAvailablePoints(false);
 	}
 
 	public const CONTRIB_CACHE_DURATION = Time::IN_SECONDS['hour'];

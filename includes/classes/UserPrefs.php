@@ -25,10 +25,12 @@ class UserPrefs extends GlobalSettings {
 		'a_postreq' => 1,
 		'a_postres' => 1,
 		'a_reserve' => 1,
-		'pcg_slots' => 0,
+		'pcg_slots' => null,
 	];
 
-	public const STRICT_COMPARE = [];
+	public const STRICT_COMPARE = [
+		'pcg_slots',
+	];
 
 	/**
 	 * Gets a user preference item's value
