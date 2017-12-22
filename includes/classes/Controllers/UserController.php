@@ -18,10 +18,18 @@ use App\Pagination;
 use App\Permission;
 use App\Posts;
 use App\Response;
+use App\UserPrefs;
 use App\Users;
 
 class UserController extends Controller {
 	public $do = 'user';
+
+	public function homepage(){
+		if (UserPrefs::get('p_homelastep'))
+			HTTP::redirect('/episode/latest', HTTP::REDIRECT_TEMP);
+
+		HTTP::redirect('/cg', HTTP::REDIRECT_TEMP);
+	}
 
 	public function profile($params){
 		global $USERNAME_REGEX, $sameUser;

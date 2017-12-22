@@ -85,7 +85,8 @@ if ($isUserMember)
 <?php	(new \App\UserSettingForm('p_avatarprov', $User))->render();
 		(new \App\UserSettingForm('p_vectorapp', $User))->render();
 		(new \App\UserSettingForm('p_hidediscord', $User))->render();
-		(new \App\UserSettingForm('p_hidepcg', $User))->render(); ?>
+		(new \App\UserSettingForm('p_hidepcg', $User))->render();
+		(new \App\UserSettingForm('p_homelastep', $User))->render(); ?>
 		</section>
 		<section class="staff-limits">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Account limitations</h2>

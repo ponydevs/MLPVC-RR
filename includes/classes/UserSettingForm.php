@@ -72,6 +72,12 @@ class UserSettingForm {
 				],
 			],
 		],
+		'p_homelastep' => [
+			'type' => 'checkbox',
+			'options' => [
+				'desc' => 'Home page should open latest episode (instead of the color guide)',
+			]
+		],
 		'ep_noappprev' => [
 			'type' => 'checkbox',
 			'options' => [

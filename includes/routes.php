@@ -26,7 +26,7 @@ $router->addMatchTypes([
 ]);
 
 // Pages
-$router->map('GET', '/',                               'EpisodeController#index');
+$router->map('GET', '/',                               'UserController#homepage');
 $router->map('GET', '/footer-git',                     'FooterController#git');
 $router->map('GET', '/about',                          'AboutController#index');
 $router->map('GET', '/about/browser/[i:session]?',     'AboutController#browser');
@@ -59,6 +59,7 @@ $router->map('GET',      '/[cg]/cutiemark/[i:id].svg',                          
 $router->map('GET',      '/[cg]/cutiemark/download/[i:id][adi]?',               'CutiemarkController#download');
 $router->map('GET', '/da-auth',                        'AuthController#auth');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
+$router->map('GET', '/episode/latest',                 'EpisodeController#latest');
 $router->map('GET', '/episodes/[i]?',                  'EpisodeController#episodeList');
 $router->map('GET', '/movies/[i]?',                    'EpisodeController#movieList');
 $router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');

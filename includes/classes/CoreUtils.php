@@ -769,13 +769,13 @@ class CoreUtils {
 		// Navigation items
 		if (!$disabled){
 			$NavItems = [
-				['/', 'Latest episode'],
+				['/episode/latest', 'Latest episode'],
 				['/episodes', 'Episodes'],
 				['/cg', 'Color Guide'],
 				['/events', 'Events'],
 			];
 			if (Auth::$signed_in)
-				$NavItems[] = ['/@'.Auth::$user->name, 'Account'];
+				$NavItems[] = [Auth::$user->toURL(), 'Account'];
 			if (Permission::sufficient('staff')){
 				$NavItems[] = ['/users', 'Users'];
 				$NavItems[] = ['/admin', 'Admin'];

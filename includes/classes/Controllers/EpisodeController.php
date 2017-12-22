@@ -24,7 +24,7 @@ use App\Models\EpisodeVideo;
 
 /** @property Episode $_episode */
 class EpisodeController extends Controller {
-	public function index(){
+	public function latest(){
 		$CurrentEpisode = Episodes::getLatest();
 		if (empty($CurrentEpisode))
 			CoreUtils::loadPage(__CLASS__.'::view', [
