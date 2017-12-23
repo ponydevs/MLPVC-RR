@@ -310,17 +310,13 @@ HTML;
 	 */
 	public function getPCGAvailablePoints(bool $throw = true):int {
 		$slotcount = UserPrefs::get('pcg_slots', $this, true);
-		if ($slotcount !== null){
-			$slotcount = (int)$slotcount;
-			if ($throw && $slotcount === 0)
-				throw new NoPCGSlotsException();
-			return $slotcount;
-		}
+		if ($slotcount === null)
+			$this->recalculatePCGSlotHistroy();
 
-		// We need to calculate the available slots
-		$this->recalculatePCGSlotHistroy();
-
-		return $this->getPCGAvailablePoints($throw);
+		$slotcount = (int)UserPrefs::get('pcg_slots', $this, true);
+		if ($throw && $slotcount === 0)
+			throw new NoPCGSlotsException();
+		return $slotcount;
 	}
 
 	public function syncPCGSlotCount(){
