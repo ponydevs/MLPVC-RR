@@ -29,7 +29,7 @@ class UserPrefs extends GlobalSettings {
 	];
 
 	public const STRICT_COMPARE = [
-		'pcg_slots',
+		'pcg_slots' => true,
 	];
 
 	/**
