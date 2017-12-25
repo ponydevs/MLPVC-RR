@@ -112,7 +112,6 @@ $router->map('POST', '/cg/colorgroup/[gsd:action]/[i:id]',   'ColorGroupControll
 $router->map('POST', '/cg/colorgroup/[make:action]',         'ColorGroupController#action');
 $router->map('POST', '/cg/colorgroup/appearance-list',       'ColorGroupController#appearanceList');
 $router->map('POST', '/cg/colorgroup/list/[i:id]',           'ColorGroupController#list');
-$router->map('POST', '/cg/get-sprite-colors/[i:id]',         'AppearanceController#getSpriteColors');
 $router->map('POST', '/cg/sanitizesvg/[i:id]',               'ColorGuideController#sanitizeSvg');
 $router->map('POST', '/@[un:name]/cg/slot-check',            'PersonalGuideController#checkAvailSlots');
 $router->map('POST', '/@[un:name]/cg/point-history/recalc',  'PersonalGuideController#pointRecalc');

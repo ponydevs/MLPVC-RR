@@ -153,22 +153,6 @@ $TFeature:  adjust_hue($_TBase, 20);
 			&:not(:last-child) {
 				margin: 0 0 10px;
 			}
-
-			> .cat {
-				line-height: 1em;
-
-				.admin {
-					margin-top: 5px;
-					display: block;
-					font-size: .9em;
-
-					button {
-						margin: 0;
-
-						&:not(:last-child){ margin-right: 5px }
-					}
-				}
-			}
 		}
 
 		> .cat {
@@ -177,6 +161,18 @@ $TFeature:  adjust_hue($_TBase, 20);
 			display: block;
 			margin: 0 0 5px;
 			font-family: 'Celestia', sans-serif;
+
+			.admin {
+				margin-top: 5px;
+				display: block;
+				font-size: .8em;
+
+				button {
+					margin: 0;
+
+					&:not(:last-child){ margin-right: 5px }
+				}
+			}
 
 			~ span {
 				@include colored-square(35px);

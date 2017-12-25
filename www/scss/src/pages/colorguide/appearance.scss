@@ -24,8 +24,6 @@
 @media all and (min-width: $Breakpoint){
 	.pony-cm .preview { @include pony-cm-image }
 
-	#content .admin { display: none }
-
 	#pony-cm-list {
 		.pony-cm {
 			display: inline-block;
@@ -79,16 +77,6 @@
 		margin-bottom: 10px;
 	}
 
-	section {
-		> .admin button {
-			display: block;
-			margin: 0 0 10px 0;
-			width: 100%;
-
-			&:not(:last-child){ margin-bottom: 5px }
-		}
-	}
-
 	#tags .tags {
 		&:empty:before { content: "This appearance has no tags" }
 		> :not(:last-child) {
@@ -120,11 +108,17 @@
 		}
 	}
 
-	.related ul {
-		@extend %appearance-ul;
+	.color-list > div.admin {
+		margin-bottom: 10px;
+
+		button { margin: 0 }
 	}
 
 	#colors { @extend %colors-ul }
+
+	.related ul {
+		@extend %appearance-ul;
+	}
 }
 
 #pony-cm-list {

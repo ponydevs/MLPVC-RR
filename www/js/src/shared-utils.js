@@ -104,6 +104,7 @@
 		Tab: 9,
 		Enter: 13,
 		Alt: 18,
+		Escape: 27,
 		Space: 32,
 		LeftArrow: 37,
 		UpArrrow: 38,

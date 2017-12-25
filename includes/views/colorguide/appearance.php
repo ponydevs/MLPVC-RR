@@ -78,6 +78,7 @@ use App\Tags;
 			<div class="admin">
 				<button class="darkblue typcn typcn-arrow-unsorted reorder-cgs">Re-order groups</button>
 				<button class="green typcn typcn-plus create-cg">Create group</button>
+				<button class="darkblue typcn typcn typcn-document-add apply-template">Apply template</button>
 			</div>
 <?  }
 	if ($placehold = $Appearance->getPendingPlaceholder())

@@ -124,6 +124,7 @@ class ColorGuideController extends Controller {
 	protected const GUIDE_MANAGE_JS = [
 		'jquery.uploadzone',
 		'jquery.autocomplete',
+		'jquery.ponycolorpalette',
 		'handlebars-v3.0.3',
 		'Sortable',
 		'pages/colorguide/tag-list',

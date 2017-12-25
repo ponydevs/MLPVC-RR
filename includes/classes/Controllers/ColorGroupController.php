@@ -16,6 +16,7 @@ use App\Models\Logs\MajorChange;
 use App\Permission;
 use App\Response;
 use App\Users;
+use GuzzleHttp\Exception\BadResponseException;
 
 class ColorGroupController extends ColorGuideController {
 	public function action($params){
@@ -351,6 +352,11 @@ class ColorGroupController extends ColorGuideController {
 	public function list($params){
 		$this->_getAppearance($params);
 
+		$returnedColorFields = [
+			isset($_GET['hex']) ? 'hex' : 'id',
+			'label',
+		];
+
 		$list = [];
 		foreach ($this->_appearance->color_groups as $item){
 			$group = [
@@ -358,7 +364,7 @@ class ColorGroupController extends ColorGuideController {
 				'colors' => []
 			];
 			foreach ($item->colors as $c){
-				$arr = $c->to_array(['only' => ['id','label']]);
+				$arr = $c->to_array(['only' => $returnedColorFields]);
 				if ($c->linked_to !== null)
 					unset($arr['id']);
 				$group['colors'][] = $arr;

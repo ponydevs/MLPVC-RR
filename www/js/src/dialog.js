@@ -91,6 +91,23 @@
 
 			if (params.color.length)
 				$contentAdd.addClass(params.color);
+
+			const $tabUi = $contentAdd.find('.tab-wrap');
+			if ($tabUi.length > 0){
+				const tabClick = $tab => {
+					const $contents = $tab.closest('.tab-wrap').find('.tab-contents');
+
+					$tab.addClass('selected').siblings().removeClass('selected');
+					$contents.children().addClass('hidden').filter('.content-' + $tab.attr('data-content')).removeClass('hidden');
+				};
+				$tabUi.on('click', '.tab-list .tab', function(){
+					tabClick($(this));
+				});
+				let $defaultTab = $tabUi.find('.tab-default');
+				if ($defaultTab.length === 0)
+					$defaultTab = $tabUi.find('.tab').first();
+				tabClick($defaultTab);
+			}
 			if (append){
 				this.$dialogOverlay = $('#dialogOverlay');
 				this.$dialogBox = $('#dialogBox');

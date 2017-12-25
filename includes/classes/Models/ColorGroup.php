@@ -74,7 +74,7 @@ class ColorGroup extends OrderedModel {
 		$label = CoreUtils::escapeHTML($this->label).($colon?': ':'');
 		$HTML =
 			"<span class='cat'>$label".
-				($colorNames && Permission::sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"></button><button class="red typcn typcn-trash delete-cg"></button></span>':'').
+				($colorNames && Permission::sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"><span>Edit</span></button><button class="red typcn typcn-trash delete-cg"><span>Delete</span></button></span>':'').
 			'</span>';
 		$Colors = empty($AllColors) ? $this->colors : ($AllColors[$this->id] ?? null);
 		if (!empty($Colors)){

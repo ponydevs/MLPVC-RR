@@ -381,6 +381,8 @@ class AppearanceController extends ColorGuideController {
 				$cgs = $this->_appearance->color_groups;
 				if (empty($cgs))
 					Response::fail('This appearance does not have any color groups');
+				if (\count($cgs) < 2)
+					Response::fail('An appearance needs at least 2 color groups before you can change their order');
 				foreach ($cgs as $i => $cg)
 					$cgs[$i] = $cg->to_array([
 						'only' => ['id','label'],
@@ -917,38 +919,6 @@ class AppearanceController extends ColorGuideController {
 				'Owner' => $this->_appearance->owner,
 			],
 		]);
-	}
-
-	public function getSpriteColors($params){
-		$this->_getAppearance($params);
-
-		if (empty($this->_appearance))
-			Response::fail('Could not find appearance');
-
-		$DefaultMapping = [
-			'Coat Outline' => '#443633',
-			'Coat Shadow Outline' => '#404433',
-			'Coat Fill' => '#70605D',
-			'Coat Shadow Fill' => '#6C7260',
-			'Iris Gradient Top' => '#3B3B3B',
-			'Iris Gradient Middle' => '#606060',
-			'Iris Gradient Bottom' => '#BEBEBE',
-			'Iris Highlight Top' => '#542727',
-			'Iris Highlight Bottom' => '#7E3A3A',
-			'Magic Aura' => '#B7B7B7',
-		];
-
-		$ColorMappings = $this->_appearance->getColorMapping($DefaultMapping);
-
-		$colors = [];
-		foreach ($DefaultMapping as $k => $v){
-			if (!isset($ColorMappings[$k]))
-				continue;
-
-			$colors[$v] = $ColorMappings[$k];
-		}
-
-		Response::done(['colors' => $colors]);
 	}
 
 	public function spriteColorCheckup(){

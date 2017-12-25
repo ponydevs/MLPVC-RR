@@ -126,13 +126,14 @@ body.dialog-open {
 	}
 
 	form {
-		> label, > .label {
+		> label, .label {
 			> span {
 				~ select,
 				~ textarea,
 				~ input:not([type=radio]):not([type=checkbox]):not([type=button]),
 				~ .input-group-2,
 				~ .input-group-3,
+				~ .radio-group,
 				~ .ace_editor {
 					margin-top: 5px !important;
 					display: block;
@@ -147,6 +148,49 @@ body.dialog-open {
 			> textarea {
 				resize: vertical;
 			}
+		}
+	}
+	.tab-wrap {
+		$padding: 8px;
+		background: #fff;
+
+		> ul {
+			list-style: none;
+			margin: 0;
+		}
+
+		> .tab-list {
+			padding: 0;
+			display: flex;
+			flex-flow: row nowrap;
+			justify-content: stretch;
+			user-select: none;
+
+			> .tab {
+				flex: 1 1 auto;
+				border-top-left-radius: 8px;
+				border-top-right-radius: 8px;
+				border: 1px solid;
+				position: relative;
+				bottom: -1px;
+				padding: $padding;
+				background: #eee;
+				text-align: center;
+				cursor: pointer;
+
+				&.selected {
+					border-bottom: 0;
+					font-weight: bold;
+					background-color: #fff;
+				}
+				&:not(:last-child) {
+					border-right: 0;
+				}
+			}
+		}
+		> .tab-contents {
+			border: 1px solid;
+			padding: $padding;
 		}
 	}
 	.notice {

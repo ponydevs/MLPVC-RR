@@ -11,6 +11,9 @@ $(function(){
 	}).on('click','.create-cg',function(e){
 		e.preventDefault();
 		$.ctxmenu.triggerItem($colors, 2);
+	}).on('click','.apply-template',function(e){
+		e.preventDefault();
+		$.ctxmenu.triggerItem($colors, 3);
 	});
 	$colors.on('click','button.edit-cg',function(){
 		$.ctxmenu.triggerItem($(this).parents('.ctxmenu-bound'), 1);
