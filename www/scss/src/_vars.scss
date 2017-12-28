@@ -232,6 +232,7 @@ $NoScrollbar: false;
 
 %appearance-ul {
 	display: flex;
+	flex-flow: row wrap;
 	align-items: center;
 	font-size: 1.2em;
 	font-weight: bold;
