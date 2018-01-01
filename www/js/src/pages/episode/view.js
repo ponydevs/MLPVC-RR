@@ -124,69 +124,24 @@ $(function(){
 			$.post(`/episode/vote/${EpID}?detail`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				let $chart = $.mk('canvas'),
-					ctx = $chart.get(0).getContext("2d"),
-					$tooltip = $.mk('p').attr('class','tooltip');
+				const $ul = $.mk('ul');
+				let totalVotes = 0;
+				$.each(this.data, (label, value) => {
+					const
+						ms = +label === 1 ? '' : 's',
+						vs = +value === 1 ? '' : 's';
+					$ul.append(`<li><strong>${label} muffin${ms}:</strong> ${value} vote${vs}</li>`);
+					totalVotes += +value;
+				});
+				const $bars = $.mk('div').attr('class','bars');
+				$.each(this.data, (label, value) => {
+					$bars.append(`<div class="bar type-${label}" style="width:${$.roundTo(100*(value/totalVotes), 2)}%"></div>`);
+				});
+
 				$.Dialog.info(false, [
-					$.mk('p').text("Here’s a chart showing how the votes are distributed. Mouse over the different segments to see the exact number of votes."),
-					$.mk('div').attr('id','vote-distrib').append($chart, $tooltip)
+					$.mk('p').text("Here’s how the votes are distributed:"),
+					$.mk('div').attr('id','vote-distrib').append($ul, $bars)
 				]);
-				                   //-- 0 ---,--- 1 ---,--- 2 ---,--- 3 ---,--- 4 ---,--- 5 ---
-				let LegendColors = [undefined,"#FF5454","#FFB554","#FFFF54","#8CD446","#4DC742"],
-					data = this.data,
-					totalVotes = 0;
-
-				data.datasets[0].backgroundColor = [];
-				data.datasets[0].hoverBackgroundColor = [];
-				data.datasets[0].borderWidth = [];
-				data.datasets[0].hoverBorderColor = [];
-				$.each(data.datasets[0].data,function(k,v){
-					let bgcolor = LegendColors[parseInt(data.labels[k], 10)];
-					data.datasets[0].backgroundColor.push(bgcolor);
-					let lighter = $.RGBAColor.parse(bgcolor),
-						mult = 1.06;
-					lighter.red = Math.round(Math.min(255, lighter.red * mult));
-					lighter.green = Math.round(Math.min(255, lighter.green * mult));
-					lighter.blue = Math.round(Math.min(255, lighter.blue * mult));
-					data.datasets[0].hoverBackgroundColor.push(lighter.toHex());
-					data.datasets[0].borderWidth.push(2);
-					data.datasets[0].hoverBorderColor.push(`rgba(${lighter.red},${lighter.green},${lighter.blue},0.9)`);
-					totalVotes += parseInt(v, 10);
-				});
-
-				if (totalVotes === 0){
-					$chart.remove();
-					$tooltip.text('There are no votes for this episode yet');
-					return;
-				}
-
-				new Chart(ctx,{
-					type: 'pie',
-					data: data,
-					options: {
-						titleFontColor: '#000',
-						bodyFontColor: '#000',
-						animation: {
-							easing: 'easeInOutExpo',
-						},
-						legend: {
-							display: false,
-						},
-						tooltips: {
-							callbacks: {
-								title: function(tooltip,data){
-									let value = parseInt(data.labels[tooltip[0].index], 10);
-									return `${value} muffin${value!==1?'s':''}`;
-								},
-								label: function(tooltip,data){
-									let voteCount = parseInt(data.datasets[tooltip.datasetIndex].data[tooltip.index],10),
-										votePerc = Math.round((voteCount/totalVotes)*1000)/10;
-									return `${voteCount} user${voteCount!==1?'s':''} (${votePerc}%)`;
-								}
-							}
-						}
-					}
-				});
 			}));
 		});
 	};

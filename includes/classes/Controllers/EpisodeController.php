@@ -368,18 +368,9 @@ class EpisodeController extends Controller {
 				WHERE season = ? AND episode = ?
 				GROUP BY v.vote
 				ORDER BY v.vote ASC', [$this->_episode->season, $this->_episode->episode]);
-			$VoteCounts = [
-				'labels' => [],
-				'datasets' => [
-					[
-						'data' => []
-					]
-				]
-			];
-			foreach ($VoteCountQuery as $row){
-				$VoteCounts['labels'][] = $row['label'];
-				$VoteCounts['datasets'][0]['data'][] = $row['value'];
-			}
+			$VoteCounts = [];
+			foreach ($VoteCountQuery as $row)
+				$VoteCounts[$row['label']] = $row['value'];
 
 			Response::done(['data' => $VoteCounts]);
 		}

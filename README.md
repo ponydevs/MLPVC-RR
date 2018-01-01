@@ -10,7 +10,6 @@
    [jQuery](http://jquery.com/),
    [qTip2](http://qtip2.com/),
    [autocomplete.js](https://github.com/algolia/autocomplete.js),
-   [Chart.js](http://www.chartjs.org/),
    [Sortable](https://github.com/RubaXa/Sortable),
    [Ace Editor](https://ace.c9.io/),
    [moment.js](http://momentjs.com/),

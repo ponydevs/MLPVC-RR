@@ -127,7 +127,7 @@ class Episodes {
 		if ($serverSideRedirect)
 			CoreUtils::fixPath($url);
 
-		$js = ['imagesloaded.pkgd', 'jquery.fluidbox', 'Chart', true, 'pages/episode/manage'];
+		$js = ['imagesloaded.pkgd', 'jquery.fluidbox', true, 'pages/episode/manage'];
 		if (Permission::sufficient('staff')){
 			$js[] = 'moment-timezone';
 			$js[] = 'pages/episode/list-manage';

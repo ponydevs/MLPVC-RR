@@ -414,22 +414,25 @@
 }
 
 #vote-distrib {
-	canvas {
-		width: 200px;
-		height: 200px;
-		display: block;
-		margin: 10px auto 5px;
-	}
-	.tooltip {
-		display: block;
-		text-align: center;
-		font-size: 17px;
-		font-weight: bold;
-		line-height: 17px;
-		height: 17px;
-		margin: 5px 0 0;
+	.bars {
+		display: flex;
+		flex-flow: row nowrap;
+		position: relative;
+		height: 22px;
+		border-radius: 5px;
+		overflow: hidden;
+		border: 1px solid;
 
-		&:empty { display: none }
+		> .bar {
+			flex: 1 0 auto;
+			height: 100%;
+
+			&.type-1 { background: #FF5454 }
+			&.type-2 { background: #FFB554 }
+			&.type-3 { background: #FFFF54 }
+			&.type-4 { background: #8CD446 }
+			&.type-5 { background: #4DC742 }
+		}
 	}
 }
 
