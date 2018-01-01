@@ -10,7 +10,7 @@ use App\Time;
 /** @var \App\Models\EventEntry[] $UserEntries */ ?>
 <div id="content" class="section-container">
 	<h1><?=$heading?></h1>
-	<p><?=$EventType?> for <?=$Event->getEntryRoleName()?> &bull; <?=$Event->hasStarted() ? (($Event->hasEnded() ? 'Ended' : 'Ends').' '.Time::tag($Event->ends_at)) : 'Starts '.Time::tag($startts)?></p>
+	<p><?=$EventType?> for <?=$Event->getEntryRoleName()?> &bull; <?=$Event->hasStarted() ? (($Event->hasEnded() ? 'Ended' : 'Ends').' '.Time::tag($Event->ends_at)) : 'Starts '.Time::tag($Event->starts_at)?></p>
 
 <?php   $couldEnter = Auth::$signed_in && $Event->checkCanEnter(Auth::$user);
 		$canEnter = $couldEnter && $Event->hasStarted() && !$Event->hasEnded();

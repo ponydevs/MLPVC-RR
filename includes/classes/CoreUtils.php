@@ -292,7 +292,7 @@ class CoreUtils {
 				}
 				$month = date('M', $time);
 				$day = date('j', $time);
-				$Verbs = $beforestartdate ? 'Stars' : 'Ends';
+				$Verbs = $beforestartdate ? 'Starts' : 'Ends';
 				$timetag = self::_eventTimeTag($time, $i+$j);
 
 				$HTML[] = [

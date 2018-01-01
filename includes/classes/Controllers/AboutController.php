@@ -58,4 +58,8 @@ class AboutController extends Controller {
 			],
 		]);
 	}
+
+	public function upcoming(){
+		Response::done(['html' => CoreUtils::getSidebarUpcoming(NOWRAP)]);
+	}
 }

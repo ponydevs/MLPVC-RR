@@ -90,7 +90,7 @@ $router->map('GET', '/post/lazyload/[rrl:thing]/[i:id]', 'PostController#lazyloa
 $router->map('GET', '/event/entry/lazyload/[i:id]',    'EventController#lazyloadEntry');
 
 // "API" Endpoints
-$router->map('POST', '/about/stats',                         'AboutController#stats');
+$router->map('POST', '/about/upcoming',                      'AboutController#upcoming');
 $router->map('POST', '/admin/logs/details/[i:id]',           'AdminController#logDetail');
 $router->map('POST', '/admin/usefullinks',                   'AdminController#usefulLinks');
 $router->map('POST', '/admin/usefullinks/reorder',           'AdminController#reorderUsefulLinks');

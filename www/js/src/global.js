@@ -310,12 +310,18 @@ $(function(){
 					diff = Time.Difference(now, airs);
 				}
 				if (!cdExists || diff.past){
-					if (cdExists){
-						$cd.find('.marquee').trigger('destroy.simplemarquee');
-						$cd.parents('li').remove();
-					}
 					clearCD();
-					return window.setUpcomingCountdown();
+					$.post('/about/upcoming', $.mkAjaxHandler(function(){
+						if (!this.status) return console.error(`Failed to load upcoming event list: ${this.message}`);
+
+						const $uc = $('#upcoming');
+						$uc.find('ul').html(this.html);
+						if (!this.html)
+							$uc.addClass('hidden');
+						else $uc.removeClass('hidden');
+						window.setUpcomingCountdown();
+					}));
+					return;
 				}
 				let text;
 				if (diff.time < Time.InSeconds.month && diff.month === 0){
@@ -342,7 +348,8 @@ $(function(){
 
 			let $lis = $uc.children('ul').children();
 			if (!$lis.length)
-				return $uc.remove();
+				return $uc.addClass('hidden');
+			$uc.removeClass('hidden');
 
 			$cd = $lis.first().find('time').addClass('nodt');
 			clearCD();

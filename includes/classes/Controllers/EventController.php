@@ -159,16 +159,19 @@ class EventController extends Controller {
 		]))->out();
 		$update['entry_role'] = $entry_role;
 
-		$vote_role = (new Input('vote_role',function($value){
-			if (!\in_array($value, Event::REGULAR_ENTRY_ROLES))
-				return Input::ERROR_INVALID;
-		},[
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'Event vote role is missing',
-				Input::ERROR_INVALID => 'Event vote role (@value) is invalid',
-			],
-		]))->out();
-		$update['vote_role'] = $vote_role;
+		if (($update['type'] ?? $this->_event->type) === 'contest'){
+			$vote_role = (new Input('vote_role',function($value){
+				if (!\in_array($value, Event::REGULAR_ENTRY_ROLES))
+					return Input::ERROR_INVALID;
+			},[
+				Input::CUSTOM_ERROR_MESSAGES => [
+					Input::ERROR_MISSING => 'Event vote role is missing',
+					Input::ERROR_INVALID => 'Event vote role (@value) is invalid',
+				],
+			]))->out();
+			$update['vote_role'] = $vote_role;
+		}
+		else $update['vote_role'] = null;
 
 		$max_entries = (new Input('max_entries',function(&$value, $range){
 			/** @noinspection TypeUnsafeComparisonInspection */
