@@ -65,37 +65,9 @@ else echo CoreUtils::notice('warn','This section went missing due to a bug, and 
 		</div>
 	</section>
 	<section>
-		<h2>What are those characters and numbers in the footer?</h2>
+		<h2>What after the @ sign in the footer?</h2>
 		<div>
-			<p>This website’s complete codebase is available for anyone to see on GitHub at <a href="<?=GITHUB_URL?>"><?=GITHUB_URL?></a>. What you're seeing is the version number, which consists of the first few characters of the latest commit’s ID. In this case, a commit is simply an update to the site. Whenever a new update is applied, the version number changes automatically.</p>
+			<p>This website is open source, you can find the code <a href="<?=GITHUB_URL?>">on GitHub</a>. What you're seeing is the commit ID correspoding to the most recent version of the code the site is currently operating on. Whenever a new update is deployed, the version number changes automatically. The code on the server mirrors the repository exactly with no hidden alterations.</p>
 		</div>
 	</section>
-	<section>
-		<h2>How do I know you're not hiding anything?</h2>
-		<div>
-			<p>Refer to the output below. If there were any hidden files or changes not present in the repository, you would be able to see them here.</p>
-			<pre id="proof"><code><?php
-
-	$commands = [
-		'git remote -v' => true,
-		'git rev-parse HEAD' => true,
-		'git ls-files . --exclude-standard --others' => function(string $str):string {
-			return str_replace('.',PROJPATH,$str);
-		},
-		'git diff' => true,
-	];
-
-	$HTML = '';
-	foreach ($commands as $command => $handler){
-		$origCommand = $command;
-		if ($handler !== true)
-			$command = $handler($command);
-		# Trim lines longer than 512 characters (usually sourcemaps)
-		$output = preg_replace(new \App\RegExp('^(.{512}).+$','m'),'$1…',shell_exec($command));
-		$HTML .= rtrim('<strong>$ '.CoreUtils::escapeHTML($origCommand)."</strong>\n".CoreUtils::escapeHTML($output))."\n";
-	}
-	echo rtrim($HTML);
-
-			?></code></pre>
-		</div>
 </div>
