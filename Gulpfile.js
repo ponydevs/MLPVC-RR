@@ -1,76 +1,38 @@
 // jshint ignore: start
-let cl = console.log,
-	stripAnsi = require('strip-ansi'),
-	chalk = require('chalk');
+const
+	chalk = require('chalk'),
+	gulp = require('gulp'),
+	sourcemaps = require('gulp-sourcemaps'),
+	plumber = require('gulp-plumber'),
+	sass = require('gulp-sass'),
+	autoprefixer = require('gulp-autoprefixer'),
+	cleanCss = require('gulp-clean-css'),
+	uglify = require('gulp-uglify'),
+	babel = require('gulp-babel'),
+	cached = require('gulp-cached'),
+	workingDir = __dirname;
 
-let toRun = process.argv.slice(2).slice(-1)[0] || 'default'; // Works only if task name is the last param
-console.log('Starting Gulp task "'+toRun+'"');
-let require_list = ['gulp'];
-if (['js','dist-js','scss','md','default'].indexOf(toRun) !== -1){
-	require_list.push.apply(require_list, [
-		'gulp-plumber',
-		'gulp-duration',
-	]);
-
-	if (toRun !== 'dist-js' && toRun !== 'md')
-		require_list.push('gulp-sourcemaps');
-
-	if (toRun === 'scss' || toRun === 'default')
-		require_list.push.apply(require_list, [
-			'gulp-sass',
-			'gulp-autoprefixer',
-			'gulp-clean-css',
-		]);
-	if (toRun === 'js' || toRun === 'dist-js' || toRun === 'default')
-		require_list.push.apply(require_list, [
-			'gulp-uglify',
-			'gulp-babel',
-			'gulp-cached'
-		]);
-	if (toRun === 'md' || toRun === 'default')
-		require_list.push.apply(require_list, [
-			'gulp-markdown',
-			'gulp-dom',
-		]);
-
-	if (toRun === 'md' || toRun === 'dist-js' || toRun === 'default')
-		require_list.push('gulp-rename');
-}
-else if (toRun === 'pgsort' || toRun == 'one_time_transform')
-	require_list.push('fs');
-process.stdout.write('(');
-for (let i= 0,l=require_list.length; i<l; i++){
-	let v = require_list[i],
-		key = v.replace(/^gulp-([a-z-]+)$/, '$1').replace(/-(\w)/,function(_, a){
-			return a.toUpperCase();
-		});
-	global[key] = require(v);
-	process.stdout.write(' '+v);
-}
-console.log(" )\n");
-
-let workingDir = __dirname;
-
-function Logger(prompt){
-	let $p = '['+chalk.blue(prompt)+'] ';
-	this.log = function(message){
-		console.log($p+message);
-	};
-	this.error = function(message){
+class Logger {
+	constructor(prompt){
+		this.prefix = '['+chalk.blue(prompt)+'] ';
+	}
+	log(message){
+		console.log(this.prefix+message);
+	}
+	error(message){
 		if (typeof message === 'string'){
 			message = message.trim()
 				.replace(/[\/\\]?www/,'');
-			console.error($p+'Error in '+message);
+			console.error(this.prefix+'Error in '+message);
 		}
 		else console.log(JSON.stringify(message,null,'4'));
-	};
-	return this;
+	}
 }
 
 let SASSL = new Logger('scss'),
 	SASSWatchArray = ['www/scss/src/*.scss','www/scss/src/**/*.scss'];
 gulp.task('scss', function() {
-	gulp.src(SASSWatchArray)
+	return gulp.src(SASSWatchArray)
 		.pipe(plumber(function(err){
 			SASSL.error(err.relativePath+'\n'+' line '+err.line+': '+err.messageOriginal);
 			this.emit('end');
@@ -91,181 +53,53 @@ gulp.task('scss', function() {
 			includeContent: false,
 			sourceRoot: '/scss/src',
 		}))
-		.pipe(duration('scss'))
 		.pipe(gulp.dest('www/scss/min'));
 });
 
 let JSL = new Logger('js'),
-	DJSL = new Logger('dist-js'),
-	jspipe = function(pipe, taskName){
-		let noSourcemaps = taskName === 'dist-js';
-		pipe =  pipe
-			.pipe(duration(taskName))
-			.pipe(cached(taskName, { optimizeMemory: true }))
-			.pipe(plumber(function(err){
-				err =
-					err.fileName
-					? err.fileName.replace(workingDir,'')+'\n  line '+(
-						err._babel === true
-						? err.loc.line
-						: err.lineNumber
-					)+': '+err.message.replace(/^[\/\\]/,'')
-					                  .replace(err.fileName.replace(/\\/g,'/')+': ','')
-					                  .replace(/\(\d+(:\d+)?\)$/, '')
-					: err;
-				(noSourcemaps ? DJSL : JSL).error(err);
-				this.emit('end');
-			}));
-		if (!noSourcemaps)
-			pipe = pipe.pipe(sourcemaps.init());
-		pipe = pipe
-				.pipe(babel({
-					presets: ['env']
-				}))
-				.pipe(uglify({
-					output: {
-						ascii_only: noSourcemaps,
-						comments: function(_, comment){ return /^!/m.test(comment.value) },
-					},
-				}));
-		if (noSourcemaps)
-			pipe = pipe.pipe(rename(function(path){
-				path.basename = path.basename.replace(/\.[^.]+$/i,'');
-				path.extname = '.jsx';
-			}));
-		if (!noSourcemaps)
-			pipe = pipe.pipe(sourcemaps.write('../min', {
-				includeContent: false,
-				sourceRoot: '/js/src',
-				sourceMappingURL: function(file){
-					return '/js/min/'+(file.relative.replace(/^\/+/,''))+'.map';
-				},
-			}));
-		return pipe;
-	},
 	JSWatchArray = ['www/js/src/*.js','www/js/src/**/*.js'];
-gulp.task('js', function(){
-	jspipe(
-		gulp.src(JSWatchArray),
-		'js'
-	).pipe(gulp.dest('www/js/min'));
-});
-gulp.task('dist-js', function(){
-	jspipe(
-		gulp.src(['www/dist/*.src.jsx']),
-		'dist-js'
-	).pipe(gulp.dest('www/dist'));
-});
-
-let MDL = new Logger('md');
-gulp.task('md', function(){
-	gulp.src('README.md')
-		.pipe(duration('md'))
+gulp.task('js', () => {
+	return gulp.src(JSWatchArray)
+		.pipe(cached('js', { optimizeMemory: true }))
 		.pipe(plumber(function(err){
-			MDL.error(err);
+			err =
+				err.fileName
+				? err.fileName.replace(workingDir,'')+'\n  line '+(
+					err._babel === true
+					? err.loc.line
+					: err.lineNumber
+				)+': '+err.message.replace(/^[\/\\]/,'')
+				                  .replace(err.fileName.replace(/\\/g,'/')+': ','')
+				                  .replace(/\(\d+(:\d+)?\)$/, '')
+				: err;
+			JSL.error(err);
 			this.emit('end');
 		}))
-		.pipe(markdown())
-		.pipe(dom(function(){
-			let document = this,
-				el = document.getElementById('what-s-this-site-'),
-				newElements = '<section class="'+el.id+'">'+el.outerHTML;
-
-			while (el.nextElementSibling !== null && el.nextElementSibling.id !== 'contributing'){
-				let next = el.nextElementSibling;
-				if (next.nodeName.toLowerCase() === 'h2')
-					newElements += '</section><section class="'+next.id+'">';
-				newElements += next.outerHTML;
-				el = next;
-			}
-
-			return newElements+'\n';
+		.pipe(sourcemaps.init())
+			.pipe(babel({
+				presets: ['env']
+			}))
+			.pipe(uglify({
+				output: {
+					comments: function(_, comment){ return /^!/m.test(comment.value) },
+				},
+			}))
+		.pipe(sourcemaps.write('../min', {
+			includeContent: false,
+			sourceRoot: '/js/src',
+			sourceMappingURL: function(file){
+				return '/js/min/'+(file.relative.replace(/^\/+/,''))+'.map';
+			},
 		}))
-		.pipe(rename('readme_snippet.html'))
-		.pipe(gulp.dest('includes/views/about'));
+		.pipe(gulp.dest('www/js/min'));
 });
 
-let PGL = new Logger('pgsort'),
-	parseRow = function(r){
-		let match = r.match(/VALUES \((\d+)(?:, (\d+|NULL))?[, )]/);
-		if (!match)
-			return [];
-		return [match[1], match[2]];
-	};
-gulp.task('pgsort', function(){
-	try {
-		fs.readdir('./setup', function(err, dir){
-			if (err) throw err;
-
-			let i = 0;
-			while (i < dir.length){
-				if (!/\.pg\.sql$/.test(dir[i])){
-					dir.splice(i, 1);
-					continue;
-				}
-				i++;
-			}
-
-			for (i = 0; i<dir.length; i++)
-				(function(fpath){
-					fs.readFile(fpath, 'utf8', function(err, data){
-						if (err) throw err;
-						let test = /INSERT INTO "?([a-z_\-]+)"?(?:\s+\([^)]+\))?\s+VALUES\s*\((\d+),[\s\S]+?;(?:\r|\r\n|\n)/g;
-						if (!test.test(data))
-							return;
-						let Tables = {},
-							TableCounters = {};
-						data.replace(test,function(row,table){
-							if (typeof Tables[table] !== 'object')
-								Tables[table] = [];
-							Tables[table].push(row);
-							TableCounters[table] = 0;
-							return row;
-						});
-
-						for (let j = 0, k = Object.keys(Tables), l = k.length; j<l; j++){
-							let table = k[j];
-							Tables[table].sort(function(a,b){
-								a = parseRow(a);
-								b = parseRow(b);
-
-								let ix = 0;
-								if (a[0] === b[0] && !isNaN(a[1]) && !isNaN(b[1]))
-									ix++;
-
-								a[ix] = parseInt(a[ix], 10);
-								b[ix] = parseInt(b[ix], 10);
-
-								return a[ix] > b[ix] ? 1 : (a[ix] < b[ix] ? -1 : 0);
-							})
-						}
-						data = data.replace(test,function(row,table){
-							return Tables[table][TableCounters[table]++];
-						});
-						data = data.replace(/;(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?(?:\s+\([^)]+\))?\s+VALUES\s+/g,',\n');
-						data = data.replace(/((?:\r|\r\n|\n)\s*(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?(?:\s+\([^)]+\))?\s+VALUES)\s*\(/g,'$1\n(');
-						data = data.replace(/\r\n?/g,'\n');
-
-						fs.writeFile(fpath, data, function(err){
-							if (err) throw err;
-						});
-					});
-				})('./setup/'+dir[i]);
-		});
-	}
-	catch(err){
-		PGL.error(err);
-		this.emit('end');
-	}
-});
-
-gulp.task('default', ['js', 'dist-js', 'scss', 'md'], function(){
-	gulp.watch(JSWatchArray, {debounceDelay: 2000}, ['js']);
+gulp.task('watch', done => {
+	gulp.watch(JSWatchArray, {debounceDelay: 2000}, gulp.series('js'));
 	JSL.log('File watcher active');
-	gulp.watch(['www/dist/*.src.jsx'], {debounceDelay: 2000}, ['dist-js']);
-	DJSL.log('File watcher active');
-	gulp.watch(SASSWatchArray, {debounceDelay: 2000}, ['scss']);
+	gulp.watch(SASSWatchArray, {debounceDelay: 2000}, gulp.series('scss'));
 	SASSL.log('File watcher active');
-	gulp.watch('README.md', {debounceDelay: 2000}, ['md']);
-	MDL.log('File watcher active');
+	done();
 });
+
+gulp.task('default', gulp.series(gulp.parallel('js', 'scss'), 'watch'));
