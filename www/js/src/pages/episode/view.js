@@ -606,9 +606,15 @@ $(function(){
 	$.fn.reorderPosts = function(){
 		let $parent = this;
 		$parent.children().sort(function(a,b){
-			let $a = $(a),
+			const
+				$a = $(a),
 				$b = $(b),
-				diff = (new Date($a.find('.post-date time').attr('datetime'))).getTime() - (new Date($b.find('.post-date time').attr('datetime'))).getTime();
+				$aFinAt = $a.find('.finish-date time'),
+				$bFinAt = $b.find('.finish-date time');
+			let diff;
+			if ($aFinAt.length && $bFinAt.length)
+				diff = (new Date($aFinAt.attr('datetime'))).getTime() - (new Date($bFinAt.attr('datetime'))).getTime();
+			else diff = (new Date($a.find('.post-date time').attr('datetime'))).getTime() - (new Date($b.find('.post-date time').attr('datetime'))).getTime();
 			if (diff === 0)
 				return parseInt($a.attr('id').replace('/\D/g',''), 10) - parseInt($b.attr('id').replace('/\D/g',''), 10);
 			return diff;
