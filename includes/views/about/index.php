@@ -55,7 +55,7 @@
 	<section>
 		<h2>What's after the @ sign in the footer?</h2>
 		<div>
-			<p>This website is open source, you can find the code <a href="<?=GITHUB_URL?>">on GitHub</a>. What you're seeing is the commit ID correspoding to the most recent version of the code the site is currently operating on. Whenever a new update is deployed, the version number changes automatically. The code on the server mirrors the repository exactly with no hidden alterations.</p>
+			<p>This website is open source, you can find the code <a href="<?=GITHUB_URL?>">on GitHub</a>. What you're seeing is the commit ID which refers to the most recent version of the code the site is currently operating on. Whenever a new update is deployed, the version number changes automatically. The code on the server mirrors the repository exactly with no hidden alterations.</p>
 		</div>
 	</section>
 </div>
