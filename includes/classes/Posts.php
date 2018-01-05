@@ -70,10 +70,10 @@ class Posts {
 		$RecentPosts = DB::$instance->disableAutoClass()->query(
 			"SELECT * FROM
 			(
-				SELECT $cols, requested_by, requested_at AS posted_at FROM requests
+				SELECT $cols, type, requested_by, requested_at AS posted_at FROM requests
 				WHERE requested_at > NOW() - INTERVAL '20 DAYS'
 				UNION ALL
-				SELECT $cols, null AS requested_by, reserved_at AS posted_at FROM reservations
+				SELECT $cols, null AS type, null AS requested_by, reserved_at AS posted_at FROM reservations
 				WHERE reserved_at > NOW() - INTERVAL '20 DAYS'
 			) t
 			ORDER BY posted_at DESC
@@ -84,7 +84,7 @@ class Posts {
 			$is_request = !empty($Post['requested_by']);
 			$className = '\\App\\Models\\'.($is_request ? 'Request' : 'Reservation');
 			if (!$is_request)
-				unset($Post['requested_by']);
+				unset($Post['requested_by'], $Post['type']);
 			/** @var $post Post */
 			$post = new $className($Post);
 			$HTML .= $post->getLi(true, false, LAZYLOAD);

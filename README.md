@@ -1,4 +1,4 @@
-# MLPVC-RR [![Build status](https://travis-ci.org/ponydevs/MLPVC-RR.svg?branch=master)](https://travis-ci.org/ponydevs/MLPVC-RR)
+# MLPVC-RR [![Build status](https://travis-ci.org/ponydevs/MLPVC-RR.svg?branch=master)](https://travis-ci.org/ponydevs/MLPVC-RR) [![Dependency Status](https://beta.gemnasium.com/badges/github.com/ponydevs/MLPVC-RR.svg)](https://beta.gemnasium.com/projects/github.com/ponydevs/MLPVC-RR)
 
 ## Attributions
 
