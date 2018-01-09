@@ -32,7 +32,7 @@ do
 		eval ${CMD_MIGRATE}
 		echo "$ $CMD_YARN"
 		eval ${CMD_YARN}
-		echo "$ CMD_GULP"
+		echo "$ $CMD_GULP"
 		eval ${CMD_GULP}
 	else
 		echo "Push ignored (refname=$refname; branch=$branch)"

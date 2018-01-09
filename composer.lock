@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "37df7ae81f18f571dfa0c591f45be7f2",
+    "content-hash": "d759f7a0e0d703dc9ff2f4b0d8a41885",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -171,16 +171,16 @@
         },
         {
             "name": "enshrined/svg-sanitize",
-            "version": "0.7.2",
+            "version": "0.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/darylldoyle/svg-sanitizer.git",
-                "reference": "2768fb1c8868d97145e8f2a5457caf590c8d2062"
+                "reference": "432fc4fc7e95b8a866790ba27e35076b9dd96ebe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/darylldoyle/svg-sanitizer/zipball/2768fb1c8868d97145e8f2a5457caf590c8d2062",
-                "reference": "2768fb1c8868d97145e8f2a5457caf590c8d2062",
+                "url": "https://api.github.com/repos/darylldoyle/svg-sanitizer/zipball/432fc4fc7e95b8a866790ba27e35076b9dd96ebe",
+                "reference": "432fc4fc7e95b8a866790ba27e35076b9dd96ebe",
                 "shasum": ""
             },
             "require-dev": {
@@ -204,7 +204,7 @@
                 }
             ],
             "description": "An SVG sanitizer for PHP",
-            "time": "2017-08-31T00:10:18+00:00"
+            "time": "2017-12-06T15:31:26+00:00"
         },
         {
             "name": "erusev/parsedown",
