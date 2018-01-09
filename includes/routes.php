@@ -49,6 +49,7 @@ $router->map('GET',      '/[cg]/[eqg:eqg]?/[i]?',                               
 $router->map('GET',      '/[cg]/[eqg:eqg]?/full',                               'ColorGuideController#fullList');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/tags/[i]?',                          'TagController#list');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/changes/[i]?',                       'ColorGuideController#changeList');
+$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]',                                'ColorGuideController#guide');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id]',                         'AppearanceController#view');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id]-[adi]',                   'AppearanceController#view');
 $router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[adi]-[i:id]',                   'AppearanceController#view');
