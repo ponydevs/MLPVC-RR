@@ -15,10 +15,7 @@ do
 		CMD_CHECKOUT="git -c advice.detachedHead=false checkout $newrev -f"
 		CMD_COMPOSER="sudo -u www-data composer install --no-dev 2>&1"
 		CMD_MIGRATE="sudo -u www-data vendor/bin/phinx migrate"
-		# Requires npm i -g yarn
 		CMD_YARN="sudo -u www-data yarn install"
-		# Requires npm i -g gulp-cli
-		CMD_GULP="sudo -u www-data gulp compile"
 
 		echo "$ $CMD_CD"
 		eval ${CMD_CD}
@@ -32,8 +29,6 @@ do
 		eval ${CMD_MIGRATE}
 		echo "$ $CMD_YARN"
 		eval ${CMD_YARN}
-		echo "$ $CMD_GULP"
-		eval ${CMD_GULP}
 	else
 		echo "Push ignored (refname=$refname; branch=$branch)"
     fi

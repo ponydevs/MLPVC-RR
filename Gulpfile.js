@@ -102,6 +102,4 @@ gulp.task('watch', done => {
 	done();
 });
 
-gulp.task('compile', gulp.parallel('js', 'scss'));
-
-gulp.task('default', gulp.series('compile', 'watch'));
+gulp.task('default', gulp.series(gulp.parallel('js', 'scss'), 'watch'));
