@@ -19,7 +19,11 @@ abstract class AbstractEntryType extends NSModel {
 		return Log::find_by_reftype_and_refid($this->type, $this->entryid);
 	}
 
-	public function get_type():string {
+	public static function getType():string {
 		return preg_replace(new RegExp('^log__'),'',static::$table_name);
+	}
+
+	public function get_type():string {
+		return static::getType();
 	}
 }

@@ -10,6 +10,8 @@ use App\DB;
 use App\DeviantArt;
 use App\File;
 use App\HTTP;
+use App\Logs;
+use App\Models\Logs\FailedAuthAttempt;
 use App\Permission;
 use App\RegExp;
 use App\Response;
@@ -23,7 +25,7 @@ class AuthController extends Controller {
 	}
 
 	public function auth(){
-		CSRFProtection::detect();
+		CSRFProtection::protect();
 
 		if (!isset($_GET['error']) && (empty($_GET['code']) || empty($_GET['state'])))
 			$_GET['error'] = 'unauthorized_client';
@@ -34,20 +36,22 @@ class AuthController extends Controller {
 				$this->_moveToState($_GET['state'] ?? null);
 			$this->_error($err, $errdesc);
 		}
-		try {
-			Auth::$user = DeviantArt::getAccessToken($_GET['code']);
-		}
-		catch (CURLRequestException $e){
-			if ($e->getCode() >= 500){
+
+		if (FailedAuthAttempt::canAuthenticate()){
+			try {
+				Auth::$user = DeviantArt::getAccessToken($_GET['code']);
+			}
+			catch(\Exception $e){
 				CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
+				FailedAuthAttempt::record();
 				$this->_error('server_error');
 			}
+			Auth::$signed_in = !empty(Auth::$user);
 		}
-		catch(\Exception $e){
-			CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
-			$this->_error('server_error');
+		else {
+			$_GET['error'] = 'time_out';
+			$_GET['error_description'] = "You've made too many failed login attempts in a short period of time. Please wait a few minutes before trying again.";
 		}
-		Auth::$signed_in = !empty(Auth::$user);
 
 		if (isset($_GET['error'])){
 			$err = $_GET['error'];
@@ -57,6 +61,8 @@ class AuthController extends Controller {
 				if ($err === 'user_banned')
 					$errdesc .= "\n\nIf you’d like to appeal your ban, please <a class='send-feedback'>contact us</a>.";
 			}
+			if ($err !== 'time_out')
+				FailedAuthAttempt::record();
 			$this->_error($err, $errdesc ?? null);
 		}
 
@@ -114,7 +120,8 @@ class AuthController extends Controller {
 	private function _error(?string $err, ?string $errdesc = null){
 		$rndkey = self::_isStateRndkey($match) ? $match[0] : null;
 
-		CoreUtils::error_log("DeviantArt authentication error ($err): $errdesc");
+		if ($err !== 'time_out')
+			CoreUtils::error_log("DeviantArt authentication error ($err): $errdesc");
 
 		HTTP::statusCode(500);
 		CoreUtils::loadPage('ErrorController::auth', [

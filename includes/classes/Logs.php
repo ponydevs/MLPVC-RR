@@ -7,6 +7,7 @@ use App\Models\Appearance;
 use App\Models\ColorGroup;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
+use App\Models\KnownIP;
 use App\Models\Logs\Log;
 use App\Models\PCGSlotGift;
 use App\Models\Request;
@@ -39,6 +40,7 @@ class Logs {
 		'post_fix'             => 'Broken post restored',
 		'staff_limits'         => 'Account limitation changed',
 		'pcg_gift_refund'      => 'Gifted slots refunded',
+		'failed_auth_attempts' => 'Failed authentication attempt',
 	];
 
 	public const FORCE_INITIATOR_WEBSERVER = true;
@@ -361,6 +363,21 @@ class Logs {
 				$details[] = ['Recipient', $gift->receiver->toAnchor()];
 				$details[] = ['Amount', CoreUtils::makePlural('slot', $gift->amount, PREPEND_NUMBER).' ('.CoreUtils::makePlural('point', $gift->amount*10, PREPEND_NUMBER).')'];
 				$details[] = ['Sent', Time::tag($gift->created_at)];
+			break;
+			case 'failed_auth_attempts':
+				$browser = !empty($data['user_agent']) ? CoreUtils::detectBrowser($data['user_agent']) : null;
+				$details[] = ['Browser', $browser === null ? 'Unknown' : "{$browser['browser_name']} {$browser['browser_ver']} on {$browser['platform']}"];
+				if (!empty($data['user_agent']))
+					$details[] = ['User Agent', $data['user_agent']];
+				$knownIps = KnownIP::find_all_by_ip($MainEntry['ip']);
+				if (!empty($knownIps)){
+					$potUsers = [];
+					foreach ($knownIps as $k){
+						if ($k->user_id !== null)
+							$potUsers[] = $k->user->toAnchor();
+					}
+					$details[] = ['Potential users', implode(', ',$potUsers)];
+				}
 			break;
 			default:
 				$details[] = ['<span class="typcn typcn-warning"></span> Couldn’t process details', 'No data processor defined for this entry type', self::KEYCOLOR_ERROR];
