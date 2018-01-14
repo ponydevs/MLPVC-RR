@@ -25,7 +25,7 @@ use SeinopSys\RGBAColor;
  * @property string              $label
  * @property string              $notes_src
  * @property string              $notes_rend
- * @property string              $owner_id
+ * @property string|null         $owner_id
  * @property DateTime            $added
  * @property DateTime            $last_cleared
  * @property bool                $ishuman

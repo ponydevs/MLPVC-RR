@@ -13,14 +13,14 @@ class Appearances {
 	public const PCG_APPEARANCE_MAKE_DISABLED = 'You are not allowed to create personal color guide appearances';
 
 	/**
-	 * @param bool      $EQG
+	 * @param bool|null $EQG
 	 * @param int|int[] $limit
 	 * @param string    $userid
 	 * @param string    $cols
 	 *
 	 * @return Appearance[]
 	 */
-	public static function get($EQG, $limit = null, $userid = null, $cols = null){
+	public static function get(?bool $EQG, $limit = null, ?string $userid = null, ?string $cols = null){
 		if ($userid !== null)
 			DB::$instance->where('owner_id', $userid);
 		else {

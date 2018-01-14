@@ -214,6 +214,7 @@ class ColorGuideController extends Controller {
 		$this->_initialize($params);
 
 		$title = '';
+		/** @var $AppearancesPerPage int */
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
 		$Ponies = [];
 		try {
