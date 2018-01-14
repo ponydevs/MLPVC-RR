@@ -238,8 +238,11 @@ class CoreUtils {
 		if (isset($options['heading']))
 			$scope['heading'] = $heading = $options['heading'];
 
-		if (self::isJSONExpected())
-			HTTP::statusCode(400, AND_DIE);
+		if (self::isJSONExpected()){
+			HTTP::statusCode(400);
+			$path = self::escapeHTML($_SERVER['REQUEST_URI']);
+			Response::fail("The requested endpoint ($path) does not support JSON responses");
+		}
 
 		header('Content-Type: text/html; charset=utf-8;');
 		require INCPATH.'views/_layout.php';

@@ -301,8 +301,16 @@ class ColorGuideController extends Controller {
 		    $Ponies = Appearances::get($this->_EQG, $Pagination->getLimit());
 		}
 
-		if (isset($_REQUEST['btnl']) && !empty($Ponies[0]->id))
-			HTTP::redirect($Ponies[0]->toURL());
+		if (isset($_REQUEST['btnl'])){
+			$found = !empty($Ponies[0]->id);
+			if (CoreUtils::isJSONExpected()){
+				if (!$found)
+					Response::fail('Your search returned no results.');
+				Response::done([ 'goto' => $Ponies[0]->toURL() ]);
+			}
+			if ($found)
+				HTTP::redirect($Ponies[0]->toURL());
+		}
 
 		$path = new UriBuilder($this->_cgPath);
 		$path->append_query_raw($Pagination->getPageQueryString());
