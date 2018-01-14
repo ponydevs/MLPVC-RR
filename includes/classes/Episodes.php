@@ -130,7 +130,7 @@ class Episodes {
 		$js = ['imagesloaded.pkgd', 'jquery.fluidbox', true, 'pages/episode/manage'];
 		if (Permission::sufficient('staff')){
 			$js[] = 'moment-timezone';
-			$js[] = 'pages/episode/list-manage';
+			$js[] = 'pages/show/index-manage';
 		}
 
 		$PrevEpisode = $CurrentEpisode->getPrevious();

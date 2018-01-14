@@ -159,7 +159,7 @@ class Users {
 		$signoutText = !$current ? 'Delete' : 'Sign out';
 		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."' data-sid='{$Session->id}'>$signoutText</button>";
 		if (Permission::sufficient('developer') && !empty($Session->user_agent)){
-			$buttons .= "<br><button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session->user_agent)."'>UA</button>".
+			$buttons .= "<button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session->user_agent)."'>UA</button>".
 				"<a class='btn link typcn typcn-chevron-right' href='/browser/{$Session->id}'>Debug</a>";
 		}
 
@@ -168,7 +168,8 @@ class Users {
 		echo <<<HTML
 <li class="browser-$browserClass" id="session-{$Session->id}">
 <span class="browser">$browserTitle</span>
-$platform$buttons
+$platform
+<div class='button-block'>$buttons</div>
 <span class="created">Created: $firstuse</span>
 <span class="used">$lastuse</span>
 </li>
@@ -284,12 +285,12 @@ HTML;
 		$giftslotbtn = $User->getPCGSlotGiftButtonHTML();
 		$givepointsbtn = $User->getPCGPointGiveButtonHTML();
 		$HTML .= <<<HTML
-<p>
+<div class="button-block">
 	<a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a>
 	$slothistbtn
 	$giftslotbtn
 	$givepointsbtn
-</p>
+</div>
 HTML;
 		$HTML .= '';
 

@@ -5,113 +5,85 @@ $(function(){
 	let requesting = false,
 		$FilterForm = $('#filter-form');
 	
-	$FilterForm.on('submit', function(e){
-		e.preventDefault();
-
-		let $_entryType = $FilterForm.find('[name="type"] option:selected'),
-			_entryTypeValue = $_entryType.val(),
-			_byUsername = $FilterForm.find('[name="by"]').val().trim(),
-			title = `${_entryTypeValue.length?`${$_entryType.text().replace('of type ','')} entries`:''}${_byUsername.length?`${_entryTypeValue.length?'':'entries'} by ${_byUsername}`:''}`,
-			query = title.length ? $FilterForm.serialize() : '';
-		$FilterForm.find('button[type=reset]').attr('disabled', query === '');
-
-		if (query !== '')
-			$.Dialog.wait('Navigation', `Looking for ${title.replace(/</g,'&lt;')}`);
-		else $.Dialog.success('Navigation', 'Search terms cleared');
-
-		$.toPage.call({query}, false, true, true, false, function(){
-			if (query !== false)
-				return /^Page \d+/.test(document.title)
-					? `${title} - ${document.title}`
-					: document.title.replace(/^.*( - Page \d+)/, title+'$1');
-			else return document.title.replace(/^.* - (Page \d+)/, '$1');
-		}).then(function(){
-			$.Dialog.close();
-		});
-	}).on('reset', function(e){
+	$FilterForm.on('reset', function(e){
 		e.preventDefault();
 
 		$FilterForm.find('[name="type"]').val('');
 		$FilterForm.find('[name="by"]').val('');
-		$FilterForm.triggerHandler('submit');
+		$FilterForm.trigger('submit');
 	});
 
 	let $logsTable = $('#logs');
-	$logsTable.find('tbody').off('page-switch').on('page-switch',function(){
-		$(this).children().each(function(){
-			let $row = $(this);
+	$logsTable.find('tbody').off('page-switch').on('click','.expand-section',function(){
+		let $this = $(this),
+			title = 'Log entry details';
 
-			$row.find('.expand-section').off('click').on('click',function(){
-				let $this = $(this),
-					title = 'Log entry details';
+		if ($this.hasClass('typcn-minus')) $this.toggleClass('typcn-minus typcn-plus').next().stop().slideUp();
+		else {
+			if ($this.next().length === 1)
+				$this.toggleClass('typcn-minus typcn-plus').next().stop().slideDown();
+			else {
+				if (requesting) return false;
+				requesting = true;
 
-				if ($this.hasClass('typcn-minus')) $this.toggleClass('typcn-minus typcn-plus').next().stop().slideUp();
-				else {
-					if ($this.next().length === 1)
-						$this.toggleClass('typcn-minus typcn-plus').next().stop().slideDown();
-					else {
-						if (requesting) return false;
-						requesting = true;
+				$this.removeClass('typcn-minus typcn-plus').addClass('typcn-refresh');
 
-						$this.removeClass('typcn-minus typcn-plus').addClass('typcn-refresh');
+				let EntryID = parseInt($this.closest('td').siblings().first().text()),
+					fail = function(){
+						$this.addClass('typcn-times color-red').css('cursor','not-allowed').off('click');
+					};
 
-						let EntryID = parseInt($row.children().first().text()),
-							fail = function(){
-								$this.addClass('typcn-times color-red').css('cursor','not-allowed').off('click');
-							};
-
-						$.post(`/admin/logs/details/${EntryID}`,$.mkAjaxHandler(function(){
-							if (!this.status){
-								if (this.unlickable === true)
-									$this.replaceWith($this.text().trim());
-								$.Dialog.fail(title,this.message);
-								return fail();
-							}
-
-							let $dataDiv = $.mk('div').attr('class','expandable-section').css('display','none');
-							$.each(this.details, (_, detail) => {
-								let $info, $key = $.mk('strong').html(detail[0]+': ');
-								if (typeof detail[2] === 'string')
-									$key.addClass(`color-${detail[2]}`);
-								if (detail[1] === null)
-									$info = $.mk('em').addClass(`color-darkblue`).text('empty');
-								else if (typeof detail[1] === 'boolean')
-									$info = $.mk('span').addClass(`color-${detail[1]?'green':'red'}`).text(detail[1]?'yes':'no');
-								else if ($.isArray(detail[1])){
-									$info = undefined;
-									$key.html($key.html().replace(/:\s$/, ''));
-								}
-								else $info = detail[1];
-
-								$dataDiv.append($.mk('div').append($key,$info));
-							});
-
-							$dataDiv.insertAfter($this).slideDown();
-							Time.Update();
-							$this.addClass('typcn-minus color-darkblue');
-						})).always(function(){
-							requesting = false;
-							$this.removeClass('typcn-refresh');
-						}).fail(fail);
+				$.post(`/admin/logs/details/${EntryID}`,$.mkAjaxHandler(function(){
+					if (!this.status){
+						if (this.unlickable === true)
+							$this.replaceWith($this.text().trim());
+						$.Dialog.fail(title,this.message);
+						return fail();
 					}
-				}
-			});
-			$row.find('.server-init').off('click').on('click',function(){
-				$FilterForm.find('[name="by"]').val($(this).text().trim());
-				$FilterForm.triggerHandler('submit');
-			});
-			$row.find('.search-ip').off('click').on('click',function(){
-				const $this = $(this);
-				$FilterForm.find('[name="by"]').val($this.hasClass('your-ip') ? 'my IP' : $this.siblings('.address').text().trim());
-				$FilterForm.triggerHandler('submit');
-			});
-			$row.find('.search-user').off('click').on('click',function(){
-				const $this = $(this);
-				$FilterForm.find('[name="by"]').val($this.hasClass('your-name') ? 'me' : $this.siblings('.name').text().trim());
-				$FilterForm.triggerHandler('submit');
-			});
-		});
-	}).trigger('page-switch').on('click','.dynt-el',function(){
+
+					let $dataDiv = $.mk('div').attr('class','expandable-section').css('display','none');
+					$.each(this.details, (_, detail) => {
+						let $info, $key = $.mk('strong').html(detail[0]+': ');
+						if (typeof detail[2] === 'string')
+							$key.addClass(`color-${detail[2]}`);
+						if (detail[1] === null)
+							$info = $.mk('em').addClass(`color-darkblue`).text('empty');
+						else if (typeof detail[1] === 'boolean')
+							$info = $.mk('span').addClass(`color-${detail[1]?'green':'red'}`).text(detail[1]?'yes':'no');
+						else if ($.isArray(detail[1])){
+							$info = undefined;
+							$key.html($key.html().replace(/:\s$/, ''));
+						}
+						else $info = detail[1];
+
+						$dataDiv.append($.mk('div').append($key,$info));
+					});
+
+					$dataDiv.insertAfter($this).slideDown();
+					Time.Update();
+					$this.addClass('typcn-minus color-darkblue');
+				})).always(function(){
+					requesting = false;
+					$this.removeClass('typcn-refresh');
+				}).fail(fail);
+			}
+		}
+	})
+	.on('click','.server-init',function(){
+		$FilterForm.find('[name="by"]').val($(this).text().trim());
+		$FilterForm.trigger('submit');
+	})
+	.on('click','.search-ip',function(){
+		const $this = $(this);
+		$FilterForm.find('[name="by"]').val($this.hasClass('your-ip') ? 'my IP' : $this.siblings('.address').text().trim());
+		$FilterForm.trigger('submit');
+	})
+	.on('click','.search-user',function(){
+		const $this = $(this);
+		$FilterForm.find('[name="by"]').val($this.hasClass('your-name') ? 'me' : $this.siblings('.name').text().trim());
+		$FilterForm.trigger('submit');
+	})
+	.on('click','.dynt-el',function(){
 		let ww = $w.width();
 		if (ww >= 650)
 			return true;

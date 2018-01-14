@@ -426,7 +426,6 @@ HTML;
 HTML;
 		}
 
-		// TODO Add a check image button & disable the submit button
 		$HTML .= <<<HTML
 		</div>
 		
@@ -631,7 +630,7 @@ HTML;
 				$post_type = $post->is_request ? '<em>Posted in the <strong>'.self::REQUEST_TYPES[$post->type].'</strong> section</em>' : '';
 				$HTML .= $post_label.$posted_at.$post_type.$reserved_at.$finished_at.$locked_at;
 				if (!empty($post->fullsize)){
-					$HTML .= "<a href='{$post->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a>";
+					$HTML .= "<span><a href='{$post->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a></span>";
 				}
 			}
 			else $HTML .= $post_label.$posted_at.$reserved_at;

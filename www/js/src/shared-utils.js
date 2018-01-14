@@ -101,6 +101,7 @@
 
 	// Common key codes for easy reference
 	window.Key = {
+		Backspace: 8,
 		Tab: 9,
 		Enter: 13,
 		Alt: 18,
@@ -349,7 +350,7 @@
 		if (typeof func !== 'function')
 			return def;
 
-		return func.apply(window, params);
+		return func(...params);
 	};
 
 	// Convert .serializeArray() result to object

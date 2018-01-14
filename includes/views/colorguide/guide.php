@@ -17,12 +17,12 @@ use App\Tags;
 		<small>Alternatively, use the old color guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a></small><br>
 		Looking for this information in a machine-readable format? <a href="<?=$jsonExport = CoreUtils::cachedAssetLink('mlpvc-colorguide','dist','json')?>" target="_blank" download="mlpvc-colorguide.json">JSON</a> (updated <?=\App\Time::tag((int) explode('?',$jsonExport)[1])?>)
 	</p>
-	<p class='align-center links'>
+	<div class='align-center button-block'>
 <?  if (Permission::sufficient('staff')){ ?>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
 <?	} ?>
-		<a class='btn link typcn typcn-world' href="/cg<?=$EQG?'':'/eqg'?>/1">View <?=$EQG?'Ponies':'Equestria Girls'?></a>
-		<a class='btn link typcn typcn-th-menu' href="/cg<?=$EQG?'/eqg':''?>/full">Full List of <?=$EQG?'Equestria Girls':'Ponies'?></a>
+		<a class='btn link typcn typcn-world' href="/cg/<?=$EQG?'pony':'eqg'?>">View <?=$EQG?'Pony':'EQG'?> Guide</a>
+		<a class='btn link typcn typcn-th-menu' href="/cg/<?=$EQG?'eqg':'pony'?>/full">Full List</a>
 		<a class='btn link typcn typcn-arrow-forward' href="/cg/blending">Blending Calculator</a>
 		<a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker</a>
 		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
@@ -32,18 +32,18 @@ use App\Tags;
 <?  } ?>
 <?  if (Permission::sufficient('developer')){ ?>
 		<button class='blue typcn typcn-download cg-export'>Export</button>
-		<button class='blue typcn typcn-document cg-reindex'>Re-index</button>
+		<button class='orange typcn typcn-database cg-reindex'>Re-index</button>
 <?  } ?>
-	</p>
+	</div>
 <?  $Universal = \App\Models\Appearance::find(0);
 	if (!empty($Universal))
 		echo "<ul id='universal' class='appearance-list'>".Appearances::getHTML([$Universal], NOWRAP).'</ul>'; ?>
 <? if ($elasticAvail){ ?>
 	<form id="search-form">
 		<input name="q" <?=!empty($_GET['q'])?" value='".CoreUtils::aposEncode($_GET['q'])."'":''?> title='Search'>
-		<button type='submit'  class='blue'>Search</button>
-		<button type='button' class='green typcn typcn-flash sanic-button' title="I'm feeling lucky"></button>
-		<button type='reset' class='red typcn typcn-times' title='Clear'<?=empty($_GET['q'])?' disabled':''?>></button>
+		<button type="submit" class="blue">Search</button>
+		<button type="submit" name="btnl" class="green typcn typcn-flash" title="I'm feeling lucky"></button>
+		<button type="reset" class="red typcn typcn-times" title="Clear"<?=empty($_GET['q'])?' disabled':''?>></button>
 	</form>
 <?  }
 	else echo \App\CGUtils::getElasticUnavailableNotice($EQG); ?>

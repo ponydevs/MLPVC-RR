@@ -5,7 +5,7 @@ use App\Permission;
 <div id="content" class="section-container">
 	<h1><?=$title?></h1>
 	<p>Various tools related to managing the site</p>
-	<div class='align-center links'>
+	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-document-text' href="/admin/logs">Logs</a>
 <?php   if (Permission::sufficient('developer')){ ?>
 		<a class='btn link typcn typcn-code' href="/admin/wsdiag">WS</a>

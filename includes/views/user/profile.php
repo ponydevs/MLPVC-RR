@@ -71,7 +71,7 @@ if ($isUserMember)
 		<section class="guide-settings">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Color Guide</h2>
 <?php	(new \App\UserSettingForm('cg_itemsperpage', $User))->render();
-		(new \App\UserSettingForm('cg_hidesynon', $User))->render();
+		//(new \App\UserSettingForm('cg_hidesynon', $User))->render();
 		(new \App\UserSettingForm('cg_hideclrinfo', $User))->render();
 		(new \App\UserSettingForm('cg_fulllstprev', $User))->render(); ?>
 		</section>

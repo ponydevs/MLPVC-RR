@@ -4,7 +4,7 @@ namespace App\Controllers;
 use App\File;
 use App\RegExp;
 
-class MuffinRatingController {
+class MuffinRatingController extends Controller {
 	public $do = 'muffin-rating';
 
 	public function image(){

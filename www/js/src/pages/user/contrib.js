@@ -26,8 +26,4 @@ $(function(){
 		$('.deviation-promise').each((_, el) => io.observe(el));
 	}
 	reobserve();
-
-	$('#contribs').on('page-switch',function(){
-		reobserve();
-	});
 });

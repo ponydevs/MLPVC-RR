@@ -32,7 +32,7 @@
 			transition: box-shadow .5s ease-in-out;
 
 			&:after {
-				content: "MLPVC-RR";
+				content: "MLP Vector Club";
 				position: absolute;
 				top: 0;
 				left: 0;
@@ -113,6 +113,25 @@
 
 	footer { text-align: center }
 
+	.button-block {
+		display: flex;
+		flex-flow: row wrap;
+		margin: 10px 0;
+		border-radius: 10px;
+		overflow: hidden;
+		text-align: center;
+
+		> button, .btn {
+			margin: 0 !important;
+			padding: 5px !important;
+			min-height: 1.3em;
+			line-height: 1.3em;
+			flex: 1 1 auto;
+
+			border-radius: 0;
+		}
+	}
+
 	.notice > label:first-child { text-align: center; font-size: 1.2em }
 }
 // Desktop-only Styles
@@ -150,7 +169,9 @@
 			width: 100%;
 
 			ul {
-				overflow: hidden;
+				height: $HeaderHeight + 30px;
+				overflow-x: scroll;
+				overflow-y: hidden;
 			}
 			#to-the-top {
 				display: none;
@@ -186,6 +207,10 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		background: $StyledBackground;
+	}
+
+	.button-block {
+		margin: 0;
 	}
 
 	.notice > label:first-child { font-size: 1.4em }
@@ -398,24 +423,30 @@ header, #sidebar .mobile-nav {
 	width: 100%;
 	box-sizing: border-box;
 	color: #fff;
+	display: block;
+	margin: 0;
 
 	&:empty {
 		display: none;
 	}
 
-	.div {
-		$margin: .5em;
-		opacity: .5;
-		margin-right: $margin;
+	li {
+		display: inline;
 
-		&:not(:first-child) {
-			margin-left: $margin;
+		&.div {
+			$margin: .5em;
+			opacity: .5;
+			margin-right: $margin;
+
+			&:not(:first-child) {
+				margin-left: $margin;
+			}
 		}
-	}
 
-	> a {
-		color: inherit;
-		font-weight: normal;
+		a {
+			color: inherit;
+			font-weight: normal;
+		}
 	}
 }
 // Page layout - Content

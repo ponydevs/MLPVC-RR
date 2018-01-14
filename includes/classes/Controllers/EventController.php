@@ -19,6 +19,7 @@ use App\Permission;
 use App\Response;
 use App\RegExp;
 use App\Time;
+use Peertopark\UriBuilder;
 
 class EventController extends Controller {
 	public $do = 'event';
@@ -71,13 +72,13 @@ class EventController extends Controller {
 	public function list(){
 		$Pagination = new Pagination('events', 20, Event::count());
 
-		CoreUtils::fixPath("/events/{$Pagination->page}");
+		$path = new UriBuilder('/events');
+		$path->append_query_raw($Pagination->getPageQueryString());
+		CoreUtils::fixPath($path);
 		$heading = 'Events';
 		$title = "Page $Pagination->page - $heading";
 
 		$Events = Event::find('all', $Pagination->getAssocLimit());
-
-		$Pagination->respondIfShould(Events::getListHTML($Events, NOWRAP), '#event-list');
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))

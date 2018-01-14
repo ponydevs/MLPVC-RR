@@ -76,8 +76,8 @@ class Appearances {
 			$Actions = "<a class='btn link typcn typcn-image' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$Appearance->id}p.png$FileModTime' target='_blank'></a>".
 			           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
 			if ($permission)
-				$Actions .= "<button class='edit typcn typcn-pencil darkblue' title='Edit'></button>".
-				            ($Appearance->id!==0?"<button class='delete typcn typcn-trash red' title='Delete'></button>":'');
+				$Actions .= "<button class='edit-appearance typcn typcn-pencil darkblue' title='Edit'></button>".
+				            ($Appearance->id!==0?"<button class='delete-appearance typcn typcn-trash red' title='Delete'></button>":'');
 			$processedLabel = $Appearance->processLabel();
 			$privlock = $Appearance->private ? "<span class='typcn typcn-lock-closed color-orange'></span> " : '';
 			$HTML .= "<li id='p{$Appearance->id}'>$img<div><strong>$privlock<a href='{$Appearance->toURL()}'>$processedLabel</a>$Actions</strong>$updates$notes$tags$colors</div></li>";

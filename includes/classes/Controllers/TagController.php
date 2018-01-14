@@ -13,18 +13,19 @@ use App\Permission;
 use App\Response;
 use App\Appearances;
 use App\Tags;
+use Peertopark\UriBuilder;
 
 class TagController extends ColorGuideController {
 	public function list(){
 		$Pagination = new Pagination('cg/tags', 20, DB::$instance->count('tags'));
 
-		CoreUtils::fixPath("/cg/tags/{$Pagination->page}");
+		$path = new UriBuilder('/cg/tags');
+		$path->append_query_raw($Pagination->getPageQueryString());
+		CoreUtils::fixPath($path);
 		$heading = 'Tags';
 		$title = "Page $Pagination->page - $heading - Color Guide";
 
 		$Tags = Tags::getFor(null,$Pagination->getLimit(), true);
-
-		$Pagination->respondIfShould(Tags::getTagListHTML($Tags, NOWRAP), '#tags tbody');
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))
@@ -279,7 +280,7 @@ HTML;
 
 						if (!Tagged::make($Tag->id, $Appearance->id)->save()) Response::dbError();
 						$Appearance->updateIndex();
-						Tags::updateUses($Tag->id);
+						$Tag->updateUses();
 						$r = ['tags' => $Appearance->getTagsHTML(NOWRAP)];
 						if ($this->_appearancePage){
 							$r['needupdate'] = true;
@@ -352,7 +353,7 @@ HTML;
 			foreach ($TaggedAppearanceIDs as $id)
 				Appearance::find($id)->updateIndex();
 
-			Tags::updateUses($Target->id);
+			$Target->updateUses();
 			Response::success('Tags successfully '.($merging?'merged':'synonymized'), $synoning || $merging ? ['target' => $Target->to_array()] : null);
 		}
 

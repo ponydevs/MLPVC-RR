@@ -28,7 +28,6 @@ use App\Models\Tag;
 use App\Models\Tagged;
 use App\Models\User;
 use App\Notifications;
-use App\Pagination;
 use App\Permission;
 use App\RegExp;
 use App\Response;
@@ -69,7 +68,7 @@ class AppearanceController extends ColorGuideController {
 			'title' => "$title - Color Guide",
 			'heading' => $heading,
 			'css' => ['pages/colorguide/guide', true],
-			'js' => ['jquery.qtip', 'jquery.ctxmenu', 'pages/colorguide/guide', true],
+			'js' => ['jquery.ctxmenu', 'pages/colorguide/guide', true],
 			'import' => [
 				'Appearance' => $this->_appearance,
 				'EQG' => $this->_EQG,
@@ -80,7 +79,7 @@ class AppearanceController extends ColorGuideController {
 			$settings['import']['Owner'] = $this->_ownedBy;
 			$settings['import']['isOwner'] = $this->_isOwnedByUser;
 		}
-		else $settings['import']['Changes'] = MajorChange::get($this->_appearance->id);
+		else $settings['import']['Changes'] = MajorChange::get($this->_appearance->id, null);
 		if ($this->_isOwnedByUser || Permission::sufficient('staff')){
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
@@ -340,7 +339,7 @@ class AppearanceController extends ColorGuideController {
 
 				if (!empty($Tagged))
 					foreach($Tagged as $tag)
-						Tags::updateUses($tag->id);
+						$tag->updateUses();
 
 				$fpath = SPRITE_PATH."{$this->_appearance->id}.png";
 				CoreUtils::deleteFile($fpath);
@@ -715,68 +714,27 @@ class AppearanceController extends ColorGuideController {
 
 				Response::success('Cached images have been removed, they will be re-generated on the next request');
 			break;
-			case 'tag':
-			case 'untag':
+			case 'gettags':
+			case 'settags':
 				if ($this->_appearance->owner_id !== null)
 					Response::fail('Tagging is unavailable for appearances in personal guides');
 
 				if ($this->_appearance->id === 0)
 					Response::fail('This appearance cannot be tagged');
 
-				switch ($action){
-					case 'tag':
-						$tag_name = CGUtils::validateTagName('tag_name');
+				if ($action === 'gettags')
+					Response::done([ 'tags' => $this->_appearance->getTagsAsText() ]);
 
-						$TagCheck = CGUtils::normalizeEpisodeTagName($tag_name);
-						if ($TagCheck !== false)
-							$tag_name = $TagCheck;
-
-						$Tag = Tags::getActual($tag_name, 'name');
-						if (empty($Tag))
-							Response::fail("The tag $tag_name does not exist.<br>Would you like to create it?", [
-								'cancreate' => $tag_name,
-								'typehint' => $TagCheck !== false ? 'ep' : null,
-							]);
-						if (Tagged::is($Tag, $this->_appearance))
-							Response::fail('This appearance already has this tag');
-
-						if (!Tagged::make($Tag->id, $this->_appearance->id)->save())
-							Response::dbError();
-
-					break;
-					case 'untag':
-						$tag_id = (new Input('tag','int', [
-							Input::CUSTOM_ERROR_MESSAGES => [
-								Input::ERROR_MISSING => 'Tag ID is missing',
-								Input::ERROR_INVALID => 'Tag ID (@value) is invalid',
-							]
-						]))->out();
-						$Tag = Tag::find($tag_id);
-						if (empty($Tag))
-							Response::fail('This tag does not exist');
-						if ($Tag->synonym_of !== null)
-							Response::fail('Synonym tags cannot be removed from appearances directly. '.
-							        "If you want to remove this tag you must remove <strong>{$Tag->synonym->name}</strong> or the synonymization.");
-
-						if (
-							DB::$instance->where('appearance_id', $this->_appearance->id)->where('tag_id', $Tag->id)->has('tagged')
-							&& !DB::$instance->where('appearance_id', $this->_appearance->id)->where('tag_id', $Tag->id)->delete('tagged')
-						) Response::dbError();
-					break;
-				}
-
+				$tags = (new Input('tags','string',[
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'List of tags is missing',
+						Input::ERROR_INVALID => 'List of tags is invalud',
+					]
+				]))->out();
+				$this->_appearance->processTagChanges($tags, $this->_EQG);
 				$this->_appearance->updateIndex();
 
-				Tags::updateUses($Tag->id);
-				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$this->_EQG?'eqg':'pony'][$Tag->id]))
-					Appearances::getSortReorder($this->_EQG);
-
-				$response = ['tags' => $this->_appearance->getTagsHTML(NOWRAP)];
-				if ($this->_appearancePage && $Tag->type === 'ep'){
-					$response['needupdate'] = true;
-					$response['eps'] = $this->_appearance->getRelatedEpisodesHTML($this->_EQG);
-				}
-				Response::done($response);
+				Response::done();
 			break;
 			case 'applytemplate':
 				try {

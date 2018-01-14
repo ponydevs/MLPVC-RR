@@ -37,6 +37,11 @@ class CGUtils {
 		],
 	];
 
+	public const GUIDE_MAP = [
+		'eqg' => 'EQG',
+		'pony' => 'Pony',
+	];
+
 	/**
 	 * Response creator for typeahead.js
 	 *
@@ -285,27 +290,46 @@ HTML;
 	 *
 	 * @param MajorChange[] $Changes
 	 * @param bool          $wrap
-	 * @param bool          $showAppearance
 	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public static function getChangesHTML(?array $Changes, bool $wrap = WRAP, bool $showAppearance = false):string {
+	public static function getMajorChangesHTML(?array $Changes, bool $wrap = WRAP):string {
 		$seeInitiator = Permission::sufficient('staff');
 		/** @var $PonyCache Appearance[] */
 		$HTML = '';
 		if (\is_array($Changes))
 			foreach ($Changes as $c){
-				$initiator = $appearance = '';
-				if ($seeInitiator){
-					$main = $c->log;
-					$initiator = ' by '.$main->actor->toAnchor();
-				}
-				if ($showAppearance)
-					$appearance = $c->appearance->toAnchor().': ';
-				$HTML .= "<li>$appearance{$c->reason} - ".Time::tag($c->log->timestamp)."$initiator</li>";
+				$initiator = $seeInitiator ? "<div class='by'><span class='typcn typcn-user'></span> {$c->log->actor->toAnchor()}</div>" : '';
+				$appearance = $c->appearance->toAnchorWithPreview();
+				$when = Time::tag($c->log->timestamp);
+				$HTML .= <<<HTML
+<tr>
+	<td class="pony-link">$appearance</td>
+	<td class="reason">{$c->reason}</td>
+	<td class="by-at">
+		<div class="when"><span class="typcn typcn-time"></span> $when</div>
+		$initiator
+	</tr>
+</tr>
+HTML;
 			};
-		return $wrap ? "<ul id='changes'>$HTML</ul>" : $HTML;
+
+		if (!$wrap)
+			return $HTML;
+
+		return <<<HTML
+<table>
+	<thead>
+		<tr>
+			<th>Appearance</th>
+			<th class="reason">Reason</th>
+			<th>When?</th>
+		</tr>
+	</thead>
+	<tbody id='changes'>$HTML</tbody>
+</table>
+HTML;
 	}
 
 	public static function processPCGSlotHistoryData(string $type, ?string $data):?string {
@@ -395,7 +419,7 @@ HTML;
 			return $HTML;
 
 		return <<<HTML
-<div class="">
+<div class="responsive-table">
 <table id='history-entries'>
 	<thead>
 		<th>Reason</th>
@@ -405,6 +429,7 @@ HTML;
 	</thead>
 	<tbody>$HTML</tbody>
 </table>
+</div>
 HTML;
 	}
 
@@ -934,18 +959,18 @@ GPL;
 		$name = strtolower((new Input($key,function($value, $range){
 			if (Input::checkStringLength($value,$range,$code))
 				return $code;
+			if (strpos($value, ',') !== false)
+				return 'comma';
 			if ($value[0] === '-')
 				return 'dash';
-			$sanitized_name = preg_replace(new RegExp('[^a-z\d]'),'',$value);
-			if (preg_match(new RegExp('^(b+[a4]+w*d+|g+[uo0]+d+|(?:b+[ae3]+|w+[o0u]+r+)[s5]+[t7]+)(e+r+|e+s+t+)?p+[o0]+[wh]*n+[ye3]*'),$sanitized_name))
-				return 'opinionbased';
 		}, [
-			Input::IN_RANGE => [2,30],
+			Input::IN_RANGE => [2,64],
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Tag name cannot be empty',
+				Input::ERROR_INVALID => 'Tag name (@value) cannot be empty',
 				Input::ERROR_RANGE => 'Tag name must be between @min and @max characters',
-				'dash' => 'Tag name cannot start with a dash',
-				'opinionbased' => 'Highly opinion-based tags are not allowed',
+				'dash' => 'Tag name (@value) cannot start with a dash',
+				'comma' => 'Tag name (@value) cannot contain commas',
 			]
 		]))->out());
 		CoreUtils::checkStringValidity($name,'Tag name',INVERSE_TAG_NAME_PATTERN);

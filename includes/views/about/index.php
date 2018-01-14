@@ -10,7 +10,7 @@
 		<h2>Attributions</h2>
 		<p>Please refer to the project's <a href="<?=GITHUB_URL?>#attributions">GitHub page</a> for an up to date list of all used tools & libraries.</p>
 		<p>
-			<strong><a href="https://mlpvc-rr.ml/blending">Color Belending Calculator</a></strong> originally made by <a href="https://github.com/dasprid">DASPRiD</a><br>
+			<strong><a href="/blending">Color Belending Calculator</a></strong> originally made by <a href="https://github.com/dasprid">DASPRiD</a><br>
 			<strong>Headings' font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a><br>
 			<strong>DeviantArt logo</strong> © <a href="http://www.deviantart.com/">DeviantArt</a><br>
 			<a href="https://commons.wikimedia.org/wiki/File:Adobe_Illustrator_CC_icon.svg"><strong>Adobe Illustrator CC logo</strong></a> © Adobe Systems Inc.<br>
@@ -20,7 +20,7 @@
 			<strong>Sign-in image (<a href="https://github.com/ponydevs/MLPVC-RR/blob/master/www/img/login-success.svg">direct link</a>)</strong>: <a href="http://felix-kot.deviantart.com/art/Pinkie-holding-a-check-mark-286014735">Pinkie holding a check mark</a> by <a href="http://felix-kot.deviantart.com/">Felix-KoT</a> <em>(color-corrected)</em><br>
 			<strong>Extrenal link icon</strong> (licensed GPL) taken from <a href="https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg">Wikimedia Commons</a><br>
 			<strong>Vector-based loading icons</strong> were generated using <a href="https://loading.io/">Loading.io</a> (some are no longer available)<br>
-			<strong>Browser logos</strong> (used in session list &amp; the <a href="https://mlpvc-rr.ml/browser">Browser recognition testing page</a>):
+			<strong>Browser logos</strong> (used in session list &amp; the <a href="/browser">Browser recognition testing page</a>):
 		</p>
 		<ul>
 			<li><a href="http://fav.me/d9rtlbv">Edge</a> by <a href="http://masemj.deviantart.com/">masemj</a> (<a href="http://fav.me/d8uhefy">designed</a> by <a href="http://furrgroup.deviantart.com/">furrgroup</a>)</li>
@@ -33,7 +33,7 @@
 			<li>Other logos not mentioned previously were found on <a href="https://github.com/alrra/browser-logos/">alrra/browser-logos</a></li>
 		</ul>
 		<p>
-			<a href="https://mlpvc-rr.ml/cg/blending-reverse"><strong>Blending Reverser</strong></a> built with the help of <a href="https://pirill-poveniy.deviantart.com">Pirill-Poveniy</a> and <a href="https://parcly-taxel.deviantart.com">Parcly-Taxel</a><br>
+			<a href="/cg/blending-reverse"><strong>Blending Reverser</strong></a> built with the help of <a href="https://pirill-poveniy.deviantart.com">Pirill-Poveniy</a> and <a href="https://parcly-taxel.deviantart.com">Parcly-Taxel</a><br>
 			<strong>Coding, design &amp; hosting:</strong> <a href="https://github.com/SeinopSys">SeinopSys</a>
 		</p>
 	</section>
@@ -47,7 +47,6 @@
 				<li><a href="http://imgur.com/">Imgur</a></li>
 				<li><a href="http://derpibooru.org/">Derpibooru</a></li>
 				<li><a href="http://app.prntscr.com/">LightShot</a></li>
-				<li><del>Puush</del> (no longer supported)</li>
 			</ul>
 			<p>* Using direct links from these providers is not supported due to the ambugious URL schema shared by both Sta.sh and DeviantArt (both links end with an ID in the same format). Example: the link <q>http://fav.me/<wbr>dzc2af9</q> could have a download link that points to <q>http://orig11.deviantart.net/<wbr>27f5/<wbr>f/<wbr>2017/<wbr>107/<wbr>3/<wbr>b/<wbr>image_by_user-dzc2af9.png</q>. If you use the second link, the site won't accept it. <a id="butwhy" href="#show-boring-details">But why?</a><span class="hidden" id="thisiswhy"><br>To understand why I, as a developer cannot provide support for this, let's look at an example with a normal link and its corresponding direct link from Sta.sh: <q>https://sta.sh/<wbr>0z5gg4as67m</q> &rarr; <q>http://orig00.deviantart.net/<wbr>9935/<wbr>f/<wbr>2016/<wbr>089/<wbr>8/<wbr>e/<wbr>another_image_by_user-dxc2f9v.jpg</q> Notice anything different? It's the lack of distinct difference between the two, there's nothing to tell which site the image came from. Hopefully this gives you an idea of why things are the way they are.</span></p>
 		</div>

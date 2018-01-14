@@ -21,6 +21,7 @@ use App\Response;
 use App\Time;
 use App\UserPrefs;
 use App\Users;
+use Peertopark\UriBuilder;
 
 class PersonalGuideController extends ColorGuideController {
 	public function list($params){
@@ -35,17 +36,17 @@ class PersonalGuideController extends ColorGuideController {
 	    $Pagination = new Pagination("@{$this->_ownedBy->name}/cg", $AppearancesPerPage, $_EntryCount);
 	    $Ponies = $this->_ownedBy->getPCGAppearances($Pagination);
 
-		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}");
+		$path = new UriBuilder($this->_cgPath);
+		$path->append_query_raw($Pagination->getPageQueryString());
+		CoreUtils::fixPath($path);
 		$heading = CoreUtils::posess($this->_ownedBy->name).' Personal Color Guide';
 		$title = "Page {$Pagination->page} - $heading";
-
-		$Pagination->respondIfShould(Appearances::getHTML($Ponies, NOWRAP), '#list');
 
 		$settings = [
 			'title' => $title,
 			'heading' => $heading,
 			'css' => ['pages/colorguide/guide'],
-			'js' => ['jquery.qtip', 'jquery.ctxmenu', 'pages/colorguide/guide', 'paginate'],
+			'js' => ['jquery.ctxmenu', 'pages/colorguide/guide', 'paginate'],
 			'import' => [
 				'Ponies' => $Ponies,
 				'Pagination' => $Pagination,
@@ -76,11 +77,11 @@ class PersonalGuideController extends ColorGuideController {
 	        $Entries = $this->_ownedBy->getPCGSlotHistoryEntries($Pagination);
 	    }
 
-		CoreUtils::fixPath("{$this->_cgPath}/point-history/{$Pagination->page}");
+		$path = new UriBuilder("{$this->_cgPath}/point-history");
+		$path->append_query_raw($Pagination->getPageQueryString());
+		CoreUtils::fixPath($path);
 		$heading = ($this->_isOwnedByUser ? 'Your' : CoreUtils::posess($this->_ownedBy->name)).' Point History';
 		$title = "Page {$Pagination->page} - $heading";
-
-		$Pagination->respondIfShould(CGUtils::getPCGSlotHistoryHTML($Entries, NOWRAP), '#history-entries tbody');
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))

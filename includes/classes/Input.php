@@ -262,7 +262,7 @@ class Input {
 	}
 
 	private function _outputError($message, $errorCode = null){
-		$message = str_replace('@value', CoreUtils::escapeHTML($this->_initValue), $message);
+		$message = str_replace('@value', CoreUtils::escapeHTML(str_replace('@','&#64;',$this->_initValue)), $message);
 		if ($errorCode === self::ERROR_RANGE){
 			if (isset($this->_range[0]))
 				$message = str_replace('@min', $this->_range[0], $message);

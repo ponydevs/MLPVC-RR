@@ -93,6 +93,6 @@ $REWRITE_REGEX = new RegExp('^/(?:\s*?)(@?[\w-]*)(?:/([\w.:-]+(?:/[\w.:-]+)*)?)?
 // Color Guide regular expression \\
 $EQG_URL_PATTERN = new RegExp('^eqg/?');
 # Tags
-define('TAG_NAME_PATTERN', '^[a-z\d ().\-\'#]{2,30}$');
+define('TAG_NAME_PATTERN', '^[a-z\d ().\-\']{2,64}$');
 $TAG_NAME_REGEX = new RegExp(TAG_NAME_PATTERN,'u');
-define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().\-\'#]');
+define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().\-\']');

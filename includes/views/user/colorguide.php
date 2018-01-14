@@ -14,10 +14,10 @@ $isOwnerOrStaff = $isOwner || $isStaff; ?>
 	<h1><?=$heading?></h1>
 	<p>Unofficial colors maintained by <?=$User->toAnchor()?></p>
 <?  if ($isOwnerOrStaff){ ?>
-	<p class='align-center links'>
+	<div class='align-center button-block'>
 		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
 		<?=$User->getPCGPointHistoryButtonHTML()?>
-	</p>
+	</div>
 <?  } ?>
 	<?=$Pagination . Appearances::getHTML($Ponies, WRAP, $isOwnerOrStaff) . $Pagination?>
 </div>

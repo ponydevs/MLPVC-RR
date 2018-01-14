@@ -68,10 +68,10 @@ CONTRIBUTING.md  Gulpfile.js  node_modules        README.md    www
 db               includes     package.json        setup        yarn.lock
 $ chown -R www-data:www-data vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/
 $ chmod g+rw fs vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/
-$ cp setup/nginx.conf /etc/nginx/sites-available/mlpvc-rr.conf
-$ ln -s /etc/nginx/sites-available/mlpvc-rr.conf /etc/nginx/sites-enabled/
+$ cp setup/nginx.conf /etc/nginx/sites-available/mlpvector.lc.conf
+$ ln -s /etc/nginx/sites-available/mlpvector.lc.conf /etc/nginx/sites-enabled/
 $ echo "127.0.0.1 domain.tld" > /etc/hosts
-$ nano /etc/nginx/sites-available/mlpvc-rr.conf # Make your changes
+$ nano /etc/nginx/sites-available/mlpvector.lc.conf # Make your changes
 $ service nginx reload
 ```
 

@@ -90,7 +90,7 @@ class Tagged extends NSModel {
 	 * @return Tagged
 	 */
 	public static function make(int $tag_id, int $appearance_id):Tagged {
-		return new Tagged([
+		return new self([
 			'tag_id' => $tag_id,
 			'appearance_id' => $appearance_id,
 		]);

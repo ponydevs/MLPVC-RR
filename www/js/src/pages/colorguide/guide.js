@@ -27,181 +27,53 @@ $(function(){
 	window.copyHashToggler = function(){copyHashToggler()};
 	window.copyHashEnabled = function(){ return copyHash };
 
-	let $SearchForm = $('#search-form'),
-		hasSearchForm = $SearchForm.length;
-
-	function tooltips(){
-		let $tags = $('.tags').children('span.tag');
-		$tags.each(function(){
-			let $this = $(this),
-				text = 'Click to quick search',
-				title = $this.attr('title'),
-				tagstyle = $this.attr('class').match(/typ-([a-z]+)(?:\s|$)/);
-
-			tagstyle = !tagstyle ? '' : ` qtip-tag-${tagstyle[1]}`;
-
-			if (!title){
-				let titletext = $this.text().trim();
-				title = /^s\d+e\d+(-\d+)?$/i.test(titletext)
-					? titletext.toUpperCase()
-					: $.capitalize($this.text().trim(), true);
-			}
-
-			if (title){
-				$this.qtip({
-					content: (
-						hasSearchForm
-						? { text, title }
-						: { text: '', title }
-					),
-					position: {my: 'bottom center', at: 'top center', viewport: true},
-					style: {classes: `qtip-tag${tagstyle}`}
-				});
-			}
-		});
-		$tags.css('cursor','pointer').off('click').on('click', function(e){
-			e.preventDefault();
-
-			let query = this.innerHTML.trim();
-			if ($SearchForm.length){
-				$SearchForm.find('input[name="q"]').val(query);
-				$SearchForm.triggerHandler('submit');
-			}
-			else $.Navigation.visit('/cg'+(EQG?'/eqg':'')+`/1?q=${encodeURIComponent(query)}`);
-		});
-		$('ul.colors').children('li').find('.valid-color').each(function(){
-			let $this = $(this);
-			if ($this.hasAttr('data-hasqtip'))
-				$this.data('qtip').destroy();
-
-			let text = `Click to copy HEX color code to clipboard<br>Shift+Click to view RGB values`,
-				title = $this.attr('title');
-
-			if ($this.is(':empty'))
-				text = 'No color to copy';
-
-			$this.qtip({
-				content: {
-					text: text,
-					title: title
-				},
-				position: { my: 'bottom center', at: 'top center', viewport: true },
-				style: { classes: 'qtip-see-thru' }
-			});
-
-			return true;
-		}).off('mousedown touchstart click').on('click', function(e){
-			e.preventDefault();
-			let $this = $(this),
-				copy = $this.html().trim();
-			if (e.shiftKey){
-				let rgb = $.RGBAColor.parse(copy),
-					$cg = $this.closest('li'),
-					path = [
-						(
-							!AppearancePage
-							? $cg.parents('li').children().last().children('strong').text().trim()
-							: $content.children('h1').text()
-						),
-						$cg.children().first().text().replace(/:\s+$/,''),
-						$this.attr('oldtitle'),
-					];
-				return $.Dialog.info(`RGB values for color ${copy}`, `<div class="align-center">${path.join(' &rsaquo; ')}<br><span style="font-size:1.2em">rgb(<code class="color-red">${rgb.red}</code>, <code class="color-green">${rgb.green}</code>, <code class="color-darkblue">${rgb.blue}</code>)</span></div>`);
-			}
-			if (!copyHash) copy = copy.replace('#','');
-			$.copy(copy);
-		}).filter(':not(.ctxmenu-bound)').ctxmenu(
-			[
-				{text: `Copy HEX color code`, icon: 'clipboard', 'default': true, click: function(){
-					$(this).triggerHandler('click');
-				}},
-				{text: "View RGB values", icon: 'brush', click: function(){
-					$(this).triggerHandler({
-						type: 'click',
-						shiftKey: true,
-					});
-				}},
-			],
-			function($el){ return 'Color: '+$el.attr('oldtitle') }
-		).on('mousedown', function(e){
-		    if (e.shiftKey)
-		        e.preventDefault();
-		});
-		$('.cm-direction:not(.tipped)').each(function(){
-			let $this = $(this),
-				appearanceID = $this.closest('li').attr('id').substring(1),
-				base = new Image(),
-				cm = new Image(),
-				base_img = `/cg/v/${appearanceID}d.svg?t=`+(parseInt(new Date().getTime()/1000)),
-				cm_img = $this.attr('data-cm-preview');
-			setTimeout(function(){
-				base.src = base_img;
-				cm.src = cm_img;
-			}, 1);
-			$this.addClass('tipped').qtip({
-				content: {
-					text: $.mk('span').attr('class', 'cm-dir-image').backgroundImageUrl(base_img).append(
-						$.mk('div').attr('class', 'img cm-dir-'+$this.attr('data-cm-dir')).backgroundImageUrl(cm_img)
-					)
-				},
-				position: { my: 'bottom center', at: 'top center', viewport: true },
-				style: { classes: 'qtip-link' }
-			});
-		});
-	}
-	window.tooltips = function(){tooltips()};
-
-	function navigation(){
-		$('.getswatch').off('click').on('click',getswatch);
-		tooltips();
-		copyHashToggler();
-	}
-	$list.filter('#list').on('page-switch', navigation);
-	$d.on('paginate-refresh', navigation);
-	navigation();
-
-	$SearchForm.on('submit', function(e, btnl){
+	$('ul.colors').children('li').find('.valid-color').off('mousedown touchstart click').on('click', function(e){
 		e.preventDefault();
-
 		let $this = $(this),
-			$query = $this.find('input[name=q]'),
-			orig_query = $query.val().replace(/[^\w\s*?]/g,''),
-			searching = orig_query.trim().length > 0,
-			query = $this.serialize();
-		$this.find('button[type=reset]').attr('disabled', !searching);
-		$query.val(orig_query);
-
-		if (!btnl){
-			if (searching)
-				$.Dialog.wait('Navigation', `Searching for <code>${orig_query.replace(/</g,'&lt;')}</code>`);
-			else $.Dialog.success('Navigation', 'Search terms cleared');
+			copy = $this.html().trim();
+		if (e.shiftKey){
+			let rgb = $.RGBAColor.parse(copy),
+				$cg = $this.closest('li'),
+				path = [
+					(
+						!AppearancePage
+						? $cg.parents('li').children().last().children('strong').text().trim()
+						: $content.children('h1').text()
+					),
+					$cg.children().first().text().replace(/:\s+$/,''),
+					$this.attr('oldtitle'),
+				];
+			return $.Dialog.info(`RGB values for color ${copy}`, `<div class="align-center">${path.join(' &rsaquo; ')}<br><span style="font-size:1.2em">rgb(<code class="color-red">${rgb.red}</code>, <code class="color-green">${rgb.green}</code>, <code class="color-darkblue">${rgb.blue}</code>)</span></div>`);
 		}
-		else $.Dialog.wait('Navigation', `Loading appearance page`);
-		$.toPage.call({query:query,btnl:btnl}, window.location.pathname.replace(/\d+($|\?)/,'1$1'), true, true, false, function(){
-			$('.qtip').each(function(){
-				let $this = $(this);
-				$this.data('qtip').destroy();
-				$this.remove();
-			});
+		if (!copyHash) copy = copy.replace('#','');
+		$.copy(copy, e);
+	}).filter(':not(.ctxmenu-bound)').ctxmenu(
+		[
+			{text: `Copy HEX color code`, icon: 'clipboard', 'default': true, click: function(){
+				$(this).triggerHandler('click');
+			}},
+			{text: "View RGB values", icon: 'brush', click: function(){
+				$(this).triggerHandler({
+					type: 'click',
+					shiftKey: true,
+				});
+			}},
+		],
+		function($el){ return 'Color: '+$el.attr('oldtitle') }
+	).on('mousedown', function(e){
+	    if (e.shiftKey)
+	        e.preventDefault();
+	});
 
-			if (searching)
-				return /^Page \d+/.test(document.title)
-					? `${orig_query} - ${document.title}`
-					: document.title.replace(/^.*( - Page \d+)/, orig_query+'$1');
-			else return document.title.replace(/^.* - (Page \d+)/, '$1');
-		}).then(function(){
-			$.Dialog.close();
-		}).catch(function(){
-			$.Dialog.close();
-		});
-	}).on('reset', function(e){
+	$('.getswatch').off('click').on('click',getswatch);
+	copyHashToggler();
+
+	$('#search-form').on('reset', function(e){
 		e.preventDefault();
 
 		let $this = $(this);
 		$this.find('input[name=q]').val('');
-		$this.triggerHandler('submit');
-	}).on('click','.sanic-button',function(){
-		$SearchForm.triggerHandler('submit', [true]);
+		$this.trigger('submit');
 	});
 
 	function getswatch(e){
@@ -264,11 +136,4 @@ $(function(){
 
 		$.Dialog.info(`Download swatch file for ${ponyName}`,$SwatchDlForm);
 	}
-}, function(){
-	'use strict';
-	$('.qtip').each(function(){
-		let $this = $(this);
-		$this.data('qtip').destroy();
-		$this.remove();
-	});
 });

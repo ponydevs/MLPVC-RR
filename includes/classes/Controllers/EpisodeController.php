@@ -14,13 +14,13 @@ use App\Models\Appearance;
 use App\Models\EpisodeVote;
 use App\Models\Tag;
 use App\Models\Tagged;
-use App\Pagination;
 use App\Permission;
 use App\Posts;
 use App\Response;
 use App\VideoProvider;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
+use Peertopark\UriBuilder;
 
 /** @property Episode $_episode */
 class EpisodeController extends Controller {
@@ -36,54 +36,6 @@ class EpisodeController extends Controller {
 
 	public function page($params){
 		Episodes::loadPage($params['id'] ?? null);
-	}
-
-	public function episodeList(){
-		$this->_list('episodes');
-	}
-
-	public function movieList(){
-		$this->_list('movies');
-	}
-
-	private function _list(string $subpage){
-		$areMovies = $subpage !== 'episodes';
-
-		$EpisodesPagination = new Pagination('episodes', 8, Episode::count(['conditions' => 'season != 0']));
-		$MoviesPagination = new Pagination('movies', 8, Episode::count(['conditions' => 'season = 0']));
-
-		$Pagination = $areMovies ? $MoviesPagination : $EpisodesPagination;
-		($areMovies ? $EpisodesPagination : $MoviesPagination)->forcePage(1);
-
-		$Episodes = Episodes::get($EpisodesPagination->getLimit());
-		$Movies = Episodes::get($MoviesPagination->getLimit(), 'season = 0', true);
-
-		CoreUtils::fixPath("/$subpage/{$Pagination->page}");
-		$heading = CoreUtils::capitalize($subpage);
-		$title = "Page {$Pagination->page} - $heading";
-
-		$Pagination->respondIfShould(Episodes::getTableTbody($areMovies ? $Movies : $Episodes, $areMovies), "#$subpage tbody");
-
-		$settings = [
-			'heading' => $heading,
-			'title' => $title,
-			'css' => [true],
-			'js' => ['paginate', true],
-			'import' => [
-				'Pagination' => $Pagination,
-				'EpisodesPagination' => $EpisodesPagination,
-				'MoviesPagination' => $MoviesPagination,
-				'Movies' => $Movies,
-				'Episodes' => $Episodes,
-				'areMovies' => $areMovies,
-			],
-		];
-		if (Permission::sufficient('staff'))
-			$settings['js'] = array_merge(
-				$settings['js'],
-				['moment-timezone', 'pages/episode/list-manage']
-			);
-		CoreUtils::loadPage('EpisodeController::list', $settings);
 	}
 
 	private $_episode;

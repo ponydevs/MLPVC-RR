@@ -126,7 +126,7 @@ ga('send','pageview');
 </head>
 <body>
 	<header>
-		<nav><ul class="dragscroll">
+		<nav class="dragscroll"><ul>
 			<li class="sidebar-toggle"></li>
 			<?=CoreUtils::getNavigationHTML($fatalErrorPage)?>
 		</ul><div id="to-the-top" class="typcn typcn-arrow-up"></div></nav>
@@ -136,7 +136,7 @@ ga('send','pageview');
 <?php include INCPATH.'views/_sidebar.php'; ?>
 	</aside>
 
-	<div id="breadcrumbs"><?=CoreUtils::getBreadcrumbsHTML($fatalErrorPage, $scope, $view ?? null)?></div>
+	<ol id="breadcrumbs" itemscope itemtype="http://schema.org/BreadcrumbList"><?=CoreUtils::getBreadcrumbsHTML($fatalErrorPage, $scope, $view ?? null)?></ol>
 
 	<div id="main">
 <?php  if (isset($view) && $view instanceof View)

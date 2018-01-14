@@ -6,6 +6,7 @@
 	isWebkit = 'WebkitAppearance' in document.documentElement.style, EQG = window.EQG, EQGRq = EQG?'?eqg':'',
 		AppearancePage = !!window.AppearancePage, PersonalGuide = window.PersonalGuide,
 		PGRq = PersonalGuide?`/@${PersonalGuide}`:'',
+		TAG_NAME_REGEX = window.TAG_NAME_REGEX,
 		ColorTextParseError = function(line, lineNumber, matches){
 			let missing = [];
 			if (!matches || !matches[1])
@@ -346,7 +347,6 @@
 							if (data.newurl)
 								$ponyLabel.attr('href',data.newurl);
 							$ponyNotes.html(this.notes);
-							window.tooltips();
 							$.Dialog.close();
 							return;
 						}
@@ -381,7 +381,7 @@
 	});
 
 	let $EditTagFormTemplate = $.mk('form','edit-tag');
-	$EditTagFormTemplate.append('<label><span>Tag name (3-30 chars.)</span><input type="text" name="name" required pattern="^[^-][ -~]{1,29}$" maxlength="30"></label>');
+	$EditTagFormTemplate.append('<label><span>Tag name (3-64 chars.)</span><input type="text" name="name" required pattern="^[^-][ -~]{1,29}$" maxlength="64"></label>');
 	let _typeSelect =
 		`<div class='type-selector'>
 			<label>
@@ -436,7 +436,6 @@
 								$tagsDivs.filter(function(){
 									return $(this).children('.id-'+target.id).length === 0;
 								}).append($tsp).reorderTags();
-								window.tooltips();
 								ctxmenus();
 							break;
 							case "unsynon":
@@ -452,7 +451,6 @@
 										$this.replaceWith(new TagSpan(target));
 									else $this.remove();
 								});
-								window.tooltips();
 								ctxmenus();
 							break;
 						}
@@ -462,6 +460,29 @@
 			});
 		})
 	);
+
+
+	class KeyValueCache {
+		constructor(){
+			this.clear();
+		}
+		set(k,v){
+			this.cache[k] = v;
+
+			return v;
+		}
+		get(k){
+			return this.cache[k];
+		}
+		has(k){
+			return this.cache.hasOwnProperty(k);
+		}
+		clear(){
+			this.cache = {};
+		}
+	}
+
+	const TagAutocompleteCache = new KeyValueCache();
 
 	class TagSpan extends jQuery {
 		constructor(data){
@@ -507,9 +528,7 @@
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.tags){
-						$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
 						$tagsDiv.html(this.tags);
-						window.tooltips();
 						ctxmenus();
 					}
 					if (this.needupdate === true){
@@ -517,7 +536,7 @@
 						$EpAppearances.replaceWith($eps);
 						$EpAppearances = $eps;
 					}
-					$._tagAutocompleteCache = {};
+					TagAutocompleteCache.clear();
 					$.Dialog.close();
 				}));
 			});
@@ -804,9 +823,6 @@
 							$pony.find('ul.colors').html(this.cgs);
 						if (!AppearancePage && this.notes){
 							let $notes = $pony.find('.notes');
-							try {
-								$notes.find('.cm-direction').qtip('destroy', true);
-							}catch(e){}
 							$notes.html(this.notes);
 						}
 						if (this.update){ // Guide Page
@@ -821,7 +837,6 @@
 							else $(this.changes).insertBefore($('#tags'));
 						}
 
-						window.tooltips();
 						ctxmenus();
 						if (this.update || this.changes)
 							Time.Update();
@@ -1496,9 +1511,8 @@
 			$.post(`${PGRq}/cg/appearance/applytemplate/${appearanceID}${EQGRq}`,data,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				let $pony = $('#p'+appearanceID);
+				let $pony = $(`#p${appearanceID}`);
 				$pony.find('ul.colors').html(this.cgs);
-				window.tooltips();
 				ctxmenus();
 
 				$.Dialog.close();
@@ -1557,7 +1571,7 @@
 		).on('submit', function(e){
 			e.preventDefault();
 
-			// We don't want the form to close out randomly when someone presses enter for example
+			// We don't want the form to close randomly when someone presses enter for example
 		}).on('added',function(_, appearanceID){
 			let colors = {}, ready = false;
 			const
@@ -1772,7 +1786,7 @@
 			],
 			'Tags'
 		);
-		$tags.children('span:not(.ctxmenu-bound)').ctxmenu([
+		$tags.children('.tag:not(.ctxmenu-bound)').ctxmenu([
 			{text: 'Edit tag', icon: 'pencil', click: function(){
 				let $tag = $(this),
 					tagName = $tag.text().trim(),
@@ -1802,7 +1816,6 @@
 
 								let data = this,
 									$affected = $('.id-'+data.id);
-								$affected.qtip('destroy', true);
 								if (data.title) $affected.attr('title', data.title);
 								else $affected.removeAttr('title');
 								$affected.text(data.name).data('ctxmenu-items').eq(0).text(`Tag: ${data.name}`);
@@ -1813,7 +1826,6 @@
 										this.className += ` typ-${data.type}`;
 									$(this)[data.synonym_of?'addClass':'removeClass']('synonym').parent().reorderTags();
 								});
-								window.tooltips();
 
 								if (AppearancePage && data.needupdate){
 									let $newEpSection = $(data.eps);
@@ -1826,40 +1838,6 @@
 					});
 					else $.Dialog.fail(title, this.message);
 				}));
-			}},
-			{text: 'Remove tag', icon: 'minus', click: function(){
-				let $tag = $(this),
-					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/);
-
-				if (!tagID) return false;
-				tagID = tagID[1];
-
-				let appearanceID = $tag.closest('[id^=p]').attr('id').replace(/\D/g, ''),
-					tagName = $tag.text().trim(),
-					title = `Remove tag: ${tagName}`;
-
-				$.Dialog.confirm(title,`The tag <strong>${tagName}</strong> will be removed from this appearance.<br>Are you sure?`,['Remove it','Nope'], function(sure){
-					if (!sure) return;
-
-					let data = {tag:tagID};
-					$.Dialog.wait(title,'Removing tag');
-					if (AppearancePage)
-						data.APPEARANCE_PAGE = true;
-
-					$.post(`${PGRq}/cg/appearance/untag/${appearanceID}${EQGRq}`,data,$.mkAjaxHandler(function(){
-						if (!this.status) return $.Dialog.fail(title, this.message);
-
-						if (this.needupdate === true){
-							let $eps = $(this.eps);
-							$EpAppearances.replaceWith($eps);
-							$EpAppearances = $eps;
-						}
-						$tag.qtip('destroy', true);
-						$tag.remove();
-						$('.tag.synonym').filter(`[data-syn-of=${tagID}]`).remove();
-						$.Dialog.close();
-					}));
-				});
 			}},
 			{text: 'Delete tag', icon: 'trash', click: function(){
 				let $tag = $(this),
@@ -1884,9 +1862,8 @@
 									$EpAppearances = $eps;
 								}
 								let $affected = $('.id-' + tagID);
-								$affected.qtip('destroy', true);
 								$affected.remove();
-								$._tagAutocompleteCache = {};
+								TagAutocompleteCache.clear();
 								$.Dialog.close();
 							}
 							else if (this.confirm)
@@ -1906,88 +1883,6 @@
 				$.ctxmenu.triggerItem($(this).parent(), 1);
 			}},
 		], $el => `Tag: ${$el.text().trim()}` );
-
-		let insertKeys = [Key.Enter, Key.Comma];
-		$tags.children('.addtag').each(function(){
-			let $input = $(this),
-				appearanceID = $input.closest('[id^=p]').attr('id').substring(1);
-			$input.autocomplete(
-				{ minLength: 3 },
-				[
-					{
-						name: 'tags',
-						display: 'name',
-						source: (query, callback) => {
-							if (typeof $._tagAutocompleteCache === 'undefined')
-								$._tagAutocompleteCache = {};
-							else if (typeof $._tagAutocompleteCache[query] !== 'undefined')
-								return callback($._tagAutocompleteCache[query]);
-							$.get(`${PGRq}/cg/get-tags?s=`+encodeURIComponent(query), $.mkAjaxHandler(function(){
-								callback($._tagAutocompleteCache[query] = this);
-							}));
-						},
-						templates: {
-							suggestion: Handlebars.compile('<span class="tag id-{{tid}} {{type}} {{#if synonym_of}}synonym{{else}}monospace{{/if}}">{{name}} <span class="uses">{{#if synonym_of}}<span class="typcn typcn-flow-children"></span>{{synonym_target}}{{else}}{{uses}}{{/if}}</span></span>')
-						}
-					}
-				]
-			);
-			$input.on('keydown', function(e){
-				if (insertKeys.includes(e.keyCode)){
-					e.preventDefault();
-					let tag_name = $input.val().trim(),
-						$tagsDiv = $input.parents('.tags'),
-						$ponyTags = $tagsDiv.children('.tag'),
-						title = `Adding tag: ${tag_name}`;
-
-					if ($ponyTags.filter(function(){ return this.innerHTML.trim() === tag_name }).length > 0)
-						return $.Dialog.fail(title, 'This appearance already has this tag');
-
-					$.Dialog.setFocusedElement($input.attr('disabled', true));
-					$input.parent().addClass('loading');
-					$input.autocomplete('val', tag_name);
-
-					let data = {tag_name:tag_name};
-					if (AppearancePage)
-						data.APPEARANCE_PAGE = true;
-
-					$.post(`${PGRq}/cg/appearance/tag/${appearanceID}${EQGRq}`, data, $.mkAjaxHandler(function(){
-						if (this.status){
-							if (this.needupdate === true){
-								let $eps = $(this.eps);
-								$EpAppearances.replaceWith($eps);
-								$EpAppearances = $eps;
-							}
-							$tagsDiv.children('[data-hasqtip]').qtip('destroy', true);
-							$tagsDiv.children('.tag').remove();
-							$tagsDiv.append($(this.tags).filter('span'));
-							window.tooltips();
-							ctxmenus();
-							$._tagAutocompleteCache = {};
-							$input.autocomplete('val', '').focus();
-						}
-						else if (typeof this.cancreate === 'string'){
-							let new_name = this.cancreate,
-								typehint = this.typehint;
-							title = title.replace(tag_name, new_name);
-							return $.Dialog.confirm(title, this.message, function(sure){
-								if (!sure) return;
-								createNewTag($input, new_name, typehint);
-							});
-						}
-						else $.Dialog.fail(title, this.message);
-					})).always(function(){
-						$input.removeAttr('disabled').parent().removeClass('loading');
-					});
-				}
-			});
-			$input.nextAll('.aa-menu').on('click', '.tag', function(){
-				$input.trigger({
-					type: 'keydown',
-					keyCode: Key.Enter,
-				});
-			});
-		});
 
 		$colorGroups = $('ul.colors');
 		$colorGroups.filter(':not(.ctxmenu-bound)').ctxmenu(
@@ -2047,7 +1942,6 @@
 									if (!this.status) return $.Dialog.fail(null, this.message);
 
 									$colors.html(this.cgs);
-									window.tooltips();
 									ctxmenus();
 									$.Dialog.close();
 								}));
@@ -2069,7 +1963,7 @@
 				{text: `Edit color group`, icon: 'pencil', click: function(){
 					let $this = $(this),
 						$group = $this.closest('li'),
-						groupID = $group.attr('id').substring(2),
+						groupID = $group.attr('id').replace(/\D/g, ''),
 						groupName = $group.find('.cat').contents().first().text().replace(/:\s?$/,''),
 						title = `Editing color group: `+groupName;
 
@@ -2093,7 +1987,6 @@
 
 						$.post(`${PGRq}/cg/colorgroup/del/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
 							if (this.status){
-								$group.children('[data-hasqtip]').qtip('destroy', true);
 								$group.remove();
 								$.Dialog.close();
 							}
@@ -2233,65 +2126,243 @@
 			})($this, appearanceID);
 		});
 	}
-	window.ctxmenus = function(){ctxmenus()};
+	window.ctxmenus = () => ctxmenus();
 
-	$list.on('page-switch',bindEditTagsHandlers);
-	bindEditTagsHandlers();
+	$('button.edit-appearance:not(.bound)').addClass('bound').on('click',function(){
+		let $this = $(this),
+			$li = $this.closest('[id^=p]'),
+			appearanceID = $li.attr('id').substring(1),
+			ponyName = !AppearancePage
+				? $this.parent().text().trim()
+				: $content.children('h1').text(),
+			title = 'Editing appearance: '+ponyName;
 
-	function bindEditTagsHandlers(){
-		$('button.edit:not(.bound)').addClass('bound').on('click',function(){
-			let $this = $(this),
-				$li = $this.closest('[id^=p]'),
-				appearanceID = $li.attr('id').substring(1),
-				ponyName = !AppearancePage
-					? $this.parent().text().trim()
-					: $content.children('h1').text(),
-				title = 'Editing appearance: '+ponyName;
+		$.Dialog.wait(title, 'Retrieving appearance details from server');
 
-			$.Dialog.wait(title, 'Retrieving appearance details from server');
+		$.post(`${PGRq}/cg/appearance/get/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
 
-			$.post(`${PGRq}/cg/appearance/get/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
+			let data = this;
+			data.appearanceID = appearanceID;
+			mkPonyEditor($this, title, data);
+		}));
+	});
+	$('button.delete-appearance').on('click',function(){
+		let $this = $(this),
+			$li = $this.closest('[id^=p]'),
+			appearanceID = $li.attr('id').substring(1),
+			ponyName = !AppearancePage
+				? $this.parent().text().trim()
+				: $content.children('h1').text(),
+			title = 'Deleting appearance: '+ponyName;
 
-				let data = this;
-				data.appearanceID = appearanceID;
-				mkPonyEditor($this, title, data);
-			}));
-		}).next('.delete').on('click',function(){
-			let $this = $(this),
-				$li = $this.closest('[id^=p]'),
-				appearanceID = $li.attr('id').substring(1),
-				ponyName = !AppearancePage
-					? $this.parent().text().trim()
-					: $content.children('h1').text(),
-				title = 'Deleting appearance: '+ponyName;
+		$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?', function(sure){
+			if (!sure) return;
 
-			$.Dialog.confirm(title,'Deleting this appearance will remove <strong>ALL</strong> of its color groups, the colors within them, and the sprite file, if any.<br>Delete anyway?', function(sure){
-				if (!sure) return;
+			$.Dialog.wait(title, 'Sending removal request');
 
-				$.Dialog.wait(title, 'Sending removal request');
+			$.post(`${PGRq}/cg/appearance/delete/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
+				if (this.status){
+					$li.remove();
+					$.Dialog.success(title, this.message, PersonalGuide);
 
-				$.post(`${PGRq}/cg/appearance/delete/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
-					if (this.status){
-						$li.remove();
-						$.Dialog.success(title, this.message, PersonalGuide);
-
-						let path = window.location.pathname;
-						if ($list.children().length === 0)
-							path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
-						if (AppearancePage){
-							$.Dialog.wait('Navigation', 'Loading page 1');
-							$.Navigation.visit(`${PGRq}/cg/1`);
-						}
-						else if (PersonalGuide) $.toPage(path,true,true);
+					let path = window.location.pathname;
+					if ($list.children().length === 0)
+						path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
+					if (AppearancePage){
+						$.Dialog.wait('Navigation', 'Loading page 1');
+						$.Navigation.visit(`${PGRq}/cg/1`);
 					}
-					else $.Dialog.fail(title, this.message);
-				}));
-			});
+					else if (PersonalGuide) $.toPage(path,true,true);
+				}
+				else $.Dialog.fail(title, this.message);
+			}));
 		});
+	});
 
-		ctxmenus();
+	ctxmenus();
+
+	class TagEditor {
+		constructor(rawTags, afterSave){
+			this.afterSave = afterSave;
+			this.plaintextMode = false;
+
+			this.$tagsSection = $('#tags');
+			this.$tagList = this.$tagsSection.children('.tags');
+			this.$tagList.addClass('hidden');
+			this.$editButton = $('#edit-tags-btn');
+			this.$saveButton = $.mk('button').attr('class','green typcn typcn-tick').text('Save').insertAfter(this.$editButton);
+			this.$editButton.detach();
+			this.$saveButton.on('click', e => {
+				e.preventDefault();
+
+				$.callCallback(afterSave, [this.getValue()]);
+			});
+			this.$modeButton = $.mk('button').attr('class','darkblue typcn typcn-pencil').text('Plain text editor').insertAfter(this.$saveButton);
+			this.$modeButton.on('click', e => {
+				e.preventDefault();
+
+				if (this.plaintextMode){
+					this.$textarea.addClass('hidden');
+					this.importTags(this.$textarea.val(), false);
+					this.$tagInput.parent().removeClass('hidden');
+					this.plaintextMode = false;
+					this.$modeButton.removeClass('typcn-edit').addClass('typcn-pencil').text('Plain text editor');
+				}
+				else {
+					this.$tagInput.parent().addClass('hidden');
+					this.$editor.children('.tag').remove();
+					this.$textarea.removeClass('hidden');
+					this.plaintextMode = true;
+					this.$modeButton.removeClass('typcn-pencil').addClass('typcn-edit').text('Interactive editor');
+				}
+			});
+			this.$discardButton = $.mk('button').attr('class','orange typcn typcn-times').text('Discard').insertAfter(this.$modeButton);
+			this.$discardButton.on('click', e => {
+				e.preventDefault();
+
+				this.destroy();
+			});
+			this.$textarea = $.mk('textarea').attr('class','hidden').val(rawTags);
+
+			this.$editor = $.mk('div').attr('class','tag-editor').insertAfter(this.$tagList);
+			this.$tagInput = $.mk('input').attr({type: 'text', required: true, 'class': 'addtag', maxlength: 64}).patternAttr(TAG_NAME_REGEX);
+			this.$tagInput.on('keydown', e => {
+				if (![Key.Enter, Key.Comma].includes(e.keyCode))
+					return;
+				e.preventDefault();
+
+				if (!this.$tagInput.is(':valid'))
+					return;
+
+				const val = this.$tagInput.val();
+				const $dupe = this.$editor.children('.tag').children('.name').filter(function(){
+					return $(this).text() === val;
+				});
+				if ($dupe.length > 0){
+					const $el = $dupe.closest('.tag');
+					$el.removeClass('notice-me');
+					setTimeout(() => {
+						$el.addClass('notice-me');
+					}, 1);
+					return;
+				}
+
+				this.addTag(val);
+				this.$tagInput.autocomplete('val', '');
+			});
+			this.$tagInput.nextAll('.aa-menu').on('click', '.tag', function(){
+				this.$tagInput.trigger({
+					type: 'keydown',
+					keyCode: Key.Enter,
+				});
+			});
+
+			this.$editor.append(this.$tagInput, this.$textarea);
+			this.$tagInput.autocomplete(
+				{ minLength: 3 },
+				[
+					{
+						name: 'tags',
+						display: 'name',
+						source: (query, callback) => {
+							if (TagAutocompleteCache.has(query))
+								return callback(TagAutocompleteCache.get(query));
+							$.get(`${PGRq}/cg/get-tags?s=`+encodeURIComponent(query), $.mkAjaxHandler(function(){
+								callback(TagAutocompleteCache.set(query, this));
+							}));
+						},
+						templates: {
+							suggestion: Handlebars.compile('<span class="tag id-{{tid}} {{type}} {{#if synonym_of}}synonym{{else}}monospace{{/if}}">{{name}} <span class="uses">{{#if synonym_of}}<span class="typcn typcn-flow-children"></span>{{synonym_target}}{{else}}{{uses}}{{/if}}</span></span>')
+						}
+					}
+				]
+			);
+
+			this.importTags(rawTags);
+
+			// Close the dialog opened by the tag data fetching script
+			$.Dialog.close();
+		}
+		importTags(rawTags){
+			this.$editor.children('.tag').remove();
+			let tags = rawTags.split(',');
+			tags.forEach(tag => {
+				this.addTag(tag.trim(), false);
+			});
+		}
+		addTag(name, updateValue = true){
+			const $tag = $.mk('span').attr('class', 'tag').append(
+				$.mk('span').attr('class','name').text(name),
+				$.mk('span').attr('class','remove').on('click', e => {
+					$(e.target).parent().remove();
+					this.updateValue();
+				})
+			);
+			$tag.insertBefore(this.$tagInput.closest('.algolia-autocomplete'));
+			if (updateValue)
+				this.updateValue();
+		}
+		updateValue(){
+			const tags = [];
+			this.$editor.find('.tag').children('.name').each(function(){
+				tags.push($(this).text());
+			});
+			this.$textarea.val(tags.join(', '));
+		}
+		getValue(){
+			return this.$textarea.val();
+		}
+		disableButtons(){
+			this.$saveButton.disable();
+			this.$modeButton.disable();
+			this.$discardButton.disable();
+		}
+		enableButtons(){
+			this.$saveButton.enable();
+			this.$modeButton.enable();
+			this.$discardButton.enable();
+		}
+		destroy(){
+			this.$tagList.removeClass('hidden');
+			this.$editButton.insertBefore(this.$saveButton);
+			this.$editor.remove();
+			this.$saveButton.remove();
+			this.$modeButton.remove();
+			this.$discardButton.remove();
+			TagAutocompleteCache.clear();
+		}
 	}
+
+	const $editTagsBtn = $('#edit-tags-btn');
+	$editTagsBtn.on('click',function(e){
+		e.preventDefault();
+
+		const oldHtml = $editTagsBtn.html();
+		$editTagsBtn.disable().html('Please wait&hellip;');
+
+		const appearanceID = $(this).closest('[id^=p]').attr('id').replace(/\D/g, '');
+		$.post(`/cg/appearance/gettags/${appearanceID}`, $.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			const editor = new TagEditor(this.tags, tags => {
+				editor.disableButtons();
+
+				$.post(`/cg/appearance/settags/${appearanceID}`, { tags }, $.mkAjaxHandler(function(){
+					if (!this.status){
+						editor.enableButtons();
+						return $.Dialog.fail('Saving tags', this.message);
+					}
+
+					window.location.reload();
+				})).fail(() => {
+					editor.enableButtons();
+				});
+			});
+		})).always(() => {
+			$editTagsBtn.html(oldHtml).enable();
+		});
+	});
 
 	$('.cg-export').on('click',function(){
 		$.mk('form').attr({

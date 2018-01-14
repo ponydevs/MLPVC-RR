@@ -5,10 +5,10 @@
 <div id="content" class="section-container">
 	<h1><?=$ip?></h1>
 	<p>Details for this specific IP address</p>
-	<p class='align-center links'>
+	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
 		<a class='btn link typcn typcn-document-text' href="/admin/logs?by=<?=$ip?>">View Log Entries</a>
-	</p>
+	</div>
 
 <?  if (!empty($KnownIPs)){ ?>
 	<section>

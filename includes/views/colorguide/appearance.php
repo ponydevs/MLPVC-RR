@@ -31,25 +31,27 @@ use App\Tags;
 	$RenderPath = $Appearance->getPalettePath();
 	$FileModTime = '?t='.CoreUtils::filemtime($RenderPath); ?>
 	<div id="p<?=$Appearance->id?>" class="section-container">
-		<div class='align-center'>
+		<div class='button-block align-center'>
 			<a class='btn link typcn typcn-image' href='/cg/v/<?="{$Appearance->id}p.png$FileModTime".(!empty($_GET['token']) ? "&token={$_GET['token']}" : '')?>' target='_blank'>View as PNG</a>
 			<button class='getswatch typcn typcn-brush teal'>Download swatch file</button>
 <?  if ($isOwner || Permission::sufficient('staff')){ ?>
 			<button class='blue share typcn typcn-export' <?=$Appearance->private?'data-private="true"':''?> data-url="<?=rtrim(ABSPATH,'/').$Appearance->toURL().($Appearance->private ? "?token={$Appearance->token}" : '')?>">Share</button>
-			<button class='darkblue edit typcn typcn-pencil'>Edit metadata</button>
+			<button class='darkblue edit-appearance typcn typcn-pencil'>Edit metadata</button>
 <?php   if ($Appearance->id){ ?>
-			<button class='red delete typcn typcn-trash'>Delete apperance</button>
+			<button class='red delete-appearance typcn typcn-trash'>Delete apperance</button>
 <?php   }
 	} ?>
 		</div>
 
 <?  if ($Appearance->owner_id === null){
-		if (!empty($Changes))
-			echo str_replace('@',CGUtils::getChangesHTML($Changes),CGUtils::CHANGES_SECTION);
+		echo $Appearance->getChangesHTML();
 		if ($Appearance->id !== 0 && (\App\DB::$instance->where('appearance_id', $Appearance->id)->has('tagged') || Permission::sufficient('staff'))){ ?>
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
 			<div class='tags'><?=$Appearance->getTagsHTML(NOWRAP)?></div>
+<?php       if (Permission::sufficient('staff')){ ?>
+			<div class="button-block"><button id="edit-tags-btn" class="darkblue typcn typcn-pencil">Edit tags</button></div>
+<?php       } ?>
 		</section>
 <?php
 		}
@@ -75,7 +77,7 @@ use App\Tags;
 		<section class="color-list">
 <?  if (Permission::sufficient('staff') || $isOwner){ ?>
 			<h2 class="admin">Color groups</h2>
-			<div class="admin">
+			<div class="admin button-block">
 				<button class="darkblue typcn typcn-arrow-unsorted reorder-cgs">Re-order groups</button>
 				<button class="green typcn typcn-plus create-cg">Create group</button>
 				<button class="darkblue typcn typcn typcn-document-add apply-template">Apply template</button>
@@ -103,9 +105,10 @@ use App\Tags;
 		'PersonalGuide' => $Owner->name ?? false,
 	];
 	if ($isOwner || Permission::sufficient('staff')){
-		global $HEX_COLOR_REGEX;
+		global $HEX_COLOR_REGEX, $TAG_NAME_REGEX;
 		$export = array_merge($export, [
 			'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
+			'TAG_NAME_REGEX' => $TAG_NAME_REGEX,
 			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
 			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
 		]);

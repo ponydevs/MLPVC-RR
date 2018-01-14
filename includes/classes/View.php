@@ -77,23 +77,30 @@ class View {
 				return $bc;
 			case 'colorguide':
 				$eqg = $scope['EQG'] ?? false;
-				$bc = new NavBreadcrumb(($eqg?'EQG ':'').'Color Guide', '/cg'.($eqg?'/eqg':''));
+				$ret = new NavBreadcrumb('Color Guide');
+				$bc = new NavBreadcrumb($eqg ? 'EQG' : 'Pony', '/cg/'.($eqg?'eqg':'pony'));
+				$ret->setChild($bc);
 				switch ($this->method){
 					case 'appearance':
 						/** @var $appearance \App\Models\Appearance */
 						$appearance = $scope['Appearance'];
-						if ($appearance->owner_id !== null)
+						if ($appearance->owner_id !== null){
 							$bc = $appearance->owner->getPCGBreadcrumb();
+							$ret = $bc;
+						}
 						$bc->end()->setChild($appearance->label);
 					break;
 					case 'blending':
-						$bc->setChild('Color Blending Calculator');
+						$ret->setLink('/cg');
+						$ret->setChild(new NavBreadcrumb('Color Blending Calculator', '/cg/blending', true));
 					break;
 					case 'blendingreverse':
-						$bc->setChild('Color Blending Reverser');
+						$ret->setLink('/cg');
+						$ret->setChild(new NavBreadcrumb('Color Blending Reverser', '/cg/blending-reverse', true));
 					break;
 					case 'change-list':
-						$bc->setChild('List of Major Changes');
+						$ret->setLink('/cg');
+						$ret->setChild(new NavBreadcrumb('List of Major Changes', '/cg/changes', true));
 					break;
 					case 'full-list':
 						$bc->setChild('Full List');
@@ -111,25 +118,31 @@ class View {
 						);
 					break;
 					case 'tag-list':
-						$bc->setChild('List of Tags');
+						$ret->setLink('/cg');
+						$ret->setChild(new NavBreadcrumb('List of Tags', '/cg/tags', true));
 					break;
 					case 'guide':
 					default:
 						$bc->setActive();
 				}
-				return $bc;
+				return $ret;
 			case 'components':
 				return new NavBreadcrumb('Components',null,true);
+			case 'show':
 			case 'episode':
+				$showbc = new NavBreadcrumb('Show','/show');
 				switch ($this->method){
-					case 'list':
-						return new NavBreadcrumb('Episodes & Movies',null,true);
+					case 'index':
+						return $showbc->setActive();
 					case 'view':
 						if (!isset($scope['CurrentEpisode']))
 							return new NavBreadcrumb('Home',null,true);
 						/** @var $ep \App\Models\Episode */
 						$ep = $scope['CurrentEpisode'];
-						return (new NavBreadcrumb($ep->is_movie ? 'Movies' : 'Episodes', $ep->is_movie ? '/movies' : '/episodes'))->setChild($scope['heading']);
+						$cat = new NavBreadcrumb($ep->is_movie ? 'Movies & Shorts' : 'Episodes');
+						$cat->setChild(new NavBreadcrumb($scope['heading'], $ep->toURL(), true));
+						$showbc->setChild($cat);
+						return $showbc->setActive(false);
 				}
 			break;
 			case 'error':

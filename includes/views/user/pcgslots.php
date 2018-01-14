@@ -11,7 +11,7 @@ use App\Tags;
 	<h1><?=$heading?></h1>
 	<p>Displaying <?= $Pagination->itemsPerPage ?> items/page</p>
 
-	<div class="align-center">
+	<div class="align-center button-block">
 		<a href="<?=$User->toURL()?>" class="btn link typcn typcn-user">Profile page</a>
 <?php   if (\App\Permission::sufficient('staff')){
 			if (\App\Permission::sufficient('developer')){ ?>

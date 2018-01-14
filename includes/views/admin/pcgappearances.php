@@ -4,9 +4,9 @@
 <div id="content" class="section-container">
 	<h1><?=$heading?></h1>
 	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
-	<p class='align-center links'>
+	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
-	</p>
+	</div>
 
 	<?=$Pagination?>
 	<div class="responsive-table">

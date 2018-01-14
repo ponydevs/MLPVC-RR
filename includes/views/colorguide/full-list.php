@@ -13,7 +13,7 @@ use App\Tags;
 		<option value=''<?=$GuideOrder?' selected':''?>>by relevance</option>
 	</select></p>
 
-	<p class='align-center links'>
+	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/cg<?=$EQG?'/eqg':''?>">Back to <?=($EQG?'EQG ':'')?>Color Guide</a>
 <?php if (Permission::sufficient('staff')){ ?>
 		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"<?=!$GuideOrder?' disabled':''?>>Re-order</button>
@@ -22,7 +22,7 @@ use App\Tags;
 		<a class='btn link typcn typcn-world' href="/cg<?=($EQG?'':'/eqg')?>/full">List of <?=$EQG?'Ponies':'Equestria Girls'?></a>
 		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
 		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
-	</p>
+	</div>
 
 	<?=CGUtils::getFullListHTML($Appearances, $GuideOrder, $EQG)?>
 </div>

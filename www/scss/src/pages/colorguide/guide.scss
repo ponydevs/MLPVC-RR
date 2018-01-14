@@ -1,5 +1,4 @@
 //noinspection CssUnknownTarget
-@import "../../vendor/jquery.qtip.css";
 @import "../../colorguide_vars";
 @import "../../components/optional/ctxmenu";
 // Mobile-only
@@ -41,10 +40,6 @@
 
 				&:empty { display: none }
 
-				.addtag {
-					margin: 0;
-					width: 100%;
-				}
 				> * {
 					flex: 1 1 auto;
 
@@ -87,7 +82,7 @@
 	}
 }
 
-#content > p.links { margin: 0 0 5px }
+#content > p { margin: 0 0 5px }
 
 .appearance-list {
 	padding: 0;
@@ -161,12 +156,8 @@
 div.tags {
 	user-select: none;
 	margin-top: 6px;
-
-	.addtag {
-		margin-bottom: 5px;
-	}
 }
-.tag:not(.addtag), div.tags .twitter-typeahead {
+.tag, div.tags .twitter-typeahead {
 	margin: 0 6px 6px 0;
 	vertical-align: top;
 }
@@ -253,73 +244,6 @@ ul.colors {
 		> span:not(.cat) { @include colored-square(16px, 1px) }
 	}
 }
-
-%qtip-custom {
-	font-size: 16px;
-	line-height: initial !important;
-	min-width: initial !important;
-
-	.qtip-titlebar {
-		padding: 5px;
-		text-align: center;
-		background: inherit;
-
-		+ .qtip-content { font-size: .75em }
-	}
-	.qtip-content {
-		padding: 5px;
-		text-align: center;
-		border-top: 1px solid;
-	}
-}
-.qtip-content:empty {
-	display: none;
-}
-
-.qtip-see-thru {
-	background-color: rgba(white,.8);
-	border: 1px solid rgba(black,.7);
-	box-shadow: 0 0 2px rgba(black,.7);
-
-	@extend %qtip-custom;
-}
-.qtip-pick-warn {
-	background-color: $NOrangeBG;
-	border: 1px solid $NOrange;
-	box-shadow: 0 0 2px $NOrange;
-	color: $NOrange;
-	font-size: 1.05em;
-	line-height: 1.1em;
-}
-.qtip-link {
-	background-color: white;
-	color: $Link;
-	border: 1px solid rgba($Link,.7);
-	box-shadow: 0 0 2px rgba($Link,.7);
-	font-size: 1.1em;
-
-	@extend %qtip-custom;
-
-	.cm-dir-image {
-		@include pony-cm-image(150px);
-		margin: 0 auto;
-	}
-}
-
-.qtip-tag {
-	@include tag-style($TDefault);
-
-	border-color: initial !important;
-
-	@extend %qtip-custom;
-}
-
-.qtip-tag-cat { @include tag-style($TCategory) }
-.qtip-tag-spec { @include tag-style($TSpecies) }
-.qtip-tag-gen { @include tag-style($TGender) }
-.qtip-tag-app { @include tag-style($TAppearance) }
-.qtip-tag-ep { @include tag-style($TEpisode) }
-.qtip-tag-char { @include tag-style($TCharacter) }
 
 #search-form {
 	display: flex;

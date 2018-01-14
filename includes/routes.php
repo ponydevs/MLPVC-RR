@@ -14,7 +14,7 @@ $router->addMatchTypes([
 	'rrsl' => '(request|reservation)s?',
 	'cgimg' => '[spfc]',
 	'cgext' => '(png|svg|json|gpl)',
-	'eqg' => 'eqg',
+	'guide' => '(eqg|pony)',
 	'favme' => 'd[a-z\d]{6}',
 	'gsd' => '([gs]et|del)',
 	'make' => 'make',
@@ -45,24 +45,25 @@ $router->map('GET',      '/[cg]/blending',                                      
 $router->map('GET',      '/[cg]/blending-reverse',                              'ColorGuideController#blendingReverse');
 $router->map('GET',      '/[cg]/picker',                                        'ColorGuideController#picker');
 $router->map('GET',      '/[cg]/picker/frame',                                  'ColorGuideController#pickerFrame');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[i]?',                               'ColorGuideController#guide');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/full',                               'ColorGuideController#fullList');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/tags/[i]?',                          'TagController#list');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/changes/[i]?',                       'ColorGuideController#changeList');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]',                                'ColorGuideController#guide');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id]',                         'AppearanceController#view');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id]-[adi]',                   'AppearanceController#view');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[adi]-[i:id]',                   'AppearanceController#view');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/[v]/[i:id][cgimg:type]?.[cgext:ext]', 'AppearanceController#asFile');
-$router->map('GET',      '/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?',      'AppearanceController#sprite');
+$router->map('GET',      '/[cg]/[guide:guide]?/[i]?',                               'ColorGuideController#guide');
+$router->map('GET',      '/[cg]/[guide:guide]?/full',                               'ColorGuideController#fullList');
+$router->map('GET',      '/[cg]/[guide:guide]?/tags/[i]?',                          'TagController#list');
+$router->map('GET',      '/[cg]/[guide:guide]?/changes/[i]?',                       'ColorGuideController#changeList');
+$router->map('GET',      '/[cg]/[guide:guide]?/[v]',                                'ColorGuideController#guide');
+$router->map('GET',      '/[cg]/[guide:guide]?/[v]/[i:id]',                         'AppearanceController#view');
+$router->map('GET',      '/[cg]/[guide:guide]?/[v]/[i:id]-[adi]',                   'AppearanceController#view');
+$router->map('GET',      '/[cg]/[guide:guide]?/[v]/[adi]-[i:id]',                   'AppearanceController#view');
+$router->map('GET',      '/[cg]/[guide:guide]?/[v]/[i:id][cgimg:type]?.[cgext:ext]', 'AppearanceController#asFile');
+$router->map('GET',      '/[cg]/[guide:guide]?/sprite(-colors)?/[i:id][adi]?',      'AppearanceController#sprite');
 $router->map('GET|POST', '/[cg]/get-tags',                                      'TagController#autocomplete');
 $router->map('GET',      '/[cg]/cutiemark/[i:id].svg',                          'CutiemarkController#view');
 $router->map('GET',      '/[cg]/cutiemark/download/[i:id][adi]?',               'CutiemarkController#download');
 $router->map('GET', '/da-auth',                        'AuthController#auth');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
 $router->map('GET', '/episode/latest',                 'EpisodeController#latest');
-$router->map('GET', '/episodes/[i]?',                  'EpisodeController#episodeList');
-$router->map('GET', '/movies/[i]?',                    'EpisodeController#movieList');
+$router->map('GET', '/episodes/[i]?',                  'ShowController#index');
+$router->map('GET', '/movies/[i]?',                    'ShowController#index');
+$router->map('GET', '/show',                           'ShowController#index');
 $router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');
 $router->map('GET', '/eqg/[adi:id]',                   'EQGController#redirectStr');
 $router->map('GET', '/events/[i]?',                    'EventController#list');
@@ -84,7 +85,7 @@ $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]',                         'Appe
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]-[adi]',                   'AppearanceController#viewPersonal');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[adi]-[i:id]',                   'AppearanceController#viewPersonal');
 $router->map('GET', '/@[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'AppearanceController#personalAsFile');
-$router->map('GET', '/@[un:name]/[cg]/[eqg:eqg]?/sprite(-colors)?/[i:id][adi]?', 'AppearanceController#sprite');
+$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/sprite(-colors)?/[i:id][adi]?', 'AppearanceController#sprite');
 $router->map('GET', '/manifest',                       'ManifestController#json');
 $router->map('GET', '/user/contrib/lazyload/[favme:favme]',     'UserController#contribLazyload');
 $router->map('GET', '/post/lazyload/[rrl:thing]/[i:id]', 'PostController#lazyload');

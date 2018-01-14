@@ -8,6 +8,15 @@
 		display: inline-block;
 		vertical-align: bottom;
 	}
+	#suggestion {
+		&:before {
+			margin-right: 0 !important;
+		}
+
+		> span {
+			display: none;
+		}
+	}
 }
 // Desktop styles
 @media all and (min-width: $Breakpoint){
@@ -211,26 +220,5 @@
 				}
 			}
 		}
-	}
-}
-
-#dialogContent > div {
-	> img { display: none }
-	&:nth-last-child(2), &:last-child {
-		> img {
-			display: block;
-			height: 200px;
-			margin: 10px auto 0;
-
-			@media all and (max-width: $Breakpoint), all and (max-height: 620px) {
-				display: none;
-			}
-		}
-	}
-
-	.disc-verify-code {
-		font-size: 1.3em;
-		font-family: $monospace;
-		margin: 10px 0;
 	}
 }

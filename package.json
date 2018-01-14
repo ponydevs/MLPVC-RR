@@ -2,7 +2,7 @@
   "name": "mlpvc-rr",
   "version": "1.0.0",
   "description": "An automated system for handling requests & reservations, made for MLP-VectorClub",
-  "homepage": "https://mlpvc-rr.ml",
+  "homepage": "https://mlpvector.club",
   "dependencies": {
     "glob": "^7.1.2",
     "normalize.css": "^7.0.0",

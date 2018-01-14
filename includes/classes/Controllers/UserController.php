@@ -20,6 +20,7 @@ use App\Posts;
 use App\Response;
 use App\UserPrefs;
 use App\Users;
+use Peertopark\UriBuilder;
 
 class UserController extends Controller {
 	public $do = 'user';
@@ -281,9 +282,9 @@ class UserController extends Controller {
 				throw new \RuntimeException(__METHOD__.": Mising data retriever for type {$params['type']}");
 		}
 
-		CoreUtils::fixPath("/$paginationPath/{$Pagination->page}");
-
-		$Pagination->respondIfShould(Users::getContributionListHTML($params['type'], $data, NOWRAP), '#contribs');
+		$path = new UriBuilder("/$paginationPath");
+		$path->append_query_raw($Pagination->getPageQueryString());
+		CoreUtils::fixPath($path);
 
 		$title = "Page {$Pagination->page} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($User->name).' Contributions';
 		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$User->toAnchor();

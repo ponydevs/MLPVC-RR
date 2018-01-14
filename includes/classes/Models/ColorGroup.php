@@ -5,6 +5,7 @@ namespace App\Models;
 use App\CoreUtils;
 use App\Permission;
 use App\UserPrefs;
+use HtmlGenerator\HtmlTag;
 use SeinopSys\RGBAColor;
 
 /**
@@ -80,17 +81,19 @@ class ColorGroup extends OrderedModel {
 		if (!empty($Colors)){
 			$extraInfo = $force_extra_info || !UserPrefs::get('cg_hideclrinfo');
 			foreach ($Colors as $i => $c){
+				$span = HtmlTag::createElement('span');
 				$title = CoreUtils::aposEncode($c->label);
 				$color = '';
 				if (!empty($c->hex)){
 					$color = $c->hex;
-					$title .= "' style='background-color:$color' class='valid-color";
+					$span->text($color);
+					$span->set('style', "background-color:$color");
+					$span->set('class', 'valid-color');
 				}
 
-				$append = "<span title='$title'>$color</span>";
 				if ($colorNames){
 					$label = CoreUtils::escapeHTML($c->label);
-					$append = "<div class='color-line".(!$extraInfo || empty($color)?' no-detail':'')."'>$append<span><span class='label'>$label";
+					$append = "<div class='color-line".(!$extraInfo || empty($color)?' no-detail':'')."'>$span<span><span class='label'>$label";
 					if ($extraInfo && !empty($color)){
 						/** @noinspection NullPointerExceptionInspection */
 						$rgb = RGBAColor::parse($color)->toRGB();
@@ -98,10 +101,11 @@ class ColorGroup extends OrderedModel {
 					}
 					$append .= '</span></div>';
 				}
+				else $append = (string)$span->set('title', $title);
 				$HTML .= $append;
 			}
 		}
 
-		return $wrap ? "<li id='cg{$this->id}'>$HTML</li>" : $HTML;
+		return $wrap ? "<li id='cg-{$this->id}'>$HTML</li>" : $HTML;
 	}
 }

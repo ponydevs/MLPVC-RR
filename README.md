@@ -8,7 +8,6 @@
    [Font Awesome](http://fontawesome.io/),
    [loading.io](http://loading.io/),
    [jQuery](http://jquery.com/),
-   [qTip2](http://qtip2.com/),
    [autocomplete.js](https://github.com/algolia/autocomplete.js),
    [Sortable](https://github.com/RubaXa/Sortable),
    [Ace Editor](https://ace.c9.io/),
@@ -45,7 +44,7 @@
    [Phinx](https://phinx.org/),
    [Monolog](https://seldaek.github.io/monolog/)
 
-Please check the site's [About](https://mlpvc-rr.ml/about) page for additional credits.
+Please check the site's [About](https://mlpvector.club/about) page for additional credits.
 
 ## Contributing
 

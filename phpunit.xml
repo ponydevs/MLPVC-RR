@@ -14,7 +14,7 @@
         </testsuite>
     </testsuites>
 	<php>
-		<server name="SERVER_NAME" value="mlpvc-rr.lc"/>
+		<server name="SERVER_NAME" value="mlpvector.lc"/>
 		<server name="REQUEST_METHOD" value="GET"/>
 	</php>
 </phpunit>

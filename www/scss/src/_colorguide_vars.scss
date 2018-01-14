@@ -10,8 +10,8 @@ $TCharacter: adjust_hue($_TBase, 240);
 $TFeature:  adjust_hue($_TBase, 20);
 
 @mixin tag-style($color:$TDefault, $icon:false){
-	color: darken($color, 5);
-	background-color: lighten($color, 50);
+	color: darken($color, 5) !important;
+	background-color: lighten($color, 50) !important;
 	@if ($icon != false){
 			&:before { content: $icon }
 	}

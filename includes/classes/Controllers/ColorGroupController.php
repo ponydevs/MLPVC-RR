@@ -289,7 +289,7 @@ class ColorGroupController extends ColorGuideController {
 			]);
 			if ($this->_appearancePage){
 				$FullChangesSection = isset($_POST['FULL_CHANGES_SECTION']);
-				$response['changes'] = CGUtils::getChangesHTML(MajorChange::get($Group->appearance_id), $FullChangesSection);
+				$response['changes'] = CGUtils::getMajorChangesHTML(MajorChange::get($Group->appearance_id, null), $FullChangesSection);
 				if ($FullChangesSection)
 					$response['changes'] = str_replace('@',$response['changes'],CGUtils::CHANGES_SECTION);
 			}

@@ -624,7 +624,7 @@ HTML;
 		}
 		$HTML = '';
 		if ($staffVisitingMember || $sameUser){
-			$gamble = $TotalPending < 4 && $sameUser ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb">Suggestion</button>' : '';
+			$gamble = $TotalPending < 4 && $sameUser ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb"><span>Suggestion</span></button>' : '';
 			$HTML .= <<<HTML
 <section class='pending-reservations'>
 <h2>{$PrivateSection}Pending reservations$gamble</h2>

@@ -25,6 +25,7 @@ use App\UserPrefs;
 use App\Users;
 use GuzzleHttp\Command\Guzzle\GuzzleClient;
 use IPTools\IP;
+use Peertopark\UriBuilder;
 use RestCord\DiscordClient;
 
 class AdminController extends Controller {
@@ -125,7 +126,13 @@ class AdminController extends Controller {
 		if (!empty($title))
 			$title .= '- ';
 		$title .= "Page {$Pagination->page} - $heading - Admin Area";
-		CoreUtils::fixPath("/admin/logs/{$Pagination->page}".(!empty($q)?'?'.implode('&',$q):''));
+
+		$path = new UriBuilder('/admin/logs');
+		$path->append_query_raw($Pagination->getPageQueryString());
+		if (!empty($q))
+			foreach ($q as $item)
+				$path->append_query_raw($item);
+		CoreUtils::fixPath($path);
 
 		foreach ($whereArgs as $arg)
 			DB::$instance->where(...$arg);
@@ -133,8 +140,6 @@ class AdminController extends Controller {
 			->orderBy('timestamp','DESC')
 			->orderBy('entryid','DESC')
 			->get('log', $Pagination->getLimit());
-
-		$Pagination->respondIfShould(Logs::getTbody($LogItems), '#logs tbody');
 
 		CoreUtils::loadPage(__METHOD__, [
 			'heading' => $heading,
@@ -555,13 +560,13 @@ HTML;
 	public function pcgAppearances(){
 		$Pagination = new Pagination('admin/pcg-appearances', 10, $this->_setupPcgAppearances()->count(Appearance::$table_name));
 
-		CoreUtils::fixPath("/admin/pcg-appearances/{$Pagination->page}");
+		$path = new UriBuilder('/admin/pcg-appearances');
+		$path->append_query_raw($Pagination->getPageQueryString());
+		CoreUtils::fixPath($path);
 		$heading = 'All PCG Appearances';
 		$title = "Page $Pagination->page - $heading - Color Guide";
 
 		$Appearances = $this->_setupPcgAppearances()->orderBy('added','DESC')->get(Appearance::$table_name, $Pagination->getLimit());
-
-		$Pagination->respondIfShould(Appearances::getPCGListHTML($Appearances, NOWRAP), '#pcg-appearances-table tbody');
 
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,

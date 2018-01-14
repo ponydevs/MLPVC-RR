@@ -1,6 +1,6 @@
 <div id="content" class="section-container">
 	<h1>WebSocket Server Diagnostics</h1>
-	<div class='align-center links'>
+	<div class='align-center button-block'>
 		<a class='btn darkblue typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
 	</div>
 

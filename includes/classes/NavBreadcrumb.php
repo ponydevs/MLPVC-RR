@@ -6,7 +6,7 @@ class NavBreadcrumb {
 	/** @var string */
 	private $name;
 
-	/** @var string */
+	/** @var string|null */
 	private $link;
 
 	/** @var bool */
@@ -15,11 +15,19 @@ class NavBreadcrumb {
 	/** @var NavBreadcrumb */
 	private $child;
 
-	public function __construct(string $name, string $link = null, bool $active = false){
+	public function __construct(string $name, ?string $link = null, bool $active = false){
 		$this->name = $name;
 		$this->link = $link;
 		$this->enabled = $link !== null;
 		$this->active = $active;
+	}
+
+	public function setLink(?string $link, bool $enable = true){
+		$this->link = $link;
+		if ($enable)
+			$this->enabled = true;
+
+		return $this;
 	}
 
 	public function setActive(bool $value = true){
@@ -69,19 +77,34 @@ class NavBreadcrumb {
 		return $this->child;
 	}
 
-	public function toAnchor(){
-		$name = CoreUtils::escapeHTML($this->name);
-		return $this->active ? "<strong>$name</strong>" : ($this->enabled ? "<a href='{$this->link}'>$name</a>" : "<span>$name</span>");
+	public function toAnchor(int $position){
+		$extraAttributes = 'itemscope itemtype="http://schema.org/Thing" itemprop="item"';
+		if ($this->link){
+			$abspath = ABSPATH.\substr($this->link, 1);
+			$extraAttributes .= " itemid='$abspath'";
+		}
+		$name = '<span itemprop="name">'.CoreUtils::escapeHTML($this->name).'</span>';
+
+		$HTML = $this->active
+			? "<strong $extraAttributes>$name</strong>"
+			: (
+				$this->enabled
+				? "<a href='{$this->link}' $extraAttributes>$name</a>"
+				: "<span $extraAttributes>$name</span>"
+			);
+		return "<li itemprop='itemListElement' itemscope itemtype='http://schema.org/ListItem'>$HTML<meta itemprop='position' content='$position'></li>";
 	}
 
-	public const DIV = '<span class="div">/</span>';
+	public const DIV = '<li class="div">/</li>';
 
 	public function __toString():string {
+		$position = 1;
 		$HTML = [];
 		$ptr = $this;
 		do {
-			$HTML[] = $ptr->toAnchor();
+			$HTML[] = $ptr->toAnchor($position);
 			$ptr = $ptr->getChild();
+			$position++;
 		}
 		while ($ptr !== null);
 

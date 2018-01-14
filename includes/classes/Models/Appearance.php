@@ -16,6 +16,7 @@ use App\Tags;
 use App\Time;
 use App\UserPrefs;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
+use HtmlGenerator\HtmlTag;
 use SeinopSys\RGBAColor;
 
 /**
@@ -37,6 +38,7 @@ use SeinopSys\RGBAColor;
  * @property Color[]             $preview_colors      (Via relations)
  * @property Tag[]               $tags                (Via relations)
  * @property Tagged[]            $tagged              (Via relations)
+ * @property MajorChange[]       $major_changes       (Via relations)
  * @method static Appearance[] find_by_sql($sql, $values = null)
  * @method static Appearance find_by_owner_id_and_label(string $uuid, string $label)
  * @method static Appearance find_by_ishuman_and_label($ishuman, string $label)
@@ -52,6 +54,7 @@ class Appearance extends NSModel implements LinkableInterface {
 		['tagged', 'class' => 'Tagged'],
 		['color_groups', 'order' => '"order" asc, id asc'],
 		['related_appearances', 'class' => 'RelatedAppearance', 'foreign_key' => 'source_id', 'order' => 'target_id asc'],
+		['major_changes', 'class' => 'Logs\MajorChange', 'order' => 'entryid desc'],
 	];
 	public static $belongs_to = [
 		['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
@@ -202,8 +205,9 @@ class Appearance extends NSModel implements LinkableInterface {
 				return '';
 			$notes = '';
 		}
-		if (Cutiemark::exists(['appearance_id' => $this->id]))
-			$notes .= "<span>Cutie marks available</span>";
+		$cms = Cutiemark::count(['appearance_id' => $this->id]);
+		if ($cms > 0)
+			$notes .= '<span>'.CoreUtils::makePlural('Cutie mark', $cms).' available</span>';
 		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
 	}
 
@@ -242,18 +246,8 @@ class Appearance extends NSModel implements LinkableInterface {
 		$Tags = Tags::getFor($this->id, null, $isStaff);
 
 		$HTML = '';
-		if ($this->id !== 0 && $isStaff)
-			$HTML .= "<input type='text' class='addtag tag' placeholder='Enter tag' pattern='".TAG_NAME_PATTERN."' maxlength='30' required>";
-		$HideSynon = Permission::sufficient('staff') && UserPrefs::get('cg_hidesynon');
-		if (!empty($Tags)) foreach ($Tags as $t){
-			$isSynon = $t->synonym_of !== null;
-			if ($isSynon && $HideSynon)
-				continue;
-			$class = " class='tag id-{$t->id}".($isSynon?' synonym':'').(!empty($t->type)?' typ-'.$t->type:'')."'";
-			$title = !empty($t->title) ? " title='".CoreUtils::aposEncode($t->title)."'" : '';
-			$syn_of = $isSynon ? " data-syn-of='{$t->synonym_of}'" : '';
-			$HTML .= "<span$class$title$syn_of>{$t->name}</span>";
-		}
+		if (!empty($Tags)) foreach ($Tags as $t)
+			$HTML .= $t->to_html($this->ishuman);
 
 		return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;
 	}
@@ -266,7 +260,7 @@ class Appearance extends NSModel implements LinkableInterface {
 	 * @return string
 	 */
 	public function getUpdatesHTML($wrap = WRAP){
-		$update = MajorChange::get($this->id, MOST_RECENT);
+		$update = MajorChange::get($this->id, null, MOST_RECENT);
 		if (!empty($update)){
 			$update = 'Last updated '.Time::tag($update->log->timestamp);
 		}
@@ -276,6 +270,29 @@ class Appearance extends NSModel implements LinkableInterface {
 			$update = '';
 		}
 		return $wrap ? "<div class='update'>$update</div>" : $update;
+	}
+
+	public function getChangesHTML(bool $wrap = WRAP):string {
+		$HTML = '';
+		if (\count($this->major_changes) === 0)
+			return $HTML;
+
+			$isStaff = Permission::sufficient('staff');
+		foreach ($this->major_changes as $change){
+			$li = CoreUtils::escapeHTML($change->reason).' &ndash; '.Time::tag($change->log->timestamp);
+			if ($isStaff)
+				$li .= ' by '.$change->log->actor->toAnchor();
+			$HTML .= "<li>$li</li>";
+		}
+		if (!$wrap)
+			return $HTML;
+
+		return <<<HTML
+<section class="major-changes">
+	<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
+	<ul>$HTML</ul>
+</section>
+HTML;
 	}
 
 	/**
@@ -406,7 +423,8 @@ HTML;
 		$safeLabel = $this->getSafeLabel();
 		$pcg = $this->owner_id !== null;
 		$owner = $pcg ? '/@'.User::find($this->owner_id)->name : '';
-		return "$owner/cg/v/{$this->id}-$safeLabel";
+		$guide = $pcg ? '' : ($this->ishuman ? 'eqg' : 'pony').'/';
+		return "$owner/cg/{$guide}v/{$this->id}-$safeLabel";
 	}
 
 	public function toAnchor():string {
@@ -766,5 +784,61 @@ HTML;
 
 	public function hidden(bool $ignoreStaff = false):bool {
 		return $this->owner_id !== null && $this->private && $this->isPrivate($ignoreStaff);
+	}
+
+	public function getTagsAsText(){
+		$tags = [];
+		foreach (Tags::getFor($this->id, null, Permission::sufficient('staff')) as $tag)
+			$tags[] = $tag->name;
+		return implode(', ', $tags);
+	}
+
+	public function processTagChanges(string $new_tags, bool $eqg){
+		$new = [];
+		foreach (explode(',', $new_tags) as $new_tag)
+			$new[CoreUtils::trim($new_tag)] = true;
+		$old = [];
+		$old_tags = DB::$instance->query(
+			'SELECT t.name as name, t.id as id FROM tags t
+			LEFT JOIN tagged tg ON t.id = tg.tag_id
+			WHERE tg.appearance_id = ?', [$this->id]);
+
+		/** @var $removed int[] */
+		$removed = [];
+		foreach ($old_tags as $row){
+			$name = $row['name'];
+			if (!isset($new[$name]))
+				$removed[] = $row['id'];
+			else unset($new[$name]);
+		}
+		if (!empty($removed))
+			DB::$instance->where('tag_id', $removed)->where('appearance_id', $this->id)->delete(Tagged::$table_name);
+
+		foreach ($new as $name => $_){
+			$_POST['tag_name'] = CoreUtils::trim($name);
+			if (empty($_POST['tag_name']))
+				continue;
+
+			$tag_name = CGUtils::validateTagName('tag_name');
+			$tag_type = null;
+
+			$TagCheck = CGUtils::normalizeEpisodeTagName($tag_name);
+			if ($TagCheck !== false){
+				$tag_name = $TagCheck;
+				$tag_type = 'ep';
+			}
+
+			$Tag = Tags::getActual($tag_name, 'name');
+			if (empty($Tag))
+				$Tag = Tag::create([
+					'name' => $tag_name,
+					'type' => $tag_type,
+				]);
+
+			Tagged::make($Tag->id, $this->id)->save();
+			$Tag->updateUses();
+			if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$eqg?'eqg':'pony'][$Tag->id]))
+				Appearances::getSortReorder($eqg);
+		}
 	}
 }

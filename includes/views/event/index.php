@@ -16,7 +16,7 @@ use App\Time;
 		$canEnter = $couldEnter && $Event->hasStarted() && !$Event->hasEnded();
 		$finalized = $Event->isFinalized();
 		if (Auth::$signed_in && !$finalized){ ?>
-	<div class="align-center" id="event-<?=$Event->id?>">
+	<div class="align-center button-block" id="event-<?=$Event->id?>">
 		<button class="green typcn typcn-user-add" <?=$canEnter?'':'disabled'?> id="enter-event">Enter</button>
 <?php       if (Permission::sufficient('staff')){ ?>
 		<button class="blue typcn typcn-pencil edit-event">Edit</button>

@@ -27,10 +27,8 @@ class Tags {
 	 */
 	public static function getFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
 		if (!$exporting){
-			$showSynonymTags = $showEpTags || Permission::sufficient('staff');
-			if (!$showSynonymTags)
-				DB::$instance->where('"synonym_of" IS NULL');
 			DB::$instance
+				->where('"synonym_of" IS NULL')
 				->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
 				->orderBy('tags.type')
 				->orderBy('tags.name');
@@ -38,11 +36,10 @@ class Tags {
 				DB::$instance->where("tags.type != 'ep'");
 		}
 		else {
-			$showSynonymTags = true;
 			DB::$instance->orderBy('tags.id');
 		}
 		if ($PonyID !== null){
-			DB::$instance->join('tagged','(tagged.tag_id = tags.id'.($showSynonymTags?' OR tagged.tag_id = tags.synonym_of':'').')','right',false);
+			DB::$instance->join('tagged','tagged.tag_id = tags.id','right',false);
 			DB::$instance->where('tagged.appearance_id',$PonyID);
 		}
 		return DB::$instance->setModel(Tag::class)->get('tags',$limit,'tags.*');

@@ -35,7 +35,9 @@
 		"enshrined/svg-sanitize": "^0.8.2",
 		"monolog/monolog": "^1.23",
 		"seinopsys/rgbacolor": "1.*",
-		"ramsey/uuid": "^3.0"
+		"ramsey/uuid": "^3.0",
+		"airmanbzh/php-html-generator": "^1.0",
+		"peertopark/uribuilder": "^1.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "6.*",

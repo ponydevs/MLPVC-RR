@@ -146,7 +146,6 @@ $(function(){
 
 	function docReadyAlwaysRun(){
 		console.log('> docReadyAlwaysRun()');
-		$d.triggerHandler('paginate-refresh');
 
 		// Sign in button handler
 		$.LocalStorage.remove('cookie_consent');

@@ -2,6 +2,8 @@
 
 namespace App;
 use ActiveRecord\SQLBuilder;
+use HtmlGenerator\HtmlTag;
+use Peertopark\UriBuilder;
 
 /**
  * Class for writing out complex pagination HTML
@@ -9,7 +11,11 @@ use ActiveRecord\SQLBuilder;
  */
 class Pagination {
 	public $maxPages, $page, $itemsPerPage;
-	public $_context, $_wrap, $_basePath;
+	public $_context = 2, $_wrap, $basePath;
+	/**
+	 * @var string
+	 */
+	private $_noconflict;
 
 	/**
 	 * Creates an instance of the class and return the generated HTML
@@ -17,14 +23,12 @@ class Pagination {
 	 * @param string $basePath     The starting path of ech paginated page without the page number
 	 * @param int    $ItemsPerPage Number of items to display on a single page
 	 * @param int    $EntryCount   Number of available entries
-	 * @param int    $context      How many items to show on either side of current page
-	 *
-	 * @return Pagination
+	 * @param string $noconflict   Specify a name to use for the query string parameter
 	 */
-	public function __construct(string $basePath, int $ItemsPerPage, ?int $EntryCount = null, $context = 2){
+	public function __construct(string $basePath, int $ItemsPerPage, ?int $EntryCount = null, string $noconflict = ''){
 		$this->itemsPerPage = $ItemsPerPage;
-		$this->_context = $context;
-		$this->_basePath = $basePath;
+		$this->basePath = $basePath;
+		$this->_noconflict = $noconflict;
 		$this->page = 1;
 		$this->guessPage();
 
@@ -33,14 +37,13 @@ class Pagination {
 	}
 
 	private function guessPage(){
-		$path = explode('/',substr(strtok($_SERVER['REQUEST_URI'],'?'), 1));
-		// We need at least 2 elements to paginate
-		if (empty($path) || \count($path) < 2)
-			return;
-
-		$lastPart = \array_slice($path, -1)[0];
-		if (is_numeric($lastPart))
-			$this->page = max((int) $lastPart, 1);
+		$page = $_GET["{$this->_noconflict}page"] ?? null;
+		if ($page === null){
+			$uri = explode('/', $_SERVER['REQUEST_URI']);
+			$page = array_pop($uri);
+		}
+		if (is_numeric($page))
+			$this->page = max((int) $page, 1);
 	}
 
 	/**
@@ -51,7 +54,7 @@ class Pagination {
 	 * @return self
 	 */
 	public function forcePage(int $page){
-		$this->page = max((int) $page, 1);
+		$this->page = max($page, 1);
 
 		return $this;
 	}
@@ -93,13 +96,19 @@ class Pagination {
 		);
 	}
 
-	private function _toLink(int $i, &$currentIndex = null, $nr = null){
+	private function _makeLink($i){
+		$href = new UriBuilder("/{$this->basePath}");
+		$href->append_query_raw($this->getPageQueryString($i));
+		return $href->build_http_string();
+	}
+
+	private function _makeItem(int $i, &$currentIndex = null, $nr = null){
 		$current = $i === (int) $this->page;
 		if ($currentIndex !== null && $current)
 			$currentIndex = $nr;
 		return '<li>'.(
 			!$current
-			? "<a href='/{$this->_basePath}/$i'>$i</a>"
+			? HtmlTag::createElement('a')->set('href', $this->_makeLink($i))->text($i)
 			: "<strong>$i</strong>"
 		).'</li>';
 	}
@@ -118,7 +127,7 @@ class Pagination {
 
 			if ($this->maxPages < 7){
 				for ($i = 1; $i <= $this->maxPages; $i++){
-					$Items[$nr] = $this->_toLink($i, $currentIndex, $nr++);
+					$Items[$nr] = $this->_makeItem($i, $currentIndex, $nr++);
 					$nr++;
 				}
 			}
@@ -127,11 +136,17 @@ class Pagination {
 				foreach ($this->_getLinks() as $i) {
 					if ($i !== min($previousPage + 1, $this->maxPages)){
 						$diff = $i - ($previousPage + 1);
-						$Items[$nr++] = $diff > 1 ? "<li class='spec'><a>&hellip;</a></li>" : $this->_toLink($previousPage+1);
+						if ($diff > 1){
+							$item = HtmlTag::createElement('li')->set('class','spec');
+							$item->addElement('a')->text("\u{2026}");
+							$item->attr('data-baseurl', $this->_makeLink('*'));
+						}
+						else $item = $this->_makeItem($previousPage+1);
+						$Items[$nr++] = $item;
 					}
 					$previousPage = $i;
 
-					$Items[$nr] = $this->_toLink($i, $currentIndex, $nr);
+					$Items[$nr] = $this->_makeItem($i, $currentIndex, $nr);
 					$nr++;
 				}
 			}
@@ -140,7 +155,7 @@ class Pagination {
 		}
 		else $Items = '';
 
-		$path = CoreUtils::aposEncode($this->_basePath);
+		$path = CoreUtils::aposEncode($this->basePath);
 
 		return $wrap ? "<ul class='pagination' data-for='$path'>$Items</ul>" : $Items;
 	}
@@ -160,40 +175,6 @@ class Pagination {
 			'from' => $limit[0],
 			'size' => $limit[1],
 		];
-	}
-
-	/**
-	 * Calls respond if needed based on the paginate GET parameter
-	 *
-	 * @param string $output
-	 * @param string $update
-	 *
-	 * @see _respond
-	 */
-	public function respondIfShould(string $output, string $update){
-		if (isset($_GET['paginate'])){
-			$_SERVER['REQUEST_URI'] = rtrim(preg_replace(new RegExp('paginate=true(?:&|$)'),'',$_SERVER['REQUEST_URI']),'?');
-			$this->_respond($output, $update);
-		}
-	}
-
-	/**
-	 * Respond to paginated result requests
-	 *
-	 * @param string $output The HTML of the paginated content
-	 * @param string $update The CSS selector telling the JS which element to place $output in
-	 */
-	private function _respond(string $output, string $update){
-		CoreUtils::detectUnexpectedJSON();
-
-		Response::done([
-			'output' => $output,
-			'update' => $update,
-			'for' => $this->_basePath,
-			'pagination' => $this->toHTML(NOWRAP),
-			'page' => $this->page,
-			'request_uri' => $_SERVER['REQUEST_URI'],
-		]);
 	}
 
 	/**
@@ -231,8 +212,22 @@ class Pagination {
 	 *
 	 * @return string
 	 */
-	public function getLimitString(){
+	public function getLimitString():string {
 		$limit = $this->getLimit();
 		return "LIMIT $limit[1] OFFSET $limit[0]";
+	}
+
+	/**
+	 * Returns the raw query string parameter for the page
+	 *
+	 * @param int|null $page Page number, or current page if not specified
+	 *
+	 * @return string
+	 */
+	public function getPageQueryString($page = null):string {
+		$pagenum = $page ?? $this->page;
+		if ($pagenum === 1)
+			$pagenum = CoreUtils::FIXPATH_EMPTY;
+		return "{$this->_noconflict}page=$pagenum";
 	}
 }

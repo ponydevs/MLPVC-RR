@@ -11,6 +11,7 @@ use App\DB;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\NoPCGSlotsException;
 use App\File;
+use App\HTTP;
 use App\ImageProvider;
 use App\Input;
 use App\JSON;
@@ -45,6 +46,7 @@ use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
+use Peertopark\UriBuilder;
 
 class ColorGuideController extends Controller {
 	public $do = 'colorguide';
@@ -58,12 +60,13 @@ class ColorGuideController extends Controller {
 	/** @var bool */
 	protected $_EQG, $_appearancePage, $_personalGuide;
 	/** @var string */
-	protected $_cgPath;
+	protected $_cgPath, $_guide;
 	protected function _initCGPath(){
-		$this->_cgPath = '/cg'.($this->_EQG?'/eqg':'');
+		$this->_cgPath = rtrim("/cg/{$this->_guide}", '/');
 	}
 	protected function _initialize($params, bool $setPath = true){
-		$this->_EQG = !empty($params['eqg']) || isset($_GET['eqg']);
+		$this->_guide = strtolower($params['guide'] ?? 'pony');
+		$this->_EQG = $this->_guide === 'eqg' || isset($_GET['eqg']);
 		if ($setPath)
 			$this->_initCGPath();
 		$this->_appearancePage = isset($_POST['APPEARANCE_PAGE']);
@@ -154,7 +157,7 @@ class ColorGuideController extends Controller {
 		$js[] = true;
 
 		CoreUtils::loadPage(__METHOD__, [
-			'title' => 'Full List - '.($this->_EQG?'EQG ':'').'Color Guide',
+			'title' => 'Full List - '.($this->_EQG?'EQG':'Pony').' Color Guide',
 			'css' => [true],
 			'js' => $js,
 			'import' => [
@@ -181,16 +184,18 @@ class ColorGuideController extends Controller {
 		Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG,null,null,'id,label'), true, $this->_EQG, NOWRAP)]);
 	}
 
-	public function changeList(){
-		$Pagination = new Pagination('cg/changes', 50, MajorChange::count());
+	public function changeList($params){
+		$this->_initialize($params);
+		$paginate = ltrim($this->_cgPath, '/').'/changes';
+		$Pagination = new Pagination($paginate, 9, MajorChange::total($this->_EQG));
 
-		CoreUtils::fixPath("/cg/changes/{$Pagination->page}");
-		$heading = 'Major Color Changes';
-		$title = "Page $Pagination->page - $heading - Color Guide";
+		$path = new UriBuilder("/{$Pagination->basePath}");
+		$path->append_query_raw($Pagination->getPageQueryString());
+		CoreUtils::fixPath($path);
+		$heading = 'Major '.CGUtils::GUIDE_MAP[$this->_guide].' Color Changes';
+		$title = "Page {$Pagination->page} - $heading - Color Guide";
 
-		$Changes = MajorChange::get(null, $Pagination->getLimitString());
-
-		$Pagination->respondIfShould(CGUtils::getChangesHTML($Changes, NOWRAP, SHOW_APPEARANCE_NAMES), '#changes');
+		$Changes = MajorChange::get(null, $this->_EQG, $Pagination->getLimitString());
 
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,
@@ -198,6 +203,7 @@ class ColorGuideController extends Controller {
 			'css' => [true],
 			'js' => ['paginate'],
 			'import' => [
+				'EQG' => $this->_EQG,
 				'Changes' => $Changes,
 				'Pagination' => $Pagination,
 			],
@@ -295,23 +301,21 @@ class ColorGuideController extends Controller {
 		    $Ponies = Appearances::get($this->_EQG, $Pagination->getLimit());
 		}
 
-		if (isset($_REQUEST['btnl'])){
-			if (empty($Ponies[0]->id))
-				Response::fail('The search returned no results.');
-			Response::done(['goto' => $Ponies[0]->toURL()]);
-		}
+		if (isset($_REQUEST['btnl']) && !empty($Ponies[0]->id))
+			HTTP::redirect($Ponies[0]->toURL());
 
-		CoreUtils::fixPath("$this->_cgPath/{$Pagination->page}?q=".(!empty($SearchQuery) ? $SearchQuery : CoreUtils::FIXPATH_EMPTY));
-		$heading = ($this->_EQG?'EQG ':'').'Color Guide';
+		$path = new UriBuilder($this->_cgPath);
+		$path->append_query_raw($Pagination->getPageQueryString());
+		$path->append_query_param('q', !empty($SearchQuery) ? $SearchQuery : CoreUtils::FIXPATH_EMPTY);
+		CoreUtils::fixPath($path);
+		$heading = ($this->_EQG?'EQG':'Pony').' Color Guide';
 		$title .= "Page {$Pagination->page} - $heading";
-
-		$Pagination->respondIfShould(Appearances::getHTML($Ponies, NOWRAP), '#list');
 
 		$settings = [
 			'title' => $title,
 			'heading' => $heading,
 			'css' => [true],
-			'js' => ['jquery.qtip', 'jquery.ctxmenu', true, 'paginate'],
+			'js' => ['jquery.ctxmenu', true, 'paginate'],
 			'import' => [
 				'EQG' => $this->_EQG,
 				'Ponies' => $Ponies,

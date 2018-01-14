@@ -11,9 +11,9 @@ use App\Logs;
 	}
 	else { ?>
 	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
-	<p class='align-center links'>
+	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
-	</p>
+	</div>
 	<form id="filter-form">
 		<strong>Show</strong>
 		<select name="type" class="entrytype">

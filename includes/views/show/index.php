@@ -35,7 +35,7 @@ global $EP_TITLE_REGEX; ?>
 	echo $EpisodesPagination; ?>
 	</div>
 	<div class="sidebyside">
-		<h1>Movies</h1>
+		<h1>Movies &amp; Shorts</h1>
 <?  if (empty($Movies))
 		echo '<p>There are no movies stored in the database</p>';
 	if (Permission::sufficient('staff')) { ?>

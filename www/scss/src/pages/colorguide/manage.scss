@@ -10,6 +10,9 @@
 	font-family: $monospace;
 }
 .algolia-autocomplete {
+	position: relative;
+	z-index: 1;
+
 	.aa-dataset-tags {
 		background: #fff;
 
@@ -38,13 +41,83 @@
 			@include loading-indicator(16px);
 		}
 	}
-	.addtag { cursor: text }
 }
-.tag.addtag.aa-hint { color: rgba(black, .4) !important }
 
-// Remove excess margin on appearance pages
-#tags .addtag {
-	margin: 0;
+.tag-editor {
+	display: block;
+	$border: 1px;
+	border: $border solid grey;
+	background: #fff;
+	$padding: 5px;
+	padding: $padding;
+	$minheight-descktop: 90px;
+	@media all and (min-width: $Breakpoint) {
+		min-height: $minheight-descktop;
+	}
+	@media all and (max-width: $Breakpoint) {
+		min-height: calc(30vh - #{$padding*2} - #{$border*2});
+	}
+
+	> :not(textarea) {
+		margin: 2px !important;
+	}
+
+	.addtag {
+		padding: 3px 5px;
+		box-sizing: border-box;
+	}
+	> .tag {
+		@include tag-style($TCharacter);
+
+		&.notice-me {
+			position: relative;
+			z-index: 2;
+			animation: flash 1s ease-in-out;
+
+			@keyframes flash {
+				from, to {
+					transform: scale(1);
+				}
+				50% {
+					transform: scale(1.5);
+					color: $NRed;
+					background: $NRedBG;
+				}
+			}
+		}
+
+		.remove {
+			font-weight: bold;
+			margin-left: .5em;
+			cursor: pointer;
+
+			&:before {
+				content: 'x';
+			}
+		}
+	}
+	textarea {
+		display: block;
+		width: 100%;
+		padding: $padding;
+		box-sizing: border-box;
+		resize: vertical;
+		font-family: $monospace;
+		font-size: 1em;
+
+		@media all and (min-width: $Breakpoint) {
+			min-height: $minheight-descktop;
+		}
+		@media all and (max-width: $Breakpoint) {
+			min-height: 30vh;
+		}
+	}
+}
+
+@media all and (min-width: $Breakpoint) {
+	#tags .button-block button {
+		margin: 5px 5px 0 0;
+	}
 }
 
 #pony-editor .ace_editor {

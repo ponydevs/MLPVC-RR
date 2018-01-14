@@ -9,10 +9,10 @@ use App\Models\Tag;
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
-	<p class='align-center links'>
+	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/cg">Back to Color Guide</a>
 		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
-	</p>
+	</div>
 	<?=$Pagination?>
 	<table id="tags">
 		<thead><?php
