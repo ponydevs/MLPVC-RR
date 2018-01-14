@@ -99,6 +99,10 @@ class Pagination {
 	private function _makeLink($i){
 		$href = new UriBuilder("/{$this->basePath}");
 		$href->append_query_raw($this->getPageQueryString($i));
+		$get = $_GET;
+		if (isset($get["{$this->_noconflict}page"]))
+			unset($get["{$this->_noconflict}page"]);
+		$href->append_query_array($get);
 		return $href->build_http_string();
 	}
 
