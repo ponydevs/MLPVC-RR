@@ -5,7 +5,10 @@ namespace App\Controllers;
 use App\Users;
 
 abstract class Controller {
+	protected static $auth = true;
+
 	public function __construct(){
-		Users::authenticate();
+		if (static::$auth)
+			Users::authenticate();
 	}
 }

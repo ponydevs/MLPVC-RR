@@ -5,7 +5,7 @@ use App\File;
 use App\RegExp;
 
 class MuffinRatingController extends Controller {
-	public $do = 'muffin-rating';
+	protected static $auth = false;
 
 	public function image(){
 		$ScorePercent = 100;

@@ -4,7 +4,9 @@ namespace App\Controllers;
 
 use App\File;
 
-class ManifestController {
+class ManifestController extends Controller {
+	protected static $auth = false;
+
 	public function json(){
 		$file = File::get(INCPATH.'manifest.json');
 		$file = str_replace('{{ABSPATH}}', ABSPATH, $file);
