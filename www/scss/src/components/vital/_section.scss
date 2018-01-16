@@ -21,7 +21,7 @@
 			margin-bottom: 5px;
 		}
 	}
-	> div > * {
+	> div > *:not(button) {
 		margin: 0 0 5px;
 
 		&:last-child { margin-bottom: 0 }

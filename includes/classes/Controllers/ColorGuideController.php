@@ -57,8 +57,10 @@ class ColorGuideController extends Controller {
 			CSRFProtection::protect();
 	}
 
+	/** @var bool|int|null */
+	protected $_EQG;
 	/** @var bool */
-	protected $_EQG, $_appearancePage, $_personalGuide;
+	protected $_appearancePage, $_personalGuide;
 	/** @var string */
 	protected $_cgPath, $_guide;
 	protected function _initCGPath(){
