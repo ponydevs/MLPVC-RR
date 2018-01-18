@@ -793,7 +793,10 @@ HTML;
 	}
 
 	public function canVisitorSeePCG():bool {
-		return Permission::sufficient('staff') || (!UserPrefs::get('p_hidepcg', $this) && (Auth::$signed_in && Auth::$user->id === $this->id));
+		$isStaff = Permission::sufficient('staff');
+		$isHiddenByUser = UserPrefs::get('p_hidepcg', $this);
+		$isOwner = Auth::$signed_in && Auth::$user->id === $this->id;
+		return $isStaff || $isOwner || !$isHiddenByUser;
 	}
 
 	public function maskedRole():string {

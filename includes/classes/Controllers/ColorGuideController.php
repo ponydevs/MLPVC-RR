@@ -85,7 +85,11 @@ class ColorGuideController extends Controller {
 		$nameSet = isset($params['name']);
 		if (!$nameSet && $force)
 			CoreUtils::notFound();
-		$this->_ownedBy = $nameSet ? Users::get($params['name'], 'name') : null;
+		if ($nameSet){
+			$this->_ownedBy = Users::get($params['name'], 'name');
+			if (empty($this->_ownedBy))
+				CoreUtils::notFound();
+		}
 		$this->_isOwnedByUser = $nameSet ? (Auth::$signed_in && Auth::$user->id === $this->_ownedBy->id) : false;
 
 		if ($nameSet)
