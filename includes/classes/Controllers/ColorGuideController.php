@@ -188,14 +188,11 @@ class ColorGuideController extends Controller {
 
 	public function changeList($params){
 		$this->_initialize($params);
-		$paginate = ltrim($this->_cgPath, '/').'/changes';
-		$Pagination = new Pagination($paginate, 9, MajorChange::total($this->_EQG));
+		$Pagination = new Pagination("{$this->_cgPath}/changes", 9, MajorChange::total($this->_EQG));
 
-		$path = new UriBuilder("/{$Pagination->basePath}");
-		$path->append_query_raw($Pagination->getPageQueryString());
-		CoreUtils::fixPath($path);
+		CoreUtils::fixPath($Pagination->toURI());
 		$heading = 'Major '.CGUtils::GUIDE_MAP[$this->_guide].' Color Changes';
-		$title = "Page {$Pagination->page} - $heading - Color Guide";
+		$title = "Page {$Pagination->getPage()} - $heading - Color Guide";
 
 		$Changes = MajorChange::get(null, $this->_EQG, $Pagination->getLimitString());
 
@@ -230,7 +227,7 @@ class ColorGuideController extends Controller {
 		if ($elasticAvail){
 			$search = new ElasticsearchDSL\Search();
 			$inOrder = true;
-		    $Pagination = new Pagination(ltrim($this->_cgPath, '/'), $AppearancesPerPage);
+		    $Pagination = new Pagination($this->_cgPath, $AppearancesPerPage);
 
 			// Search query exists
 			if ($searching){
@@ -300,7 +297,7 @@ class ColorGuideController extends Controller {
 			$SearchQuery = null;
 		    $_EntryCount = DB::$instance->where('ishuman',$this->_EQG)->where('id != 0')->count('appearances');
 
-		    $Pagination = new Pagination(ltrim($this->_cgPath, '/'), $AppearancesPerPage, $_EntryCount);
+		    $Pagination = new Pagination($this->_cgPath, $AppearancesPerPage, $_EntryCount);
 		    $Ponies = Appearances::get($this->_EQG, $Pagination->getLimit());
 		}
 
@@ -315,12 +312,11 @@ class ColorGuideController extends Controller {
 				HTTP::redirect($Ponies[0]->toURL());
 		}
 
-		$path = new UriBuilder($this->_cgPath);
-		$path->append_query_raw($Pagination->getPageQueryString());
+		$path = $Pagination->toURI();
 		$path->append_query_param('q', !empty($SearchQuery) ? $SearchQuery : CoreUtils::FIXPATH_EMPTY);
 		CoreUtils::fixPath($path);
 		$heading = ($this->_EQG?'EQG':'Pony').' Color Guide';
-		$title .= "Page {$Pagination->page} - $heading";
+		$title .= "Page {$Pagination->getPage()} - $heading";
 
 		$settings = [
 			'title' => $title,

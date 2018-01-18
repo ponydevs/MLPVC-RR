@@ -71,7 +71,7 @@ class PCGSlotHistory extends NSModel {
 	 * @param int|DateTime|null $created
 	 * @return self
 	 */
-	public static function makeRecord(string $user_id, string $change_type, ?int $change_amount = null, ?array $change_data = null, $created = null):self {
+	public static function record(string $user_id, string $change_type, ?int $change_amount = null, ?array $change_data = null, $created = null):self {
 		$entry = new self();
 		$entry->user_id = $user_id;
 

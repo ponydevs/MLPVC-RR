@@ -55,6 +55,7 @@ $router->map('GET',      '/[cg]/[guide:guide]?/[v]/[i:id]-[adi]',               
 $router->map('GET',      '/[cg]/[guide:guide]?/[v]/[adi]-[i:id]',                   'AppearanceController#view');
 $router->map('GET',      '/[cg]/[guide:guide]?/[v]/[i:id][cgimg:type]?.[cgext:ext]', 'AppearanceController#asFile');
 $router->map('GET',      '/[cg]/[guide:guide]?/sprite(-colors)?/[i:id][adi]?',      'AppearanceController#sprite');
+$router->map('GET',      '/[cg]/[guide:guide]?/tag-changes/[i:id][adi]?',       'AppearanceController#tagChanges');
 $router->map('GET|POST', '/[cg]/get-tags',                                      'TagController#autocomplete');
 $router->map('GET',      '/[cg]/cutiemark/[i:id].svg',                          'CutiemarkController#view');
 $router->map('GET',      '/[cg]/cutiemark/download/[i:id][adi]?',               'CutiemarkController#download');

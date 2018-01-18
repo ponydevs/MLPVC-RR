@@ -31,9 +31,9 @@ class PCGPointGrant extends NSModel {
 	 * @param int         $amount
 	 * @param null|string $comment
 	 *
-	 * @return PCGPointGrant
+	 * @return self
 	 */
-	public static function grant(string $to, string $by, int $amount, ?string $comment = null){
+	public static function record(string $to, string $by, int $amount, ?string $comment = null):self {
 		$instance = new self();
 		$instance->receiver_id = $to;
 		$instance->sender_id = $by;
@@ -45,7 +45,7 @@ class PCGPointGrant extends NSModel {
 
 	public function make_related_entries(bool $sync = true){
 		$action = $this->amount > 0 ? 'give' : 'take';
-		PCGSlotHistory::makeRecord($this->receiver_id, "manual_$action", abs($this->amount), [
+		PCGSlotHistory::record($this->receiver_id, "manual_$action", abs($this->amount), [
 			'comment' => $this->comment,
 			'by' => $this->sender_id,
 		], $this->created_at);

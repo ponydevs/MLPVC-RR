@@ -129,7 +129,7 @@ class NotificationsController extends Controller {
 						Response::fail('Only the recipient can accept or reject this gift.');
 					$giftArr = [ 'gift_id' => $gift->id ];
 					if ($read_action === 'reject'){
-						PCGSlotHistory::makeRecord($gift->sender_id, 'gift_rejected', $gift->amount, $giftArr);
+						PCGSlotHistory::record($gift->sender_id, 'gift_rejected', $gift->amount, $giftArr);
 						$gift->sender->syncPCGSlotCount();
 						$gift->rejected = true;
 						$gift->save();
@@ -140,7 +140,7 @@ class NotificationsController extends Controller {
 						Response::done();
 					}
 					else {
-						PCGSlotHistory::makeRecord($gift->receiver_id, 'gift_accepted', $gift->amount, $giftArr);
+						PCGSlotHistory::record($gift->receiver_id, 'gift_accepted', $gift->amount, $giftArr);
 						$gift->receiver->syncPCGSlotCount();
 						$gift->claimed = true;
 						$gift->save();

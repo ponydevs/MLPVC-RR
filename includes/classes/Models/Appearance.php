@@ -92,7 +92,7 @@ class Appearance extends NSModel implements LinkableInterface {
 	 *
 	 * @return string
 	 */
-	public function getSafeLabel():string {
+	public function getURLSafeLabel():string {
 		return CoreUtils::makeUrlSafe($this->label);
 	}
 
@@ -420,7 +420,7 @@ HTML;
 	}
 
 	public function toURL():string {
-		$safeLabel = $this->getSafeLabel();
+		$safeLabel = $this->getURLSafeLabel();
 		$pcg = $this->owner_id !== null;
 		$owner = $pcg ? '/@'.User::find($this->owner_id)->name : '';
 		$guide = $pcg ? '' : ($this->ishuman ? 'eqg' : 'pony').'/';
@@ -811,8 +811,11 @@ HTML;
 				$removed[] = $row['id'];
 			else unset($new[$name]);
 		}
-		if (!empty($removed))
+		if (!empty($removed)){
 			DB::$instance->where('tag_id', $removed)->where('appearance_id', $this->id)->delete(Tagged::$table_name);
+			foreach ($removed as $tag_id)
+				TagChange::record(false, $tag_id, $this->id);
+		}
 
 		foreach ($new as $name => $_){
 			$_POST['tag_name'] = CoreUtils::trim($name);
@@ -822,22 +825,23 @@ HTML;
 			$tag_name = CGUtils::validateTagName('tag_name');
 			$tag_type = null;
 
-			$TagCheck = CGUtils::normalizeEpisodeTagName($tag_name);
-			if ($TagCheck !== false){
-				$tag_name = $TagCheck;
+			$episodeTagCheck = CGUtils::normalizeEpisodeTagName($tag_name);
+			if ($episodeTagCheck !== false){
+				$tag_name = $episodeTagCheck;
 				$tag_type = 'ep';
 			}
 
-			$Tag = Tags::getActual($tag_name, 'name');
-			if (empty($Tag))
-				$Tag = Tag::create([
+			$tag = Tags::getActual($tag_name, 'name');
+			if (empty($tag))
+				$tag = Tag::create([
 					'name' => $tag_name,
 					'type' => $tag_type,
 				]);
 
-			Tagged::make($Tag->id, $this->id)->save();
-			$Tag->updateUses();
-			if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$eqg?'eqg':'pony'][$Tag->id]))
+			Tagged::make($tag->id, $this->id)->save();
+			TagChange::record(true, $tag->id, $this->id);
+			$tag->updateUses();
+			if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$eqg?'eqg':'pony'][$tag->id]))
 				Appearances::getSortReorder($eqg);
 		}
 	}

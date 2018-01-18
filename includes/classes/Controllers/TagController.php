@@ -17,13 +17,11 @@ use Peertopark\UriBuilder;
 
 class TagController extends ColorGuideController {
 	public function list(){
-		$Pagination = new Pagination('cg/tags', 20, DB::$instance->count('tags'));
+		$Pagination = new Pagination('/cg/tags', 20, DB::$instance->count('tags'));
 
-		$path = new UriBuilder('/cg/tags');
-		$path->append_query_raw($Pagination->getPageQueryString());
-		CoreUtils::fixPath($path);
+		CoreUtils::fixPath($Pagination->toURI());
 		$heading = 'Tags';
-		$title = "Page $Pagination->page - $heading - Color Guide";
+		$title = "Page {$Pagination->getPage()} - $heading - Color Guide";
 
 		$Tags = Tags::getFor(null,$Pagination->getLimit(), true);
 
@@ -309,7 +307,6 @@ HTML;
 			break;
 		}
 
-		// TODO Untangle spaghetti
 		$merging = $action === 'merge';
 		$synoning = $action === 'synon';
 		if ($merging || $synoning){

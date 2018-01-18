@@ -8,7 +8,7 @@ use App\Models\Tag;
 /** @var $Pagination \App\Pagination */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
-	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
+	<p>Displaying <?=$Pagination->getItemsPerPage()?> items/page</p>
 	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/cg">Back to Color Guide</a>
 		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>

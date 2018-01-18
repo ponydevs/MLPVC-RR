@@ -11,14 +11,14 @@ use Peertopark\UriBuilder;
 
 class ShowController extends Controller {
 	public function index(){
-		$EpisodesPagination = new Pagination('show', 8, Episode::count(['conditions' => 'season != 0']), 'ep');
-		$MoviesPagination = new Pagination('show', 8, Episode::count(['conditions' => 'season = 0']), 'movie');
+		$basePath = '/show';
+		$EpisodesPagination = new Pagination($basePath, 8, Episode::count(['conditions' => 'season != 0']), 'ep');
+		$MoviesPagination = new Pagination($basePath, 8, Episode::count(['conditions' => 'season = 0']), 'movie');
 
 		$Episodes = Episodes::get($EpisodesPagination->getLimit());
 		$Movies = Episodes::get($MoviesPagination->getLimit(), 'season = 0', true);
 
-		$path = new UriBuilder('/show');
-		$path->append_query_raw($EpisodesPagination->getPageQueryString());
+		$path = $EpisodesPagination->toURI();
 		$path->append_query_raw($MoviesPagination->getPageQueryString());
 		CoreUtils::fixPath($path);
 		$heading = 'Episodes & Movies';

@@ -121,14 +121,13 @@ class AdminController extends Controller {
 
 		foreach ($whereArgs as $arg)
 			DB::$instance->where($arg[0], $arg[1] ?? \PostgresDb::DBNULL);
-		$Pagination = new Pagination('admin/logs', 25, DB::$instance->count('log'));
+		$Pagination = new Pagination('/admin/logs', 25, DB::$instance->count('log'));
 		$heading = 'Global logs';
 		if (!empty($title))
 			$title .= '- ';
-		$title .= "Page {$Pagination->page} - $heading - Admin Area";
+		$title .= "Page {$Pagination->getPage()} - $heading - Admin Area";
 
-		$path = new UriBuilder('/admin/logs');
-		$path->append_query_raw($Pagination->getPageQueryString());
+		$path = $Pagination->toURI();
 		if (!empty($q))
 			foreach ($q as $item)
 				$path->append_query_raw($item);
@@ -558,13 +557,11 @@ HTML;
 	}
 
 	public function pcgAppearances(){
-		$Pagination = new Pagination('admin/pcg-appearances', 10, $this->_setupPcgAppearances()->count(Appearance::$table_name));
+		$Pagination = new Pagination('/admin/pcg-appearances', 10, $this->_setupPcgAppearances()->count(Appearance::$table_name));
 
-		$path = new UriBuilder('/admin/pcg-appearances');
-		$path->append_query_raw($Pagination->getPageQueryString());
-		CoreUtils::fixPath($path);
+		CoreUtils::fixPath($Pagination->toURI());
 		$heading = 'All PCG Appearances';
-		$title = "Page $Pagination->page - $heading - Color Guide";
+		$title = "Page {$Pagination->getPage()} - $heading - Color Guide";
 
 		$Appearances = $this->_setupPcgAppearances()->orderBy('added','DESC')->get(Appearance::$table_name, $Pagination->getLimit());
 

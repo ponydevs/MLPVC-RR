@@ -10,7 +10,7 @@ use App\Logs;
 		echo "<p>$MSG</p>";
 	}
 	else { ?>
-	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
+	<p>Displaying <?=$Pagination->getItemsPerPage()?> items/page</p>
 	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
 	</div>

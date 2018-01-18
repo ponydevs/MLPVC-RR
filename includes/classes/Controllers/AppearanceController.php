@@ -25,9 +25,11 @@ use App\Models\Notification;
 use App\Models\PCGSlotHistory;
 use App\Models\RelatedAppearance;
 use App\Models\Tag;
+use App\Models\TagChange;
 use App\Models\Tagged;
 use App\Models\User;
 use App\Notifications;
+use App\Pagination;
 use App\Permission;
 use App\RegExp;
 use App\Response;
@@ -60,7 +62,7 @@ class AppearanceController extends ColorGuideController {
 		if ($this->_appearance->hidden())
 			CoreUtils::noPerm();
 
-		$SafeLabel = $this->_appearance->getSafeLabel();
+		$SafeLabel = $this->_appearance->getURLSafeLabel();
 		CoreUtils::fixPath("$this->_cgPath/v/{$this->_appearance->id}-$SafeLabel");
 		$title = $heading = $this->_appearance->processLabel();
 
@@ -91,6 +93,20 @@ class AppearanceController extends ColorGuideController {
 		$this->_initPersonal($params);
 
 		$this->view($params);
+	}
+
+	public function tagChanges($params){
+		// TODO Finish feature
+		CoreUtils::notFound();
+
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		$this->_initialize($params);
+		$this->_getAppearance($params);
+
+		$totalChangeCount = TagChange::count(['appearance_id' => $this->_appearance->id]);
+		$Pagination = new Pagination("{$this->_cgPath}/tag-changes/{$this->_appearance->getURLSafeLabel()}", 25, $totalChangeCount);
 	}
 
 	public function asFile($params, User $Owner = null){
@@ -275,7 +291,7 @@ class AppearanceController extends ColorGuideController {
 					]);
 
 					if ($newAppearance->owner_id !== null){
-						PCGSlotHistory::makeRecord($newAppearance->owner_id, 'appearance_add', null, [
+						PCGSlotHistory::record($newAppearance->owner_id, 'appearance_add', null, [
 							'id' => $newAppearance->id,
 							'label' => $newAppearance->label,
 						]);
@@ -367,7 +383,7 @@ class AppearanceController extends ColorGuideController {
 					$notif->safeMarkRead();
 
 				if ($this->_appearance->owner_id !== null){
-					PCGSlotHistory::makeRecord($this->_appearance->owner_id, 'appearance_del', null, [
+					PCGSlotHistory::record($this->_appearance->owner_id, 'appearance_del', null, [
 						'id' => $this->_appearance->id,
 						'label' => $this->_appearance->label,
 					]);
@@ -728,7 +744,7 @@ class AppearanceController extends ColorGuideController {
 				$tags = (new Input('tags','string',[
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'List of tags is missing',
-						Input::ERROR_INVALID => 'List of tags is invalud',
+						Input::ERROR_INVALID => 'List of tags is invalid',
 					]
 				]))->out();
 				$this->_appearance->processTagChanges($tags, $this->_EQG);
@@ -861,7 +877,7 @@ class AppearanceController extends ColorGuideController {
 
 		[$Colors,$ColorGroups,$AllColors] = $this->_appearance->getSpriteRelevantColors();
 
-		$SafeLabel = $this->_appearance->getSafeLabel();
+		$SafeLabel = $this->_appearance->getURLSafeLabel();
 		CoreUtils::fixPath("{$this->_cgPath}/sprite/{$this->_appearance->id}-$SafeLabel");
 
 		CoreUtils::loadPage('ColorGuideController::sprite', [

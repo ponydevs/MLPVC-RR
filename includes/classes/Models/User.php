@@ -228,11 +228,11 @@ HTML;
 		$oldrole_is_staff = Permission::sufficient('staff', $oldrole);
 		$newrole_is_staff = Permission::sufficient('staff', $newrole);
 		if ($oldrole_is_staff && !$newrole_is_staff){
-			PCGSlotHistory::makeRecord($this->id, 'staff_leave');
+			PCGSlotHistory::record($this->id, 'staff_leave');
 			$this->syncPCGSlotCount();
 		}
 		else if (!$oldrole_is_staff && $newrole_is_staff){
-			PCGSlotHistory::makeRecord($this->id, 'staff_join');
+			PCGSlotHistory::record($this->id, 'staff_join');
 			$this->syncPCGSlotCount();
 		}
 
@@ -328,7 +328,7 @@ HTML;
 		DB::$instance->where('user_id', $this->id)->delete(PCGSlotHistory::$table_name);
 
 		# Free slot for everyone
-		PCGSlotHistory::makeRecord($this->id, 'free_trial', null, null, strtotime('2017-12-16T13:36:59Z'));
+		PCGSlotHistory::record($this->id, 'free_trial', null, null, strtotime('2017-12-16T13:36:59Z'));
 
 		# Grant points for approver requests
 		DB::$instance->where('requested_by', $this->id, '!=');
@@ -336,7 +336,7 @@ HTML;
 		$posts = $this->getApprovedFinishedRequestContributions(false);
 		if (!empty($posts))
 			foreach ($posts as $post){
-				PCGSlotHistory::makeRecord($this->id, 'post_approved', null, [
+				PCGSlotHistory::record($this->id, 'post_approved', null, [
 					'type' => $post->kind,
 					'id' => $post->id,
 				], $post->approval_entry->timestamp);
@@ -344,7 +344,7 @@ HTML;
 
 		# Take slots for existing appearances
 		foreach ($this->pcg_appearances as $appearance){
-			PCGSlotHistory::makeRecord($this->id, 'appearance_add', null, [
+			PCGSlotHistory::record($this->id, 'appearance_add', null, [
 				'id' => $appearance->id,
 				'label' => $appearance->label,
 			], $appearance->added);
@@ -358,7 +358,7 @@ HTML;
 				'SELECT DISTINCT * FROM pcg_slot_gifts
 				WHERE refunded_by IS NULL AND rejected = FALSE AND sender_id = ?', [$this->id]);
 		foreach ($sentGifts as $gift){
-			PCGSlotHistory::makeRecord($this->id, 'gift_sent', $gift->amount, [
+			PCGSlotHistory::record($this->id, 'gift_sent', $gift->amount, [
 				'gift_id' => $gift->id,
 			], $gift->created_at);
 		}
@@ -371,7 +371,7 @@ HTML;
 				'SELECT DISTINCT * FROM pcg_slot_gifts
 				WHERE claimed = TRUE AND receiver_id = ?', [$this->id]);
 		foreach ($receivedGifts as $gift){
-			PCGSlotHistory::makeRecord($this->id, 'gift_accepted', $gift->amount, [
+			PCGSlotHistory::record($this->id, 'gift_accepted', $gift->amount, [
 				'gift_id' => $gift->id,
 			], $gift->updated_at);
 		}

@@ -667,7 +667,7 @@ HTML;
 		/** @var $Post Post */
 		$Post = DB::$instance->where('id', $id)->getOne("{$type}s");
 		if (UserPrefs::get('a_pcgearn', $Post->reserver)){
-			PCGSlotHistory::makeRecord($Post->reserver->id, 'post_approved', null, [
+			PCGSlotHistory::record($Post->reserver->id, 'post_approved', null, [
 				'type' => $Post->kind,
 				'id' => $Post->id,
 			]);

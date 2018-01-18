@@ -238,10 +238,8 @@ class UserController extends Controller {
 		if ($User->id !== (Auth::$user->id ?? null) && $params['type'] === 'requests' && Permission::insufficient('staff'))
 			CoreUtils::notFound();
 
-		$paginationPath = "@{$User->name}/contrib/{$params['type']}";
-
 		$itemsPerPage = 10;
-		$Pagination = new Pagination($paginationPath, $itemsPerPage);
+		$Pagination = new Pagination("/@{$User->name}/contrib/{$params['type']}", $itemsPerPage);
 
 		/** @var $cnt int */
 		/** @var $data array */
@@ -282,11 +280,9 @@ class UserController extends Controller {
 				throw new \RuntimeException(__METHOD__.": Mising data retriever for type {$params['type']}");
 		}
 
-		$path = new UriBuilder("/$paginationPath");
-		$path->append_query_raw($Pagination->getPageQueryString());
-		CoreUtils::fixPath($path);
+		CoreUtils::fixPath($Pagination->toURI());
 
-		$title = "Page {$Pagination->page} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($User->name).' Contributions';
+		$title = "Page {$Pagination->getPage()} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($User->name).' Contributions';
 		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$User->toAnchor();
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,

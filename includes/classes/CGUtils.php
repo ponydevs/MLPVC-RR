@@ -109,7 +109,7 @@ class CGUtils {
 	 */
 	private static function _processFullListLink(Appearance $appearance, &$HTML, bool $previews){
 		$sprite = '';
-		$url = "/cg/v/{$appearance->id}-".$appearance->getSafeLabel();
+		$url = "/cg/v/{$appearance->id}-".$appearance->getURLSafeLabel();
 		if (Permission::sufficient('staff')){
 			$SpriteURL = $appearance->getSpriteURL();
 			if (!empty($SpriteURL)){

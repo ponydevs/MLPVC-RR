@@ -8,7 +8,7 @@ use App\Tags;
 /** @var $Pagination \App\Pagination */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
-	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
+	<p>Displaying <?=$Pagination->getItemsPerPage()?> items/page</p>
 	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/cg/<?=$EQG?'eqg':'pony'?>">Back to <?=$EQG?'EQG':'Pony'?> Guide</a>
 		<a class='btn link typcn typcn-world' href="/cg/<?=$EQG?'pony':'eqg'?>/changes">View <?=$EQG?'Pony':'EQG'?> Changes</a>

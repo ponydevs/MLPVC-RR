@@ -33,14 +33,12 @@ class PersonalGuideController extends ColorGuideController {
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
 	    $_EntryCount = $this->_ownedBy->getPCGAppearanceCount();
 
-	    $Pagination = new Pagination("@{$this->_ownedBy->name}/cg", $AppearancesPerPage, $_EntryCount);
+	    $Pagination = new Pagination($this->_cgPath, $AppearancesPerPage, $_EntryCount);
 	    $Ponies = $this->_ownedBy->getPCGAppearances($Pagination);
 
-		$path = new UriBuilder($this->_cgPath);
-		$path->append_query_raw($Pagination->getPageQueryString());
-		CoreUtils::fixPath($path);
+		CoreUtils::fixPath($Pagination->toURI());
 		$heading = CoreUtils::posess($this->_ownedBy->name).' Personal Color Guide';
-		$title = "Page {$Pagination->page} - $heading";
+		$title = "Page {$Pagination->getPage()} - $heading";
 
 		$settings = [
 			'title' => $title,
@@ -70,18 +68,16 @@ class PersonalGuideController extends ColorGuideController {
 		$EntriesPerPage = 20;
 	    $_EntryCount = $this->_ownedBy->getPCGSlotHistoryEntryCount();
 
-	    $Pagination = new Pagination("@{$this->_ownedBy->name}/cg/point-history", $EntriesPerPage, $_EntryCount);
+	    $Pagination = new Pagination("{$this->_cgPath}/point-history", $EntriesPerPage, $_EntryCount);
 	    $Entries = $this->_ownedBy->getPCGSlotHistoryEntries($Pagination);
 	    if (\count($Entries) === 0){
 	        $this->_ownedBy->recalculatePCGSlotHistroy();
 	        $Entries = $this->_ownedBy->getPCGSlotHistoryEntries($Pagination);
 	    }
 
-		$path = new UriBuilder("{$this->_cgPath}/point-history");
-		$path->append_query_raw($Pagination->getPageQueryString());
-		CoreUtils::fixPath($path);
+		CoreUtils::fixPath($Pagination->toURI());
 		$heading = ($this->_isOwnedByUser ? 'Your' : CoreUtils::posess($this->_ownedBy->name)).' Point History';
-		$title = "Page {$Pagination->page} - $heading";
+		$title = "Page {$Pagination->getPage()} - $heading";
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))
@@ -256,7 +252,7 @@ class PersonalGuideController extends ColorGuideController {
 
 		foreach ($gifts as $gift){
 			$giftIDArr =[ 'gift_id' => $gift->id ];
-			PCGSlotHistory::makeRecord($gift->sender_id, 'gift_refunded', $gift->amount, $giftIDArr);
+			PCGSlotHistory::record($gift->sender_id, 'gift_refunded', $gift->amount, $giftIDArr);
 			$gift->sender->syncPCGSlotCount();
 
 			$gift->refunded_by = Auth::$user->id;
@@ -324,7 +320,7 @@ class PersonalGuideController extends ColorGuideController {
 		]))->out();
 		CoreUtils::checkStringValidity($comment, 'Comment', INVERSE_PRINTABLE_ASCII_PATTERN);
 
-		PCGPointGrant::grant($target->id, Auth::$user->id, $amount, $comment);
+		PCGPointGrant::record($target->id, Auth::$user->id, $amount, $comment);
 
 		$nPoints = CoreUtils::makePlural('point', abs($amount), PREPEND_NUMBER);
 		$given = $amount > 0 ? 'given' : 'taken';

@@ -3,7 +3,7 @@
 /** @var $Appearances App\Models\Appearance[] */ ?>
 <div id="content" class="section-container">
 	<h1><?=$heading?></h1>
-	<p>Displaying <?=$Pagination->itemsPerPage?> items/page</p>
+	<p>Displaying <?=$Pagination->getItemsPerPage()?> items/page</p>
 	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
 	</div>

@@ -50,7 +50,10 @@ use App\Tags;
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
 			<div class='tags'><?=$Appearance->getTagsHTML(NOWRAP)?></div>
 <?php       if (Permission::sufficient('staff')){ ?>
-			<div class="button-block"><button id="edit-tags-btn" class="darkblue typcn typcn-pencil">Edit tags</button></div>
+			<div class="button-block">
+				<button id="edit-tags-btn" class="darkblue typcn typcn-pencil">Edit tags</button>
+				<!-- <a class="btn link typcn typcn-document" href="/cg/tag-changes/<?=$Appearance->id?>">Tag changes</a> -->
+			</div>
 <?php       } ?>
 		</section>
 <?php

@@ -70,13 +70,11 @@ class EventController extends Controller {
 	}
 
 	public function list(){
-		$Pagination = new Pagination('events', 20, Event::count());
+		$Pagination = new Pagination('/events', 5, Event::count());
 
-		$path = new UriBuilder('/events');
-		$path->append_query_raw($Pagination->getPageQueryString());
-		CoreUtils::fixPath($path);
+		CoreUtils::fixPath($Pagination->toURI());
 		$heading = 'Events';
-		$title = "Page $Pagination->page - $heading";
+		$title = "Page {$Pagination->getPage()} - $heading";
 
 		$Events = Event::find('all', $Pagination->getAssocLimit());
 

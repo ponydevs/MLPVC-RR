@@ -9,7 +9,7 @@ use App\Tags;
 /** @var $isOwner bool */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
-	<p>Displaying <?= $Pagination->itemsPerPage ?> items/page</p>
+	<p>Displaying <?=$Pagination->getItemsPerPage()?> items/page</p>
 
 	<div class="align-center button-block">
 		<a href="<?=$User->toURL()?>" class="btn link typcn typcn-user">Profile page</a>

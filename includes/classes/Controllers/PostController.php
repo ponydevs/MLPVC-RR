@@ -263,7 +263,7 @@ class PostController extends Controller {
 				$this->_post->lock = false;
 				$this->_post->save();
 
-				PCGSlotHistory::makeRecord($this->_post->reserved_by, 'post_unapproved', null, [
+				PCGSlotHistory::record($this->_post->reserved_by, 'post_unapproved', null, [
 					'type' => $this->_post->kind,
 					'id' => $this->_post->id,
 				]);
