@@ -840,6 +840,40 @@ ALTER SEQUENCE log__episodes_entryid_seq OWNED BY log__episodes.entryid;
 
 
 --
+-- Name: log__failed_auth_attempts; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE log__failed_auth_attempts (
+    entryid integer NOT NULL,
+    user_agent character varying(255)
+);
+
+
+ALTER TABLE log__failed_auth_attempts OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__failed_auth_attempts_entryid_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE log__failed_auth_attempts_entryid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE log__failed_auth_attempts_entryid_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: log__failed_auth_attempts_entryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE log__failed_auth_attempts_entryid_seq OWNED BY log__failed_auth_attempts.entryid;
+
+
+--
 -- Name: log__img_update; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1640,6 +1674,44 @@ ALTER SEQUENCE sessions_id_seq OWNED BY sessions.id;
 
 
 --
+-- Name: tag_changes; Type: TABLE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE TABLE tag_changes (
+    id integer NOT NULL,
+    tag_id integer NOT NULL,
+    appearance_id integer NOT NULL,
+    user_id uuid NOT NULL,
+    added boolean NOT NULL,
+    "when" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE tag_changes OWNER TO "mlpvc-rr";
+
+--
+-- Name: tag_changes_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE SEQUENCE tag_changes_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tag_changes_id_seq OWNER TO "mlpvc-rr";
+
+--
+-- Name: tag_changes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER SEQUENCE tag_changes_id_seq OWNED BY tag_changes.id;
+
+
+--
 -- Name: tagged; Type: TABLE; Schema: public; Owner: mlpvc-rr
 --
 
@@ -1896,6 +1968,13 @@ ALTER TABLE ONLY log__episodes ALTER COLUMN entryid SET DEFAULT nextval('log__ep
 
 
 --
+-- Name: log__failed_auth_attempts entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__failed_auth_attempts ALTER COLUMN entryid SET DEFAULT nextval('log__failed_auth_attempts_entryid_seq'::regclass);
+
+
+--
 -- Name: log__img_update entryid; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2033,6 +2112,13 @@ ALTER TABLE ONLY reservations ALTER COLUMN id SET DEFAULT nextval('reservations_
 --
 
 ALTER TABLE ONLY sessions ALTER COLUMN id SET DEFAULT nextval('sessions_id_seq'::regclass);
+
+
+--
+-- Name: tag_changes id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tag_changes ALTER COLUMN id SET DEFAULT nextval('tag_changes_id_seq'::regclass);
 
 
 --
@@ -2234,6 +2320,14 @@ ALTER TABLE ONLY log__episodes
 
 
 --
+-- Name: log__failed_auth_attempts log__failed_auth_attempts_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY log__failed_auth_attempts
+    ADD CONSTRAINT log__failed_auth_attempts_pkey PRIMARY KEY (entryid);
+
+
+--
 -- Name: log__img_update log__img_update_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2415,6 +2509,14 @@ ALTER TABLE ONLY reservations
 
 ALTER TABLE ONLY sessions
     ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tag_changes tag_changes_pkey; Type: CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tag_changes
+    ADD CONSTRAINT tag_changes_pkey PRIMARY KEY (id);
 
 
 --
@@ -2710,6 +2812,27 @@ CREATE INDEX sessions_user_id ON sessions USING btree (user_id);
 
 
 --
+-- Name: tag_changes_appearance_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX tag_changes_appearance_id ON tag_changes USING btree (appearance_id);
+
+
+--
+-- Name: tag_changes_tag_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX tag_changes_tag_id ON tag_changes USING btree (tag_id);
+
+
+--
+-- Name: tag_changes_user_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE INDEX tag_changes_user_id ON tag_changes USING btree (user_id);
+
+
+--
 -- Name: tags_name; Type: INDEX; Schema: public; Owner: mlpvc-rr
 --
 
@@ -2977,6 +3100,30 @@ ALTER TABLE ONLY reservations
 
 ALTER TABLE ONLY sessions
     ADD CONSTRAINT sessions_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: tag_changes tag_changes_appearance_id; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tag_changes
+    ADD CONSTRAINT tag_changes_appearance_id FOREIGN KEY (appearance_id) REFERENCES appearances(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: tag_changes tag_changes_tag_id; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tag_changes
+    ADD CONSTRAINT tag_changes_tag_id FOREIGN KEY (tag_id) REFERENCES tags(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: tag_changes tag_changes_user_id; Type: FK CONSTRAINT; Schema: public; Owner: mlpvc-rr
+--
+
+ALTER TABLE ONLY tag_changes
+    ADD CONSTRAINT tag_changes_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

@@ -33,7 +33,7 @@
 			<li>Other logos not mentioned previously were found on <a href="https://github.com/alrra/browser-logos/">alrra/browser-logos</a></li>
 		</ul>
 		<p>
-			<a href="/cg/blending-reverse"><strong>Blending Reverser</strong></a> built with the help of <a href="https://pirill-poveniy.deviantart.com">Pirill-Poveniy</a> and <a href="https://parcly-taxel.deviantart.com">Parcly-Taxel</a><br>
+			<!-- <a href="/cg/blending-reverse"><strong>Blending Reverser</strong></a> built with the help of <a href="https://pirill-poveniy.deviantart.com">Pirill-Poveniy</a> and <a href="https://parcly-taxel.deviantart.com">Parcly-Taxel</a><br> -->
 			<strong>Coding, design &amp; hosting:</strong> <a href="https://github.com/SeinopSys">SeinopSys</a>
 		</p>
 	</section>
