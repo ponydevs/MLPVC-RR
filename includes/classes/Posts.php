@@ -481,9 +481,9 @@ HTML;
 		if (!empty($TransferAttempts)){
 			$SentFor = [];
 			foreach ($TransferAttempts as $n){
-				Notifications::safeMarkRead($n['id']);
+				Notifications::safeMarkRead($n->id);
 
-				$data = JSON::decode($n['data']);
+				$data = JSON::decode($n->data);
 				if (!empty($SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"]))
 					continue;
 
