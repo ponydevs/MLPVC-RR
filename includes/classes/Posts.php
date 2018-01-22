@@ -179,15 +179,16 @@ class Posts {
 		}
 		catch (\Exception $e){ Response::fail($e->getMessage()); }
 
-
 		foreach (self::TYPES as $type){
 			/** @noinspection DisconnectedForeachInstructionInspection */
 			if ($Post !== null)
 				DB::$instance->where('id',$Post->id,'!=');
-			/** @var $UsedUnder Post */
-			$UsedUnder = DB::$instance->where('preview',$Image->preview)->getOne("{$type}s");
-			if (!empty($UsedUnder))
-				Response::fail('This exact image has already been used for a '.$UsedUnder->toAnchor($type,null,true).' under '.$UsedUnder->ep->toAnchor());
+			if ($Image->preview !== null){
+				/** @var $UsedUnder Post */
+				$UsedUnder = DB::$instance->where('preview',$Image->preview)->getOne("{$type}s");
+				if (!empty($UsedUnder))
+					Response::fail('This exact image has already been used for a '.$UsedUnder->toAnchor($type,null,true).' under '.$UsedUnder->ep->toAnchor());
+			}
 		}
 
 		return $Image;

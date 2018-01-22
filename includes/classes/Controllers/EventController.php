@@ -341,7 +341,7 @@ class EventController extends Controller {
 	}
 
 	/**
-	 * @return EventEntry
+	 * @return array
 	 */
 	private function _addSetEntry(){
 		$update = [];
@@ -357,13 +357,13 @@ class EventController extends Controller {
 				ImageProvider::PROV_FAVME,
 				ImageProvider::PROV_DA,
 				ImageProvider::PROV_STASH,
-			]);
+			], false, false);
 		}
 		catch (MismatchedProviderException|UnsupportedProviderException $e){
 			Response::fail('Entry link must point to a deviation or Sta.sh submission');
 		}
 		catch (\Exception $e){
-			Response::fail($e->getMessage());
+			Response::fail('Erroe while checking submission link: '.$e->getMessage());
 		}
 		$update['sub_id'] = $submission->id;
 		$update['sub_prov'] = $submission->provider;
@@ -401,7 +401,7 @@ class EventController extends Controller {
 			$update['prev_thumb'] = null;
 		}
 
-		return new EventEntry($update);
+		return $update;
 	}
 
 	public function addEntry($params){
@@ -418,7 +418,9 @@ class EventController extends Controller {
 		if ($this->_event->hasEnded() && Permission::insufficient('staff'))
 			Response::fail('This event has concluded, so no new entries can be submitted.');
 
-		$insert = $this->_addSetEntry();
+		$insert = new EventEntry();
+		foreach ($this->_addSetEntry() as $k => $v)
+			$insert->{$k} = $v;
 		$insert->submitted_by = Auth::$user->id;
 		$insert->event_id = $this->_event->id;
 		$insert->score = $this->_event->type === 'contest' ? 0 : null;
@@ -478,22 +480,18 @@ class EventController extends Controller {
 	public function setEntry($params){
 		$this->_entryPermCheck($params);
 
-		$entry = $this->_addSetEntry();
-
 		$changes = [];
-		foreach ($entry->attributes() as $k => $v){
+		foreach ($this->_addSetEntry() as $k => $v){
 			if ($v !== $this->_entry->{$k})
 				$changes[$k] = $v;
 		}
 
 		if (!empty($changes)){
-			// Do not change edit time if only entry title is changed
-			if (!(\count($changes) === 1 && array_key_exists('title', $changes)))
-				$changes['last_edited'] = date('c');
-			$entry->update_attributes($changes);
+			$changes['last_edited'] = date('c');
+			$this->_entry->update_attributes($changes);
 		}
 
-		Response::done(['entryhtml' => $entry->toListItemHTML($this->_event, false, NOWRAP)]);
+		Response::done(['entryhtml' => $this->_entry->toListItemHTML($this->_event, false, NOWRAP)]);
 	}
 
 	public function delEntry($params){

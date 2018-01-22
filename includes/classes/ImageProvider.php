@@ -20,8 +20,8 @@ class ImageProvider {
 	 */
 	public $extra;
 
-	private $_ignoreMime;
-	public function __construct(string $url = null, ?array $reqProv = null, bool $ignoreMime = false){
+	private $_ignore_mime, $_require_image;
+	public function __construct(string $url = null, ?array $reqProv = null, bool $ignoreMime = false, bool $requireImage = true){
 		if (!empty($url)){
 			$provider = self::getProvider(DeviantArt::trimOutgoingGateFromUrl(CoreUtils::trim($url)));
 			if (!empty($reqProv)){
@@ -31,7 +31,8 @@ class ImageProvider {
 					throw new MismatchedProviderException($provider->name);
 			}
 			$this->provider = $provider->name;
-			$this->_ignoreMime = $ignoreMime;
+			$this->_ignore_mime = $ignoreMime;
+			$this->_require_image = $requireImage;
 			$this->setUrls($provider->itemid);
 		}
 	}
@@ -87,7 +88,7 @@ class ImageProvider {
 	}
 
 	private function _checkImageAllowed($url, $ctype = null){
-		if ($this->_ignoreMime)
+		if ($this->_ignore_mime)
 			return;
 
 		if (empty($ctype)){
@@ -98,6 +99,13 @@ class ImageProvider {
 		if (empty(self::$_allowedMimeTypes[$ctype]))
 			throw new \RuntimeException((!empty(self::$_blockedMimeTypes[$ctype])? self::$_blockedMimeTypes[$ctype].' are':"Content type \"$ctype\" is").' not allowed, please use a different image.');
 	}
+
+	public const STASH_IMAGE_TYPES = [
+		'png'  => true,
+		'jpg'  => true,
+		'jpeg' => true,
+		'gif'  => true,
+	];
 
 	/**
 	 * Sets $this->fullsize and $this->preview on success
@@ -157,16 +165,40 @@ class ImageProvider {
 				}
 
 				try {
-					$CachedDeviation = DeviantArt::getCachedDeviation($id,$this->provider);
+					$CachedDeviation = DeviantArt::getCachedDeviation($id, $this->provider);
 
-					if (isset($CachedDeviation->preview) && !DeviantArt::isImageAvailable($CachedDeviation->preview)){
-						$preview = CoreUtils::aposEncode($CachedDeviation->preview);
-						throw new \RuntimeException("The preview image appears to be unavailable. Please make sure <a href='$preview'>this link</a> works and try again, or re-submit the deviation if this persists.");
+					$isImage = $this->provider === 'sta.sh' ? isset(self::STASH_IMAGE_TYPES[$CachedDeviation->type]) : true;
+
+					if ($isImage){
+						$broke = false;
+						$failed = [];
+						$ps = \is_string($CachedDeviation->preview);
+						if (!$ps || !DeviantArt::isImageAvailable($CachedDeviation->preview)){
+							if ($ps)
+								$failed["$this->provider#$this->id"]['preview'] = $CachedDeviation->preview;
+							$broke = true;
+						}
+						$fss = \is_string($CachedDeviation->fullsize);
+						if (!$fss || !DeviantArt::isImageAvailable($CachedDeviation->fullsize)){
+							if ($fss)
+								$failed["$this->provider#$this->id"]['fullsize'] = $CachedDeviation->fullsize;
+							$broke = true;
+						}
+						if ($broke){
+							$makesure = \count($failed) > 0 ? ' make sure the links below work and' : '';
+							$message = "<p>The submission appears to be unavailable. Please$makesure try again, or re-submit if this persists.</p>";
+							foreach ($failed as $identify => $links){
+								$anchors = [];
+								foreach ($links as $name => $url){
+									$anchors[] = "<a href='".CoreUtils::aposEncode($url)."' target='_blank' rel='noopener'>".CoreUtils::capitalize($name).'</a>';
+								}
+								$message .= '<div><strong>'.CoreUtils::escapeHTML($identify).':</strong> '.implode(', ', $anchors).'</div>';
+							}
+							throw new \RuntimeException($message);
+						}
 					}
-					if (isset($CachedDeviation->fullsize) && !DeviantArt::isImageAvailable($CachedDeviation->fullsize)){
-						$fullsize = CoreUtils::aposEncode($CachedDeviation->fullsize);
-						throw new \RuntimeException("The submission appears to be unavailable. Please make sure <a href='$fullsize'>this link</a> works and try again, or re-submit the deviation if this persists.");
-					}
+					else if ($this->_require_image)
+						throw new \RuntimeException('The provided link cannot be used becuase it does not have an associated image.');
 				}
 				catch(CURLRequestException $e){
 					if ($e->getCode() === 404)

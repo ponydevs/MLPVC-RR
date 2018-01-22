@@ -148,7 +148,13 @@ class DeviantArt {
 				'provider' => $type,
 				'title' => preg_replace(new RegExp('\\\\\''),"'",$json['title']),
 				'preview' => isset($json['thumbnail_url']) ? URL::makeHttps($json['thumbnail_url']) : null,
-				'fullsize' => isset($json['fullsize_url']) ? URL::makeHttps($json['fullsize_url']) : null,
+				'fullsize' => isset($json['fullsize_url'])
+					? URL::makeHttps($json['fullsize_url'])
+					: (
+						isset($json['url']) && !preg_match(new RegExp('-\d+$'), $json['url'])
+						? URL::makeHttps($json['url'])
+						: null
+					),
 				'author' => $json['author_name'],
 				'updated_on' => date('c'),
 			];
@@ -180,7 +186,7 @@ class DeviantArt {
 				break;
 			}
 
-			if (!preg_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
+			if ($insert['fullsize'] === null || !preg_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
 				$fullsize_attempt = self::getDownloadURL($ID, $type);
 				if (\is_string($fullsize_attempt))
 					$insert['fullsize'] = $fullsize_attempt;
