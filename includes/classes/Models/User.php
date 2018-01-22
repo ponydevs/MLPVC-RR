@@ -562,9 +562,7 @@ HTML;
 	 * @return EventEntry[]
 	 */
 	public function getEntriesFor(Event $event, string $cols = '*'):?array {
-
-
-		return DB::$instance->where('submitted_by', $this->id)->where('eventid', $event->id)->get(EventEntry::$table_name,null,$cols);
+		return DB::$instance->where('submitted_by', $this->id)->where('event_id', $event->id)->get(EventEntry::$table_name,null,$cols);
 	}
 
 	public const YOU_HAVE = [

@@ -331,7 +331,7 @@ class EventController extends Controller {
 			Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
 
 		if (!empty($this->_event->max_entries)){
-			$entrycnt = \count(Auth::$user->getEntriesFor($this->_event, 'entryid'));
+			$entrycnt = \count(Auth::$user->getEntriesFor($this->_event, 'id'));
 			if ($entrycnt >= $this->_event->max_entries)
 				Response::fail("You've used all of your entries for this event. If you want to change your entry, edit it instead.");
 			$remain = $this->_event->max_entries - $entrycnt;
@@ -438,7 +438,7 @@ class EventController extends Controller {
 		if (!isset($params['entryid']))
 			Response::fail('Entry ID is missing or invalid');
 
-		$this->_entry = DB::$instance->where('entryid', \intval($params['entryid'], 10))->getOne(EventEntry::$table_name);
+		$this->_entry = DB::$instance->where('id', \intval($params['entryid'], 10))->getOne(EventEntry::$table_name);
 		if (empty($this->_entry) || ($action === 'manage' && !Permission::sufficient('staff') && $this->_entry->submitted_by !== Auth::$user->id))
 			Response::fail('The requested entry could not be found or you are not allowed to edit it');
 
@@ -499,7 +499,7 @@ class EventController extends Controller {
 	public function delEntry($params){
 		$this->_entryPermCheck($params);
 
-		if (!DB::$instance->where('entryid', $this->_entry->id)->delete(EventEntry::$table_name))
+		if (!$this->_entry->delete())
 			Response::dbError('Failed to delete entry');
 
 		Response::done();

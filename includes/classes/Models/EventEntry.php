@@ -43,8 +43,8 @@ class EventEntry extends NSModel {
 			return;
 
 		$score = DB::$instance->disableAutoClass()->where('entryid', $this->id)->getOne(EventEntryVote::$table_name, 'COALESCE(SUM(value),0) as score');
-		DB::$instance->where('entryid', $this->id)->update(self::$table_name,$score);
 		$this->score = $score['score'];
+		$this->save();
 
 		try {
 			CoreUtils::socketEvent('entry-score',[
