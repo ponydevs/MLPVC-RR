@@ -99,9 +99,10 @@ $(function(){
 				`<div class='hidden section ai'>
 					<h4>How to import swatches to Adobe Illustrator</h4>
 					<ul>
-						<li>Because Illustator uses a proprietary format for swatch files, you must download a script <a href='/dist/Import Swatches from JSON.jsx?v=1.5' download='Import Swatches from JSON.jsx' class='btn typcn typcn-download'>by clicking here</a> to be able to import them from our site. Once you downloaded it, place it in an easy to find location, because you'll need to use it every time you want to import colors.<br><small>If you place it in <code>&hellip;\\Adobe\\Adobe Illustrator *\\Presets\\*\\Scripts</code> it'll be available as one of the options in the Scripts submenu.</small></li>
+						<li>Because Illustator uses a proprietary format for swatch files, you must download a script <a href='/dist/Import Swatches from JSON.jsx?v=1.5' download='Import Swatches from JSON.jsx' class='btn typcn typcn-download'>by clicking here</a> to be able to import them from our site. Be sure to save it to an easy to find location because you'll need to browser for it every time you want to import colors.</li>
 						<li>Once you have the script, <a href="/cg/v/${appearanceID}s.json${token}" class="btn blue typcn typcn-download">click here</a> to download the <code>.json</code> file that you'll need to use for the import.</li>
 						<li>Now that you have the 2 files, open Illustrator, create/open a document, then go to <strong>File &rsaquo; Scripts &rsaquo; Other Script</strong> (or press ${pressAi}) then find the file with the <code>.jsx</code> extension (the one you first downloaded). A dialog will appear telling you what to do next.</li>
+						<li>Optional: If you'd like to make using the script faster, you can place it in the <code>&hellip;\\Adobe<wbr>\\Adobe Illustrator *<wbr>\\Presets<wbr>\\*<wbr>\\Scripts</code> folder, and after an Illustrator restart it'll be available as one of the options in the File &rsaquo; Scripts submenu.</li>
 					</ul>
 					<div class="responsive-embed">
 						<iframe src="https://www.youtube.com/embed/oobQZ2xiDB8" allowfullscreen async defer></iframe>
