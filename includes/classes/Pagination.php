@@ -35,7 +35,7 @@ class Pagination {
 		$this->_itemsPerPage = $itemsPerPage;
 		$this->_basePath = $basePath;
 		$this->_noconflict = $noConflict;
-		$this->page = 1;
+		$this->_page = 1;
 		$this->guessPage();
 
 		if ($entryCount !== null)
@@ -49,7 +49,7 @@ class Pagination {
 			$page = array_pop($uri);
 		}
 		if (is_numeric($page))
-			$this->page = max((int) $page, 1);
+			$this->_page = max((int) $page, 1);
 	}
 
 	/**
@@ -60,7 +60,7 @@ class Pagination {
 	 * @return self
 	 */
 	public function forcePage(int $page){
-		$this->page = max($page, 1);
+		$this->_page = max($page, 1);
 
 		return $this;
 	}
@@ -74,8 +74,8 @@ class Pagination {
 	 */
 	public function calcMaxPages(int $EntryCount){
 		$this->_maxPages = (int) max(1, ceil($EntryCount/$this->_itemsPerPage));
-		if ($this->page > $this->_maxPages)
-			$this->page = $this->_maxPages;
+		if ($this->_page > $this->_maxPages)
+			$this->_page = $this->_maxPages;
 
 		return $this;
 	}
@@ -94,8 +94,8 @@ class Pagination {
 			array_merge(
 				[1],
 				range(
-					max($this->page - $this->_context, 1),
-					min($this->page + $this->_context, $this->_maxPages)
+					max($this->_page - $this->_context, 1),
+					min($this->_page + $this->_context, $this->_maxPages)
 				),
 				[$this->_maxPages]
 			)
@@ -113,7 +113,7 @@ class Pagination {
 	}
 
 	private function _makeItem(int $i, &$currentIndex = null, $nr = null){
-		$current = $i === (int) $this->page;
+		$current = $i === (int) $this->_page;
 		if ($currentIndex !== null && $current)
 			$currentIndex = $nr;
 		return '<li>'.(
@@ -129,7 +129,7 @@ class Pagination {
 			return '';
 		}
 
-		if (!($this->page === 1 && $this->_maxPages === 1)){
+		if (!($this->_page === 1 && $this->_maxPages === 1)){
 			$Items = [];
 			$previousPage = 0;
 			$nr = 0;
@@ -193,7 +193,7 @@ class Pagination {
 	 * @return int[]
 	 */
 	public function getLimit(){
-		return [($this->page-1)*$this->_itemsPerPage, $this->_itemsPerPage ];
+		return [($this->_page-1)*$this->_itemsPerPage, $this->_itemsPerPage ];
 	}
 
 	/**
@@ -235,7 +235,7 @@ class Pagination {
 	 * @return string
 	 */
 	public function getPageQueryString($page = null):string {
-		$pagenum = $page ?? $this->page;
+		$pagenum = $page ?? $this->_page;
 		if ($pagenum === 1)
 			$pagenum = CoreUtils::FIXPATH_EMPTY;
 		return "{$this->_noconflict}page=$pagenum";
