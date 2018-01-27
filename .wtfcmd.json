@@ -1,0 +1,65 @@
+[
+	{
+		"group": "db",
+		"name": "migrate",
+		"desc": [
+			"Run pending migrations",
+			"Requires `composer install` to be run in the project first"
+		],
+		"cmd": {
+			"bash": "vendor/bin/phinx migrate",
+			"powershell": "vendor\\bin\\phinx migrate"
+		}
+	},
+	{
+		"group": "db",
+		"name": "rollback",
+		"desc": [
+			"Roll back migrations",
+			"Requires `composer install` to be run in the project first"
+		],
+		"cmd": {
+			"bash": "vendor/bin/phinx rollback",
+			"powershell": "vendor\\bin\\phinx rollback"
+		}
+	},
+	{
+		"group": "db",
+		"name": "create",
+		"desc": [
+			"Create a migration with the specified name",
+			"Requires `composer install` to be run in the project first"
+		],
+		"cmd": {
+			"bash": "vendor/bin/phinx create {{.name}}",
+			"powershell": "vendor\\bin\\phinx create {{.name}}"
+		},
+		"args": [
+			{
+				"name": "name",
+				"desc": "Name for the migration class (CamelCase)",
+				"required": true,
+				"test": "^[A-Z][A-Za-z\\d]+$"
+			}
+		]
+	},
+	{
+		"name": "assets",
+		"desc": [
+			"Run the \"default\" gulp task to compile all assets in their current state and start a file watcher to update them when changes are made",
+			"Requires `yarn install` to be run in the project first"
+		],
+		"cmd": "gulp default"
+	},
+	{
+		"name": "tests",
+		"desc": [
+			"Run tests",
+			"Requires `composer install` to be run in the project first"
+		],
+		"cmd": {
+			"bash": "vendor/bin/phpunit",
+			"powershell": "vendor\\bin\\phpunit"
+		}
+	}
+]

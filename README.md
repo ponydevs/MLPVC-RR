@@ -42,7 +42,8 @@
    [Kint](http://raveren.github.io/kint/),
    [Hasklig](https://github.com/i-tu/Hasklig),
    [Phinx](https://phinx.org/),
-   [Monolog](https://seldaek.github.io/monolog/)
+   [Monolog](https://seldaek.github.io/monolog/),
+   [wtfcmd](https://github.com/blunt1337/wtfcmd)
 
 Please check the site's [About](https://mlpvector.club/about) page for additional credits.
 
