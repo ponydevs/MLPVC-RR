@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "30a9eb82f777900783609964870ad4c3",
+    "content-hash": "d3698c7a71ddeb6366288d26f7ac1212",
     "packages": [
         {
             "name": "airmanbzh/php-html-generator",
@@ -1738,16 +1738,16 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "3.7.1",
+            "version": "3.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334"
+                "reference": "44abcdad877d9a46685a3a4d221e3b2c4b87cb76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/45cffe822057a09e05f7bd09ec5fb88eeecd2334",
-                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/44abcdad877d9a46685a3a4d221e3b2c4b87cb76",
+                "reference": "44abcdad877d9a46685a3a4d221e3b2c4b87cb76",
                 "shasum": ""
             },
             "require": {
@@ -1758,17 +1758,15 @@
                 "rhumsaa/uuid": "self.version"
             },
             "require-dev": {
-                "apigen/apigen": "^4.1",
-                "codeception/aspect-mock": "^1.0 | ^2.0",
+                "codeception/aspect-mock": "^1.0 | ~2.0.0",
                 "doctrine/annotations": "~1.2.0",
                 "goaop/framework": "1.0.0-alpha.2 | ^1.0 | ^2.1",
                 "ircmaxell/random-lib": "^1.1",
                 "jakub-onderka/php-parallel-lint": "^0.9.0",
-                "mockery/mockery": "^0.9.4",
+                "mockery/mockery": "^0.9.9",
                 "moontoast/math": "^1.1",
                 "php-mock/php-mock-phpunit": "^0.3|^1.1",
-                "phpunit/phpunit": "^4.7|>=5.0 <5.4",
-                "satooshi/php-coveralls": "^0.6.1",
+                "phpunit/phpunit": "^4.7|^5.0",
                 "squizlabs/php_codesniffer": "^2.3"
             },
             "suggest": {
@@ -1816,7 +1814,7 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2017-09-22T20:46:04+00:00"
+            "time": "2018-01-20T00:28:24+00:00"
         },
         {
             "name": "react/promise",
@@ -1913,27 +1911,27 @@
         },
         {
             "name": "robmorgan/phinx",
-            "version": "dev-edge",
+            "version": "dev-custom-columns",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/phinx.git",
-                "reference": "c3af02454f8a9f522d201df0095f8ea516cb28d0"
+                "reference": "17599b3541d2d9b788a35608743965fd7629369a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/c3af02454f8a9f522d201df0095f8ea516cb28d0",
-                "reference": "c3af02454f8a9f522d201df0095f8ea516cb28d0",
+                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/17599b3541d2d9b788a35608743965fd7629369a",
+                "reference": "17599b3541d2d9b788a35608743965fd7629369a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4",
-                "symfony/config": "~2.8|~3.0|~4.0",
-                "symfony/console": "~2.8|~3.0|~4.0",
-                "symfony/yaml": "~2.8|~3.0|~4.0"
+                "symfony/config": "^2.8|^3.0|^4.0",
+                "symfony/console": "^2.8|^3.0|^4.0",
+                "symfony/yaml": "^2.8|^3.0|^4.0"
             },
             "require-dev": {
                 "cakephp/cakephp-codesniffer": "^3.0",
-                "phpunit/phpunit": "^4.8.26|^5.0"
+                "phpunit/phpunit": "^4.8.35|^5.7|^6.5"
             },
             "bin": [
                 "bin/phinx"
@@ -2000,9 +1998,9 @@
                 "phinx"
             ],
             "support": {
-                "source": "https://github.com/SeinopSys/phinx/tree/edge"
+                "source": "https://github.com/SeinopSys/phinx/tree/custom-columns"
             },
-            "time": "2017-10-31T17:55:00+00:00"
+            "time": "2018-01-27T17:24:22+00:00"
         },
         {
             "name": "s1lentium/iptools",
@@ -2098,16 +2096,16 @@
         },
         {
             "name": "seinopsys/postgresql-database-class",
-            "version": "v2.0.6",
+            "version": "v2.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class.git",
-                "reference": "484dbbe005267d011ed91e8a1bbaeea8fcc170e0"
+                "reference": "ec2e858d6d0f53f246d19b02e7f316adbec9dc06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/484dbbe005267d011ed91e8a1bbaeea8fcc170e0",
-                "reference": "484dbbe005267d011ed91e8a1bbaeea8fcc170e0",
+                "url": "https://api.github.com/repos/SeinopSys/PHP-PostgreSQL-Database-Class/zipball/ec2e858d6d0f53f246d19b02e7f316adbec9dc06",
+                "reference": "ec2e858d6d0f53f246d19b02e7f316adbec9dc06",
                 "shasum": ""
             },
             "require": {
@@ -2132,7 +2130,7 @@
                 }
             ],
             "description": "PHP wrapper class for PDO-based interaction with PostgreSQL databases, heavily based on joshcam/mysqli-database-class",
-            "time": "2017-10-08T20:23:10+00:00"
+            "time": "2018-01-27T13:28:32+00:00"
         },
         {
             "name": "seinopsys/rgbacolor",
@@ -3049,16 +3047,16 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "4.2.0",
+            "version": "4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "66465776cfc249844bde6d117abff1d22e06c2da"
+                "reference": "94fd0001232e47129dd3504189fa1c7225010d08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/66465776cfc249844bde6d117abff1d22e06c2da",
-                "reference": "66465776cfc249844bde6d117abff1d22e06c2da",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/94fd0001232e47129dd3504189fa1c7225010d08",
+                "reference": "94fd0001232e47129dd3504189fa1c7225010d08",
                 "shasum": ""
             },
             "require": {
@@ -3096,7 +3094,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2017-11-27T17:38:31+00:00"
+            "time": "2017-11-30T07:14:17+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",

@@ -2,6 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 use Phinx\Db\Adapter\PostgresAdapter;
+use Phinx\Util\Literal;
 
 /*
  * You'll need to import setup/create_extensions.pg.sql as superuser before the first migration
@@ -265,8 +266,8 @@ class ConvertSchemaToMigration extends AbstractMigration {
 
 		$table = 'log__da_namechange';
 		$this->tables[$table] = $this->table($table, ['id' => 'entryid'])
-			->addCustomColumn('old', 'citext')
-			->addCustomColumn('new', 'citext')
+			->addColumn('old', Literal::from('citext'))
+			->addColumn('new', Literal::from('citext'))
 			->addColumn('user_id', 'uuid')
 			->addIndex('user_id');
 		$this->tables[$table]->create();
@@ -477,7 +478,7 @@ class ConvertSchemaToMigration extends AbstractMigration {
 		$table = 'users';
 		$this->tables[$table] = $this->table($table, ['id' => false, 'primary_key' => 'id'])
 			->addColumn('id',          'uuid')
-			->addCustomColumn('name',  'citext')
+			->addColumn('name', Literal::from('citext'))
 			->addColumn('role',        'string',    ['length' => 10, 'default' => 'user'])
 			->addColumn('avatar_url',  'string',    ['length' => 255])
 			->addColumn('signup_date', 'timestamp', ['timezone' => true, 'default' => 'CURRENT_TIMESTAMP']);

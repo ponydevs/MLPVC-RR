@@ -16,6 +16,8 @@ class SetHomepageSettingForExistingUsers extends AbstractMigration {
 			if ($row['id2'] !== null && !isset($uniqids[$row['id2']]))
 				$uniqids[$row['id2']] = true;
 		}
+		if (empty($uniqids))
+		    return;
 
 		$values = [];
 		foreach ($uniqids as $k => $_)
