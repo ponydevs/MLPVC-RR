@@ -596,7 +596,7 @@
 			this.editing = typeof data === 'object' && data.label && data.Colors;
 			if (typeof $group !== 'undefined'){
 				if ($group instanceof jQuery){
-					this.group_id = $group.attr('id').substring(2);
+					this.group_id = $group.attr('id').replace(/\D/g, '');
 					this.appearance_id = parseInt($group.parents('[id^=p]').attr('id').substring(1), 10);
 				}
 				else this.appearance_id = parseInt($group, 10);
