@@ -24,7 +24,7 @@ use Wohali\OAuth2\Client\Provider\Exception\DiscordIdentityProviderException;
  * @property string   $nick
  * @property string   $avatar_hash
  * @property DateTime $joined_at
- * @property int      $discriminator
+ * @property string   $discriminator
  * @property string   $access  (oAuth)
  * @property string   $refresh (oAuth)
  * @property string   $scope   (oAuth)
@@ -55,10 +55,6 @@ class DiscordMember extends AbstractUser {
 
 		$ext = preg_match(new RegExp('^a_'), $this->avatar_hash) ? 'gif' : 'png';
 		return "https://cdn.discordapp.com/avatars/{$this->id}/{$this->avatar_hash}.$ext";
-	}
-
-	public function get_user_id(){
-		return $this->discord_server_member->user_id;
 	}
 
 	public function isServerMember(bool $recheck = false){

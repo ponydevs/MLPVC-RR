@@ -117,7 +117,7 @@ class DiscordAuthController extends Controller {
 			$this->_target = Auth::$user;
 		else {
 			$this->_target = Users::get($params['name']);
-			if ($target->id !== Auth::$user->id && Permission::insufficient('staff'))
+			if ($this->_target->id !== Auth::$user->id && Permission::insufficient('staff'))
 				Response::fail();
 		}
 

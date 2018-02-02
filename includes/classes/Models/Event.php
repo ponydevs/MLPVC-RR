@@ -78,6 +78,8 @@ class Event extends NSModel implements LinkableInterface {
 				return Permission::sufficient($this->entry_role, $user->role);
 			case 'spec_discord':
 				return $user->isDiscordServerMember(true);
+			default:
+				throw new \RuntimeException("Unhandled entry role {$this->entry_role} on event #{$this->id}");
 		}
 	}
 

@@ -9,7 +9,7 @@ use App\Time;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @property int      $id
+ * @property string   $id
  * @property string   $user_id
  * @property string   $platform
  * @property string   $browser_name

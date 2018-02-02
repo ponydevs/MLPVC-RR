@@ -506,7 +506,6 @@ $(function(){
 	$slbl.children('select').each(function(){
 		let $el = $(this);
 		$el.data('orig', $el.find('option:selected').val()).on('keydown keyup change',function(){
-			console.log('Event fired');
 			let $el = $(this),
 				$val = $el.find('option:selected');
 			$el.siblings('.save').attr('disabled', $val.val() === $el.data('orig'));
