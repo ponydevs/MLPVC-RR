@@ -547,8 +547,12 @@ HTML;
 		return $contribs;
 	}
 
-	public function isDiscordLinked():bool {
+	public function boundToDiscordMember():bool {
 		return $this->discord_member instanceof DiscordMember;
+	}
+
+	public function isDiscordLinked():bool {
+		return  $this->boundToDiscordMember() && $this->discord_member->isLinked();
 	}
 
 	public function isDiscordServerMember(bool $recheck = false):bool {

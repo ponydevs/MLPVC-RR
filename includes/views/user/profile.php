@@ -34,7 +34,7 @@ if ($canEdit)
 	echo ' <button id="change-role" class="blue typcn typcn-spanner" title="Change '.CoreUtils::posess($User->name).' role"></button>';
 if (Permission::sufficient('developer')){
 	echo " &bullet; <span class='user-id'>{$User->id}</span>";
-	if ($User->isDiscordLinked())
+	if ($User->boundToDiscordMember())
 		echo " &bullet; <span class='discord-id'>{$User->discord_member->id}</span>";
 } ?></p>
 		</div>
@@ -112,7 +112,7 @@ if ($isUserMember)
 		</section>
 		<section id="discord-connect">
 			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Discord account</h2>
-<?php   if ($User->isDiscordLinked()){
+<?php   if ($User->boundToDiscordMember()){
 			$member = $User->discord_member;
 			$unlinkBtn = '<button class="orange typcn typcn-user-delete unlink">Unlink</button>'; ?>
 			<p><?=$sameUser?'Your':'This'?> account <?=$member->isLinked()?'is linked':'was manually bound'?> to <strong><?=CoreUtils::escapeHTML($member->discord_tag)?></strong><?php
@@ -121,7 +121,8 @@ if ($isUserMember)
 				if ($member->isServerMember())
 					echo " and $you've joined our <a href='https://discordapp.com/channels/".DISCORD_SERVER_ID."'>Discord server</a> ".Time::tag($member->joined_at);
 				else echo " but $you haven't joined our <a href='".DISCORD_INVITE_LINK."'>Discord server</a> yet";
-			} ?>.</p>
+			}
+			else echo ' by a staff member, but manual bindings are no longer considered valid'; ?>.</p>
 <?php       if ($member->isLinked()){ ?>
 			<p id="discord-sync-info" data-cooldown="<?=DiscordMember::SYNC_COOLDOWN?>"><?php
 				if ($member->isServerMember())

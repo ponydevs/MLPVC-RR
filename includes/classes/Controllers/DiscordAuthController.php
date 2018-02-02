@@ -56,7 +56,7 @@ class DiscordAuthController extends Controller {
 	}
 
 	private function _redirectIfAlreadyLinked(){
-		if (Auth::$user->isDiscordLinked() && Auth::$user->discord_member->isLinked())
+		if (Auth::$user->isDiscordLinked())
 			HTTP::tempRedirect($this->_getReturnUrl());
 	}
 
@@ -121,8 +121,8 @@ class DiscordAuthController extends Controller {
 				Response::fail();
 		}
 
-		if (!$this->_target->isDiscordLinked())
-			Response::fail('You must be linked to a Discord user to perform this action');
+		if ($this->_target->discord_member === null)
+			Response::fail('You must be bound to a Discord user to perform this action');
 
 		$this->_sameUser = $this->_target->id === Auth::$user->id;
 	}
