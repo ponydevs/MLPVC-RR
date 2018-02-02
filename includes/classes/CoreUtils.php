@@ -26,9 +26,8 @@ class CoreUtils {
 	 * Forces an URL rewrite to the specified path
 	 *
 	 * @param string|UriBuilder $fix_uri URL to forcibly redirect to
-	 * @param int               $http    HTTP status code for the redirect
 	 */
-	public static function fixPath($fix_uri, int $http = HTTP::REDIRECT_TEMP){
+	public static function fixPath($fix_uri){
 		$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
 		$path = $_split[0];
 		$query = empty($_split[1]) ? '' : "?{$_split[1]}";
@@ -55,7 +54,7 @@ class CoreUtils {
 			$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
 		}
 		if ($path !== $fix_path || $query !== $fix_query)
-			HTTP::redirect("$fix_path$fix_query", $http);
+			HTTP::tempRedirect("$fix_path$fix_query");
 	}
 
 	/**
@@ -877,7 +876,7 @@ HTML;
 	}
 
 	/**
-	 * Adds possessive ’s at the end of a word
+	 * Adds possessive 's at the end of a word
 	 *
 	 * @param string $w
 	 * @param bool   $sOnly
@@ -885,7 +884,7 @@ HTML;
 	 * @return string
 	 */
 	public static function posess($w, bool $sOnly = false){
-		$s = '’'.(mb_substr($w, -1) !== 's'?'s':'');
+		$s = "'".(mb_substr($w, -1) !== 's'?'s':'');
 		if ($sOnly)
 			return $s;
 		return $w.$s;
@@ -930,7 +929,7 @@ HTML;
 	 * @return array
 	 */
 	public static function detectBrowser($user_agent = null){
-		$Return = ['user_agent' => !empty($user_agent) ? $user_agent : $_SERVER['HTTP_USER_AGENT']];
+		$Return = ['user_agent' => !empty($user_agent) ? $user_agent : ($_SERVER['HTTP_USER_AGENT'] ?? '')];
 		$browser = new Browser($Return['user_agent']);
 		$name = $browser->getBrowser();
 		if ($name !== Browser::BROWSER_UNKNOWN){
@@ -1095,7 +1094,7 @@ HTML;
 	}
 
 	public const VECTOR_APPS = [
-		'' => '(don’t show)',
+		'' => "(don't show)",
 		'illustrator' => 'Adobe Illustrator',
 		'inkscape' => 'Inkscape',
 		'ponyscape' => 'Ponyscape',
@@ -1327,5 +1326,11 @@ HTML;
 
 	public static function responseSmiley(string $face):string {
 		return "<div class='align-center'><span class='sideways-smiley-face'>$face</span></div>";
+	}
+
+	public static function isURLSafe(string $url, &$matches = null):bool {
+		global $REWRITE_REGEX;
+
+		return mb_strlen($url) <= 256 && $REWRITE_REGEX->match(strtok($url,'?'), $matches);
 	}
 }

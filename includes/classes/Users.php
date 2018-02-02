@@ -18,29 +18,25 @@ class Users {
 	/**
 	 * User Information Retriever
 	 * --------------------------
-	 * Gets a single row from the 'users' database
-	 *  where $coloumn is equal to $value
-	 * Returns null if user is not found
-	 *
-	 * If $cols is set, only specified coloumns
-	 *  will be fetched
+	 * Gets a single row from the 'users' database where $column is equal to $value
+	 * Returns null if user is not found and false if user data could not be fetched
 	 *
 	 * @param string $value
-	 * @param string $coloumn
+	 * @param string $column
 	 *
 	 * @throws \Exception
 	 * @return User|null|false
 	 */
-	public static function get($value, $coloumn = 'id'){
-		if ($coloumn === 'id')
+	public static function get($value, $column = 'id'){
+		if ($column === 'id')
 			return User::find($value);
 
-		if ($coloumn === 'name' && !empty(self::$_USER_CACHE[$value]))
+		if ($column === 'name' && !empty(self::$_USER_CACHE[$value]))
 			return self::$_USER_CACHE[$value];
 
-		$User = DB::$instance->where($coloumn, $value)->getOne('users');
+		$User = DB::$instance->where($column, $value)->getOne('users');
 
-		if (empty($User) && $coloumn === 'name')
+		if (empty($User) && $column === 'name')
 			$User = self::fetch($value);
 
 		if (isset($User->name))
@@ -52,7 +48,7 @@ class Users {
 	/**
 	 * User Information Fetching
 	 * -------------------------
-	 * Fetch user info from dA upon request to nonexistant user
+	 * Fetch user info from dA upon request to nonexistent user
 	 *
 	 * @param string $username
 	 *
@@ -142,7 +138,7 @@ class Users {
 		if ($return_as_bool)
 			return $overTheLimit;
 		if ($overTheLimit)
-			Response::fail("You've already reserved {$reservations['count']} images, and you can’t have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
+			Response::fail("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
 	}
 
 	/**
@@ -177,23 +173,27 @@ HTML;
 	}
 
 	/**
-	 * Check authentication cookie and set global
+	 * Check authentication cookie and set Auth class static properties
 	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public static function authenticate(){
-		CSRFProtection::detect();
-
-		if (!POST_REQUEST && isset($_GET['CSRF_TOKEN']))
-			HTTP::redirect(CSRFProtection::removeParamFromURL($_SERVER['REQUEST_URI']));
-
-		if (!Cookie::exists('access'))
+		if (Auth::$signed_in)
 			return;
+
+		if (!Cookie::exists('access')){
+			Auth::$session = Session::newGuestSession();
+			return;
+		}
 		$authKey = Cookie::get('access');
 		if (!empty($authKey)){
 			Auth::$session = Session::find_by_token(CoreUtils::sha256($authKey));
 			if (Auth::$session !== null)
 				Auth::$user = Auth::$session->user;
+			else Auth::$session = Session::newGuestSession();
+
+			if (Auth::$user === null)
+				Auth::$session->lastvisit = date('c');
 		}
 
 		if (!empty(Auth::$user->id)){
@@ -217,15 +217,12 @@ HTML;
 
 				if ($tokenvalid){
 					Auth::$signed_in = true;
-					if (time() - strtotime(Auth::$session->lastvisit) > Time::IN_SECONDS['minute']){
-						Auth::$session->lastvisit = date('c');
-						Auth::$session->detect_browser();
-						Auth::$session->save();
-					}
+					Auth::$session->registerVisit();
 				}
 			//}
 		}
-		else Cookie::delete('access', Cookie::HTTPONLY);
+		else if (Auth::$session === null)
+			Cookie::delete('access', Cookie::HTTPONLY);
 	}
 
 	public const PROFILE_SECTION_PRIVACY_LEVEL = [
@@ -347,7 +344,7 @@ HTML;
 		$HTML = "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>";
 		if ($item->finished_at !== null){
 			$finished_at = Time::tag($item->finished_at);
-			$HTML .= "<div class='finshed-at-ts'><span class='typcn typcn-time'></span> $finished_at</div>";
+			$HTML .= "<div class='finished-at-ts'><span class='typcn typcn-time'></span> $finished_at</div>";
 		}
 		return $HTML;
 	}
@@ -433,8 +430,7 @@ HTML;
 					/** @var $item Request */
 					$preview = $item->toAnchorWithPreview();
 					$posted = Time::tag($item->requested_at);
-					$isreserved = $item->reserved_by !== null;
-					if ($isreserved){
+					if ($item->reserved_by !== null){
 						$reserved_by = $item->reserver->toAnchor();
 						$reserved_at = Time::tag($item->reserved_at);
 						$reserved = "<span class='typcn typcn-user' title='By'></span> $reserved_by<br><span class='typcn typcn-time'></span> $reserved_at";

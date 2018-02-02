@@ -87,21 +87,17 @@ $(function(){
 		popup.resizeTo(w,h);
 		popup.moveTo(calcpos.left,calcpos.top);
 	};
-	let OAUTH_URL = window.OAUTH_URL,
-		signingGenRndKey = () => (~~(Math.random()*99999999)).toString(36);
 	$d.on('click','#turbo-sign-in',function(e){
 		e.preventDefault();
 
 		let $this = $(this),
 			origNotice = $this.parent().html();
 		$this.disable();
-		OAUTH_URL = $this.attr('data-url');
 
-		let rndk = signingGenRndKey(),
-			success = false,
+		let success = false,
 			closeCheck,
 			popup;
-		window[' '+rndk] = function(){
+		window.__authCallback = function(){
 			success = true;
 			if ($.Dialog._open.type === 'request')
 				$.Dialog.clearNotice(/Redirecting you to DeviantArt/);
@@ -109,7 +105,7 @@ $(function(){
 			popup.close();
 		};
 		try {
-			popup = window.open(OAUTH_URL+'&state='+rndk);
+			popup = window.open('/da-auth/begin');
 		}
 		catch(_){ return $.Dialog.fail(false, 'Could not open login pop-up. Please open another page') }
 
@@ -150,7 +146,6 @@ $(function(){
 		// Sign in button handler
 		$.LocalStorage.remove('cookie_consent');
 		let consent = $.LocalStorage.get('cookie_consent_v2');
-		OAUTH_URL = window.OAUTH_URL;
 
 		$('#signin').off('click').on('click',function(){
 			let $this = $(this),
@@ -163,7 +158,7 @@ $(function(){
 
 					let redirect = function(){
 						$.Dialog.wait(false, 'Redirecting you to DeviantArt');
-						location.href = OAUTH_URL+"&state="+encodeURIComponent(location.href.replace(location.origin,''));
+						location.href = '/da-auth/begin?return='+encodeURIComponent(location.href.replace(/^.*?\w\//,'/'));
 					};
 
 					if (navigator.userAgent.indexOf('Trident') !== -1)
@@ -171,15 +166,15 @@ $(function(){
 
 					$.Dialog.wait('Sign-in process', "Opening popup window");
 
-					let rndk = signingGenRndKey(), success = false, closeCheck, popup, waitforit = false;
-					window[' '+rndk] = function(fail, openedWindow){
+					let success = false, closeCheck, popup, waitforit = false;
+					window.__authCallback = function(fail, openedWindow){
 						clearInterval(closeCheck);
 						if (fail === true){
 							if (!openedWindow.jQuery)
 								$.Dialog.fail(false, 'Sign in failed, check popup for details.');
 							else {
 								const
-									pageTitle = openedWindow.$('#content').children('h1').text(),
+									pageTitle = openedWindow.$('#content').children('h1').html(),
 									noticeText = openedWindow.$('#content').children('.notice').html();
 								$.Dialog.fail(false, `<p class="align-center"><strong>${pageTitle}</strong></p><p>${noticeText}</p>`);
 								popup.close();
@@ -194,7 +189,7 @@ $(function(){
 						$.Navigation.reload(true);
 					};
 					try {
-						popup = $.PopupOpenCenter(OAUTH_URL+"&state="+rndk,'login','450','580');
+						popup = $.PopupOpenCenter('/da-auth/begin','login','450','580');
 					}catch(e){}
 					// http://stackoverflow.com/a/25643792
 					let onWindowClosed = function(){
@@ -202,9 +197,9 @@ $(function(){
 								return;
 
 							if (document.cookie.indexOf('auth=') !== -1)
-								return window[' '+rndk];
+								return window.__authCallback;
 
-							$.Dialog.fail(false, 'Popup-based login unsuccessful');
+							$.Dialog.fail(false, 'Popup-based login failed');
 							redirect();
 						};
 					closeCheck = setInterval(function(){
@@ -247,6 +242,7 @@ $(function(){
 			if (window.sidebarForcedVisible() || !$body.hasClass('sidebar-open'))
 				return;
 
+			// noinspection JSSuspiciousNameCombination
 			const
 				offX = Math.abs(offset.x),
 				offY = Math.abs(offset.y),
@@ -396,12 +392,12 @@ $(function(){
 
 		$.Dialog.info($.Dialog.isOpen() ? undefined : 'Send feedback',
 			`<h3>How to send feedback</h3>
-			<p>If you're having an issue with the site and would like to let us know or have an idea/feature request you’d like to share, here’s how:</p>
+			<p>If you're having an issue with the site and would like to let us know or have an idea/feature request you'd like to share, here's how:</p>
 			<ul>
 				<li><a href='https://discord.gg/0vv70fepSILbdJOD'>Join our Discord server</a> and describe your issue/idea in the <strong>#support</strong> channel</li>
 				<li><a href='http://mlp-vectorclub.deviantart.com/notes/'>Send a note </a>to the group on DeviantArt</li>
 				<li><a href='mailto:${email}'>Send an e-mail</a> to ${email}</li>
-				<li>If you have a GitHub account, you can also  <a href="${$footer.find('a.issues').attr('href')}">create an issue</a> on the project’s GitHub page.
+				<li>If you have a GitHub account, you can also  <a href="${$footer.find('a.issues').attr('href')}">create an issue</a> on the project's GitHub page.
 			</ul>`
 		);
 	});

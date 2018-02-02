@@ -12,7 +12,7 @@
 	if (preg_match($permRedirectPattern,$requri))
 		HTTP::redirect(preg_replace($permRedirectPattern, '$1$2', $requri));
 	$decoded_uri = CoreUtils::trim(urldecode($requri));
-	if (!preg_match($REWRITE_REGEX,strtok($decoded_uri,'?'),$matches)){
+	if (!CoreUtils::isURLSafe($decoded_uri, $matches)){
 		Users::authenticate();
 		CoreUtils::badReq();
 	}

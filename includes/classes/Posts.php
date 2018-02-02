@@ -187,7 +187,7 @@ class Posts {
 				/** @var $UsedUnder Post */
 				$UsedUnder = DB::$instance->where('preview',$Image->preview)->getOne("{$type}s");
 				if (!empty($UsedUnder))
-					Response::fail('This exact image has already been used for a '.$UsedUnder->toAnchor($type,null,true).' under '.$UsedUnder->ep->toAnchor());
+					Response::fail("This exact image has already been used for a {$UsedUnder->toAnchor($type,null,true)} under {$UsedUnder->ep->toAnchor()}");
 			}
 		}
 
@@ -498,7 +498,7 @@ HTML;
 		}
 	}
 
-	public const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it’s now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
+	public const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
 	public const BROKEN = "<strong class='color-orange broken-note' title=\"The full size preview of this post was deemed unavailable and it is now marked as broken\"><span class='typcn typcn-plug'></span> Deemed broken</strong>";
 
 	/**

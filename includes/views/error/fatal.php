@@ -27,7 +27,7 @@ switch($errcause){
 	case 'libmiss': ?>
 	<h1>Configuration problem</h1>
 	<p>A required extension/setting is missng</p>
-<?php   echo CoreUtils::notice('info','<span class="typcn typcn-info-large"></span> One of the site’s core modules have not been installed yet. This usually happens after a software upgrade/reinstall and is just a temporary issue, no data has been lost and everything will be back to normal very soon. Sorry for the inconvenience. <a class="send-feedback">Notify the developer</a>',true);
+<?php   echo CoreUtils::notice('info','<span class="typcn typcn-info-large"></span> One of the site\'s core modules have not been installed yet. This usually happens after a software upgrade/reinstall and is just a temporary issue, no data has been lost and everything will be back to normal very soon. Sorry for the inconvenience. <a class="send-feedback">Notify the developer</a>',true);
 		echo CoreUtils::notice('warn','<strong>Probable cause / debug information:</strong><pre><code>'.strip_trace($e->getMessage()).'</code></pre>',true);
 	break;
 	case 'maintenance': ?>

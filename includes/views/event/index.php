@@ -13,7 +13,7 @@ use App\Time;
 	<p><?=$EventType?> for <?=$Event->getEntryRoleName()?> &bull; <?=$Event->hasStarted() ? (($Event->hasEnded() ? 'Ended' : 'Ends').' '.Time::tag($Event->ends_at)) : 'Starts '.Time::tag($Event->starts_at)?></p>
 
 <?php   $couldEnter = Auth::$signed_in && $Event->checkCanEnter(Auth::$user);
-		$canEnter = $couldEnter && $Event->hasStarted() && !$Event->hasEnded();
+		$canEnter = $couldEnter && $Event->isOngoing();
 		$finalized = $Event->isFinalized();
 		if (Auth::$signed_in && !$finalized){ ?>
 	<div class="align-center button-block" id="event-<?=$Event->id?>">
@@ -44,11 +44,26 @@ use App\Time;
 <?php   }
 		if (!$canEnter) {
 			if (!$finalized){ ?>
-			<p class="color-red"><?=Auth::$signed_in?'You '.($couldEnter?($Event->hasEnded()?'can no longer':''):'cannot').' participate in this event'.($couldEnter && !$Event->hasStarted()?' yet':'').'.':'You must be signed in to participate in events.'?></p>
+			<p class="color-red"><?php
+				if (Auth::$signed_in){
+					if ($couldEnter){
+						if (!$Event->hasStarted())
+							echo "You can't participate in this event yet.";
+						else echo 'You can no longer participate in this event';
+					}
+					else {
+						if ($Event->entry_role === 'spec_discord'){
+							echo 'You must be a member of our Discord server to participate in this event. <a href="'.DISCORD_INVITE_LINK.'">Join now</a>';
+							if (!Auth::$user->isDiscordLinked())
+								echo "<br>Be sure to <a href='".Auth::$user->toURL()."#discord-connect'>link your account</a> on the site once you've joined.";
+						}
+						else echo 'You cannot participate in this event.';
+					}
+				}
+				else echo 'You must be signed in to see whether you can participate in events.';
+			?></p>
 <?php       }
-			else { ?>
-			<p class="color-blue">This event has concluded. Thank you to everyone who participated!</p>
-<?php  		}
+			else echo "<p class='color-blue'>This event has concluded. Thank you to everyone who participated!</p>";
 		} ?>
 		</div>
 	</section>

@@ -72,9 +72,6 @@ $(function(){
 						</optgroup>
 						<optgroup label="Special">
 							<option value="spec_discord">Discord Server Members</option>
-							<option value="spec_illustrator">Illustrator Users</option>
-							<option value="spec_inkscape">Inkscape Users</option>
-							<option value="spec_ponyscape">Ponyscape Users</option>
 						</optgroup>
 					</select>`,
 					`<input type="text" name="max_entries" pattern="^(0*[1-9]\\d*|[Uu]nlimited|0)$" list="max_entries-list" value="1">

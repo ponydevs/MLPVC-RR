@@ -95,8 +95,8 @@
 	};
 	$.ctxmenu.addItem =
 	$.ctxmenu.addItems = function($el){
-		let argl = arguments.length;
-		if (argl < 2) throw new Error(`Invalud number of arguments (${argl}) for $.ctxmenu.addItems`);
+		let argLength = arguments.length;
+		if (argLength < 2) throw new Error(`Invalid number of arguments (${argLength}) for $.ctxmenu.addItems`);
 
 		let items = $.toArray(arguments);
 		items.splice(0,1);
@@ -113,7 +113,7 @@
 	};
 	$.ctxmenu.triggerItem = ($el, nth) => {
 		let $ch = $el.data('ctxmenu-items').filter(':not(.sep)');
-		if (nth < 1 || $ch.length-1 < nth) throw new Error(`There’s no such menu option: ${nth}`);
+		if (nth < 1 || $ch.length-1 < nth) throw new Error(`There's no such menu option: ${nth}`);
 		$ch.eq(nth).children('a').triggerHandler('click');
 	};
 	$.ctxmenu.setDefault = ($el, nth) => {

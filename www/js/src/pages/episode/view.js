@@ -139,7 +139,7 @@ $(function(){
 				});
 
 				$.Dialog.info(false, [
-					$.mk('p').text("Here’s how the votes are distributed:"),
+					$.mk('p').text("Here's how the votes are distributed:"),
 					$.mk('div').attr('id','vote-distrib').append($ul, $bars)
 				]);
 			}));
@@ -201,8 +201,8 @@ $(function(){
 				success: $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					let $newChilds = $(this.render).filter('section').children();
-					$section.empty().append($newChilds).rebindHandlers();
+					let $newChildren = $(this.render).filter('section').children();
+					$section.empty().append($newChildren).rebindHandlers();
 					$section.find('.post-form').attr('data-type',type).formBind();
 					$section.find('h2 > button').enable();
 					Time.Update();
@@ -322,10 +322,7 @@ $(function(){
 						if (!!data.title && !$formLabelInput.val().trim())
 							$.Dialog.confirm(
 								'Confirm '+type+' title',
-								'The image you just checked had the following title:<br><br><p class="align-center"><strong>'+data.title+'</strong></p>'+
-								'<br>Would you like to use this as the '+type+'’s description?<br>Keep in mind that it should describe the thing(s) '+
-								(type==='request'?'being requested':'you plan to vector')+'.'+
-								'<p>This dialog will not appear if you give your '+type+' a description before clicking the '+CHECK_BTN+' button.</p>',
+								`The image you just checked had the following title:<br><br><p class="align-center"><strong>${data.title}</strong></p><br>Would you like to use this as the ${type}'s description?<br>Keep in mind that it should describe the thing(s) ${type === 'request' ? 'being requested' : 'you plan to vector'}.<p>This dialog will not appear if you give your ${type} a description before clicking the ${CHECK_BTN} button.</p>`,
 								function(sure){
 									if (!sure) return $form.find('input[name=label]').focus();
 									$formLabelInput.val(data.title);
@@ -337,7 +334,7 @@ $(function(){
 						});
 					}).on('error',function(){
 						if (attempts < 1){
-							$.Dialog.wait("Can’t load image",'Image could not be loaded, retrying in 2 seconds');
+							$.Dialog.wait("Can't load image",'Image could not be loaded, retrying in 2 seconds');
 							setTimeout(function(){
 								load(data, attempts+1);
 							}, 2000);
@@ -358,14 +355,14 @@ $(function(){
 
 			checkImage();
 		});
-		$form.on('submit',function(e, screwchanges, sanityCheck){
+		$form.on('submit',function(e, screwChanges, sanityCheck){
 			e.preventDefault();
 			let title = Type+' process';
 
 			if (typeof $formImgInput.data('prev-url') === 'undefined')
 				return $.Dialog.fail(title, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
 
-			if (!screwchanges && $formImgInput.data('prev-url') !== $formImgInput.val())
+			if (!screwChanges && $formImgInput.data('prev-url') !== $formImgInput.val())
 				return $.Dialog.confirm(
 					title,
 					'You modified the image URL without clicking the '+CHECK_BTN+' button.<br>Do you want to continue with the last checked URL?',
@@ -381,8 +378,8 @@ $(function(){
 					$type = $form.find('select');
 
 				if (label.indexOf('character') > -1 && $type.val() !== 'chr')
-					return $.Dialog.confirm(title, 'Your request label contains the word "character", but the request type isn’t set to Character.<br>Are you sure you\'re not requesting one (or more) character(s)?',['Let me change the type', 'Carray on'], function(sure){
-						if (!sure) return $form.triggerHandler('submit',[screwchanges, true]);
+					return $.Dialog.confirm(title, `Your request label contains the word "character", but the request type isn't set to Character.<br>Are you sure you're not requesting one (or more) character(s)?`,['Let me change the type', 'Carry on'], function(sure){
+						if (!sure) return $form.triggerHandler('submit',[screwChanges, true]);
 
 						$.Dialog.close(function(){
 							$type.focus();
@@ -404,7 +401,7 @@ $(function(){
 					if (!this.status){
 						if (!this.canforce)
 							return $.Dialog.fail(false, this.message);
-						return $.Dialog.confirm(false, this.message, ['Go ahead','Nevermind'], function(sure){
+						return $.Dialog.confirm(false, this.message, ['Go ahead','Never mind'], function(sure){
 							if (!sure) return;
 
 							data.allow_nonmember = true;
@@ -507,9 +504,9 @@ $(function(){
 	$('.user-avatar-promise').each((_, el) => avatarIO.observe(el));
 
 	let postHashRegex = /^#(request|reservation)-\d+$/,
-		showdialog = location.hash.length > 1 && postHashRegex.test(location.hash);
+		showDialog = location.hash.length > 1 && postHashRegex.test(location.hash);
 
-	if (showdialog)
+	if (showDialog)
 		$.Dialog.wait('Scroll post into view', 'Waiting for images to load');
 	directLinkHandler();
 
@@ -528,7 +525,7 @@ $(function(){
 			id = _idAttrArr[1];
 
 		if (log)
-			console.log(`[POST-FIX] Attemting to reload ${type} #${id}`);
+			console.log(`[POST-FIX] Attempting to reload ${type} #${id}`);
 		$.post(`/post/reload/${type}/${id}`,{cache:log},$.mkAjaxHandler(function(){
 			reloading[_idAttr] = false;
 			if (!this.status) return;
@@ -584,7 +581,7 @@ $(function(){
 			return $.Dialog.close();
 
 		let $progress;
-		if (showdialog){
+		if (showDialog){
 			$progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'});
 			$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
 		}
@@ -592,7 +589,7 @@ $(function(){
 			.progress(function(_, image){
 				if (image.isLoaded){
 					loaded++;
-					if (showdialog)
+					if (showDialog)
 						$progress.attr('value', loaded);
 				}
 				else if (image.img.src){
@@ -601,13 +598,13 @@ $(function(){
 					if ($li.length === 1)
 						$li.reloadLi();
 					total--;
-					if (showdialog)
+					if (showDialog)
 						$progress.attr('max', total);
 				}
 			})
 			.always(function(){
 				let found = window._HighlightHash({type:'load'});
-				if (found === false && showdialog){
+				if (found === false && showDialog){
 					const title = 'Scroll post into view';
 					// Attempt to find the post as a last resort, it might be on a different episode page
 					$.post('/post/locate/'+location.hash.substring(1).replace('-','/'),{SEASON,EPISODE},$.mkAjaxHandler(function(){
@@ -699,7 +696,7 @@ $(function(){
 			$reportBroken.on('click',function(e){
 				e.preventDefault();
 
-				$.Dialog.confirm('Report broken video','<p>Have any of the linked videos been removed from their respective platform?<p><p>Please note that availability checking is automatic, bad video quality or sound issues cannot be detected this way. You should <a class="send-feedback">tell us</a> directly if that is the case.</p>',['Send report','Nevermind'],function(sure){
+				$.Dialog.confirm('Report broken video','<p>Have any of the linked videos been removed from their respective platform?<p><p>Please note that availability checking is automatic, bad video quality or sound issues cannot be detected this way. You should <a class="send-feedback">tell us</a> directly if that is the case.</p>',['Send report','Never mind'],function(sure){
 					if (!sure) return;
 
 					$.Dialog.wait(false, 'Sending report');

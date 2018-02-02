@@ -1,7 +1,7 @@
 [
 	{
 		"group": "db",
-		"name": "migrate",
+		"name": ["migrate", "m"],
 		"desc": [
 			"Run pending migrations",
 			"Requires `composer install` to be run in the project first"
@@ -13,7 +13,7 @@
 	},
 	{
 		"group": "db",
-		"name": "rollback",
+		"name": ["rollback", "r"],
 		"desc": [
 			"Roll back migrations",
 			"Requires `composer install` to be run in the project first"
@@ -25,7 +25,7 @@
 	},
 	{
 		"group": "db",
-		"name": "create",
+		"name": ["create", "c"],
 		"desc": [
 			"Create a migration with the specified name",
 			"Requires `composer install` to be run in the project first"
@@ -44,15 +44,15 @@
 		]
 	},
 	{
-		"name": "assets",
+		"name": "gulp",
 		"desc": [
 			"Run the \"default\" gulp task to compile all assets in their current state and start a file watcher to update them when changes are made",
-			"Requires `yarn install` to be run in the project first"
+			"Requires `yarn install` and `npm install gulp -g` to be run first"
 		],
 		"cmd": "gulp default"
 	},
 	{
-		"name": "tests",
+		"name": ["tests", "t"],
 		"desc": [
 			"Run tests",
 			"Requires `composer install` to be run in the project first"

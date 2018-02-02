@@ -122,7 +122,6 @@ class CGUtils {
 			if (!empty($class))
 				$url .= "' class='$class";
 		}
-		$label = $appearance->processLabel();
 
 		if ($previews){
 			$preview_url = $appearance->getPreviewURL();
@@ -149,7 +148,7 @@ class CGUtils {
 		if (empty($aka))
 			$aka = '';
 
-		$HTML .= "<li><a href='$url'>$preview<span class='name'>$sprite$label</span>$aka</a></li>";
+		$HTML .= "<li><a href='$url'>$preview<span class='name'>$sprite{$appearance->label}</span>$aka</a></li>";
 	}
 
 	/**

@@ -349,7 +349,7 @@
 			this._$clearSettings = $('#clear-settings').on('click',e => {
 				e.preventDefault();
 
-				$.Dialog.confirm('Clear settings','<p>The editor remembers your picking area size, sidebar color format and sidebar width settings.</p><p>If you want to reset these to their defaults, click the "Clear settings" button below.</p><p><strong>This will reload the picker, and any progress will be lost.</strong></p>',['Clear settings','Nevermind'],sure => {
+				$.Dialog.confirm('Clear settings','<p>The editor remembers your picking area size, sidebar color format and sidebar width settings.</p><p>If you want to reset these to their defaults, click the "Clear settings" button below.</p><p><strong>This will reload the picker, and any progress will be lost.</strong></p>',['Clear settings','Never mind'],sure => {
 					if (!sure) return;
 
 					$.Dialog.wait(false, 'Clearing settings');
@@ -2035,13 +2035,13 @@
 			case Key.Z:
 				ColorPicker.getInstance().switchTool(Tools.zoom);
 			break;
-			case Key.UpArrrow:
+			case Key.UpArrow:
 				if (e.ctrlKey || e.altKey)
 					return;
 
 				ColorPicker.getInstance().increasePickingSize(!e.altKey);
 			break;
-			case Key.DownArrrow:
+			case Key.DownArrow:
 				if (e.ctrlKey || e.altKey)
 					return;
 

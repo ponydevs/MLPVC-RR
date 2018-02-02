@@ -27,9 +27,9 @@ class UserController extends Controller {
 
 	public function homepage(){
 		if (UserPrefs::get('p_homelastep'))
-			HTTP::redirect('/episode/latest', HTTP::REDIRECT_TEMP);
+			HTTP::tempRedirect('/episode/latest');
 
-		HTTP::redirect('/cg', HTTP::REDIRECT_TEMP);
+		HTTP::tempRedirect('/cg');
 	}
 
 	public function profile($params){
@@ -277,7 +277,7 @@ class UserController extends Controller {
 				$data = $User->getApprovedFinishedRequestContributions(false, $Pagination);
 			break;
 			default:
-				throw new \RuntimeException(__METHOD__.": Mising data retriever for type {$params['type']}");
+				throw new \RuntimeException(__METHOD__.": Missing data retriever for type {$params['type']}");
 		}
 
 		CoreUtils::fixPath($Pagination->toURI());

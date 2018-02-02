@@ -64,10 +64,10 @@ class AppearanceController extends ColorGuideController {
 
 		$SafeLabel = $this->_appearance->getURLSafeLabel();
 		CoreUtils::fixPath("$this->_cgPath/v/{$this->_appearance->id}-$SafeLabel");
-		$title = $heading = $this->_appearance->processLabel();
+		$heading = $this->_appearance->label;
 
 		$settings = [
-			'title' => "$title - Color Guide",
+			'title' => "$heading - Color Guide",
 			'heading' => $heading,
 			'css' => ['pages/colorguide/guide', true],
 			'js' => ['jquery.ctxmenu', 'pages/colorguide/guide', true],
@@ -157,13 +157,13 @@ class AppearanceController extends ColorGuideController {
 
 		if ($creating){
 			if (!$this->_personalGuide && Permission::insufficient('staff'))
-				Response::fail('You don’t have permission to add appearances to the official Color Guide');
+				Response::fail('You don\'t have permission to add appearances to the official Color Guide');
 
 			if ($this->_personalGuide){
 				$availPoints = Auth::$user->getPCGAvailablePoints(false);
 				if ($availPoints < 10){
 					$remain = Users::calculatePersonalCGNextSlot(Auth::$user->getPCGAppearanceCount());
-					Response::fail("You don’t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'. Visit <a href="/u">your profile</a> and click the <strong class="color-darkblue"><span class="typcn typcn-info-large"></span> What?</strong> button next to the Personal Color Guide heading for more information.');
+					Response::fail("You don\'t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'. Visit <a href="/u">your profile</a> and click the <strong class="color-darkblue"><span class="typcn typcn-info-large"></span> What?</strong> button next to the Personal Color Guide heading for more information.');
 				}
 				if (!UserPrefs::get('a_pcgmake'))
 					Response::fail(Appearances::PCG_APPEARANCE_MAKE_DISABLED);
@@ -418,7 +418,7 @@ class AppearanceController extends ColorGuideController {
 					$possibleIDs[$cg->id] = true;
 				foreach ($order as $i => $GroupID){
 					if (empty($possibleIDs[$GroupID]))
-						Response::fail("There’s no group with the ID of $GroupID on this appearance");
+						Response::fail("There's no group with the ID of $GroupID on this appearance");
 
 					DB::$instance->where('id', $GroupID)->update('color_groups', ['order' => $i]);
 				}

@@ -47,9 +47,6 @@ class Event extends NSModel implements LinkableInterface {
 
 	public const SPECIAL_ENTRY_ROLES = [
 		'spec_discord' => 'Discord Server Members',
-		'spec_ai' => 'Illustrator Users',
-		'spec_inkscape' => 'Inkscape Users',
-		'spec_ponyscape' => 'Ponyscape Users',
 	];
 
 	/**
@@ -80,13 +77,7 @@ class Event extends NSModel implements LinkableInterface {
 			case 'staff':
 				return Permission::sufficient($this->entry_role, $user->role);
 			case 'spec_discord':
-				return $user->isDiscordMember();
-			case 'spec_illustrator':
-			case 'spec_inkscape':
-			case 'spec_ponyscape':
-				$reqapp = explode('_',$this->entry_role)[1];
-				$vapp = UserPrefs::get('p_vectorapp');
-				return !empty($vapp) && $vapp === $reqapp;
+				return $user->isDiscordServerMember(true);
 		}
 	}
 
@@ -100,6 +91,10 @@ class Event extends NSModel implements LinkableInterface {
 
 	public function hasEnded(?int $now = null){
 		return ($now??time()) >= strtotime($this->ends_at);
+	}
+
+	public function isOngoing(){
+		return $this->hasStarted() && !$this->hasEnded();
 	}
 
 	public function getEntryRoleName():string {
@@ -127,8 +122,8 @@ class Event extends NSModel implements LinkableInterface {
 
 			/** @var $HighestScoringEntries EventEntry[] */
 			$HighestScoringEntries = DB::$instance->setModel(EventEntry::class)->query(
-				'SELECT * FROM '.EventEntry::$table_name.
-				'WHERE event_id = ? AND score > 0 AND score = (SELECT MAX(score) FROM '.EventEntry::$table_name.')
+				'SELECT * FROM event_entries 
+				WHERE event_id = ? AND score > 0 AND score = (SELECT MAX(score) FROM event_entries)
 				ORDER BY submitted_at ASC',[$this->id]);
 
 			if (empty($HighestScoringEntries))

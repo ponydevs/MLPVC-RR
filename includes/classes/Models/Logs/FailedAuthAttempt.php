@@ -50,7 +50,7 @@ class FailedAuthAttempt extends AbstractEntryType {
 
 	public static function record(){
 		Logs::logAction('failed_auth_attempts', [
-			'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+			'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
 		]);
 	}
 }

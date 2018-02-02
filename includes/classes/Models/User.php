@@ -80,7 +80,7 @@ class User extends AbstractUser implements LinkableInterface {
 		catch (\Exception $e){ Response::fail('Preference value error: '.$e->getMessage()); }
 
 		if ($newvalue === 'discord' && $this->discord_member === null)
-			Response::fail('You must be linked to a member of our discord server by the staff to use the Discord avatar provider');
+			Response::fail("You must <a href='{$this->toURL()}#discord-connect'>link your account</a> to use the Discord avatar provider");
 
 		return UserPrefs::set('p_avatarprov', $newvalue, $this);
 	}
@@ -244,7 +244,7 @@ HTML;
 	 *
 	 * @return bool
 	 */
-	public function isClubMember(){
+	public function isClubMember():bool {
 		return $this->getClubRole() !== null;
 	}
 
@@ -271,7 +271,7 @@ HTML;
 
 	public function getPCGAppearanceCount():int {
 		$return = Appearances::get(null, null, $this->id, Appearances::COUNT_COL);
-		return (int)($return[0]['cnt'] ?? 0);
+		return ($return[0]['cnt'] ?? 0);
 	}
 
 	/**
@@ -547,12 +547,12 @@ HTML;
 		return $contribs;
 	}
 
-	public function isDiscordMember():bool {
-		return $this->getDiscordIdentity() instanceof DiscordMember;
+	public function isDiscordLinked():bool {
+		return $this->discord_member instanceof DiscordMember;
 	}
 
-	public function getDiscordIdentity():?DiscordMember {
-		return $this->discord_member;
+	public function isDiscordServerMember(bool $recheck = false):bool {
+		return $this->isDiscordLinked() && $this->discord_member->isServerMember($recheck);
 	}
 
 	/**
@@ -633,10 +633,10 @@ HTML;
 				$posts = CoreUtils::makePlural('reservation', $TotalPending);
 				$HTML .= "<span>$YouHave $pendingCountReadable pending $posts";
 				if ($hasPending)
-					$HTML .= ' which ha'.($TotalPending!==1?'ve':'s').'n’t been marked as finished yet';
+					$HTML .= ' which ha'.($TotalPending!==1?'ve':'s')."n't been marked as finished yet";
 				$HTML .= '.';
 				if ($sameUser)
-					$HTML .= ' Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can’t reserve any more images until you finish or cancel some of your pending reservations.';
+					$HTML .= " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your pending reservations.";
 				$HTML .= '</span>';
 
 				if ($hasPending){
@@ -731,7 +731,7 @@ HTML;
 		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
 		$HTML = "<h2>{$privacy}Vectors waiting for approval</h2>";
 		if ($sameUser)
-			$HTML .= '<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as "approved", which gives it a green check mark, indicating that it’s most likely free of any errors.</p>';
+			$HTML .= "<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as \"approved\", which gives it a green check mark, indicating that it's most likely free of any errors.</p>";
 		$youHaveAwaitCount = "$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>");
 		$images = CoreUtils::makePlural('image', $AwaitCount);
 		$append = !$AwaitCount
@@ -740,13 +740,13 @@ HTML;
 				$sameUser
 				? " Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
 					$AwaitCount>10
-					? ' You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven’t already.'
+					? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven't already."
 					: ''
 				)
 				:''
 			).'</p><p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the '.CoreUtils::makePlural('image',$AwaitCount).' in case we forgot to click it ourselves after accepting it.';
 		$HTML .= <<<HTML
-			<p>{$youHaveAwaitCount} $images waiting to be submited to and/or approved by the group$append</p>
+			<p>{$youHaveAwaitCount} $images waiting to be submitted to and/or approved by the group$append</p>
 HTML;
 		if ($AwaitCount){
 			$HTML .= '<ul id="awaiting-deviations">';

@@ -148,7 +148,7 @@ class UserSettingForm {
 				if ($this->_current_user === null)
 					return false;
 
-				if ($this->_current_user->isDiscordMember())
+				if ($this->_current_user->isDiscordServerMember())
 					return $check_name === 'discord_member';
 				else return $check_name === 'not_discord_member';
 			default:

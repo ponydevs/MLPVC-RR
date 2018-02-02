@@ -36,7 +36,7 @@ class ColorGroupController extends ColorGuideController {
 			$GroupID = \intval($params['id'], 10);
 			$Group = ColorGroup::find($GroupID);
 			if (empty($Group))
-				Response::fail("There’s no color group with the ID of $GroupID");
+				Response::fail("There's no color group with the ID of $GroupID");
 			if (!$isStaff && ($Group->appearance->owner_id === null || $Group->appearance->owner_id !== Auth::$user->id))
 				Response::fail();
 

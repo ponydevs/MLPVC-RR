@@ -2,6 +2,7 @@
 <?php
 use App\Auth;
 use App\CoreUtils;
+use App\Models\DiscordMember;
 use App\Models\User;
 use App\Permission;
 use App\Time;
@@ -20,24 +21,22 @@ if (isset($MSG)){
 	if (isset($SubMSG))
 		echo "<p>$SubMSG</p>";
 }
-else {
-	$vectorapp = UserPrefs::get('p_vectorapp', $User);
-	$discordmember = $User->discord_member;
-	$colorscheme = UserPrefs::get('p_theme', $User);
-?>
+else { ?>
 	<div class="briefing">
 		<?=$User->getAvatarWrap()?>
 		<div class="title">
-			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->toDALink()?>"><?=str_replace(' fill="#FFF"','',\App\File::get(APPATH.'img/da-logo.svg'))?></a><?=$User->getVectorAppIcon()?><?=!empty($discordmember)?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server as @".CoreUtils::escapeHTML($discordmember->name)."'>":''?></h1>
+			<h1><span class="username"><?=$User->name?></span><a class="da" title="Visit DeviantArt profile" href="<?=$User->toDALink()?>"><?=str_replace(' fill="#FFF"','',\App\File::get(APPATH.'img/da-logo.svg'))?></a><?=$User->getVectorAppIcon()?><?=$User->isDiscordServerMember()?"<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server".($User->discord_member->name !== $User->name ? ' as '.CoreUtils::escapeHTML($User->discord_member->name):'')."'>":''?></h1>
 			<p><?php
-echo "<span class='rolelabel'>{$User->maskedRoleLabel()}</span>";
+echo "<span class='role-label'>{$User->maskedRoleLabel()}</span>";
 if ($devOnDev)
 	echo ' <span id="change-dev-role-mask" class="inline-btn typcn typcn-edit" title="Change developer\'s displayed role"></span>';
 if ($canEdit)
 	echo ' <button id="change-role" class="blue typcn typcn-spanner" title="Change '.CoreUtils::posess($User->name).' role"></button>';
-if (Permission::sufficient('developer'))
-	echo " &bullet; <span class='userid'>{$User->id}</span>", !empty($discordmember->id) ? " &bullet; <span class='discid'>{$discordmember->id}</span>" : '';
-			?></p>
+if (Permission::sufficient('developer')){
+	echo " &bullet; <span class='user-id'>{$User->id}</span>";
+	if ($User->isDiscordLinked())
+		echo " &bullet; <span class='discord-id'>{$User->discord_member->id}</span>";
+} ?></p>
 		</div>
 	</div>
 	<div class="details section-container">
@@ -105,19 +104,53 @@ if ($isUserMember)
 			foreach ($Sessions as $s)
 				Users::renderSessionLi($s, $s->id === ($CurrentSessionID ?? null));
 			?></ul>
-			<p><button class="typcn typcn-arrow-back yellow" id="signout-everywhere">Sign out everywhere</button></p>
+			<p><button class="typcn typcn-arrow-back yellow" id="sign-out-everywhere">Sign out everywhere</button></p>
 <?php   }
 		else { ?>
-			<p><?=$sameUser?'You are':'This user is'?>n’t logged in anywhere.</p>
+			<p><?=$sameUser?'You are':'This user is'?>n't logged in anywhere.</p>
+<?php   } ?>
+		</section>
+		<section id="discord-connect">
+			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:''?>Discord account</h2>
+<?php   if ($User->isDiscordLinked()){
+			$member = $User->discord_member;
+			$unlinkBtn = '<button class="orange typcn typcn-user-delete unlink">Unlink</button>'; ?>
+			<p><?=$sameUser?'Your':'This'?> account <?=$member->isLinked()?'is linked':'was manually bound'?> to <strong><?=CoreUtils::escapeHTML($member->discord_tag)?></strong><?php
+			if ($member->isLinked()){
+				$you = $sameUser?'you':'they';
+				if ($member->isServerMember())
+					echo " and $you've joined our <a href='https://discordapp.com/channels/".DISCORD_SERVER_ID."'>Discord server</a> ".Time::tag($member->joined_at);
+				else echo " but $you haven't joined our <a href='".DISCORD_INVITE_LINK."'>Discord server</a> yet";
+			} ?>.</p>
+<?php       if ($member->isLinked()){ ?>
+			<p id="discord-sync-info" data-cooldown="<?=DiscordMember::SYNC_COOLDOWN?>"><?php
+				if ($member->isServerMember())
+					echo "Server members' DiscordTag and avatar is updated automatically, but you can always use the button below to force an update.";
+				else echo "You can use the button below to force an update to your account information at any time. Server members' data is updated automatically."; ?><br>
+				Your account information was last updated <?=Time::tag($member->last_synced)?>.<?=!$member->canBeSynced()?'<span class="wait-message"> At least '.CoreUtils::makePlural('minute', DiscordMember::SYNC_COOLDOWN/60, PREPEND_NUMBER).' must pass before syncing again.</span>':''?>
+			</p>
+			<div class="button-block align-center">
+				<button class="green typcn typcn-arrow-sync sync" <?=!$member->canBeSynced()?'disabled':''?>>Sync</button>
+				<?=$unlinkBtn?>
+			</div>
+<?php       }
+			else $member = false;
+		}
+		if (empty($member)){ ?>
+			<p>Link your account to be able to choose between your Discord and DeviantArt avatars as well as to participate in events for Discord server members.</p>
+			<div class="button-block align-center">
+				<a href="/discord-connect/begin" class="btn link typcn typcn-link">Link account</a>
+				<?=isset($member)&&$member===false?$unlinkBtn:''?>
+			</div>
 <?php   } ?>
 		</section>
 <?php
 	}
 	if ($sameUser){ ?>
 		<section>
-			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['private']:''?>Unlink account</h2>
-			<p>By unlinking your account you revoke this site’s access to your account information. This will also log you out on every device where you're currently logged in. The next time you want to log in, you'll have to link your account again. This will not remove any of your <strong>public</strong> data from our site, it’s still kept locally.</p>
-	        <button id="unlink" class="orange typcn typcn-times">Unlink Account</button>
+			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['private']:''?>Unlink DeviantArt account</h2>
+			<p>All this really does is that the next time you want to log in, you'll be asked to link your account again. Normally this would prevent the site from reading any resources you've given access to when you linked your account, but since we only ask for the bare minimum permissions required to verify your identity there's not much for us to access. This also won't remove any of your data from our site, that's still kept locally.</p>
+	        <button id="unlink" class="orange typcn typcn-user-delete">Unlink Account</button>
 	    </section>
 <?  } ?></div>
 <?php

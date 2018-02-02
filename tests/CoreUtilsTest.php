@@ -116,9 +116,9 @@ class CoreUtilsTest extends TestCase {
 
 	public function testPosess(){
 		$result = CoreUtils::posess('David');
-		self::assertEquals('David’s', $result);
+		self::assertEquals("David's", $result);
 		$result = CoreUtils::posess('applications');
-		self::assertEquals('applications’', $result);
+		self::assertEquals("applications'", $result);
 	}
 
 	public function testMakePlural(){

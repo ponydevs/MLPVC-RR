@@ -360,12 +360,14 @@ HTML;
 	}
 
 	/**
-	 * As of right now this simply changes single quotes in the lable to their "smart" version
+	 * As of right now this simply changes single quotes in the label to their "smart" version
+	 *
+	 * @deprecated Just use the label property
 	 *
 	 * @return string
 	 */
 	public function processLabel():string {
-		return preg_replace(new RegExp("'"),'’', $this->label);
+		return $this->label;
 	}
 
 	/**
@@ -428,16 +430,11 @@ HTML;
 	}
 
 	public function toAnchor():string {
-		$label = $this->processLabel();
-		$link = $this->toURL();
-		return "<a href='$link'>$label</a>";
+		return "<a href='{$this->toURL()}'>{$this->label}</a>";
 	}
 
 	public function toAnchorWithPreview():string {
-		$preview = $this->getPreviewHTML();
-		$label = $this->processLabel();
-		$link = $this->toURL();
-		return "<a href='$link'>$preview<span>$label</span></a>";
+		return "<a href='{$this->toURL()}'>{$this->getPreviewHTML()}<span>{$this->label}</span></a>";
 	}
 
 	/**

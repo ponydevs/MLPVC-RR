@@ -47,7 +47,7 @@ $(function(){
 				}).patternAttr(EP_TITLE_REGEX)
 			),
 			`<div class="notice info align-center movie-only">
-				<p>Include "Equestria Girls: " if applicable. Prefixes don’t count towards the character limit.</p>
+				<p>Include "Equestria Girls: " if applicable. Prefixes don't count towards the character limit.</p>
 			</div>
 			<div class="label">
 				<span>Air date & time</span>
@@ -57,7 +57,7 @@ $(function(){
 				</div>
 			</div>
 			<div class="notice info align-center button-here">
-				<p>Specify the <span class="episode-only">episode</span><span class="movie-only">movie</span>’s air date and time in <strong>your computer’s timezone</strong>.</p>
+				<p>Specify the <span class="episode-only">episode</span><span class="movie-only">movie</span>'s air date and time in <strong>your computer's timezone</strong>.</p>
 			</div>
 			<label class="episode-only"><input type="checkbox" name="twoparter"> Has two parts</label>
 			<div class="notice info align-center episode-only">

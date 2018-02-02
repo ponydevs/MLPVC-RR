@@ -59,7 +59,9 @@ $router->map('GET',      '/[cg]/[guide:guide]?/tag-changes/[i:id][adi]?',       
 $router->map('GET|POST', '/[cg]/get-tags',                                      'TagController#autocomplete');
 $router->map('GET',      '/[cg]/cutiemark/[i:id].svg',                          'CutiemarkController#view');
 $router->map('GET',      '/[cg]/cutiemark/download/[i:id][adi]?',               'CutiemarkController#download');
-$router->map('GET', '/da-auth',                        'AuthController#auth');
+$router->map('GET', '/da-auth',                        'AuthController#end');
+$router->map('GET', '/da-auth/begin',                  'AuthController#begin');
+$router->map('GET', '/da-auth/end',                    'AuthController#end');
 $router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
 $router->map('GET', '/episode/latest',                 'EpisodeController#latest');
 $router->map('GET', '/episodes/[i]?',                  'ShowController#index');
@@ -91,6 +93,8 @@ $router->map('GET', '/manifest',                       'ManifestController#json'
 $router->map('GET', '/user/contrib/lazyload/[favme:favme]',     'UserController#contribLazyload');
 $router->map('GET', '/post/lazyload/[rrl:thing]/[i:id]', 'PostController#lazyload');
 $router->map('GET', '/event/entry/lazyload/[i:id]',    'EventController#lazyloadEntry');
+$router->map('GET', '/discord-connect/begin',          'DiscordAuthController#begin');
+$router->map('GET', '/discord-connect/end',            'DiscordAuthController#end');
 
 // "API" Endpoints
 $router->map('POST', '/about/upcoming',                      'AboutController#upcoming');
@@ -180,3 +184,6 @@ $router->map('POST', '/user/pending-gifts/[un:name]',        'PersonalGuideContr
 $router->map('POST', '/user/refund-gifts',                   'PersonalGuideController#refundSlotGifts');
 $router->map('POST', '/user/give-pcg-points/[un:name]',      'PersonalGuideController#givePoints');
 $router->map('POST', '/user/get-deductable-points/[un:name]', 'PersonalGuideController#getDeductablePoints');
+$router->map('POST', '/discord-connect/sync/[un:name]',      'DiscordAuthController#sync');
+$router->map('POST', '/discord-connect/unlink/[un:name]',    'DiscordAuthController#unlink');
+$router->map('POST', '/discord-connect/bot-update/[i:id]',   'DiscordAuthController#botUpdate');

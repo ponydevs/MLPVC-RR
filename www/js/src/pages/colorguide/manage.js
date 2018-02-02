@@ -27,7 +27,7 @@
 		(PersonalGuide?`<div class="notice info"><label>About sprites</label><p>Sprites are small, pixelated images showcasing all of the colors a given character has. They are most useful if they contain a full body image of your character with any difficult details highlighted. You can use it together with the notes, adding explanations about anything that might be confusing.</p><p>Sprites have a height limit of 300px, a width limit between 300 and 700 pixels, and are expected to be PNG files with a transparent background.</p><p>We provide templates that fit these guidelines for anyone to use through the <a class="sprite-template-gen">Template Generator</a>. If you decide to use this generator, you must add at least the mane and tail before uploading the sprite to the site.</p><p class="color-red">The staff reserves the right to remove any sprites that do not follow these guidelines.</p></div>`:'')+
 		`<p class="align-center"><a class="upload-link">Click here to upload a file</a> (max. ${window.MAX_SIZE}) or enter a URL below.</p>
 		<label><input type="text" name="image_url" placeholder="External image URL" required></label>
-		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance’s sprite image.</p>`
+		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance's sprite image.</p>`
 	);
 
 	let $EpAppearances;
@@ -774,8 +774,8 @@
 					<option>Gradient Top</option>
 					<option>Gradient Middle</option>
 					<option>Gradient Bottom</option>
-					<option>Hightlight Top</option>
-					<option>Hightlight Bottom</option>
+					<option>Highlight Top</option>
+					<option>Highlight Bottom</option>
 				</datalist>`
 			).on('submit',e => {
 				e.preventDefault();
@@ -1121,13 +1121,13 @@
 				this.sortable = undefined;
 			}
 		}
-		loadColorSelectFor($this, appeareance_id, appearance_name){
+		loadColorSelectFor($this, appearance_id, appearance_name){
 			const
 				$colorSelector = $this.next(),
 				color_id = parseInt($this.siblings().filter('.clrid').text().replace('ID:',''),10);
 			$this.disable();
 			return new Promise(fulfill => {
-				ColorListCache.read(appeareance_id).then(function(groups){
+				ColorListCache.read(appearance_id).then(function(groups){
 					$colorSelector.children('optgroup').remove();
 					$colorSelector.children('.appearance-name-option').text(appearance_name);
 
@@ -1845,7 +1845,7 @@
 					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
 					title = 'Detele tag: '+tagName;
 
-				$.Dialog.confirm(title,"Deleting this tag will also remove it from every appearance where it’s been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
+				$.Dialog.confirm(title,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
 					if (!sure) return;
 
 					let data = {};
@@ -1867,7 +1867,7 @@
 								$.Dialog.close();
 							}
 							else if (this.confirm)
-								$.Dialog.confirm(false, this.message, ['NUKE TAG','Nevermind'], function(sure){
+								$.Dialog.confirm(false, this.message, ['NUKE TAG','Never mind'], function(sure){
 									if (!sure) return;
 
 									data.sanitycheck = true;
@@ -1979,7 +1979,7 @@
 					let $group = $(this).closest('li'),
 						groupID = $group.attr('id').substring(2),
 						groupName = $group.find('.cat').contents().first().text().replace(/:\s?$/,''),
-						title = `Delete color group: `+groupName;
+						title = `Delete color group: ${groupName}`;
 					$.Dialog.confirm(title, `By deleting this color group, all colors within will be removed too.<br>Are you sure?`, function(sure){
 						if (!sure) return;
 

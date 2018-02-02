@@ -99,7 +99,7 @@ $(function(){
 				`<div class='hidden section ai'>
 					<h4>How to import swatches to Adobe Illustrator</h4>
 					<ul>
-						<li>Because Illustator uses a proprietary format for swatch files, you must download a script <a href='/dist/Import Swatches from JSON.jsx?v=1.5' download='Import Swatches from JSON.jsx' class='btn typcn typcn-download'>by clicking here</a> to be able to import them from our site. Be sure to save it to an easy to find location because you'll need to browser for it every time you want to import colors.</li>
+						<li>Because Illustrator uses a proprietary format for swatch files, you must download a script <a href='/dist/Import Swatches from JSON.jsx?v=1.5' download='Import Swatches from JSON.jsx' class='btn typcn typcn-download'>by clicking here</a> to be able to import them from our site. Be sure to save it to an easy to find location because you'll need to browser for it every time you want to import colors.</li>
 						<li>Once you have the script, <a href="/cg/v/${appearanceID}s.json${token}" class="btn blue typcn typcn-download">click here</a> to download the <code>.json</code> file that you'll need to use for the import.</li>
 						<li>Now that you have the 2 files, open Illustrator, create/open a document, then go to <strong>File &rsaquo; Scripts &rsaquo; Other Script</strong> (or press ${pressAi}) then find the file with the <code>.jsx</code> extension (the one you first downloaded). A dialog will appear telling you what to do next.</li>
 						<li>Optional: If you'd like to make using the script faster, you can place it in the <code>&hellip;\\Adobe<wbr>\\Adobe Illustrator *<wbr>\\Presets<wbr>\\*<wbr>\\Scripts</code> folder, and after an Illustrator restart it'll be available as one of the options in the File &rsaquo; Scripts submenu.</li>
@@ -110,8 +110,8 @@ $(function(){
 				</div>
 				<div class='hidden section inkscape'>
 					<h4>How to import swatches to Inkscape</h4>
-					<p>Download <a href='/cg/v/${appearanceID}s.gpl${token}' class='btn blue typcn typcn-download'>this file</a> and place it in the <code>&hellip;\\Inkscape<wbr>\\<wbr>share<wbr>\\<wbr>palettes</code> folder. If you don’t plan on using the other swatches, deleting them should make your newly imported swatch easier to find.</p>
-					<p>You will most likely have to restart Inkscape for the swatch to show up in the <em>Swatches</em> (<kbd>F6</kbd>) tool window’s menu.</p>
+					<p>Download <a href='/cg/v/${appearanceID}s.gpl${token}' class='btn blue typcn typcn-download'>this file</a> and place it in the <code>&hellip;\\Inkscape<wbr>\\<wbr>share<wbr>\\<wbr>palettes</code> folder. If you don't plan on using the other swatches, deleting them should make your newly imported swatch easier to find.</p>
+					<p>You will most likely have to restart Inkscape for the swatch to show up in the <em>Swatches</em> (<kbd>F6</kbd>) tool window's menu.</p>
 					<div class="responsive-embed">
 						<iframe src="https://www.youtube.com/embed/zmaJhbIKQqM" allowfullscreen async defer></iframe>
 					</div>

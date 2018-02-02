@@ -35,7 +35,7 @@ $(function(){
 
 				$.post(`/admin/logs/details/${EntryID}`,$.mkAjaxHandler(function(){
 					if (!this.status){
-						if (this.unlickable === true)
+						if (this.unclickable === true)
 							$this.replaceWith($this.text().trim());
 						$.Dialog.fail(title,this.message);
 						return fail();

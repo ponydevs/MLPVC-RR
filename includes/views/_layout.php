@@ -27,15 +27,15 @@ switch ($view->class ?? null){
 				$ThumbImage = $sprite;
 
 			if (isset($Owner))
-				$Description = 'Colors for "'.$Appearance->processLabel().'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub’s website';
-			else $Description = 'Show accurate colors for "'.$Appearance->processLabel().'" from the MLP-VectorClub’s Official Color Guide';
+				$Description = 'Colors for "'.$Appearance->label.'" from '.CoreUtils::posess($Owner->name).' Personal Color Guide on the the MLP-VectorClub\'s website';
+			else $Description = 'Show accurate colors for "'.$Appearance->label.'" from the MLP-VectorClub\'s Official Color Guide';
 		}
 	break;
 	case 'user':
 		if (!empty($User)){
 			$ThumbImage = $User->avatar_url;
 
-			$Description = CoreUtils::posess($User->name).' profile on the MLP-VectorClub’s website';
+			$Description = CoreUtils::posess($User->name).' profile on the MLP-VectorClub\'s website';
 		}
 	break;
 	case 'episode':
@@ -53,7 +53,7 @@ switch ($view->class ?? null){
 			if ($LinkedPost->is_request)
 				$Description = 'A request';
 			else $Description = "A reservation by {$LinkedPost->reserver->name}";
-			$Description .= ' on the MLP-VectorClub’s website';
+			$Description .= ' on the MLP-VectorClub\'s website';
 		}
 	break;
 }

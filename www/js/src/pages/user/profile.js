@@ -8,12 +8,12 @@ $(function(){
 
 		$.Dialog.info('About Personal Color Guides',
 			`<p>The Personal Color Guide is a place where you can store and share colors for any of your OCs, similar to our <a href="/cg/">Official Color Guide</a>. You have full control over the colors and other metadata for any OCs you add to the system, and you can chose to keep your PCG publicly visible on your profile or make individual appearances private and share them with only certain people using a direct link.</p>
-			<p><em>&ldquo;So where’s the catch?&rdquo;</em> &mdash; you might ask. Everyone starts with 1 slot (10 points), which lets you add a single OC to your personal guide. This limit can be increased by joining <a href="https://mlp-vectorclub.deviantart.com/">our group</a> on DeviantArt, then fulfilling requests on this website. You will be given a point for every request you finish and we approve. In order to get an additional slot, you will need 10 points, which means 10 requests.</p>
-			<p>If you have no use for your additional slots you may choose to give them away to other users - even non-members! The only restrictions are that only whole slots can be gifted and the free slot everyone starts out with cannot be gifted away. To share your hard-earned slots with others, simply visit their profile and clikck the <strong class="color-green"><span class="typcn typcn-gift"></span> Gift slots</strong> button under the Personal Color Guide section.</p>
+			<p><em>&ldquo;So where's the catch?&rdquo;</em> &mdash; you might ask. Everyone starts with 1 slot (10 points), which lets you add a single OC to your personal guide. This limit can be increased by joining <a href="https://mlp-vectorclub.deviantart.com/">our group</a> on DeviantArt, then fulfilling requests on this website. You will be given a point for every request you finish and we approve. In order to get an additional slot, you will need 10 points, which means 10 requests.</p>
+			<p>If you have no use for your additional slots you may choose to give them away to other users - even non-members! The only restrictions are that only whole slots can be gifted and the free slot everyone starts out with cannot be gifted away. To share your hard-earned slots with others, simply visit their profile and click the <strong class="color-green"><span class="typcn typcn-gift"></span> Gift slots</strong> button under the Personal Color Guide section.</p>
 			<br>
 			<p><strong>However</strong>, there are a few things to keep in mind:</p>
 			<ul>
-				<li>You may only add characters made by you, for you, or characters you've purchased to your Personal Color Guide. If we're asked to remove someone else’s character from your guide we'll certainly comply. Please stick to species canon to the show, we're a pony community after all.</li>
+				<li>You may only add characters made by you, for you, or characters you've purchased to your Personal Color Guide. If we're asked to remove someone else's character from your guide we'll certainly comply. Please stick to species canon to the show, we're a pony community after all.</li>
 				<li>Finished requests only count toward additional slots after they have been submitted to the group and have been accepted to the gallery. This is indicated by a tick symbol (<span class="color-green typcn typcn-tick"></span>) on the post throughout the site.</li>
 				<li>A finished request does not count towards additional slots if you were the one who requested it in the first place. We're not against this behaviour generally, but allowing this would defeat the purpose of this feature: encouraging members to help others.</li>
 				<li>Do not attempt to abuse the system in any way. Exploiting any bugs you may encounter instead of <a class="send-feedback">reporting them</a> could result in us disabling your access to this feature.</li>
@@ -118,7 +118,7 @@ $(function(){
 
 						const data = $form.mkData();
 						if (isNaN(data.amount) || data.amount < 1)
-							return $.Dialog.fail(false, 'Invaild amount entered');
+							return $.Dialog.fail(false, 'Invalid amount entered');
 						data.amount = parseInt(data.amount, 10);
 						const
 							s = data.amount === 1 ? '' : 's',
@@ -174,7 +174,7 @@ $(function(){
 
 						const data = $form.mkData();
 						if (isNaN(data.amount))
-							return $.Dialog.fail(false, 'Invaild amount entered');
+							return $.Dialog.fail(false, 'Invalid amount entered');
 						data.amount = parseInt(data.amount, 10);
 						if (data.amount === 0)
 							return $.Dialog.fail(false, "You have to enter an integer that isn't 0");
@@ -246,7 +246,7 @@ $(function(){
 		let $this = $(this);
 		$.Dialog.info(`User Agent string for session #${$this.parents('li').attr('id').substring(8)}`, `<code>${$this.data('agent')}</code>`);
 	});
-	$('#signout-everywhere').on('click',function(){
+	$('#sign-out-everywhere').on('click',function(){
 		$.Dialog.confirm('Sign out from ALL sessions',"This will invalidate ALL sessions. Continue?", function(sure){
 			if (!sure) return;
 
@@ -259,6 +259,61 @@ $(function(){
 			}));
 		});
 	});
+
+	const $discordConnect = $('#discord-connect');
+	$discordConnect.find('.sync').on('click',function(e){
+		e.preventDefault();
+
+		$.Dialog.wait('Syncing');
+
+		$.post(`/discord-connect/sync/${name}`, $.mkAjaxHandler(function(){
+			if (!this.status){
+				if (this.segway)
+					$.Dialog.segway(false, $.mk('div').attr('class','color-red').html(this.message));
+				else $.Dialog.fail(false, this.message);
+				return;
+			}
+
+			$.Navigation.reload(true);
+		}));
+	});
+	$discordConnect.find('.unlink').on('click',function(e){
+		e.preventDefault();
+
+		const sameUser = name === $sidebar.find('.user-data .name').text();
+		const you = sameUser?'you':'they';
+		const your = sameUser?'your':'their';
+
+		$.Dialog.confirm(
+			'Unlink Discord account',
+			`<p>If you unlink ${sameUser?'your':'this user\'s'} Discord account ${you} will no longer be able to use ${your} Discord avatar on the site or submit new entries to events for Discord server members.</p>
+			<p>Are you sure you want to unlink ${your} Discord account?</p>`,
+			sure => {
+				if (!sure) return;
+
+				$.Dialog.wait(false);
+
+				$.post(`/discord-connect/unlink/${name}`, $.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					$.Dialog.segway(false, this.message);
+				}));
+			}
+		);
+	});
+	const $syncInfo = $('#discord-sync-info');
+	if ($syncInfo.length){
+		const $timeTag = $syncInfo.find('time');
+		const cooldown = parseInt($syncInfo.attr('data-cooldown'), 10);
+		$timeTag.data('dyntime-beforeupdate', diff => {
+			if (diff.time > cooldown){
+				$syncInfo.find('.wait-message').remove();
+				$discordConnect.find('.sync').enable();
+				$timeTag.removeData('dyntime-beforeupdate');
+			}
+		});
+	}
+
 	$('#unlink').on('click',function(e){
 		e.preventDefault();
 
@@ -300,7 +355,7 @@ $(function(){
 			}));
 		});
 	};
-	window._UserScroll = $.throttle(400, function(){
+	window._UserScroll = $.throttle(400, () => {
 		fulfillPromises();
 	});
 	$w.on('scroll mousewheel',window._UserScroll);
@@ -349,7 +404,7 @@ $(function(){
 			break;
 			case "p_avatarprov":
 				const forUser = {};
-				$('.avatar-wrap.provider-'+from).each(function(){
+				$(`.avatar-wrap:not(.provider-${to_what})`).each(function(){
 					const
 						$this = $(this),
 						username = $this.attr('data-for');
@@ -357,7 +412,8 @@ $(function(){
 						forUser[username] = [];
 					forUser[username].push($this);
 				});
-				$(`.provider-${from}:not(.avatar-wrap)`).removeClass('provider-'+from).addClass('provider-'+to_what);
+				if (from)
+					$(`.provider-${from}:not(.avatar-wrap)`).removeClass('provider-'+from).addClass('provider-'+to_what);
 				let error = false;
 				$.each(forUser, (username, elements) => {
 					$.post('/user/avatar-wrap/'+username, $.mkAjaxHandler(function(){
@@ -433,7 +489,7 @@ $(function(){
 			settingChanged(endpoint.split('/').pop(), orig, this.value);
 		}));
 	});
-	$slbl.children('input[type=number], select').each(function(){
+	$slbl.children('input[type=number]').each(function(){
 		let $el = $(this);
 		$el.data('orig', $el.val().trim()).on('keydown keyup change',function(){
 			let $el = $(this);
@@ -450,6 +506,7 @@ $(function(){
 	$slbl.children('select').each(function(){
 		let $el = $(this);
 		$el.data('orig', $el.find('option:selected').val()).on('keydown keyup change',function(){
+			console.log('Event fired');
 			let $el = $(this),
 				$val = $el.find('option:selected');
 			$el.siblings('.save').attr('disabled', $val.val() === $el.data('orig'));

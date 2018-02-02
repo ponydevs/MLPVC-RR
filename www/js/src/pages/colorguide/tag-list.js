@@ -40,7 +40,7 @@ $(function(){
 	window.CGTagEditing = function(tagName, tagID, action, $tr){
 		switch (action){
 			case "delete":
-				$.Dialog.confirm(`Detele tag: ${tagName}`,"Deleting this tag will also remove it from every appearance where it’s been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
+				$.Dialog.confirm(`Delete tag: ${tagName}`,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
 					if (!sure) return;
 
 					$.Dialog.wait(false,'Sending removal request');
@@ -119,7 +119,7 @@ $(function(){
 						let targetTagName = $.mk('div').html(message).find('strong').prop('outerHTML'),
 							$SynonRemoveForm = $.mk('form','synon-remove').html(
 								`<p>If you leave the option below checked, <strong>${tagName}</strong> will be added to all appearances where ${targetTagName} is used, preserving how the tags worked while the synonym was active.</p>
-								<p>If you made these tags synonyms by accident and don’t want <strong>${tagName}</strong> to be added to each appearance where ${targetTagName} is used, you should uncheck the box below.</p>
+								<p>If you made these tags synonyms by accident and don't want <strong>${tagName}</strong> to be added to each appearance where ${targetTagName} is used, you should uncheck the box below.</p>
 								<label><input type="checkbox" name="keep_tagged" checked><span>Preserve current tag connections</span></label>`
 							);
 

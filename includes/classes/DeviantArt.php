@@ -19,8 +19,8 @@ class DeviantArt {
 		'unsupported_response_type' => 'The authorization server does not support obtaining an authorization code using this method.',
 		'unauthorized_client' => 'The authorization process did not complete. Please try again.',
 		'invalid_scope' => 'The requested scope is invalid, unknown, or malformed.',
-		'server_error' => 'There seems to be an issue on DeviantArt’s end. Try again later.',
-		'temporarily_unavailable' => 'There’s an issue on DeviantArt’s end. Try again later.',
+		'server_error' => "There seems to be an issue on DeviantArt's end. Try again later.",
+		'temporarily_unavailable' => "There's an issue on DeviantArt's end. Try again later.",
 		'user_banned' => 'You were banned on our website by a staff member.',
 		'access_denied' => 'You decided not to allow the site to verify your identity',
 	];
@@ -293,7 +293,7 @@ class DeviantArt {
 			'scope' => $accessToken->getValues()['scope'],
 		];
 
-		$cookie = bin2hex(random_bytes(64));
+		$cookie = Session::generateCookie();
 		$AuthData['token'] = CoreUtils::sha256($cookie);
 
 		$browser = CoreUtils::detectBrowser();
@@ -329,12 +329,14 @@ class DeviantArt {
 			Auth::$session->update_attributes($AuthData);
 		else {
 			Session::delete_all(['conditions' => ['user_id = ? AND scope != ?', $User->id, $AuthData['scope']]]);
-			Session::create(array_merge($AuthData, ['user_id' => $User->id]));
+			$update = array_merge($AuthData, ['user_id' => $User->id]);
+			if (Auth::$session !== null)
+				Auth::$session->update_attributes($update);
+			else Auth::$session = Session::create($update);
 		}
 
 		Session::delete_all(['conditions' => ["user_id = ? AND lastvisit <= NOW() - INTERVAL '1 MONTH'", $User->id]]);
-
-		Cookie::set('access', $cookie, time()+ Time::IN_SECONDS['year'], Cookie::HTTPONLY);
+		Session::setCookie($cookie);
 		return $User ?? null;
 	}
 

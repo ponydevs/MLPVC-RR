@@ -380,7 +380,7 @@ class Logs {
 				}
 			break;
 			default:
-				$details[] = ['<span class="typcn typcn-warning"></span> Couldn’t process details', 'No data processor defined for this entry type', self::KEYCOLOR_ERROR];
+				$details[] = ["<span class=\"typcn typcn-warning\"></span> Couldn't process details", 'No data processor defined for this entry type', self::KEYCOLOR_ERROR];
 				$details[] = ['Raw details', '<pre>'.var_export($data, true).'</pre>'];
 			break;
 		}

@@ -108,9 +108,9 @@
 		Escape: 27,
 		Space: 32,
 		LeftArrow: 37,
-		UpArrrow: 38,
+		UpArrow: 38,
 		RightArrow: 39,
-		DownArrrow: 40,
+		DownArrow: 40,
 		Delete: 46,
 		0: 48,
 		1: 49,
@@ -127,8 +127,8 @@
 	
 	// Time class
 	(function($){
-		let dateformat = { order: 'Do MMMM YYYY, H:mm:ss' };
-		dateformat.orderwd = `dddd, ${dateformat.order}`;
+		let dateFormat = { order: 'Do MMMM YYYY, H:mm:ss' };
+		dateFormat.orderwd = `dddd, ${dateFormat.order}`;
 
 		class DateFormatError extends Error {
 			constructor(message, element){
@@ -162,18 +162,18 @@
 					}
 
 					if ($elapsedHolder.length > 0 || $this.hasClass('no-dynt-el')){
-						$this.html(Timestamp.format(showDayOfWeek ? dateformat.orderwd : dateformat.order));
+						$this.html(Timestamp.format(showDayOfWeek ? dateFormat.orderwd : dateFormat.order));
 						$elapsedHolder.html(timeAgoStr);
 					}
-					else $this.attr('title', Timestamp.format(dateformat.order)).html(timeAgoStr);
+					else $this.attr('title', Timestamp.format(dateFormat.order)).html(timeAgoStr);
 				});
 			}
 
 			static Difference(now, timestamp) {
-				let substract = (now.getTime() - timestamp.getTime())/1000,
+				let subtract = (now.getTime() - timestamp.getTime())/1000,
 					d = {
-						past: substract > 0,
-						time: Math.abs(substract),
+						past: subtract > 0,
+						time: Math.abs(subtract),
 						target: timestamp,
 						week: 0,
 						month: 0,
@@ -355,8 +355,8 @@
 
 	// Convert .serializeArray() result to object
 	$.fn.mkData = function(obj){
-		let tempdata = this.find(':input:valid').serializeArray(), data = {};
-		$.each(tempdata,function(i,el){
+		let tempData = this.find(':input:valid').serializeArray(), data = {};
+		$.each(tempData,function(i,el){
 			if (/\[]$/.test(el.name)){
 				if (typeof data[el.name] === 'undefined')
 					data[el.name] = [];
@@ -390,22 +390,22 @@
 		}
 		else event.data.CSRF_TOKEN = t;
 	});
-	let lasturl,
+	let lastUrl,
 		statusCodeHandlers = {
 			401: function(){
 				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please <a class='send-feedback'>let us know</a> about this issue so we can look into it.");
 			},
 			404: function(){
-				$.Dialog.fail(false, "Error 404: The requested endpoint ("+lasturl.replace(/</g,'&lt;').replace(/\//g,'/<wbr>')+") could not be found");
+				$.Dialog.fail(false, "Error 404: The requested endpoint ("+lastUrl.replace(/</g,'&lt;').replace(/\//g,'/<wbr>')+") could not be found");
 			},
 			500: function(){
 				$.Dialog.fail(false, 'A request failed due to an internal server error. If this persists, please <a class="send-feedback">let us know</a>!');
 			},
 			503: function(){
-				$.Dialog.fail(false, 'A request failed because the server is temporarily unavailable. This shouldn’t take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.');
+				$.Dialog.fail(false, `A request failed because the server is temporarily unavailable. This shouldn't take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.`);
 			},
 			504: function(){
-				$.Dialog.fail(false, 'A request failed because the server took too long to respond. A refresh should fix this issue, but if it doesn\'t, please <a class="send-feedback">let us know</a>.');
+				$.Dialog.fail(false, `A request failed because the server took too long to respond. A refresh should fix this issue, but if it doesn't, please <a class="send-feedback">let us know</a>.`);
 			},
 		};
 	$.ajaxSetup({
@@ -415,7 +415,7 @@
 				$w.triggerHandler('ajaxerror',$.toArray(arguments));
 		},
 		beforeSend: function(_, settings){
-			lasturl = settings.url;
+			lastUrl = settings.url;
 		},
 		statusCode: statusCodeHandlers,
 	});
@@ -531,7 +531,7 @@
 
 	$.momentToYMD = momentInstance => momentInstance.format('YYYY-MM-DD');
 	$.momentToHM = momentInstance => momentInstance.format('HH:mm');
-	$.mkMoment = (datestr, timestr, utc) => moment(datestr+'T'+timestr+(utc?'Z':''));
+	$.mkMoment = (dateString, timeString, utc) => moment(dateString+'T'+timeString+(utc?'Z':''));
 
 	$.nth = n => {
 		switch (n % 10){
@@ -597,13 +597,13 @@
 	};
 
 	$.scrollTo = (pos, speed, callback) => {
-		let scrollf = function(){return false};
+		let scrollFunction = () => false;
 		$('html,body')
-			.on('mousewheel scroll',scrollf)
+			.on('mousewheel scroll',scrollFunction)
 			.animate({scrollTop:pos},speed,callback)
-			.off('mousewheel scroll',scrollf);
+			.off('mousewheel scroll',scrollFunction);
 		$w.on('beforeunload',function(){
-			$('html,body').stop().off('mousewheel scroll',scrollf);
+			$('html,body').stop().off('mousewheel scroll',scrollFunction);
 		});
 	};
 

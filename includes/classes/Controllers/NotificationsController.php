@@ -68,7 +68,7 @@ class NotificationsController extends Controller {
 					$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 					if (empty($Post)){
 						Posts::clearTransferAttempts($Post, 'del');
-						Response::fail("The {$data['type']} doesn’t exist or has been deleted");
+						Response::fail("The {$data['type']} doesn't exist or has been deleted");
 					}
 					if ($read_action === 'true'){
 						if ($Post->reserved_by !== Auth::$user->id){
@@ -110,7 +110,7 @@ class NotificationsController extends Controller {
 					$Appearance = Appearance::find($data['appearance_id']);
 					if (empty($Appearance)){
 						Appearances::clearSpriteColorIssueNotifications($data['appearance_id'], 'appdel', $Notif->recipient_id);
-						Response::fail("Appearance #{$data['appearance_id']} doesn’t exist or has been deleted");
+						Response::fail("Appearance #{$data['appearance_id']} doesn't exist or has been deleted");
 					}
 
 					if ($read_action === 'recheck' && $Appearance->spriteHasColorIssues())
@@ -124,7 +124,7 @@ class NotificationsController extends Controller {
 				case 'pcg-slot-gift':
 					$gift = PCGSlotGift::find($data['gift_id']);
 					if (empty($gift))
-						Response::fail('The sepcified gift does not exist. If you believe this is an error, please <a class="send-freedback">let us know</a>.');
+						Response::fail('The specified gift does not exist. If you believe this is an error, please <a class="send-feedback">let us know</a>.');
 					if ($gift->receiver_id !== Auth::$user->id)
 						Response::fail('Only the recipient can accept or reject this gift.');
 					$giftArr = [ 'gift_id' => $gift->id ];

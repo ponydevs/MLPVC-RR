@@ -270,11 +270,11 @@ HTML;
 					$AppearanceID = (new Input('addto','int', [Input::IS_OPTIONAL => true]))->out();
 					if ($AppearanceID !== null){
 						if ($AppearanceID === 0)
-							Response::success('The tag was created, <strong>but</strong> it could not be added to the appearance because it can’t be tagged.');
+							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.");
 
 						$Appearance = Appearance::find($AppearanceID);
 						if (empty($Appearance))
-							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn’t seem to exist. Please try adding the tag manually.");
+							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.");
 
 						if (!Tagged::make($Tag->id, $Appearance->id)->save()) Response::dbError();
 						$Appearance->updateIndex();
@@ -335,7 +335,7 @@ HTML;
 					continue;
 
 				if (!Tagged::make($Target->id, $tg->appearance_id)->save())
-					Response::fail('Tag '.($merging?'merging':'synonimizing').' failed, please re-try.<br>Technical details: '.$tg->to_json());
+					Response::fail('Tag '.($merging?'merging':'synonymizing').' failed, please re-try.<br>Technical details: '.$tg->to_json());
 			}
 			if ($merging)
 				// No need to delete "tagged" table entries, constraints do it for us

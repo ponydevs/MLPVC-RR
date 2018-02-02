@@ -35,7 +35,7 @@ use App\Models\Episode;
 				<h1><?=CoreUtils::escapeHTML($heading)?></h1>
 				<p>Vector Requests & Reservations</p>
 <?php   if (Permission::sufficient('staff')){ ?>
-				<p class="addedby"><em><?=$CurrentEpisode->is_movie?'Movie':'Episode'?> added by <?=$CurrentEpisode->poster->toAnchor().' '.Time::tag($CurrentEpisode->posted)?></em></p>
+				<p class="added-by"><em><?=$CurrentEpisode->is_movie?'Movie':'Episode'?> added by <?=$CurrentEpisode->poster->toAnchor().' '.Time::tag($CurrentEpisode->posted)?></em></p>
 <?php   } ?>
 			</div>
 		</div>
@@ -89,7 +89,7 @@ use App\Models\Episode;
 		}
 		echo CoreUtils::exportVars($export);
 	} else { ?>
-	<h1>There’s nothing here yet&hellip;</h1>
+	<h1>There's nothing here yet&hellip;</h1>
 	<p>&hellip;but there will be!</p>
 
 <?php   if (Permission::sufficient('staff'))

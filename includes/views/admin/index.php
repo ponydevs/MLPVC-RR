@@ -12,7 +12,6 @@ use App\Permission;
 <?php   } ?>
 		<a class='btn link typcn typcn-link' href="/admin/usefullinks">Useful Links</a>
 		<a class='btn link typcn typcn-user' href="/admin/pcg-appearances">PCG Appearances</a>
-		<a class='btn typcn btn-discord' href="/admin/discord">Server Members</a>
 	</div>
 
 	<section class="overdue-submissions">

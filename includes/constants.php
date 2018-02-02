@@ -6,7 +6,7 @@ use App\RegExp;
 define('HTTPS', !empty($_SERVER['HTTPS']));
 define('ABSPATH',(HTTPS?'https':'http').'://'.($_SERVER['SERVER_NAME']??'localhost').'/');
 /** @noinspection RealpathInSteamContextInspection */
-define('PROJPATH',realpath(__DIR__.'/../').'/');
+define('PROJPATH', dirname(__FILE__, 2).DIRECTORY_SEPARATOR);
 define('APPATH',  PROJPATH.'www/');
 define('FSPATH',  PROJPATH.'fs/');
 define('INCPATH', PROJPATH.'includes/');
@@ -15,6 +15,7 @@ define('GITHUB_PROJECT_NAME','ponydevs/MLPVC-RR');
 define('GITHUB_URL','https://github.com/'.GITHUB_PROJECT_NAME);
 define('SITE_TITLE', 'MLP Vector Club');
 define('SVGO_BINARY',PROJPATH.'node_modules/svgo/bin/svgo');
+define('DISCORD_INVITE_LINK', 'https://discord.gg/hrffb8k');
 
 // Load private configuration \\
 if (!file_exists(INCPATH.'conf.php'))
@@ -81,8 +82,6 @@ $PREFIX_REGEX = new RegExp('^\s*(^|.*?[^\\\\]):\s*');
 $HEX_COLOR_REGEX = new RegExp('^#?([\dA-Fa-f]{6})$','u');
 # DeviantArt
 $FULLSIZE_MATCH_REGEX = new RegExp('^https?:\/\/orig\d+\.');
-# Dsicord
-$DISCORD_NICK_REGEX = new RegExp('^(?:.*\(([a-zA-Z\d-]{1,20})\)|([a-zA-Z\d-]{1,20})\s\|.*)$');
 # General
 define('PRINTABLE_ASCII_PATTERN','^[ -~\n]+$');
 define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~\n\t]');

@@ -44,11 +44,9 @@ use App\UserPrefs;
 <?php   }
 		else { ?>
 			<button class="typcn btn-da da-login" id="signin">Sign in</button>
-			<!--suppress ES6ConvertVarToLetConst, JSUnusedLocalSymbols -->
-			<script>var OAUTH_URL = "<?=\App\DeviantArt::OAuthProviderInstance()->getAuthorizationUrl()?>";</script>
 <?php   }
-		if (!UserPrefs::get('p_hidediscord') && (Auth::$signed_in ? !Auth::$user->isDiscordMember() : true)){ ?>
-			<a class="btn typcn btn-discord discord-join" href="http://fav.me/d9zt1wv">Join Discord</a>
+		if (!UserPrefs::get('p_hidediscord') && (Auth::$signed_in ? !Auth::$user->isDiscordServerMember() : true)){ ?>
+			<a class="btn typcn btn-discord discord-join" href="<?=DISCORD_INVITE_LINK?>">Join Discord</a>
 <?php   } ?>
 		</div>
 	</section>

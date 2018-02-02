@@ -2,101 +2,166 @@
 
 namespace App\Models;
 
+use ActiveRecord\DateTime;
+use App\Auth;
+use App\Controllers\DiscordAuthController;
+use App\RegExp;
+use App\Response;
+use App\Time;
+use App\UserPrefs;
 use App\Users;
+use GuzzleHttp\Command\Exception\CommandClientException;
+use League\OAuth2\Client\Token\AccessToken;
+use RestCord\DiscordClient;
+use Wohali\OAuth2\Client\Provider\Discord;
+use Wohali\OAuth2\Client\Provider\DiscordResourceOwner;
+use Wohali\OAuth2\Client\Provider\Exception\DiscordIdentityProviderException;
 
 /**
  * @inheritdoc
- * @property string $user_id
- * @property string $username
- * @property string $nick
- * @property string $avatar_hash
- * @property string $joined_at
- * @property int    $discriminator
- * @property User   $user
+ * @property string   $user_id
+ * @property string   $username
+ * @property string   $nick
+ * @property string   $avatar_hash
+ * @property DateTime $joined_at
+ * @property int      $discriminator
+ * @property string   $access  (oAuth)
+ * @property string   $refresh (oAuth)
+ * @property string   $scope   (oAuth)
+ * @property DateTime $expires (oAuth)
+ * @property DateTime $last_synced
+ * @property string   $discord_tag   (Via magic method)
+ * @property User     $user          (Via relations)
  * @method static DiscordMember|DiscordMember[] find(...$args)
  */
 class DiscordMember extends AbstractUser {
 	public static $belongs_to = [
-		['user']
+		['user'],
 	];
+
+	public static $before_destroy = ['update_avatar_provider'];
 
 	public function get_name(){
 		return !empty($this->nick) ? $this->nick : $this->username;
 	}
 
+	public function get_discord_tag(){
+		return "{$this->username}#{$this->discriminator}";
+	}
+
 	public function get_avatar_url(){
-		return !empty($this->avatar_hash)
-			? "https://images.discordapp.net/avatars/{$this->id}/{$this->avatar_hash}.png"
-			: 'https://cdn.discordapp.com/embed/avatars/'.($this->discriminator % 5).'.png';
+		if (empty($this->avatar_hash))
+			return 'https://cdn.discordapp.com/embed/avatars/'.($this->discriminator % 5).'.png';
+
+		$ext = preg_match(new RegExp('^a_'), $this->avatar_hash) ? 'gif' : 'png';
+		return "https://cdn.discordapp.com/avatars/{$this->id}/{$this->avatar_hash}.$ext";
 	}
 
-	public function nameToDAName(string $name):?string{
-		global $DISCORD_NICK_REGEX;
-
-		if (!preg_match($DISCORD_NICK_REGEX, $name))
-			return null;
-
-		return $DISCORD_NICK_REGEX->replace('$1$2', $name);
+	public function get_user_id(){
+		return $this->discord_server_member->user_id;
 	}
 
-	// This array defines static bindings for Staff members to prevent fraud
-	// Prefixes are to prevent keys from converting to numbers
-	public const STAFF_BINDINGS = [
-		'id-167355011754491904' => '0ed57486-fc42-a2b1-3092-8f74c7ec4921',
-		'id-135035980292947968' => '06af57df-8755-a533-8711-c66f0875209a',
-		'id-134863841006845952' => '3a3d7829-9021-91a6-d84a-a8c041102fdd',
-		'id-134967730343247872' => 'c8fd7367-3ddb-dbe4-f95a-adb849660097',
-		'id-169075425170030592' => 'd3c08918-ab8e-78df-9e71-38ed61f1d682',
-		'id-168428391480033280' => 'c1e3862f-f75f-0476-e203-43111d079a8f',
-		'id-134863413733097472' => 'fbd4c706-ae9d-87e1-d667-4901895e63ce',
-		'id-187712023788912640' => '98a08424-25f4-14ad-fbd6-f7a2ee91ac74',
-		'id-170649182288347136' => '1ed58761-f4dd-9268-ebfb-d09de58fddbd',
-		'id-140360880079503362' => '46947ae2-62ae-28d1-2e49-6daee2048f59',
-	];
+	public function isServerMember(bool $recheck = false){
+		if ($recheck)
+			$this->checkServerMembership();
+		return $this->joined_at !== null;
+	}
 
-	// List of DA user IDs we do not want to automatically bind to for whatever reason (e.g. ambigous name)
-	public const BIND_BLACKLIST = [
-		'de07c6f1-cdbe-d154-47d4-1d7315688c95',
-		'ae90a347-25b4-a850-f7be-8399d16810ce',
-		'd401c282-16bc-525b-c689-86c657fdcc14',
-		'f15237dd-547b-4dac-09ff-7a44b7cd6f9f',
-		'6d2b4808-1792-6342-7087-aa0fb261907d',
-		'f73c6d54-49d2-a88b-ceb5-aba86dbb9b5b',
-		'62b26e62-090d-db3f-019a-6eeaaf1ffddc',
-		'e1cbcdef-5445-0556-aa55-78e045286554',
-		'18b06f8f-2826-0f31-1961-2441c48edf84',
-	];
+	public function isLinked(){
+		return $this->access !== null;
+	}
 
-	public function guessDAUser():?string {
-		if ($this->user_id !== null)
-			return null;
-
-		if (!empty(self::STAFF_BINDINGS["id-{$this->id}"]))
-			return $this->_checkDAUserBlacklist(self::STAFF_BINDINGS["id-{$this->id}"]);
-
-		if (!empty($this->nick)){
-			$daname = $this->nameToDAName($this->nick);
-			$firstGuess = Users::get($daname ?? $this->nick, 'name');
-			if (!empty($firstGuess))
-				return $this->_checkDAUserBlacklist($firstGuess->id);
+	public function checkServerMembership(){
+		$discordApi = new DiscordClient(['token' => DISCORD_BOT_TOKEN]);
+		try {
+			$member = $discordApi->guild->getGuildMember(['guild.id' => DISCORD_SERVER_ID, 'user.id' => $this->id]);
 		}
-
-		/** @noinspection SuspiciousAssignmentsInspection */
-		$daname = $this->nameToDAName($this->username);
-		if (!empty($daname)){
-			$secondGuess = Users::get($daname, 'name');
-			if (!empty($secondGuess))
-				return $this->_checkDAUserBlacklist($secondGuess->id);
+		catch (CommandClientException $e){
+			if ($e->getResponse()->getStatusCode() !== 404)
+				throw $e;
 		}
-
-		$thirdGuess = Users::get($this->username, 'name');
-		if (!empty($thirdGuess))
-			return $this->_checkDAUserBlacklist($thirdGuess->id);
-
-		return null;
+		if (!empty($member)){
+			$this->nick = $member->nick ?? null;
+			$this->joined_at = $member->joined_at;
+		}
+		else {
+			$this->nick = null;
+			$this->joined_at = null;
+		}
+		$this->save();
 	}
 
-	private function _checkDAUserBlacklist($id){
-		return $this->user_id = (\in_array($id, self::BIND_BLACKLIST, true) ? null : $id);
+	public static function getUserData(Discord $provider, AccessToken $token):?DiscordResourceOwner {
+		try {
+			/** @noinspection PhpIncompatibleReturnTypeInspection */
+			return $provider->getResourceOwner($token);
+		}
+		catch (DiscordIdentityProviderException $e){
+			if ($e->getCode() === 401){
+				// We've been de-authorized
+				return null;
+			}
+			throw $e;
+		}
+	}
+
+	public function updateFromApi(DiscordResourceOwner $user, bool $save = true){
+		$this->username = $user->getUsername();
+		$this->discriminator = $user->getDiscriminator();
+		$this->avatar_hash = $user->getAvatarHash();
+		if ($save)
+			$this->save();
+	}
+
+	public function isAccessTokenExpired():bool {
+		return $this->expires->getTimestamp() <= time()+10;
+	}
+
+	public function updateAccessToken(?AccessToken $token = null, bool $save = true){
+		if ($token === null){
+			if (!$this->isAccessTokenExpired())
+				return;
+
+			$provider = DiscordAuthController::getProvider();
+			$token = $provider->getAccessToken('refresh_token', [ 'refresh_token' => $this->refresh ]);
+		}
+		$this->access = $token->getToken();
+		$this->refresh = $token->getRefreshToken();
+		$this->expires = date('c', $token->getExpires());
+		$this->scope = $token->getValues()['scope'];
+		if ($save)
+			$this->save();
+	}
+
+	public const SYNC_COOLDOWN = 5 * Time::IN_SECONDS['minute'];
+
+	public function canBeSynced(){
+		return $this->last_synced === null || $this->last_synced->getTimestamp() + self::SYNC_COOLDOWN <= time();
+	}
+
+	public function sync(Discord $provider = null, bool $force = false, bool $auto_unlink = true):bool {
+		if (!$force && !$this->canBeSynced())
+			return true;
+
+		if ($provider === null)
+			$provider = DiscordAuthController::getProvider();
+		$this->updateAccessToken(null, false);
+		$user = self::getUserData($provider, new AccessToken(['access_token' => $this->access]));
+		if ($user === null){
+			if ($auto_unlink){
+				$this->delete();
+				Response::fail('The site is no longer authorized to access the Discord account data, the link has been removed.', ['segway' => true]);
+			}
+			else return false;
+		}
+		$this->updateFromApi($user);
+		$this->last_synced = date('c');
+		$this->checkServerMembership();
+		return true;
+	}
+
+	public function update_avatar_provider(){
+		if ($this->user->avatar_provider === 'discord')
+			UserPrefs::set('p_avatarprov', 'deviantart', $this->user);
 	}
 }

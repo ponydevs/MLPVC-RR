@@ -172,7 +172,7 @@ $(function(){
 		$h2c.children().remove();
 		let text = $h2c.text().trim();
 
-		$.Dialog.wait(`Editing "${text}"`,"Retrieving setting’s value");
+		$.Dialog.wait(`Editing "${text}"`,"Retrieving setting's value");
 		$.post(`/setting/get/${endpoint}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
@@ -377,12 +377,12 @@ $(function(){
 			});
 		});
 		$actions.filter('.unfinish').off('click').on('click',function(){
-			let $unfinishBtn = $(this),
-				deleteOnly = $unfinishBtn.hasClass('delete-only'),
+			let $unFinishBtn = $(this),
+				deleteOnly = $unFinishBtn.hasClass('delete-only'),
 				Type = $.capitalize(type),
 				what = type.replace(/s$/,'');
 
-			$.Dialog.request((deleteOnly?'Delete':'Unfinish')+' '+what,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this '+what+' as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind '+what+' from user</label></form>','Unfinish', function($form){
+			$.Dialog.request((deleteOnly?'Delete':'Un-finish')+' '+what,'<form id="unbind-check"><p>Are you sure you want to '+(deleteOnly?'delete this reservation':'mark this '+what+' as unfinished')+'?</p><hr><label><input type="checkbox" name="unbind"> Unbind '+what+' from user</label></form>','Un-finish', function($form){
 				let $unbind = $form.find('[name=unbind]');
 
 				if (!deleteOnly)
@@ -390,10 +390,10 @@ $(function(){
 
 				if (type === 'reservation'){
 					$unbind.on('click',function(){
-						$('#dialogButtons').children().first().val(this.checked ? 'Delete' : 'Unfinish');
+						$('#dialogButtons').children().first().val(this.checked ? 'Delete' : 'Un-finish');
 					});
 					if (deleteOnly)
-						$unbind.trigger('click').off('click').on('click keydown touchstart', function(){return false}).css('pointer-events','none').parent().hide();
+						$unbind.trigger('click').off('click').on('click keydown touchstart', () => false).css('pointer-events','none').parent().hide();
 					$form.append('<div class="notice warn">Because this '+(!deleteOnly?'is a reservation, unbinding it from the user will <strong>delete</strong> it permanently.':'reservation was added directly, it cannot be marked unfinished, only deleted.')+'</div>');
 				}
 				else
@@ -446,7 +446,7 @@ $(function(){
 		$actions.filter('.delete').off('click').on('click',function(){
 			let $this = $(this);
 
-			$.Dialog.confirm(`Deleteing request #${id}`, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
+			$.Dialog.confirm(`Deleting request #${id}`, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
 				if (!sure) return;
 
 				$.Dialog.wait(false);
@@ -682,14 +682,14 @@ $(function(){
 						$posted_at = $form.find('[name=posted_at]');
 
 						let posted_at = moment(postdata.posted_at);
-						$posted_at.val(posted_at.format('YYYY-MM-DD\THH:mm:ssZ'));
+						$posted_at.val(posted_at.format());
 					}
 					if (typeof postdata.reserved_at === 'string'){
 						$reserved_at = $form.find('[name=reserved_at]');
 
 						if (postdata.reserved_at.length){
 							let reserved = moment(postdata.reserved_at);
-							$reserved_at.val(reserved.format('YYYY-MM-DD\THH:mm:ssZ'));
+							$reserved_at.val(reserved.format());
 						}
 					}
 					if (typeof postdata.finished_at === 'string'){
@@ -697,7 +697,7 @@ $(function(){
 
 						if (postdata.finished_at.length){
 							let finished = moment(postdata.finished_at);
-							$finished_at.val(finished.format('YYYY-MM-DD\THH:mm:ssZ'));
+							$finished_at.val(finished.format());
 						}
 					}
 					$form.on('submit', function(e){
@@ -749,7 +749,7 @@ $(function(){
 			$.Dialog.confirm(`Take on reservation of ${type} #${id}`,
 				`<p>Using this option, you can express your interest in finishing the ${type} which ${reservedBy} already reserved.</p>
 				<p>They will be sent a notification letting them know you're interested and they'll be able to allow/deny the transfer of the reserver status as they see fit.</p>
-				<p>Once ${reservedBy} responds to your inquiry you'll receive a notification informing you about their decision. If they agreed, the post’s reservation will be transferred to you immediately.</p>
+				<p>Once ${reservedBy} responds to your inquiry you'll receive a notification informing you about their decision. If they agreed, the post's reservation will be transferred to you immediately.</p>
 				<p><strong>Are you sure you can handle this ${type}?</strong></p>`, sure => {
 					if (!sure) return;
 

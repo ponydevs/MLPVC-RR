@@ -20,20 +20,24 @@ use App\Models\User;
 use App\Exceptions\CURLRequestException;
 
 class AuthController extends Controller {
-	private static function _isStateRndkey(&$_match){
-		return isset($_GET['state']) && preg_match(new RegExp('^[a-z\d]+$','i'), $_GET['state'], $_match);
+	public function begin(){
+		$authUrl = DeviantArt::OAuthProviderInstance()->getAuthorizationUrl([
+			'scope' => ['user', 'browse'],
+		]);
+		if (isset($_GET['return']) && CoreUtils::isURLSafe($_GET['return']))
+			Auth::$session->setData('return_url', $_GET['return']);
+		Auth::$session->setData('da_state', DeviantArt::OAuthProviderInstance()->getState());
+		HTTP::tempRedirect($authUrl);
 	}
 
-	public function auth(){
-		CSRFProtection::protect();
-
-		if (!isset($_GET['error']) && (empty($_GET['code']) || empty($_GET['state'])))
+	public function end(){
+		if (!isset($_GET['error']) && (empty($_GET['code']) || empty($_GET['state']) || $_GET['state'] !== Auth::$session->pullData('da_state')))
 			$_GET['error'] = 'unauthorized_client';
 		if (isset($_GET['error'])){
 			$err = $_GET['error'];
 			$errdesc = $_GET['error_description'] ?? null;
 			if (Auth::$signed_in)
-				$this->_moveToState($_GET['state'] ?? null);
+				$this->_redirectBack();
 			$this->_error($err, $errdesc);
 		}
 
@@ -59,18 +63,17 @@ class AuthController extends Controller {
 				$errdesc = $_GET['error_description'];
 
 				if ($err === 'user_banned')
-					$errdesc .= "\n\nIf you’d like to appeal your ban, please <a class='send-feedback'>contact us</a>.";
+					$errdesc .= "\n\nIf you'd like to appeal your ban, please <a class='send-feedback'>contact us</a>.";
 			}
 			if ($err !== 'time_out')
 				FailedAuthAttempt::record();
 			$this->_error($err, $errdesc ?? null);
 		}
 
-		if (self::_isStateRndkey($_match)){
-			$confirm = str_replace('{{CODE}}', $_match[0], File::get(INCPATH.'views/loginConfrim.html'));
-			die($confirm);
-		}
-		else $this->_moveToState($_GET['state']);
+		if (Auth::$session->hasData('return_url'))
+			$this->_redirectBack();
+
+		die(File::get(INCPATH.'views/loginConfirm.html'));
 	}
 
 	public function signout(){
@@ -84,7 +87,7 @@ class AuthController extends Controller {
 				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, ['token' => Auth::$session->access]);
 			}
 			catch (CURLRequestException $e){
-				Response::fail("Could not revoke the site’s access: {$e->getMessage()} (HTTP {$e->getCode()})");
+				Response::fail("Could not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
 			}
 		}
 
@@ -98,7 +101,7 @@ class AuthController extends Controller {
 				/** @var $TargetUser User */
 				$TargetUser = Users::get($username, 'name');
 				if (empty($TargetUser))
-					Response::fail('Target user doesn’t exist');
+					Response::fail("Target user doesn't exist");
 				if ($TargetUser->id !== Auth::$user->id)
 					$val = $TargetUser->id;
 				else unset($TargetUser);
@@ -118,8 +121,6 @@ class AuthController extends Controller {
 	}
 
 	private function _error(?string $err, ?string $errdesc = null){
-		$rndkey = self::_isStateRndkey($match) ? $match[0] : null;
-
 		if ($err !== 'time_out')
 			CoreUtils::error_log("DeviantArt authentication error ($err): $errdesc");
 
@@ -130,23 +131,13 @@ class AuthController extends Controller {
 			'import' => [
 				'err' => $err,
 				'errdesc' => $errdesc,
-				'rndkey' => $rndkey,
 			]
 		]);
 	}
 
-	/**
-	 * Move to a different state or fall back to the home page if it's invalid
-	 * Disclaimer: relocation not covered by the application
-	 *
-	 * @param string $state Path to move to
-	 */
-	private function _moveToState(?string $state){
-		global $REWRITE_REGEX;
+	private function _redirectBack(){
+		$return_url = Auth::$session->pullData('return_url');
 
-		if ($state === null || !$REWRITE_REGEX->match($state))
-			$state = '/';
-
-		HTTP::redirect($state, HTTP::REDIRECT_TEMP);
+		HTTP::tempRedirect($return_url ?? '/');
 	}
 }

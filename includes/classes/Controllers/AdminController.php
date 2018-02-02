@@ -167,13 +167,13 @@ class AdminController extends Controller {
 		if (empty($MainEntry))
 			Response::fail('Log entry does not exist');
 		if (empty($MainEntry['refid']))
-			Response::fail('There are no details to show', ['unlickable' => true]);
+			Response::fail('There are no details to show', ['unclickable' => true]);
 
 		$Details = DB::$instance->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
 		if (empty($Details)){
 			CoreUtils::error_log("Could not find details for entry {$MainEntry['reftype']}#{$MainEntry['refid']}, NULL-ing refid of Main#{$MainEntry['entryid']}");
 			DB::$instance->where('entryid', $MainEntry['entryid'])->update('log', ['refid' => null]);
-			Response::fail('Failed to retrieve details', ['unlickable' => true]);
+			Response::fail('Failed to retrieve details', ['unclickable' => true]);
 		}
 
 		Response::done(Logs::formatEntryDetails($MainEntry,$Details));
@@ -264,8 +264,8 @@ class AdminController extends Controller {
 						Response::fail();
 				}, [
 					Input::CUSTOM_ERROR_MESSAGES => [
-						Input::ERROR_MISSING => 'Minumum role is missing',
-						Input::ERROR_INVALID => 'Minumum role (@value) is invalid',
+						Input::ERROR_MISSING => 'Minimum role is missing',
+						Input::ERROR_INVALID => 'Minimum role (@value) is invalid',
 					]
 				]))->out();
 				if ($creating || $Link->minrole !== $minrole)
@@ -300,160 +300,6 @@ class AdminController extends Controller {
 		}
 
 		Response::done();
-	}
-
-	public function discord(){
-		if (!DB::$instance->has('discord_members'))
-			$this->_getDiscordMemberList();
-
-		$heading = 'Discord Server Connections';
-		CoreUtils::loadPage(__METHOD__, [
-			'heading' => $heading,
-			'title' => "$heading - Admin Area",
-			'css' => [true],
-			'js' => [true],
-			'import' => ['nav_dsc' => true],
-		]);
-	}
-
-	public function discordMemberList(){
-		CSRFProtection::protect();
-
-		if (isset($_POST['update']))
-			$this->_getDiscordMemberList(true);
-
-		$members = DiscordMember::all();
-		usort($members, function(DiscordMember $a, DiscordMember $b){
-			$comp1 = $a->name <=> $b->name;
-			if ($comp1 !== 0)
-				return $comp1;
-			return $a->discriminator <=> $b->discriminator;
-		});
-		$HTML = '';
-		/** @var \App\Models\DiscordMember[] $members */
-		foreach ($members as $member){
-			$avatar = "<img src='{$member->avatar_url}' alt='user avatar' class='user-avatar'>";
-			$un = CoreUtils::escapeHTML($member->username);
-			$bound = !empty($member->user_id) ? 'class="bound"' : '';
-			$udata = "<span>{$member->name}</span><span>$un#{$member->discriminator}</span>";
-			$HTML .= <<<HTML
-<li id="member-{$member->id}" $bound>
-	$avatar
-	<div class='user-data'>
-		$udata
-	</div>
-</li>
-HTML;
-		}
-
-		Response::done(['list' => $HTML]);
-	}
-
-	/** @var DiscordMember */
-	private $_member;
-	private function _discordSetMember($params){
-		CSRFProtection::protect();
-
-		$this->_member = DiscordMember::find($params['id']);
-		if (empty($this->_member))
-			Response::fail('There\'s no member with this ID on record.');
-	}
-
-	public function discordMemberLinkGet($params){
-		$this->_discordSetMember($params);
-
-		$resp = [];
-		if ($this->_member->user_id !== null)
-			$resp['boundto'] = $this->_member->user->toAnchor(User::WITH_AVATAR);
-
-		Response::done($resp);
-	}
-
-	public function discordMemberLinkSet($params){
-		$this->_discordSetMember($params);
-
-		$to = (new Input('to','username',[
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'Username is missing',
-				Input::ERROR_INVALID => 'Username (@value) is invalid',
-			]
-		]))->out();
-		$user = Users::get($to, 'name');
-		if (empty($user))
-			Response::fail('The specified user does not exist');
-
-		if (!$this->_member->update_attributes([
-			'user_id' => $user->id
-		])) Response::fail('Nothing has been changed');
-
-		Response::done();
-	}
-
-	public function discordMemberLinkDel($params){
-		$this->_discordSetMember($params);
-
-		if ($this->_member->user_id === null)
-			Response::fail('Member is not bound to any user');
-
-		if (!$this->_member->update_attributes([
-			'user_id' => null
-		])) Response::fail('Nothing has been changed');
-
-		Response::done();
-	}
-
-	private function _getDiscordMemberList(bool $skip_binding = false){
-		$discord = new DiscordClient(['token' => DISCORD_BOT_TOKEN]);
-		$allMembers = [];
-		$after = 0;
-		$limit = 1000;
-		$cnt = 0;
-		while (true){
-			$members = $discord->guild->listGuildMembers(['guild.id' => DISCORD_SERVER_ID,'limit' => $limit, 'after' => $after])->toArray();
-			if (empty($members))
-				break;
-			if (!empty($members['retry_after'])){
-				CoreUtils::error_log("Discord rate limit hit, continuing in {$members['retry_after']} ms");
-				CoreUtils::msleep($members['retry_after']+100);
-				continue;
-			}
-			foreach ($members as $member)
-				$allMembers[] = $member;
-			$after = (int) $member['user']['id'];
-		}
-		$usrids = [];
-
-		foreach ($allMembers as $member){
-			$ins = new DiscordMember([
-				'id' => $member['user']['id'],
-				'username' => $member['user']['username'],
-				'discriminator' => $member['user']['discriminator'],
-				'nick' => $member['nick'] ?? null,
-				'avatar_hash' => $member['user']['avatar'] ?? null,
-				'joined_at' => $member['joined_at'],
-			]);
-
-			$usrids[] = $ins->id;
-
-			if (!empty($ins->nick) || (isset($member['roles']) && \count($member['roles']) > 1))
-				$ins->guessDAUser();
-			$ins = $ins->to_array([
-				'except' => ['name','avatar_url'],
-			]);
-
-			if (DiscordMember::exists($ins['id'])){
-				$insid = $ins['id'];
-				unset($ins['id']);
-				if ($skip_binding)
-					unset($ins['user_id']);
-				DiscordMember::find($insid)->update_attributes($ins);
-			}
-			else DiscordMember::create($ins);
-		}
-
-		if (\count($usrids) > 0)
-			DB::$instance->where("id NOT IN ('".implode("','",$usrids)."')");
-		DB::$instance->delete('discord_members');
 	}
 
 	public function massApprove(){

@@ -175,7 +175,7 @@ class PostController extends Controller {
 			break;
 			case 'locate':
 				if (empty($this->_post) || $this->_post->broken)
-					Response::fail('The post you were linked to has either been deleted or didn’t exist in the first place. Sorry.'.CoreUtils::responseSmiley(':\\'));
+					Response::fail("The post you were linked to has either been deleted or didn't exist in the first place. Sorry.".CoreUtils::responseSmiley(':\\'));
 
 				if (isset($_POST['SEASON']) && isset($_POST['EPISODE']) && $this->_post->ep->season === (int)$_POST['SEASON'] && $this->_post->ep->episode === (int)$_POST['EPISODE'])
 					Response::done([
@@ -570,7 +570,7 @@ class PostController extends Controller {
 
 		$this->_post = $thing === 'request' ? Request::find($params['id']) : Reservation::find($params['id']);
 		if (empty($this->_post) && $action !== 'locate')
-			Response::fail("There’s no $thing with the ID {$params['id']}");
+			Response::fail("There's no $thing with the ID {$params['id']}");
 
 		if (!empty($this->_post->lock) && Permission::insufficient('developer') && !\in_array($action,['unlock', 'lazyload', 'locate'],true))
 			Response::fail('This post has been approved and cannot be edited or removed.');
@@ -636,21 +636,21 @@ class PostController extends Controller {
 				$data = ['canreserve' => true];
 			}
 			else {
-				$message .= "<br>However, you have 4 reservations already which means you can’t reserve any more posts. Please review your pending reservations on your <a href='/u'>Account page</a> and cancel/finish at least one before trying to take on another.";
+				$message .= "<br>However, you have 4 reservations already which means you can't reserve any more posts. Please review your pending reservations on your <a href='/u'>Account page</a> and cancel/finish at least one before trying to take on another.";
 				$data = [];
 			}
 		};
 
 		$data = null;
 		if (empty($reserved_by)){
-			$message = 'This post is not reserved by anyone so there no need to ask for anyone’s confirmation.';
+			$message = "This post is not reserved by anyone so there no need to ask for anyone's confirmation.";
 			$checkIfUserCanReserve($message, $data);
 			Response::fail($message, $data);
 		}
 		if ($reserved_by->id === Auth::$user->id)
 			Response::fail("You've already reserved this {$params['thing']}");
 		if ($this->_post->isOverdue()){
-			$message = 'This post was reserved '.Time::tag($this->_post->reserved_at).' so anyone’s free to reserve it now.';
+			$message = 'This post was reserved '.Time::tag($this->_post->reserved_at)." so anyone's free to reserve it now.";
 			$checkIfUserCanReserve($message, $data);
 			Response::fail($message, $data);
 		}
@@ -673,7 +673,7 @@ class PostController extends Controller {
 			'user' => Auth::$user->id,
 		]);
 
-		Response::success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don’t visit the site often, it’d be a good idea to send them a note asking them to consider your inquiry.");
+		Response::success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don't visit the site often, it'd be a good idea to send them a note asking them to consider your inquiry.");
 	}
 
 	public function setImage($params){
@@ -705,7 +705,7 @@ class PostController extends Controller {
 
 		// Check image availability
 		if (!DeviantArt::isImageAvailable($Image->preview))
-			Response::fail("<p class='align-center'>The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank' rel='noopener'>{$Image->preview}</a></p>");
+			Response::fail("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank' rel='noopener'>{$Image->preview}</a></p>");
 
 		$update = [
 			'preview' => $Image->preview,
@@ -783,7 +783,7 @@ class PostController extends Controller {
 		}
 		// Check image availability
 		if (!DeviantArt::isImageAvailable($fullsize))
-			Response::fail("The specified image doesn’t seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank' rel='noopener'>$fullsize</a>");
+			Response::fail("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank' rel='noopener'>$fullsize</a>");
 
 		$this->_post->fullsize = $fullsize;
 		$this->_post->save();
