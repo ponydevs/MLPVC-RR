@@ -122,7 +122,7 @@ class Session extends NSModel {
 	}
 
 	public function generate_id(){
-		$this->id = Uuid::uuid4();
+		$this->id = Uuid::uuid4()->toString();
 	}
 }
 
