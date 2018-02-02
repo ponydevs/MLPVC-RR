@@ -137,10 +137,20 @@ if ($isUserMember)
 <?php       }
 			else $member = false;
 		}
-		if (empty($member)){ ?>
+		if (empty($member)){
+			if ($sameUser){ ?>
 			<p>Link your account to be able to choose between your Discord and DeviantArt avatars as well as to participate in events for Discord server members.</p>
+<?php       }
+			else if ($User->boundToDiscordMember()){ ?>
+			<p>You may unlink this account if you feel it should not have been linked in the first place.</p>
+<?php       }
+			else { ?>
+			<p>This user hasn't linked their Discord account yet.</p>
+<?php       } ?>
 			<div class="button-block align-center">
+<?php       if ($sameUser){ ?>
 				<a href="/discord-connect/begin" class="btn link typcn typcn-link">Link account</a>
+<?php       } ?>
 				<?=isset($member)&&$member===false?$unlinkBtn:''?>
 			</div>
 <?php   } ?>
