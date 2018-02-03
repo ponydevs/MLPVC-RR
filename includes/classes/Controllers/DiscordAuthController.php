@@ -186,6 +186,9 @@ class DiscordAuthController extends Controller {
 		if (empty($discordUser))
 			Response::fail('No local user found for ID '.$params['id']);
 
+		if (!$discordUser->isLinked())
+			Response::done();
+
 		$discordUser->sync($this->provider, true);
 		Response::done();
 	}
