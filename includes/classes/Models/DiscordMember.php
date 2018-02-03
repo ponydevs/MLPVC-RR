@@ -109,13 +109,13 @@ class DiscordMember extends AbstractUser {
 			$this->save();
 	}
 
-	public function isAccessTokenExpired():bool {
-		return $this->expires->getTimestamp() <= time()+10;
+	public function accessTokenNeedsUpdating():bool {
+		return $this->expires === null || $this->expires->getTimestamp() <= time()+10;
 	}
 
 	public function updateAccessToken(?AccessToken $token = null, bool $save = true){
 		if ($token === null){
-			if (!$this->isAccessTokenExpired())
+			if (!$this->accessTokenNeedsUpdating())
 				return;
 
 			$provider = DiscordAuthController::getProvider();
