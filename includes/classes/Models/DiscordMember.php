@@ -110,7 +110,7 @@ class DiscordMember extends AbstractUser {
 	}
 
 	public function accessTokenNeedsUpdating():bool {
-		return $this->expires === null || $this->expires->getTimestamp() <= time()+10;
+		return $this->expires !== null && $this->expires->getTimestamp() <= time()+10;
 	}
 
 	public function updateAccessToken(?AccessToken $token = null, bool $save = true){
