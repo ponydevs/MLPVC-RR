@@ -183,10 +183,7 @@ class DiscordAuthController extends Controller {
 			CoreUtils::noPerm();
 
 		$discordUser = DiscordMember::find($params['id']);
-		if (empty($discordUser))
-			Response::fail('No local user found for ID '.$params['id']);
-
-		if (!$discordUser->isLinked())
+		if (empty($discordUser) || !$discordUser->isLinked())
 			Response::done();
 
 		$discordUser->sync($this->provider, true);
