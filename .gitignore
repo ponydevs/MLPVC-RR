@@ -1,5 +1,9 @@
-# Let's encrypt
-/www/.well-known
+# Well Known excpetions
+/www/.well-known/*
+!/www/.well-known/security.txt*
+!/www/.well-known/assetlinks.json
+!/www/.well-known/apple-app-site-association
+
 /includes/conf.php
 *.log
 *.opdownload

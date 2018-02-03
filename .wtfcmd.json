@@ -44,14 +44,6 @@
 		]
 	},
 	{
-		"name": "gulp",
-		"desc": [
-			"Run the \"default\" gulp task to compile all assets in their current state and start a file watcher to update them when changes are made",
-			"Requires `yarn install` and `npm install gulp -g` to be run first"
-		],
-		"cmd": "gulp default"
-	},
-	{
 		"name": ["tests", "t"],
 		"desc": [
 			"Run tests",
@@ -61,5 +53,31 @@
 			"bash": "vendor/bin/phpunit",
 			"powershell": "vendor\\bin\\phpunit"
 		}
+	},
+	{
+		"group": ["security","sec"],
+		"name": ["gpg"],
+		"desc": [
+			"Export gpg public key to the web root",
+			"Run from the www directory"
+		],
+		"cmd": "gpg --armor --output pgp-key.txt --export {{.ident}}",
+		"args": [
+			{
+				"name": "ident",
+				"desc": [
+					"Identifier to use for finding the key to export (e.g. the e-mail)",
+					"You can use `gpg --list-keys` to find your key"
+				],
+				"required": true,
+				"test": "^(.+@.+|[A-Fa-f\\d]+)$"
+			}
+		]
+	},
+	{
+		"group": ["security","sec"],
+		"name": ["resign"],
+		"desc": "Re-create the security.txt file's signature after a modification",
+		"cmd": "gpg --detach-sign --armor -o security.txt.sig security.txt"
 	}
 ]
