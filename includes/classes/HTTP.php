@@ -176,4 +176,23 @@ class HTTP {
 	public static function tempRedirect(string $url){
 		self::redirect($url, 302);
 	}
+
+	/**
+	 * Redirection
+	 *
+	 * @param string $url     Redirection target URL
+	 * @param string $message Message display in <h1>
+	 */
+	public static function softRedirect(string $url = '/', string $message = 'Redirecting'){
+		header("Refresh: 0;url=$url");
+		$page = file_get_contents(INCPATH.'views/softRedirect.html');
+		$page = str_replace(
+			['{{MESSAGE}}',      '{{URL}}'],
+			["$message&hellip;", CoreUtils::aposEncode($url)],
+			$page
+		);
+		echo $page;
+		exit;
+	}
+
 }

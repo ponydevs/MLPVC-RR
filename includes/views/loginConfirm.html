@@ -1,70 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Sign-in process</title>
 <meta charset="utf-8">
+<title>Sign-in process</title>
 <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
-<style>
-@font-face {
-	font-family: Celestia;
-	src: url('/font/Celestia Medium Redux.ttf');
-	src: local("Celestia Redux Alternate"),
-	     local("Celestia Medium Redux"),
-	     url('/font/Celestia Medium Redux.ttf') format("truetype");
-}
-html, body {
-	width: 100%;
-	height: 100%;
-}
-body {
-	margin: 0;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 10px;
-	box-sizing: border-box;
-	opacity: 0;
-
-	transition: opacity .5s;
-}
-body.fadein {
-	opacity: 1;
-}
-body > span {
-	display: block;
-	text-align: center;
-}
-body > span > * {
-	display: block;
-}
-body > span > :first-child {
-	color: transparent;
-	width: 200px;
-	height: 200px;
-	font-size: 200px;
-	line-height: 1em;
-	background: url('/img/login-success.svg') no-repeat center;
-	background-size: contain;
-}
-body > span > :last-child {
-	font-size: 28px;
-	font-family: "Celestia", sans-serif;
-	color: green;
-}
-</style>
-<script>window.opener.$.PopupMoveCenter(window, 400, 400);try{window.history.replaceState({},'','/hi')}catch(e){}</script>
+<script>
+window.opener.$.PopupMoveCenter(window, 400, 400);
+if (!document.querySelector('.xdebug-error'))
+	window.opener['__authCallback']();
+else console.log('xdebug error detected');
+</script>
 </head>
-<body>
-	<span>
-		<span>&#x2713;</span>
-		<span>Welcome<script>
-			try {
-				if (localStorage.getItem('cookie_consent_v2') === '1')
-					//noinspection DocumentWriteJS
-					document.write(' back')
-			} catch(e){}</script>!</span>
-	</span>
-	
-<script>setTimeout(function(){document.getElementsByTagName('body')[0].className += 'fadein'},1);if(!document.querySelector('.xdebug-error'))window.opener['__authCallback']();else console.log('xdebug error detected')</script>
-</body>
+<body></body>
 </html>

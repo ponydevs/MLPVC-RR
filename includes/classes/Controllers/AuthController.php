@@ -27,7 +27,7 @@ class AuthController extends Controller {
 		if (isset($_GET['return']) && CoreUtils::isURLSafe($_GET['return']))
 			Auth::$session->setData('return_url', $_GET['return']);
 		Auth::$session->setData('da_state', DeviantArt::OAuthProviderInstance()->getState());
-		HTTP::tempRedirect($authUrl);
+		HTTP::softRedirect($authUrl, 'Creating session');
 	}
 
 	public function end(){
