@@ -17,7 +17,6 @@ use enshrined\svgSanitize\data\AttributeInterface;
 use enshrined\svgSanitize\data\TagInterface;
 use enshrined\svgSanitize\Sanitizer;
 use Monolog\Logger;
-use Peertopark\UriBuilder;
 
 class CoreUtils {
 	public const
@@ -25,15 +24,13 @@ class CoreUtils {
 	/**
 	 * Forces an URL rewrite to the specified path
 	 *
-	 * @param string|UriBuilder $fix_uri URL to forcibly redirect to
+	 * @param string $fix_uri URL to forcibly redirect to
 	 */
 	public static function fixPath($fix_uri){
 		$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
 		$path = $_split[0];
 		$query = empty($_split[1]) ? '' : "?{$_split[1]}";
 
-		if ($fix_uri instanceof UriBuilder)
-			$fix_uri = $fix_uri->build_http_string();
 		$_split = explode('?', $fix_uri, 2);
 		$fix_path = $_split[0];
 		$fix_query = empty($_split[1]) ? '' : "?{$_split[1]}";

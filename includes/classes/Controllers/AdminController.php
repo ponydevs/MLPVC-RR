@@ -25,7 +25,6 @@ use App\UserPrefs;
 use App\Users;
 use GuzzleHttp\Command\Guzzle\GuzzleClient;
 use IPTools\IP;
-use Peertopark\UriBuilder;
 use RestCord\DiscordClient;
 
 class AdminController extends Controller {

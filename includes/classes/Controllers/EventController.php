@@ -19,7 +19,6 @@ use App\Permission;
 use App\Response;
 use App\RegExp;
 use App\Time;
-use Peertopark\UriBuilder;
 
 class EventController extends Controller {
 	public $do = 'event';

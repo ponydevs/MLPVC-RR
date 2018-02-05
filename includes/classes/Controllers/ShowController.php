@@ -7,7 +7,6 @@ use App\Episodes;
 use App\Pagination;
 use App\Permission;
 use App\Models\Episode;
-use Peertopark\UriBuilder;
 
 class ShowController extends Controller {
 	public function index(){

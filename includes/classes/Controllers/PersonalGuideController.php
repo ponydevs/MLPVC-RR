@@ -21,7 +21,6 @@ use App\Response;
 use App\Time;
 use App\UserPrefs;
 use App\Users;
-use Peertopark\UriBuilder;
 
 class PersonalGuideController extends ColorGuideController {
 	public function list($params){

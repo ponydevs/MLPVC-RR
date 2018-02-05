@@ -27,6 +27,7 @@ use App\Models\RelatedAppearance;
 use App\Models\Tag;
 use App\Models\Tagged;
 use App\Models\User;
+use App\NSUriBuilder;
 use App\Pagination;
 use App\Permission;
 use App\RegExp;
@@ -46,7 +47,6 @@ use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
-use Peertopark\UriBuilder;
 
 class ColorGuideController extends Controller {
 	public $do = 'colorguide';
@@ -146,16 +146,22 @@ class ColorGuideController extends Controller {
 	public function fullList($params){
 		$this->_initialize($params);
 
-		$GuideOrder = !isset($_REQUEST['alphabetically']);
+		$GuideOrder = !isset($_GET['alphabetically']);
 		if (!$GuideOrder)
 			DB::$instance->orderBy('label');
 		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
-		if (isset($_REQUEST['ajax'])){
-			CoreUtils::detectUnexpectedJSON();
+		$path = new NSUriBuilder("{$this->_cgPath}/full");
+		if (!$GuideOrder)
+			$path->append_query_param('alphabetically', null);
 
-			Response::done(['html' => CGUtils::getFullListHTML($Appearances, $GuideOrder, $this->_EQG, NOWRAP)]);
-		}
+		if (CoreUtils::isJSONExpected())
+			Response::done([
+				'html' => CGUtils::getFullListHTML($Appearances, $GuideOrder, $this->_EQG, NOWRAP),
+				'stateUrl' => (string)$path,
+			]);
+
+		CoreUtils::fixPath($path);
 
 		$js = [];
 		if (Permission::sufficient('staff'))

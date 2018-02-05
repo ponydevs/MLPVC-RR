@@ -11,8 +11,7 @@ $(function(){
 	$sortBy.on('change',function(){
 		let baseurl = $sortBy.data('baseurl'),
 			val = $sortBy.val(),
-			url = `${baseurl}?ajax&${val}`.replace(/&$/,''),
-			stateUrl = `${baseurl}?${val}`.replace(/\?$/,'');
+			url = `${baseurl}?ajax&${val}`.replace(/&$/,'');
 
 		$.Dialog.wait('Changing sort order');
 
@@ -22,7 +21,7 @@ $(function(){
 			$fullList.html(this.html);
 			reobserve();
 			$ReorderBtn.attr('disabled', Boolean(val.length));
-			history.replaceState(history.state,'',stateUrl);
+			history.replaceState(history.state,'',this.stateUrl);
 			$.Dialog.close();
 		}));
 	});

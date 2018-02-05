@@ -20,7 +20,6 @@ use App\Posts;
 use App\Response;
 use App\UserPrefs;
 use App\Users;
-use Peertopark\UriBuilder;
 
 class UserController extends Controller {
 	public $do = 'user';

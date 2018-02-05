@@ -13,7 +13,6 @@ use App\Permission;
 use App\Response;
 use App\Appearances;
 use App\Tags;
-use Peertopark\UriBuilder;
 
 class TagController extends ColorGuideController {
 	public function list(){

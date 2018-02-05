@@ -20,7 +20,6 @@ use App\Response;
 use App\VideoProvider;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
-use Peertopark\UriBuilder;
 
 /** @property Episode $_episode */
 class EpisodeController extends Controller {

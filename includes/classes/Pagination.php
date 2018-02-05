@@ -3,7 +3,6 @@
 namespace App;
 use ActiveRecord\SQLBuilder;
 use HtmlGenerator\HtmlTag;
-use Peertopark\UriBuilder;
 
 /**
  * Class for writing out complex pagination HTML
@@ -103,7 +102,7 @@ class Pagination {
 	}
 
 	private function _makeLink($i){
-		$href = new UriBuilder($this->_basePath);
+		$href = new NSUriBuilder($this->_basePath);
 		$href->append_query_raw($this->getPageQueryString($i));
 		$get = $_GET;
 		if (isset($get["{$this->_noconflict}page"]))
@@ -241,8 +240,8 @@ class Pagination {
 		return "{$this->_noconflict}page=$pagenum";
 	}
 
-	public function toURI():UriBuilder {
-		$uri = new UriBuilder($this->_basePath);
+	public function toURI():NSUriBuilder {
+		$uri = new NSUriBuilder($this->_basePath);
 		$uri->append_query_raw($this->getPageQueryString());
 		return $uri;
 	}
