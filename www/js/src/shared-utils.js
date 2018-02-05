@@ -687,6 +687,8 @@
 	window.withinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= 650;
 
 	$.randomString = () => parseInt(Math.random().toFixed(20).replace(/[.,]/,''), 10).toString(36);
+
+	$.hrefToPath = href => href.replace(/^.*?[\w\d]\//,'/');
 	
 	(function(){
 		const PATTERNS = [

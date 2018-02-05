@@ -158,7 +158,7 @@ $(function(){
 
 					let redirect = function(){
 						$.Dialog.wait(false, 'Redirecting you to DeviantArt');
-						location.href = '/da-auth/begin?return='+encodeURIComponent(location.href.replace(/^.*?\w\//,'/'));
+						location.href = '/da-auth/begin?return='+encodeURIComponent($.hrefToPath(location.href));
 					};
 
 					if (navigator.userAgent.indexOf('Trident') !== -1)
@@ -166,7 +166,7 @@ $(function(){
 
 					$.Dialog.wait('Sign-in process', "Opening popup window");
 
-					let success = false, closeCheck, popup, waitforit = false;
+					let success = false, closeCheck, popup, waitForIt = false;
 					window.__authCallback = function(fail, openedWindow){
 						clearInterval(closeCheck);
 						if (fail === true){
@@ -212,7 +212,7 @@ $(function(){
 					}, 500);
 					$w.on('beforeunload', function(){
 						success = true;
-						if (!waitforit)
+						if (!waitForIt)
 							popup.close();
 					});
 					$.Dialog.wait(false, "Waiting for you to sign in");
