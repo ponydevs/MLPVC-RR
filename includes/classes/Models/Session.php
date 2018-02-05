@@ -62,7 +62,6 @@ class Session extends NSModel {
 		$cookie = self::generateCookie();
 		$session->token = CoreUtils::sha256($cookie);
 		$session->detectBrowser();
-		$session->save();
 		self::setCookie($cookie);
 		return $session;
 	}
