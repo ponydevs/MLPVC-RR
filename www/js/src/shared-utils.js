@@ -375,7 +375,7 @@
 		if (n && n.length)
 			return n[1];
 		else {
-			$.Dialog.fail(false, `<p>The request could not be sent due to a missing CSRF_TOKEN, please <a class="send-feedback">let us know</a>. Additional information:</p><pre><code>${document.cookie || '&lt;empty&gt;'}</code></pre>`);
+			$.Dialog.fail(false, `<p>A request could not be sent due to a missing CSRF_TOKEN, please <a class="send-feedback">let us know</a>. Additional information:</p><pre><code>${document.cookie || '&lt;empty&gt;'}</code></pre>`);
 			throw new Error('Missing CSRF_TOKEN');
 		}
 	};
