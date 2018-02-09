@@ -5,7 +5,7 @@
   "homepage": "https://mlpvector.club",
   "dependencies": {
     "glob": "^7.1.2",
-    "normalize.css": "^7.0.0",
+    "normalize.css": "^8.0.0",
     "svgo": "^1.0.0"
   },
   "devDependencies": {

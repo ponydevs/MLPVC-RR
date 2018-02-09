@@ -1592,20 +1592,20 @@
         },
         {
             "name": "league/uri-manipulations",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri-manipulations.git",
-                "reference": "e8ad43a956234a78763cc44fa16ddebeb1f4fbf4"
+                "reference": "7b1344490a293e2bd2a313afc6a95927cec4c2b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri-manipulations/zipball/e8ad43a956234a78763cc44fa16ddebeb1f4fbf4",
-                "reference": "e8ad43a956234a78763cc44fa16ddebeb1f4fbf4",
+                "url": "https://api.github.com/repos/thephpleague/uri-manipulations/zipball/7b1344490a293e2bd2a313afc6a95927cec4c2b3",
+                "reference": "7b1344490a293e2bd2a313afc6a95927cec4c2b3",
                 "shasum": ""
             },
             "require": {
-                "league/uri-components": "^1.4.1",
+                "league/uri-components": "^1.7.0",
                 "league/uri-interfaces": "^1.0",
                 "php": ">=7.0",
                 "psr/http-message": "^1.0"
@@ -1660,7 +1660,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2017-11-24T08:17:41+00:00"
+            "time": "2018-02-06T11:37:57+00:00"
         },
         {
             "name": "league/uri-parser",
