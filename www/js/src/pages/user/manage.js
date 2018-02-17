@@ -6,7 +6,7 @@ $(function(){
 
 	let $briefing = $content.children('.briefing'),
 		name = $briefing.find('.username').text().trim(),
-		$currRole = $briefing.find('.rolelabel'),
+		$currRole = $briefing.find('.role-label'),
 		currRole = $currRole.text().trim(),
 		$RoleModFormTemplate = $.mk('form').attr('id','rolemod').html('<select name="newrole" required><optgroup label="Possible roles"></optgroup></select>'),
 		$OptGrp = $RoleModFormTemplate.find('optgroup'),

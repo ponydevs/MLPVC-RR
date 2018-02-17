@@ -214,7 +214,7 @@ class UserController extends Controller {
 			]
 		]))->out();
 
-		GlobalSettings::set('dev_rolelabel', $newrole);
+		GlobalSettings::set('dev_role_label', $newrole);
 
 		Response::done();
 	}

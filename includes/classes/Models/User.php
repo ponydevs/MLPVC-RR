@@ -38,7 +38,7 @@ use App\Users;
  * @property DANameChange[]   $name_changes     (Via relations)
  * @property KnownIP[]        $known_ips        (Via relations)
  * @property PCGSlotHistory[] $pcg_slot_history (Via relations)
- * @property string           $rolelabel        (Via magic method)
+ * @property string           $role_label       (Via magic method)
  * @property string           $avatar_provider  (Via magic method)
  * @method static User find(...$args)
  */
@@ -60,7 +60,7 @@ class User extends AbstractUser implements LinkableInterface {
 		['discord_member'],
 	];
 
-	public function get_rolelabel(){
+	public function get_role_label(){
 		return Permission::ROLES_ASSOC[$this->role] ?? 'Curious Pony';
 	}
 
@@ -802,7 +802,7 @@ HTML;
 	}
 
 	public function maskedRole():string {
-		return $this->role !== 'developer' ? $this->role : GlobalSettings::get('dev_rolelabel');
+		return $this->role !== 'developer' ? $this->role : GlobalSettings::get('dev_role_label');
 	}
 
 	public function maskedRoleLabel():string {

@@ -1340,7 +1340,7 @@ HTML;
 		]))->getAvatarWrap();
 		$avprov = UserPrefs::get('p_avatarprov');
 		$name = Auth::$signed_in?Auth::$user->toAnchor():'Curious Pony';
-		$role = Auth::$signed_in?Auth::$user->rolelabel:'Guest';
+		$role = Auth::$signed_in?Auth::$user->role_label:'Guest';
 		$sessup = Auth::$signed_in?Auth::$session->getUpdateIndicatorHTML():'';
 
 		return <<<HTML
