@@ -117,6 +117,9 @@ class Session extends NSModel {
 	}
 
 	public function refreshAccessToken(){
+		if ($this->updating === true)
+			return;
+
 		$this->updating = true;
 		$this->save();
 		// Update access token in the BG
