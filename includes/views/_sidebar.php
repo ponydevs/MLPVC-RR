@@ -39,9 +39,7 @@ use App\UserPrefs;
 	</section>
 	<section id="episode-live-update" class="hidden">
 		<h2><span class="live-circle"></span> Live updates enabled</h2>
-		<p>Changes to the posts on this page are visible in real time to everyone who sees this message.<br>
-			<small>If you'd like to have the option to disable this feature please <a class="send-feedback">let us know</a>.</small>
-		</p>
+		<p>Changes to the posts on this page are visible to you in real time.</p>
 	</section>
 	<section id="entry-live-update" class="hidden">
 		<h2><span class="live-circle"></span> Live updates enabled</h2>
