@@ -33,9 +33,12 @@ class KnownIP extends NSModel implements LinkableInterface {
 	 */
 	public static function record(?string $ip = null, ?string $user_id = null, $last_seen = null, $first_seen = null){
 		$data = [
-			'ip' => strtolower($ip ?? $_SERVER['REMOTE_ADDR']),
+			'ip' => strtolower($ip ?? $_SERVER['REMOTE_ADDR'] ?? ''),
 			'user_id' => $user_id,
 		];
+
+		if (empty($data['id']))
+			return null;
 
 		foreach (['first','last'] as $k){
 			$vname = $k.'_seen';

@@ -163,7 +163,7 @@ class User extends AbstractUser implements LinkableInterface {
 		}
 		if ($sameUser === null)
 			$sameUser = Auth::$signed_in && Auth::$user->id === $this->id;
-		$privacy = $sameUser ? Users::PROFILE_SECTION_PRIVACY_LEVEL['staffonly']:'';
+		$privacy = $sameUser ? Users::PROFILE_SECTION_PRIVACY_LEVEL['staffOnly']:'';
 		$showAllBtn = $showAll ? '' : '<button class="btn darkblue typcn typcn-eye">Show all</button>';
 		$list = implode(', ', $IPs);
 		$which = $showAll ? 'Known' : 'Recently used';

@@ -120,6 +120,7 @@ $router->map('POST', '/cg/colorgroup/[make:action]',         'ColorGroupControll
 $router->map('POST', '/cg/colorgroup/appearance-list',       'ColorGroupController#appearanceList');
 $router->map('POST', '/cg/colorgroup/list/[i:id]',           'ColorGroupController#list');
 $router->map('POST', '/cg/sanitizesvg/[i:id]',               'ColorGuideController#sanitizeSvg');
+$router->map('POST', '/da-auth/status',                      'AuthController#sessionStatus');
 $router->map('POST', '/@[un:name]/cg/slot-check',            'PersonalGuideController#checkAvailSlots');
 $router->map('POST', '/@[un:name]/cg/point-history/recalc',  'PersonalGuideController#pointRecalc');
 $router->map('POST', '/@[un:name]/cg/appearance/[ad:action]/[i:id]',  'AppearanceController#action');

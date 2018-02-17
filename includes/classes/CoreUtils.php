@@ -6,6 +6,7 @@ use ActiveRecord\ConnectionManager;
 use ActiveRecord\SQLBuilder;
 use App\Models\Episode;
 use App\Models\Event;
+use App\Models\FailsafeUser;
 use App\Models\UsefulLink;
 use App\Models\User;
 use Elasticsearch\Client;
@@ -1075,7 +1076,7 @@ HTML;
 		return $strlen > $len ? self::trim(mb_substr($str, 0, $len-1)).'…' : $str;
 	}
 
-	public static function socketEvent(string $event, array $data){
+	public static function socketEvent(string $event, array $data = []){
 		$elephant = new \ElephantIO\Client(new SocketIOEngine('https://ws.'.WS_SERVER_DOMAIN.':8667', [
 			'context' => [
 				'http' => [
@@ -1329,5 +1330,30 @@ HTML;
 		global $REWRITE_REGEX;
 
 		return mb_strlen($url) <= 256 && $REWRITE_REGEX->match(strtok($url,'?'), $matches);
+	}
+
+	public static function getSidebarLoggedIn():string {
+		if (Auth::$signed_in)
+			$av_wrap = Auth::$user->getAvatarWrap();
+		else $av_wrap = (new FailsafeUser([
+			'avatar_url' => GUEST_AVATAR
+		]))->getAvatarWrap();
+		$avprov = UserPrefs::get('p_avatarprov');
+		$name = Auth::$signed_in?Auth::$user->toAnchor():'Curious Pony';
+		$role = Auth::$signed_in?Auth::$user->rolelabel:'Guest';
+		$sessup = Auth::$signed_in?Auth::$session->getUpdateIndicatorHTML():'';
+
+		return <<<HTML
+<div class='logged-in provider-$avprov'>
+	$av_wrap
+	<div class="user-data">
+		<span class="user-name">$name</span>
+		<span class="user-role">
+			<span>$role</span>
+			$sessup
+		</span>
+	</div>
+</div>
+HTML;
 	}
 }

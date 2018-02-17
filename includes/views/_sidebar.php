@@ -11,21 +11,8 @@ use App\UserPrefs;
 	<div class='mobile-nav'>
 		<nav><ul><?=CoreUtils::getNavigationHTML(($view->name ?? null) === 'fatalerr')?></ul></nav>
 	</div>
-	<div class='logged-in provider-<?=UserPrefs::get('p_avatarprov')?>'>
-		<?php
-	if (Auth::$signed_in)
-		echo Auth::$user->getAvatarWrap();
-	else echo (new \App\Models\FailsafeUser([
-		'name' => 'Guest',
-		'role' => 'guest',
-		'avatar_url' => GUEST_AVATAR
-	]))->getAvatarWrap(); ?>
-		<div class="user-data">
-			<span class="user-name"><?=Auth::$signed_in?Auth::$user->toAnchor():'Curious Pony'?></span>
-			<span class="user-role"><?=Auth::$signed_in?Auth::$user->rolelabel:'Guest'?></span>
-		</div>
-	</div>
 <?php
+	echo CoreUtils::getSidebarLoggedIn();
 	if (!defined('FATAL_ERROR')){
 		if (Auth::$signed_in){
 			$Notifications = Notifications::get(Notifications::UNREAD_ONLY); ?>

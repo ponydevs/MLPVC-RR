@@ -23,6 +23,7 @@ use Ramsey\Uuid\Uuid;
  * @property DateTime $created
  * @property DateTime $lastvisit
  * @property string   $data
+ * @property bool     $updating
  * @property bool     $expired   (Via magic method)
  * @property User     $user      (Via relations)
  * @method static Session find_by_token(string $token)
@@ -113,6 +114,20 @@ class Session extends NSModel {
 			$this->detectBrowser();
 			$this->save();
 		}
+	}
+
+	public function refreshAccessToken(){
+		$this->updating = true;
+		$this->save();
+		// Update access token in the BG
+		exec('nohup /usr/bin/php -f '.INCPATH.'access_token_refresher.php '.escapeshellarg($this->id).' > /dev/null 2>&1 &');
+	}
+
+	public function getUpdateIndicatorHTML():string {
+		if (!$this->updating)
+			return '';
+
+		return ' <span id="session-update-indicator" title="Updating your session"></span>';
 	}
 
 	public function make_known_ip(){

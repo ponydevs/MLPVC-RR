@@ -344,7 +344,7 @@ class DeviantArt {
 	 * Updates the (current) session for seamless browsing even if the session expires beetween requests
 	 *
 	 * @return User|void
-	 * @throws \RuntimeException
+	 * @throws RuntimeException
 	 * @throws \InvalidArgumentException
 	 */
 	public static function refreshAccessToken():?User {

@@ -592,9 +592,21 @@ header, #sidebar .mobile-nav {
 				text-overflow: ellipsis;
 			}
 			.user-role {
-				display: block;
+				display: flex;
+				flex-flow: row nowrap;
+				justify-content: flex-start;
+				align-items: center;
 				text-transform: uppercase;
 				font-size: .8em;
+
+				#session-update-indicator {
+					width: 1em;
+					height: 1em;
+					margin-left: .4em;
+					background: url('/img/loading-ring-white.svg') no-repeat center;
+					background-size: contain;
+					display: inline-block;
+				}
 			}
 		}
 	}

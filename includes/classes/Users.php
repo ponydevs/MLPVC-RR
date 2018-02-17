@@ -198,27 +198,13 @@ HTML;
 
 		if (!empty(Auth::$user->id)){
 			// TODO When re-implementing banning, this could be re-used
-			/* if (Auth::$user->role === 'ban')
-				Session::table()->delete(['user' => Auth::$user->id]);
+			/* if ($ban_condition)
+				Session::table()->delete(['user_id' => Auth::$user->id]);
 			else { */
-				if (!Auth::$session->expired)
-					$tokenvalid = true;
-				else {
-					$tokenvalid = false;
-					try {
-						DeviantArt::refreshAccessToken();
-						$tokenvalid = true;
-					}
-					catch (CURLRequestException $e){
-						Auth::$session->delete();
-						trigger_error('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
-					}
-				}
-
-				if ($tokenvalid){
-					Auth::$signed_in = true;
-					Auth::$session->registerVisit();
-				}
+				Auth::$signed_in = true;
+				Auth::$session->registerVisit();
+				if (Auth::$session->expired)
+					Auth::$session->refreshAccessToken();
 			//}
 		}
 		else if (Auth::$session === null)
@@ -229,7 +215,7 @@ HTML;
 		'developer' => "<span class='typcn typcn-cog color-red' title='Visible to: developer'></span>",
 		'public' => "<span class='typcn typcn-world color-blue' title='Visible to: public'></span>",
 		'staff' => "<span class='typcn typcn-lock-closed' title='Visible to: you & group staff'></span>",
-		'staffonly' => "<span class='typcn typcn-lock-closed color-red' title='Visible to: group staff'></span>",
+		'staffOnly' => "<span class='typcn typcn-lock-closed color-red' title='Visible to: group staff'></span>",
 		'private' => "<span class='typcn typcn-lock-closed color-green' title='Visible to: you'></span>",
 	];
 

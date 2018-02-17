@@ -140,6 +140,14 @@ $(function(){
 		}
 	};
 
+	let $sessionUpdating = $('#session-update-indicator');
+	const sessRefTitle = 'Session refresh issue';
+	const updateLoggedInElement = response => {
+		$('.logged-in').replaceWith(response.loggedIn);
+	};
+	const sessionDeletedDialog = () => {
+		$.Dialog.fail(sessRefTitle, "We couldn't verify your DeviantArt session automatically so you have been signed out. Due to elements on the page assuming you are signed in some actions will not work as expected until the page is reloaded.");
+	};
 	function docReadyAlwaysRun(){
 		console.log('> docReadyAlwaysRun()');
 
@@ -237,6 +245,27 @@ $(function(){
 				}));
 			});
 		});
+
+		if ($sessionUpdating.length){
+			const pollInterval = 2000;
+			setTimeout(function poll(){
+				if ($sessionUpdating === null)
+					return;
+
+				if (!$.WS.down)
+					return setTimeout(poll, pollInterval);
+				$.post('/da-auth/status', $.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(sessRefTitle, this.message);
+
+					if (this.updating === true)
+						return setTimeout(poll, pollInterval);
+
+					if (this.deleted === true)
+						sessionDeletedDialog();
+					updateLoggedInElement(this);
+				}));
+			}, pollInterval);
+		}
 
 		$body.swipe($.throttle(10, function(direction, offset){
 			if (window.sidebarForcedVisible() || !$body.hasClass('sidebar-open'))
@@ -670,7 +699,21 @@ $(function(){
 						}
 					}
 				}));
-				conn.on('disconnect',function(){
+				conn.on('session-remove', wsdecoder(function(response){
+					console.log('[WS] %cSession removal detected','color:red');
+
+					sessionDeletedDialog();
+					updateLoggedInElement(response);
+				}));
+				conn.on('session-refresh', wsdecoder(function(response){
+					console.log('[WS] %cSession refresh detected','color:green');
+
+					$sessionUpdating.remove();
+					$sessionUpdating = null;
+
+					updateLoggedInElement(response);
+				}));
+				conn.on('disconnect', function(){
 					auth = false;
 					console.log('[WS] %cDisconnected','color:red');
 				});

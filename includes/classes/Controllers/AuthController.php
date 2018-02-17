@@ -140,4 +140,16 @@ class AuthController extends Controller {
 
 		HTTP::tempRedirect($return_url ?? '/');
 	}
+
+	public function sessionStatus(){
+		CSRFProtection::protect();
+
+		if (Auth::$signed_in && Auth::$session->updating)
+			Response::done([ 'updating' => true ]);
+
+		Response::done([
+			'deleted' => !Auth::$signed_in,
+			'loggedIn' => CoreUtils::getSidebarLoggedIn(),
+		]);
+	}
 }

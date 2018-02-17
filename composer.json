@@ -25,7 +25,7 @@
 		"elasticsearch/elasticsearch": "~6.0",
 		"ongr/elasticsearch-dsl": ">=2.2",
 		"altorouter/altorouter": "1.2.0",
-		"restcord/restcord": "dev-fix-token-type",
+		"restcord/restcord": "^0.2.0",
 		"erusev/parsedown": "^1.6",
 		"seinopsys/postgresql-database-class": "^2.0.6",
 		"php-activerecord/php-activerecord": "dev-master",
@@ -57,10 +57,6 @@
         {
             "type": "vcs",
             "url":  "https://github.com/SeinopSys/phinx"
-        },
-        {
-            "type": "vcs",
-            "url":  "https://github.com/SeinopSys/restcord"
         }
     ]
 }

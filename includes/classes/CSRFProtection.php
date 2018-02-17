@@ -4,30 +4,27 @@ namespace App;
 
 class CSRFProtection {
 	protected static $_cookieKey = 'CSRF_TOKEN';
+	public static $isForged;
 
 	/**
 	 * Checks POSTed data for CSRF token validity
 	 */
 	public static function detect(){
-		$CSRF = !isset($_POST[self::$_cookieKey]) || !Cookie::exists(self::$_cookieKey) || $_POST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
-		if (!POST_REQUEST && $CSRF)
+		if (isset(self::$isForged))
+			return;
+
+		self::$isForged = !isset($_POST[self::$_cookieKey]) || !Cookie::exists(self::$_cookieKey) || $_POST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
+		if (!POST_REQUEST && self::$isForged)
 			Cookie::set(self::$_cookieKey,bin2hex(random_bytes(16)), Cookie::SESSION);
 	}
 
 	/**
 	 * Blocks CSRF requests
-	 *
-	 * @param bool $return_as_bool Return the result of the check as a boolean
-	 *
-	 * @return null|bool
 	 */
-	public static function protect($return_as_bool = false){
-		global $CSRF;
-		$is_forged = isset($CSRF) && $CSRF;
+	public static function protect(){
+		self::detect();
 
-		if ($return_as_bool === RETURN_AS_BOOL)
-			return $is_forged;
-		else if ($is_forged)
+		if (self::$isForged === true)
 			HTTP::statusCode(401, AND_DIE);
 	}
 
