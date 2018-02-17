@@ -21,7 +21,7 @@ use Ramsey\Uuid\Uuid;
  * @property string   $scope   (oAuth)
  * @property DateTime $expires (oAuth)
  * @property DateTime $created
- * @property DateTime $lastvisit
+ * @property DateTime $last_visit
  * @property string   $data
  * @property bool     $updating
  * @property bool     $expired   (Via magic method)
@@ -109,8 +109,8 @@ class Session extends NSModel {
 	}
 
 	public function registerVisit(){
-		if (time() - strtotime($this->lastvisit) > Time::IN_SECONDS['minute']){
-			$this->lastvisit = date('c');
+		if (time() - strtotime($this->last_visit) > Time::IN_SECONDS['minute']){
+			$this->last_visit = date('c');
 			$this->detectBrowser();
 			$this->save();
 		}
@@ -135,7 +135,7 @@ class Session extends NSModel {
 
 	public function make_known_ip(){
 		if ($this->user_id !== null)
-			KnownIP::record(null, $this->user_id, $this->lastvisit);
+			KnownIP::record(null, $this->user_id, $this->last_visit);
 	}
 
 	public function generate_id(){

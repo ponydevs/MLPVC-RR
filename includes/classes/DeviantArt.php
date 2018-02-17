@@ -335,7 +335,7 @@ class DeviantArt {
 			else Auth::$session = Session::create($update);
 		}
 
-		Session::delete_all(['conditions' => ["user_id = ? AND lastvisit <= NOW() - INTERVAL '1 MONTH'", $User->id]]);
+		Session::delete_all(['conditions' => ["user_id = ? AND last_visit <= NOW() - INTERVAL '1 MONTH'", $User->id]]);
 		Session::setCookie($cookie);
 		return $User ?? null;
 	}

@@ -46,7 +46,7 @@ class User extends AbstractUser implements LinkableInterface {
 	public static $table_name = 'users';
 
 	public static $has_many = [
-		['sessions', 'order' => 'lastvisit desc'],
+		['sessions', 'order' => 'last_visit desc'],
 		['notifications', 'foreign_key' => 'user'],
 		['submitted_events', 'class' => 'Event', 'foreign_key' => 'submitted_by'],
 		['finalized_events', 'class' => 'Event', 'foreign_key' => 'finalized_by'],

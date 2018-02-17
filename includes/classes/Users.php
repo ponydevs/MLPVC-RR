@@ -160,7 +160,7 @@ class Users {
 		}
 
 		$firstuse = Time::tag($Session->created);
-		$lastuse = !$current ? 'Last used: '.Time::tag($Session->lastvisit) : '<em>Current session</em>';
+		$lastuse = !$current ? 'Last used: '.Time::tag($Session->last_visit) : '<em>Current session</em>';
 		echo <<<HTML
 <li class="browser-$browserClass" id="session-{$Session->id}">
 <span class="browser">$browserTitle</span>
@@ -193,7 +193,7 @@ HTML;
 			else Auth::$session = Session::newGuestSession();
 
 			if (Auth::$user === null)
-				Auth::$session->lastvisit = date('c');
+				Auth::$session->last_visit = date('c');
 		}
 
 		if (!empty(Auth::$user->id)){
