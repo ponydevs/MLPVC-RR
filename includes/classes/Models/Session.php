@@ -29,7 +29,7 @@ use Ramsey\Uuid\Uuid;
  * @method static Session find_by_token(string $token)
  * @method static Session find_by_access(string $access)
  * @method static Session find_by_refresh(string $code)
- * @method static Session find(int $id)
+ * @method static Session find(string $id)
  */
 class Session extends NSModel {
 	public static $belongs_to = [
