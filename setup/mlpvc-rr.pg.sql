@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.1
--- Dumped by pg_dump version 10.1
+-- Dumped from database version 10.2 (Debian 10.2-1.pgdg90+1)
+-- Dumped by pg_dump version 10.2 (Debian 10.2-1.pgdg90+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -237,13 +237,18 @@ ALTER SEQUENCE cutiemarks_id_seq OWNED BY cutiemarks.id;
 --
 
 CREATE TABLE discord_members (
-    id character varying(20) NOT NULL,
+    id bigint NOT NULL,
     user_id uuid,
     username character varying(255) NOT NULL,
-    discriminator integer NOT NULL,
+    discriminator character(4) NOT NULL,
     nick character varying(255),
     avatar_hash character varying(255),
-    joined_at timestamp with time zone NOT NULL
+    joined_at timestamp with time zone,
+    access character varying(30),
+    refresh character varying(30),
+    scope character varying(50),
+    expires timestamp with time zone,
+    last_synced timestamp with time zone
 );
 
 
@@ -1634,44 +1639,25 @@ ALTER SEQUENCE reservations_id_seq OWNED BY reservations.id;
 --
 
 CREATE TABLE sessions (
-    id integer NOT NULL,
-    user_id uuid NOT NULL,
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    user_id uuid,
     platform character varying(50) NOT NULL,
     browser_name character varying(50),
     browser_ver character varying(50),
     user_agent character varying(300),
-    token character varying(64) NOT NULL,
-    access character varying(50) NOT NULL,
-    refresh character varying(40) NOT NULL,
+    token character varying(64),
+    access character varying(50),
+    refresh character varying(40),
     expires timestamp with time zone,
     created timestamp with time zone DEFAULT now() NOT NULL,
-    lastvisit timestamp with time zone DEFAULT now() NOT NULL,
-    scope character varying(50) DEFAULT 'user browse'::character varying NOT NULL
+    last_visit timestamp with time zone DEFAULT now() NOT NULL,
+    scope character varying(50),
+    data text,
+    updating boolean DEFAULT false NOT NULL
 );
 
 
 ALTER TABLE sessions OWNER TO "mlpvc-rr";
-
---
--- Name: sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: mlpvc-rr
---
-
-CREATE SEQUENCE sessions_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE sessions_id_seq OWNER TO "mlpvc-rr";
-
---
--- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mlpvc-rr
---
-
-ALTER SEQUENCE sessions_id_seq OWNED BY sessions.id;
-
 
 --
 -- Name: tag_changes; Type: TABLE; Schema: public; Owner: mlpvc-rr
@@ -2105,13 +2091,6 @@ ALTER TABLE ONLY requests ALTER COLUMN id SET DEFAULT nextval('requests_id_seq':
 --
 
 ALTER TABLE ONLY reservations ALTER COLUMN id SET DEFAULT nextval('reservations_id_seq'::regclass);
-
-
---
--- Name: sessions id; Type: DEFAULT; Schema: public; Owner: mlpvc-rr
---
-
-ALTER TABLE ONLY sessions ALTER COLUMN id SET DEFAULT nextval('sessions_id_seq'::regclass);
 
 
 --
@@ -2613,6 +2592,13 @@ CREATE UNIQUE INDEX color_groups_appearance_id_label ON color_groups USING btree
 --
 
 CREATE INDEX colors_group_id ON colors USING btree (group_id);
+
+
+--
+-- Name: discord_members_user_id; Type: INDEX; Schema: public; Owner: mlpvc-rr
+--
+
+CREATE UNIQUE INDEX discord_members_user_id ON discord_members USING btree (user_id);
 
 
 --
