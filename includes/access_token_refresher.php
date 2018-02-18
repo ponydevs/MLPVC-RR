@@ -40,17 +40,7 @@ try {
 			$code = ($e instanceof \App\Exceptions\CURLRequestException ? 'HTTP ' : '').$e->getCode();
 			dyn_log('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} ($code)");
 			Auth::$session->delete();
-
 			Auth::$signed_in = false;
-			try {
-				CoreUtils::socketEvent('session-remove', [
-					'userId' => Auth::$user->id,
-					'loggedIn' => CoreUtils::getSidebarLoggedIn(),
-				]);
-			}
-			catch (\ElephantIO\Exception\ServerConnectionFailureException $e){
-				dyn_log('Notice: Could not send session-remove WS event: '.$e->getMessage());
-			}
 			exit(4);
 		}
 	}
@@ -58,15 +48,6 @@ try {
 	Auth::$signed_in = true;
 	Auth::$session->updating = false;
 	Auth::$session->save();
-	try {
-		CoreUtils::socketEvent('session-refresh', [
-			'userId' => Auth::$user->id,
-			'loggedIn' => CoreUtils::getSidebarLoggedIn(),
-		]);
-	}
-	catch (\ElephantIO\Exception\ServerConnectionFailureException $e){
-		dyn_log('Notice: Could not send session-refresh WS event: '.$e->getMessage());
-	}
 }
 catch (Throwable $e){
 	dyn_log('Uncaught error: '.$e->getMessage());
