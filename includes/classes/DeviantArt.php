@@ -336,7 +336,8 @@ class DeviantArt {
 		}
 
 		Session::delete_all(['conditions' => ["user_id = ? AND last_visit <= NOW() - INTERVAL '1 MONTH'", $User->id]]);
-		Session::setCookie($cookie);
+		if (array_key_exists('REMOTE_ADDR', $_SERVER))
+			Session::setCookie($cookie);
 		return $User ?? null;
 	}
 
