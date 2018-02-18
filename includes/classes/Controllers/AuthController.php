@@ -144,9 +144,6 @@ class AuthController extends Controller {
 	public function sessionStatus(){
 		CSRFProtection::protect();
 
-		if (Permission::insufficient('developer'))
-			Response::fail();
-
 		if (Auth::$signed_in && Auth::$session->updating)
 			Response::done([ 'updating' => true ]);
 

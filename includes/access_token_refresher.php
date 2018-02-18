@@ -10,7 +10,7 @@ use App\CoreUtils;
 function dyn_log(string $message){
 	if (posix_isatty(STDOUT))
 		echo $message."\n";
-	else CoreUtils::error_log(__FILE__.": $message");
+	else CoreUtils::error_log(basename(__FILE__).": $message");
 }
 
 try {
@@ -37,9 +37,9 @@ try {
 			\App\DeviantArt::refreshAccessToken();
 		}
 		catch (Throwable $e){
-			Auth::$session->delete();
 			$code = ($e instanceof \App\Exceptions\CURLRequestException ? 'HTTP ' : '').$e->getCode();
 			dyn_log('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} ($code)");
+			Auth::$session->delete();
 
 			Auth::$signed_in = false;
 			try {

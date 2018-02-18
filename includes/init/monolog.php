@@ -25,3 +25,4 @@ function monolog_setup(){
 }
 if (!defined('DISABLE_MONOLOG'))
 	monolog_setup();
+else ini_set('error_log', PROJPATH.'logs/'.LOG_PATH);

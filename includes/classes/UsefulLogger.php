@@ -19,7 +19,6 @@ class UsefulLogger extends Logger {
 			'name' => Auth::$user->name,
 			'session' => Auth::$session->id,
 		] : null;
-		$context['trace'] = (new \RuntimeException())->getTraceAsString();
         parent::addRecord($level, $message, $context);
     }
 }

@@ -201,24 +201,10 @@ HTML;
 			/* if ($ban_condition)
 				Session::table()->delete(['user_id' => Auth::$user->id]);
 			else { */
-				if (!Auth::$session->expired)
-					$tokenvalid = true;
-				else {
-					$tokenvalid = false;
-					try {
-						DeviantArt::refreshAccessToken();
-						$tokenvalid = true;
-					}
-					catch (CURLRequestException $e){
-						Auth::$session->delete();
-						trigger_error('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} (HTTP {$e->getCode()})", E_USER_WARNING);
-					}
-				}
-
-				if ($tokenvalid){
-					Auth::$signed_in = true;
-					Auth::$session->registerVisit();
-				}
+				Auth::$signed_in = true;
+				Auth::$session->registerVisit();
+				if (Auth::$session->expired)
+					Auth::$session->refreshAccessToken();
 			//}
 		}
 		else if (Auth::$session === null)

@@ -252,9 +252,10 @@ $(function(){
 				if ($sessionUpdating === null)
 					return;
 
-				if (!$.WS.down)
-					return setTimeout(poll, pollInterval);
 				$.post('/da-auth/status', $.mkAjaxHandler(function(){
+					if ($sessionUpdating === null)
+						return;
+
 					if (!this.status) return $.Dialog.fail(sessRefTitle, this.message);
 
 					if (this.updating === true)

@@ -109,7 +109,7 @@ class Session extends NSModel {
 	}
 
 	public function registerVisit(){
-		if (time() - strtotime($this->last_visit) > Time::IN_SECONDS['minute']){
+		if (time() - $this->last_visit->getTimestamp() > Time::IN_SECONDS['minute']){
 			$this->last_visit = date('c');
 			$this->detectBrowser();
 			$this->save();
@@ -126,7 +126,7 @@ class Session extends NSModel {
 		$this->updating = true;
 		$this->save();
 		// Update access token in the BG
-		exec('nohup /usr/bin/php -f '.INCPATH.'access_token_refresher.php '.escapeshellarg($this->id).' > /dev/null 2>&1 &');
+		exec('nohup /usr/bin/php -f '.INCPATH.'access_token_refresher.php '.escapeshellarg($this->id).' > /dev/null 2>&1 &', $out);
 	}
 
 	public function getUpdateIndicatorHTML():string {

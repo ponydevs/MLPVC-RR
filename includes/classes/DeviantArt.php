@@ -293,8 +293,10 @@ class DeviantArt {
 			'scope' => $accessToken->getValues()['scope'],
 		];
 
-		$cookie = Session::generateCookie();
-		$AuthData['token'] = CoreUtils::sha256($cookie);
+		if (!$refresh){
+			$cookie = Session::generateCookie();
+			$AuthData['token'] = CoreUtils::sha256($cookie);
+		}
 
 		$browser = CoreUtils::detectBrowser();
 		foreach ($browser as $k => $v)
@@ -336,7 +338,7 @@ class DeviantArt {
 		}
 
 		Session::delete_all(['conditions' => ["user_id = ? AND last_visit <= NOW() - INTERVAL '1 MONTH'", $User->id]]);
-		if (array_key_exists('REMOTE_ADDR', $_SERVER))
+		if (!$refresh)
 			Session::setCookie($cookie);
 		return $User ?? null;
 	}
