@@ -824,6 +824,8 @@ $(function(){
 					},2000);
 
 				conn.emit('status',null,wsdecoder(function(data){
+					if (!data.status) return console.log(`[WS] Status: %c${data.message}`, 'color:red');
+
 					console.log('[WS] Status: ID=%s; Name=%s; Rooms=%s',data.User.id,data.User.name,data.rooms.join(','));
 				}));
 			};
