@@ -3,9 +3,6 @@
 $(function(){
 	"use strict";
 
-	console.log('[HTTP-Nav] > $(document).ready()');
-	console.group('[HTTP-Nav] GET '+window.location.pathname+window.location.search+window.location.hash);
-
 	let fluidboxThisAction = (jQueryObject) => {
 		jQueryObject.fluidbox({
 			immediateOpen: true,
@@ -139,151 +136,6 @@ $(function(){
 			$.Navigation._DocReadyHandlers.push(handler);
 		}
 	};
-
-	let $sessionUpdating = $('#session-update-indicator');
-	const sessRefTitle = 'Session refresh issue';
-	const updateLoggedInElement = response => {
-		$('.logged-in').replaceWith(response.loggedIn);
-	};
-	const sessionDeletedDialog = () => {
-		$.Dialog.fail(sessRefTitle, "We couldn't verify your DeviantArt session automatically so you have been signed out. Due to elements on the page assuming you are signed in some actions will not work as expected until the page is reloaded.");
-	};
-	function docReadyAlwaysRun(){
-		console.log('> docReadyAlwaysRun()');
-
-		// Sign in button handler
-		$.LocalStorage.remove('cookie_consent');
-		let consent = $.LocalStorage.get('cookie_consent_v2');
-
-		$('#signin').off('click').on('click',function(){
-			let $this = $(this),
-				opener = function(sure){
-					if (!sure) return;
-
-					$.Dialog.close();
-					$.LocalStorage.set('cookie_consent_v2',1);
-					$this.disable();
-
-					let redirect = function(){
-						$.Dialog.wait(false, 'Redirecting you to DeviantArt');
-						location.href = '/da-auth/begin?return='+encodeURIComponent($.hrefToPath(location.href));
-					};
-
-					if (navigator.userAgent.indexOf('Trident') !== -1)
-						return redirect();
-
-					$.Dialog.wait('Sign-in process', "Opening popup window");
-
-					let success = false, closeCheck, popup, waitForIt = false;
-					window.__authCallback = function(fail, openedWindow){
-						clearInterval(closeCheck);
-						if (fail === true){
-							if (!openedWindow.jQuery)
-								$.Dialog.fail(false, 'Sign in failed, check popup for details.');
-							else {
-								const
-									pageTitle = openedWindow.$('#content').children('h1').html(),
-									noticeText = openedWindow.$('#content').children('.notice').html();
-								$.Dialog.fail(false, `<p class="align-center"><strong>${pageTitle}</strong></p><p>${noticeText}</p>`);
-								popup.close();
-							}
-							$this.enable();
-							return;
-						}
-
-						success = true;
-						$.Dialog.success(false, 'Signed in successfully');
-						popup.close();
-						$.Navigation.reload(true);
-					};
-					try {
-						popup = $.PopupOpenCenter('/da-auth/begin','login','450','580');
-					}catch(e){}
-					// http://stackoverflow.com/a/25643792
-					let onWindowClosed = function(){
-							if (success)
-								return;
-
-							if (document.cookie.indexOf('auth=') !== -1)
-								return window.__authCallback;
-
-							$.Dialog.fail(false, 'Popup-based login failed');
-							redirect();
-						};
-					closeCheck = setInterval(function(){
-						try {
-							if (!popup || popup.closed){
-								clearInterval(closeCheck);
-								onWindowClosed();
-							}
-						}catch(e){}
-					}, 500);
-					$w.on('beforeunload', function(){
-						success = true;
-						if (!waitForIt)
-							popup.close();
-					});
-					$.Dialog.wait(false, "Waiting for you to sign in");
-				};
-
-			if (!consent) $.Dialog.confirm('Privacy Notice',`<p>We must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.</p><p>If you would like to avoid these completly harmless pieces of text which are required to log in to this website, click "Decline" and continue browsing as a guest.</p><p><em>This warning will not appear again if you accept our use of persistent cookies.</em></p>`,['Accept','Decline'],opener);
-			else opener(true);
-		});
-
-		// Sign out button handler
-		$('#signout').off('click').on('click',function(){
-			let title = 'Sign out';
-			$.Dialog.confirm(title,'Are you sure you want to sign out?', function(sure){
-				if (!sure) return;
-
-				$.Dialog.wait(title,'Signing out');
-
-				$.post('/da-auth/signout',$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(title,this.message);
-
-					$.Navigation.reload();
-				}));
-			});
-		});
-
-		if ($sessionUpdating.length){
-			const pollInterval = 2000;
-			setTimeout(function poll(){
-				if ($sessionUpdating === null)
-					return;
-
-				$.post('/da-auth/status', $.mkAjaxHandler(function(){
-					if ($sessionUpdating === null)
-						return;
-
-					if (!this.status) return $.Dialog.fail(sessRefTitle, this.message);
-
-					if (this.updating === true)
-						return setTimeout(poll, pollInterval);
-
-					if (this.deleted === true)
-						sessionDeletedDialog();
-					updateLoggedInElement(this);
-				}));
-			}, pollInterval);
-		}
-
-		$body.swipe($.throttle(10, function(direction, offset){
-			if (window.sidebarForcedVisible() || !$body.hasClass('sidebar-open'))
-				return;
-
-			// noinspection JSSuspiciousNameCombination
-			const
-				offX = Math.abs(offset.x),
-				offY = Math.abs(offset.y),
-				minmove = Math.min($body.width()/2, 200);
-
-			if (direction.x !== 'left' || offX < minmove || offY > 75)
-				return;
-
-			$sbToggle.trigger('click');
-		}));
-	}
 
 	// Load footer
 	if (window.ServiceUnavailableError !== true)
@@ -507,362 +359,141 @@ $(function(){
 	$d.on('scroll',checkToTop);
 	checkToTop();
 
-	// WebSocket server connection
-	(function(){
-		let conn,
-			connpath = `https://ws.${location.hostname}:8667/`,
-			wsdecoder = f =>
-				function(data){
-					if (typeof data === 'string'){
-						try {
-							data = JSON.parse(data);
-						}
-						catch(err){}
-					}
+	// Sign in button handler
+	$.LocalStorage.remove('cookie_consent');
+	let consent = $.LocalStorage.get('cookie_consent_v2');
 
-					f(data);
-				},
-			$notifCnt,
-			$notifSb,
-			$notifSbList,
-			auth = false,
-			bindMarkRead = function(){
-				$notifSbList.off('click','.mark-read').on('click','.mark-read', function(e){
-					e.preventDefault();
-					e.stopPropagation();
+	$('#signin').off('click').on('click',function(){
+		let $this = $(this),
+			opener = function(sure){
+				if (!sure) return;
 
-					let $el = $(this);
-					if ($el.hasClass('disabled'))
-						return;
+				$.Dialog.close();
+				$.LocalStorage.set('cookie_consent_v2',1);
+				$this.disable();
 
-					let nid = $el.attr('data-id'),
-						data = {read_action: $el.attr('data-value')},
-						title = $el.attr('data-action') || 'Mark notification as read',
-						send = function(){
-							$el.siblings('.mark-read').addBack().addClass('disabled');
-
-							$.post(`/notifications/mark-read/${nid}`,data,$.mkAjaxHandler(function(){
-								if (!this.status) return $.Dialog.fail(title, this.message);
-
-								if (this.message)
-									return $.Dialog.success(title, this.message, true);
-
-								$.Dialog.close();
-							})).always(function(){
-								$el.siblings('.mark-read').addBack().removeClass('disabled');
-							});
-						};
-
-					if (data.read_action && $el.hasAttr('data-confirm'))
-						$.Dialog.confirm('Actionable notification',`Please confirm your choice: <strong class="color-${$el.attr('class').replace(/^.*variant-(\w+)\b.*$/,'$1')}">${$el.attr('title')}</strong>`,['Confirm','Cancel'], sure => {
-							if (!sure) return;
-
-							$.Dialog.wait(title);
-
-							send();
-						});
-					else send();
-				});
-			},
-			essentialElements = function(){
-				$notifCnt = $sbToggle.children('.notif-cnt');
-				if ($notifCnt.length === 0)
-					$notifCnt = $.mk('span').attr({'class':'notif-cnt',title:'New notifications'}).prependTo($sbToggle);
-				$notifSb = $sidebar.children('.notifications');
-				$notifSbList = $notifSb.children('.notif-list');
-
-				bindMarkRead();
-			};
-		function wsNotifs(){
-			let success = function(){
-				essentialElements();
-
-				if (conn)
-					return;
-
-				conn = io(connpath, { reconnectionDelay: 10000 });
-				conn.on('connect', function(){
-					console.log('[WS] %cConnected','color:green');
-
-					$.WS.recvPostUpdates(typeof window.EpisodePage !== 'undefined');
-					$.WS.navigate();
-				});
-				conn.on('auth', wsdecoder(function(data){
-					auth = true;
-					console.log(`[WS] %cAuthenticated as ${data.name}`,'color:teal');
-				}));
-				conn.on('auth-guest', wsdecoder(function(){
-					console.log(`[WS] %cReceiving events as a guest`,'color:teal');
-				}));
-				conn.on('notif-cnt', wsdecoder(function(data){
-					let cnt = data.cnt ? parseInt(data.cnt, 10) : 0;
-					console.log('[WS] Unread notification count: %d', cnt);
-
-					essentialElements();
-
-					if (cnt === 0){
-						$notifSb.stop().slideUp('fast',function(){
-							$notifSbList.empty();
-							$notifCnt.empty();
-						});
-					}
-					else $.post('/notifications/get',$.mkAjaxHandler(function(){
-						$notifCnt.text(cnt);
-						$notifSbList.html(this.list);
-						Time.Update();
-						bindMarkRead();
-						$notifSb.stop().slideDown();
-					}));
-				}));
-				conn.on('post-delete', wsdecoder(function(data){
-					if (!data.type || !data.id)
-						return;
-
-					let postid = `${data.type}-${data.id}`,
-						$post = $(`#${postid}:not(.deleting)`);
-					console.log('[WS] Post deleted (postid=%s)', postid);
-					if ($post.length){
-						$post.find('.fluidbox--opened').fluidbox('close');
-						$post.find('.fluidbox--initialized').fluidbox('destroy');
-						$post.attr({
-							'class': 'deleted',
-							title: "This post has been deleted; click here to hide",
-						}).on('click',function(){
-							let $this = $(this);
-							$this[window.withinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
-								$this.remove();
-							});
-						});
-					}
-				}));
-				conn.on('post-break', wsdecoder(function(data){
-					if (!data.type || !data.id)
-						return;
-
-					let postid = `${data.type}-${data.id}`,
-						$post = $(`#${postid}:not(.admin-break)`);
-					console.log('[WS] Post broken (postid=%s)', postid);
-					if ($post.length){
-						$post.find('.fluidbox--opened').fluidbox('close');
-						$post.find('.fluidbox--initialized').fluidbox('destroy');
-						$post.reloadLi();
-					}
-				}));
-				conn.on('post-add', wsdecoder(function(data){
-					if (!data.type || !data.id || window.EPISODE !== data.episode || window.SEASON !== data.season)
-						return;
-
-					if ($(`.posts #${data.type}-${data.id}`).length > 0)
-						return;
-					$.post(`/post/reload/${data.type}/${data.id}`,$.mkAjaxHandler(function(){
-						if (!this.status) return;
-
-						if ($(`.posts #${data.type}-${data.id}`).length > 0)
-							return;
-						let $newli = $(this.li);
-						$(this.section).append($newli);
-						$newli.rebindFluidbox();
-						Time.Update();
-						$newli.rebindHandlers(true).parent().reorderPosts();
-						console.log(`[WS] Post added (postid=${data.type}-#${data.id}) to container ${this.section}`);
-					}));
-				}));
-				conn.on('post-update', wsdecoder(function(data){
-					if (!data.type || !data.id)
-						return;
-
-					let postid = `${data.type}-${data.id}`,
-						$post = $(`#${postid}:not(.deleting)`);
-					console.log('[WS] Post updated (postid=%s)', postid);
-					if ($post.length)
-						$post.reloadLi(false);
-				}));
-				conn.on('entry-score', wsdecoder(function(data){
-					if (typeof data.entryid === 'undefined')
-						return;
-
-					let $entry = $(`#entry-${data.entryid}`);
-					console.log('[WS] Entry score updated (entryid=%s, score=%s)', data.entryid, data.score);
-					if ($entry.length)
-						$entry.refreshVoting();
-				}));
-				conn.on('devaction', wsdecoder(function(response){
-					console.log('[WS] DevAction', response);
-
-					if (typeof response.remoteAction === 'string'){
-						switch (response.remoteAction){
-							case "reload":
-								window.location.reload();
-							break;
-							case "message":
-								$.Dialog.info('Message from the developer', response.data.html);
-							break;
-						}
-					}
-				}));
-				conn.on('session-remove', wsdecoder(function(response){
-					console.log('[WS] %cSession removal detected','color:red');
-
-					sessionDeletedDialog();
-					updateLoggedInElement(response);
-				}));
-				conn.on('session-refresh', wsdecoder(function(response){
-					console.log('[WS] %cSession refresh detected','color:green');
-
-					$sessionUpdating.remove();
-					$sessionUpdating = null;
-
-					updateLoggedInElement(response);
-				}));
-				conn.on('disconnect', function(){
-					auth = false;
-					console.log('[WS] %cDisconnected','color:red');
-				});
-			};
-			if (!window.io)
-				$.ajax({
-					url: `${connpath}socket.io/socket.io.js`,
-					cache: 'true',
-					dataType: 'script',
-					success: success,
-					statusCode: {
-						404: function(){
-							console.log('%c[WS] Server down!','color:red');
-							$.WS.down = true;
-							$sidebar.find('.notif-list').on('click','.mark-read', function(e){
-								e.preventDefault();
-
-								$.Dialog.fail('Mark notification read','The notification server appears to be down. Please <a class="send-feedback">let us know</a>, and sorry for the inconvenience.');
-							});
-						}
-					}
-				});
-			else success();
-		}
-		wsNotifs();
-		$.WS = (function(){
-			let dis = () => wsNotifs(),
-				substatus = {
-					postUpdates: false,
-					entryUpdates: false,
+				let redirect = function(){
+					$.Dialog.wait(false, 'Redirecting you to DeviantArt');
+					location.href = '/da-auth/begin?return='+encodeURIComponent($.hrefToPath(location.href));
 				};
-			dis.down = false;
-			dis.navigate = function(){
-				if (typeof conn === 'undefined')
-					return;
 
-				const page = location.pathname+location.search+location.hash;
+				if (navigator.userAgent.indexOf('Trident') !== -1)
+					return redirect();
 
-				conn.emit('navigate',{page});
-			};
-			dis.recvPostUpdates = function(subscribe){
-				if (typeof conn === 'undefined')
-					return setTimeout(function(){
-						dis.recvPostUpdates(subscribe);
-					},2000);
+				$.Dialog.wait('Sign-in process', "Opening popup window");
 
-				if (typeof subscribe !== 'boolean' || substatus.postUpdates === subscribe)
-					return;
-				conn.emit('post-updates',String(subscribe),wsdecoder(function(data){
-					if (!data.status)
-						return console.log('[WS] %cpost-updates subscription status change failed (subscribe=%s)', 'color:red', subscribe);
+				let success = false, closeCheck, popup, waitForIt = false;
+				window.__authCallback = function(fail, openedWindow){
+					clearInterval(closeCheck);
+					if (fail === true){
+						if (!openedWindow.jQuery)
+							$.Dialog.fail(false, 'Sign in failed, check popup for details.');
+						else {
+							const
+								pageTitle = openedWindow.$('#content').children('h1').html(),
+								noticeText = openedWindow.$('#content').children('.notice').html();
+							$.Dialog.fail(false, `<p class="align-center"><strong>${pageTitle}</strong></p><p>${noticeText}</p>`);
+							popup.close();
+						}
+						$this.enable();
+						return;
+					}
 
-					substatus.postUpdates = subscribe;
-					$('#episode-live-update')[substatus.postUpdates?'removeClass':'addClass']('hidden');
-					console.log('[WS] %c%s','color:green', data.message);
-				}));
-			};
-			dis.recvEntryUpdates = function(subscribe){
-				if (typeof conn === 'undefined')
-					return setTimeout(function(){
-						dis.recvEntryUpdates(subscribe);
-					},2000);
+					success = true;
+					$.Dialog.success(false, 'Signed in successfully');
+					popup.close();
+					$.Navigation.reload(true);
+				};
+				try {
+					popup = $.PopupOpenCenter('/da-auth/begin','login','450','580');
+				}catch(e){}
+				// http://stackoverflow.com/a/25643792
+				let onWindowClosed = function(){
+						if (success)
+							return;
 
-				if (typeof subscribe !== 'boolean' || substatus.entryUpdates === subscribe)
-					return;
-				conn.emit('entry-updates',String(subscribe),wsdecoder(function(data){
-					if (!data.status)
-						return console.log('[WS] %centry-updates subscription status change failed (subscribe=%s)', 'color:red', subscribe);
+						if (document.cookie.indexOf('auth=') !== -1)
+							return window.__authCallback;
 
-					substatus.entryUpdates = subscribe;
-					$('#entry-live-update')[substatus.entryUpdates && window.EventType === 'contest'?'removeClass':'addClass']('hidden');
-					console.log('[WS] %c%s','color:green', data.message);
-				}));
-			};
-			dis.authme = function(){
-				if (typeof conn === 'undefined' || auth === true)
-					return;
-
-				console.log(`[WS] %cReconnection needed for identity change`,'color:teal');
-				conn.disconnect(0);
-				setTimeout(function(){
-					conn.connect();
-				},100);
-			};
-			dis.unauth = function(){
-				if (typeof conn === 'undefined' || auth !== true)
-					return;
-
-				conn.emit('unauth',null,function(data){
-					if (!data.status) return console.log('[WS] %cUnauth failed','color:red');
-
-					auth = false;
-					console.log(`[WS] %cAuthentication dropped`,'color:brown');
+						$.Dialog.fail(false, 'Popup-based login failed');
+						redirect();
+					};
+				closeCheck = setInterval(function(){
+					try {
+						if (!popup || popup.closed){
+							clearInterval(closeCheck);
+							onWindowClosed();
+						}
+					}catch(e){}
+				}, 500);
+				$w.on('beforeunload', function(){
+					success = true;
+					if (!waitForIt)
+						popup.close();
 				});
+				$.Dialog.wait(false, "Waiting for you to sign in");
 			};
-			dis.disconnect = function(reason){
-				if (typeof conn === 'undefined')
+
+		if (!consent) $.Dialog.confirm('Privacy Notice',`<p>We must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.</p><p>If you would like to avoid these completly harmless pieces of text which are required to log in to this website, click "Decline" and continue browsing as a guest.</p><p><em>This warning will not appear again if you accept our use of persistent cookies.</em></p>`,['Accept','Decline'],opener);
+		else opener(true);
+	});
+
+	// Sign out button handler
+	$('#signout').off('click').on('click',function(){
+		let title = 'Sign out';
+		$.Dialog.confirm(title,'Are you sure you want to sign out?', function(sure){
+			if (!sure) return;
+
+			$.Dialog.wait(title,'Signing out');
+
+			$.post('/da-auth/signout',$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(title,this.message);
+
+				$.Navigation.reload();
+			}));
+		});
+	});
+
+
+	let $sessionUpdating = $('#session-update-indicator');
+	if ($sessionUpdating.length){
+		const sessRefTitle = 'Session refresh issue';
+		const pollInterval = 2000;
+		setTimeout(function poll(){
+			if ($sessionUpdating === null)
+				return;
+
+			$.post('/da-auth/status', $.mkAjaxHandler(function(){
+				if ($sessionUpdating === null)
 					return;
 
-				console.log(`[WS] Forced disconnect (reason=${reason})`);
-				conn.disconnect(0);
-			};
-			dis.status = function(){
-				if (typeof conn === 'undefined')
-					return setTimeout(function(){
-						dis.status();
-					},2000);
+				if (!this.status) return $.Dialog.fail(sessRefTitle, this.message);
 
-				conn.emit('status',null,wsdecoder(function(data){
-					if (!data.status) return console.log(`[WS] Status: %c${data.message}`, 'color:red');
+				if (this.updating === true)
+					return setTimeout(poll, pollInterval);
 
-					console.log('[WS] Status: ID=%s; Name=%s; Rooms=%s',data.User.id,data.User.name,data.rooms.join(','));
-				}));
-			};
-			dis.devquery = function(what, data = {}, cb = undefined){
-				if (typeof conn === 'undefined')
-					return setTimeout(function(){
-						dis.devquery(what, data, cb);
-					},2000);
+				if (this.deleted === true)
+					$.Dialog.fail(sessRefTitle, "We couldn't verify your DeviantArt session automatically so you have been signed out. Due to elements on the page assuming you are signed in some actions will not work as expected until the page is reloaded.");
+				$('.logged-in').replaceWith(this.loggedIn);
+			}));
+		}, pollInterval);
+	}
 
-				conn.emit('devquery',{what,data},wsdecoder(function(data){
-					if (typeof cb === 'function')
-						return cb(data);
+	$body.swipe($.throttle(10, function(direction, offset){
+		if (window.sidebarForcedVisible() || !$body.hasClass('sidebar-open'))
+			return;
 
-					console.log('[WS] DevQuery '+(data.status?'Success':'Fail'), data);
-				}));
-			};
-			dis.devaction = function(clientId, remoteAction, data = {}){
-				if (typeof conn === 'undefined')
-					return setTimeout(function(){
-						dis.devaction(clientId, remoteAction, data);
-					},2000);
+		// noinspection JSSuspiciousNameCombination
+		const
+			offX = Math.abs(offset.x),
+			offY = Math.abs(offset.y),
+			minmove = Math.min($body.width()/2, 200);
 
-				conn.emit('devaction',{clientId, remoteAction, data},wsdecoder(function(data){
-					console.log('[WS] DevAction '+(data.status?'Success':'Fail'), data);
-				}));
-			};
-			dis.essentialElements = () => {
-				essentialElements();
-			};
-			return dis;
-		})();
-	})();
+		if (direction.x !== 'left' || offX < minmove || offY > 75)
+			return;
 
-
-	docReadyAlwaysRun();
-	console.log('%cDocument ready handlers called','color:green');
-	console.groupEnd();
+		$sbToggle.trigger('click');
+	}));
 });
 
 // Remove loading animation from header on load
