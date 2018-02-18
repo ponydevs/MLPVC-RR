@@ -17,11 +17,6 @@ if (defined('MAINTENANCE_START')){
 	die(require INCPATH.'views/error/fatal.php');
 }
 
-// Set new file & folder permissions
-define('FILE_PERM', 0770);
-define('FOLDER_PERM', 0770);
-umask(0007);
-
 // Database connection & Required Functionality Checking \\
 try {
 	$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::getServerSoftware().' and/or FPM';

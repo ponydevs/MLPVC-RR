@@ -17,6 +17,11 @@ define('SITE_TITLE', 'MLP Vector Club');
 define('SVGO_BINARY',PROJPATH.'node_modules/svgo/bin/svgo');
 define('DISCORD_INVITE_LINK', 'https://discord.gg/hrffb8k');
 
+// Set new file & folder permissions
+define('FILE_PERM', 0770);
+define('FOLDER_PERM', 0770);
+umask(0007);
+
 // Load private configuration \\
 if (!file_exists(INCPATH.'conf.php'))
 	die('conf.php is missing from '.INCPATH);
