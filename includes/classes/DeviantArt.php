@@ -289,7 +289,7 @@ class DeviantArt {
 		$AuthData = [
 			'access' => $accessToken->getToken(),
 			'refresh' => $accessToken->getRefreshToken(),
-			'expires' => date('c',time()+$accessToken->getExpires()),
+			'expires' => date('c',$accessToken->getExpires()),
 			'scope' => $accessToken->getValues()['scope'],
 		];
 
