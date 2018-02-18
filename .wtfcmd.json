@@ -78,22 +78,5 @@
 		"cwd": "www/.well-known",
 		"desc": "Re-create the security.txt file's signature after a modification",
 		"cmd": "gpg --detach-sign --armor -o security.txt.sig security.txt"
-	},
-	{
-		"group": "debug",
-		"name": ["refresh-access-token","rat"],
-		"cwd": "includes",
-		"desc": "Runs the command used by Session::refreshAccessToken for testing purposes",
-		"cmd": "sudo -u www-data /usr/bin/php -f access_token_refresher.php {{.sessid}}",
-		"args": [
-			{
-				"name": "sessid",
-				"desc": [
-					"Session ID to run command for"
-				],
-				"required": true,
-				"test": "^([A-Fa-f\\d-]+)$"
-			}
-		]
 	}
 ]
