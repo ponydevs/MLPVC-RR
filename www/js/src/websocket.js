@@ -178,7 +178,7 @@
 			});
 		}
 		navigate(){
-			if (typeof conn === 'undefined')
+			if (typeof this.conn === 'undefined')
 				return;
 
 			const page = location.pathname+location.search+location.hash;
@@ -186,7 +186,7 @@
 			this.conn.emit('navigate',{page});
 		}
 		recvPostUpdates(subscribe){
-			if (typeof conn === 'undefined')
+			if (typeof this.conn === 'undefined')
 				return setTimeout(() => {
 					this.recvPostUpdates(subscribe);
 				},2000);
@@ -203,7 +203,7 @@
 			}));
 		}
 		recvEntryUpdates(subscribe){
-			if (typeof conn === 'undefined')
+			if (typeof this.conn === 'undefined')
 				return setTimeout(() => {
 					this.recvEntryUpdates(subscribe);
 				},2000);
@@ -220,7 +220,7 @@
 			}));
 		}
 		authme(){
-			if (typeof conn === 'undefined' || auth === true)
+			if (typeof this.conn === 'undefined' || auth === true)
 				return;
 
 			console.log(`[WS] %cReconnection needed for identity change`,'color:teal');
@@ -230,7 +230,7 @@
 			},100);
 		}
 		unauth(){
-			if (typeof conn === 'undefined' || auth !== true)
+			if (typeof this.conn === 'undefined' || auth !== true)
 				return;
 
 			this.conn.emit('unauth', null,wsdecoder(data => {
@@ -241,14 +241,14 @@
 			}));
 		}
 		disconnect(reason){
-			if (typeof conn === 'undefined')
+			if (typeof this.conn === 'undefined')
 				return;
 
 			console.log(`[WS] Forced disconnect (reason=${reason})`);
 			this.conn.disconnect(0);
 		}
 		status(){
-			if (typeof conn === 'undefined')
+			if (typeof this.conn === 'undefined')
 				return setTimeout(() => {
 					this.status();
 				},2000);
@@ -260,7 +260,7 @@
 			}));
 		}
 		devquery(what, data = {}, cb = undefined){
-			if (typeof conn === 'undefined')
+			if (typeof this.conn === 'undefined')
 				return setTimeout(() => {
 					this.devquery(what, data, cb);
 				},2000);
@@ -273,7 +273,7 @@
 			}));
 		}
 		devaction(clientId, remoteAction, data = {}){
-			if (typeof conn === 'undefined')
+			if (typeof this.conn === 'undefined')
 				return setTimeout(() => {
 					this.devaction(clientId, remoteAction, data);
 				},2000);

@@ -2,6 +2,7 @@
 $(function(){
 	"use strict";
 
+	let interval;
 	const
 		$wssStatus = $('#wss-status').children(),
 		$wssHeartbeat = $('#wss-heartbeat'),
@@ -14,7 +15,7 @@ $(function(){
 			$wssHeartbeat.removeClass('paused');
 
 			if ($.WS.down){
-				clearInterval(window._WSStatusCheckInterval);
+				clearInterval(interval);
 				$wssStatus.text('Socket.IO server is down and/or client library failed to load');
 				$wssHeartbeat.addClass('dead');
 				return;
@@ -30,5 +31,5 @@ $(function(){
 		};
 
 	updateStatus();
-	window._WSStatusCheckInterval = setInterval(updateStatus,1000);
+	interval = setInterval(updateStatus,1000);
 });
