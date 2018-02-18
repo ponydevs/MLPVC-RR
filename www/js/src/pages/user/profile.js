@@ -218,9 +218,9 @@ $(function(){
 		if ($li.index() === 0 && $li.children().last().text().indexOf('Current') !== -1)
 			return $signoutBtn.triggerHandler('click');
 
-		let SessionID = $li.attr('id').replace(/\D/g,'');
+		let sessionID = $li.attr('id').replace(/^session-/,'');
 
-		if (typeof SessionID === 'undefined' || isNaN(SessionID) || !isFinite(SessionID))
+		if (typeof sessionID === 'undefined')
 			return $.Dialog.fail(title,'Could not locate Session ID, please reload the page and try again.');
 
 		$.Dialog.confirm(title,`${sameUser?'You':name} will be signed out of <em>${browser}</em>${platform}.<br>Continue?`, function(sure){
@@ -228,7 +228,7 @@ $(function(){
 
 			$.Dialog.wait(title,`Signing out of ${browser}${platform}`);
 
-			$.post(`/user/sessiondel/${SessionID}`, $.mkAjaxHandler(function(){
+			$.post(`/user/sessiondel/${sessionID}`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(title,this.message);
 
 				if ($li.siblings().length !== 0){

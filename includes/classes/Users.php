@@ -153,7 +153,7 @@ class Users {
 		$platform = !empty($Session->platform) ? "<span class='platform'>on <strong>{$Session->platform}</strong></span>" : '';
 
 		$signoutText = !$current ? 'Delete' : 'Sign out';
-		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."' data-sid='{$Session->id}'>$signoutText</button>";
+		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."'>$signoutText</button>";
 		if (Permission::sufficient('developer') && !empty($Session->user_agent)){
 			$buttons .= "<button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session->user_agent)."'>UA</button>".
 				"<a class='btn link typcn typcn-chevron-right' href='/browser/{$Session->id}'>Debug</a>";

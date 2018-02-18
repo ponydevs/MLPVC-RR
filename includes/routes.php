@@ -173,7 +173,7 @@ $router->map('POST', '/@[un:name]/preference/get/[au:key]',  'PreferenceControll
 $router->map('POST', '/setting/set/[au:key]',                'SettingController#set');
 $router->map('POST', '/setting/get/[au:key]',                'SettingController#get');
 $router->map('POST', '/user/suggestion',                     'UserController#suggestion');
-$router->map('POST', '/user/sessiondel/[i:id]',              'UserController#sessionDel');
+$router->map('POST', '/user/sessiondel/[uuid:id]',           'UserController#sessionDel');
 $router->map('POST', '/user/setrole/[un:name]',              'UserController#setRole');
 $router->map('POST', '/user/setdevrolemask',                 'UserController#setDevRoleMask');
 $router->map('POST', '/user/awaiting-approval/[un:name]',    'UserController#awaitingApproval');

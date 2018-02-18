@@ -158,7 +158,7 @@ class UserController extends Controller {
 	public function sessionDel($params){
 		CSRFProtection::protect();
 
-		if (!isset($params['id']) || !is_numeric($params['id']))
+		if (!isset($params['id']))
 			Response::fail('Missing session ID');
 
 		$Session = Session::find($params['id']);
