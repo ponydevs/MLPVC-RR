@@ -296,12 +296,12 @@ class DeviantArt {
 		if (!$refresh){
 			$cookie = Session::generateCookie();
 			$AuthData['token'] = CoreUtils::sha256($cookie);
-		}
 
-		$browser = CoreUtils::detectBrowser();
-		foreach ($browser as $k => $v)
-			if (!empty($v))
-				$AuthData[$k] = $v;
+			$browser = CoreUtils::detectBrowser();
+			foreach ($browser as $k => $v)
+				if (!empty($v))
+					$AuthData[$k] = $v;
+		}
 
 		if (empty($User)){
 			$MoreInfo = [

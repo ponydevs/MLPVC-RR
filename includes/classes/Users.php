@@ -156,7 +156,7 @@ class Users {
 		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."'>$signoutText</button>";
 		if (Permission::sufficient('developer') && !empty($Session->user_agent)){
 			$buttons .= "<button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session->user_agent)."'>UA</button>".
-				"<a class='btn link typcn typcn-chevron-right' href='/browser/{$Session->id}'>Debug</a>";
+				"<a class='btn link typcn typcn-chevron-right' href='/about/browser/{$Session->id}'>Debug</a>";
 		}
 
 		$firstuse = Time::tag($Session->created);

@@ -27,9 +27,7 @@ class AboutController extends Controller {
 		if (isset($params['session'])){
 			if (Permission::insufficient('developer'))
 				CoreUtils::noPerm();
-			$SessionID = \intval($params['session'], 10);
-			/** @var $Session \App\Models\Session */
-			$Session = Session::find($SessionID);
+			$Session = Session::find($params['session']);
 			if (!empty($Session))
 				$AgentString = $Session->user_agent;
 		}

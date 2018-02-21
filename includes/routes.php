@@ -29,8 +29,8 @@ $router->addMatchTypes([
 $router->map('GET', '/',                               'UserController#homepage');
 $router->map('GET', '/footer-git',                     'FooterController#git');
 $router->map('GET', '/about',                          'AboutController#index');
-$router->map('GET', '/about/browser/[i:session]?',     'AboutController#browser');
-$router->map('GET', '/browser/[i:session]?',           'AboutController#browser');
+$router->map('GET', '/about/browser/[uuid:session]?',  'AboutController#browser');
+$router->map('GET', '/browser/[uuid:session]?',        'AboutController#browser');
 $router->map('GET', '/admin',                          'AdminController#index');
 $router->map('GET', '/logs/[i]?',                      'AdminController#log');
 $router->map('GET', '/admin/logs/[i]?',                'AdminController#log');
