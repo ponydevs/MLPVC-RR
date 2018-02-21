@@ -82,7 +82,7 @@ class CoreUtilsTest extends TestCase {
 			's' => 'string',
 		]);
 		/** @noinspection all */
-		self::assertEquals('<script>var a=1,reg=/^ab?c$/gi,b=true,s="string"</script>', $result);
+		self::assertEquals('<aside class="datastore">{"a":1,"reg":"/^ab?c$/gi","b":true,"s":"string"}</aside>'."\n", $result);
 	}
 
 	public function testSanitizeHtml(){

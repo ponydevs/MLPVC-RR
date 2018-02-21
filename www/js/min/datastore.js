@@ -1,0 +1,2 @@
+"use strict";!function(){var r=new RegExp("^/(.*)/([a-z]*)$","u");Array.from(document.querySelectorAll(".datastore")).forEach(function(t){var e=JSON.parse(t.innerText),a=!0,n=!1,o=void 0;try{for(var i,c=Object.keys(e)[Symbol.iterator]();!(a=(i=c.next()).done);a=!0){var f=i.value,l=e[f];if("string"==typeof l&&r.test(l)){var u=l.match(r);l=new RegExp(u[1],u[2])}window[f]=l}}catch(r){n=!0,o=r}finally{try{!a&&c.return&&c.return()}finally{if(n)throw o}}})}();
+//# sourceMappingURL=/js/min/datastore.js.map

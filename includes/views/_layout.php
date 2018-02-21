@@ -103,9 +103,9 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 	if (isset($norobots))
 		echo'<meta name="robots" content="noindex, nofollow">';
 	if (isset($redirectto))
-		echo'<script>history.replaceState&&history.replaceState(history.state,"",'.JSON::encode($redirectto).')</script>'."\n";
+		echo'<meta id="redirectto" data-url="'.CoreUtils::escapeHTML($redirectto)."\">\n";
 	if (isset($_oldTitle))
-		echo '<script>document.title='.JSON::encode($_oldTitle)."</script>\n";
+		echo'<meta id="oldtitle" data-title="'.CoreUtils::escapeHTML($_oldTitle)."\">\n";
 	if (isset($customCSS)){
 		foreach ($customCSS as $css)
 			echo "<link rel='stylesheet' href='$css'>\n";
@@ -149,11 +149,9 @@ ga('send','pageview');
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
-<script>if(!window.jQuery)document.write('\x3Cscript src="/js/min/jquery-3.2.1.js">\x3C/script>');</script>
 <?php
 	echo CoreUtils::exportVars([
 		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN,
-		'DocReady' => [],
 		'signedIn' => Auth::$signed_in,
 	]);
 	if (isset($customJS)) foreach ($customJS as $js){

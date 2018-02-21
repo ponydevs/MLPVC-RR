@@ -205,7 +205,7 @@ class CoreUtils {
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = ['moment', 'jquery.ba-throttle-debounce', 'jquery.swipe', 'shared-utils', 'inert', 'dialog', 'global', 'websocket'];
+		$DEFAULT_JS = ['datastore','moment', 'jquery.ba-throttle-debounce', 'jquery.swipe', 'shared-utils', 'inert', 'dialog', 'global', 'websocket'];
 		$customJS = [];
 		// Only add defaults when needed
 		if (!isset($options['default-js']) || $options['default-js'] === true)
@@ -467,39 +467,11 @@ class CoreUtils {
 			return '';
 		/** @noinspection UnknownInspectionInspection */
 		/** @noinspection ES6ConvertVarToLetConst */
-		$HTML =  '<script>var ';
 		foreach ($export as $name => $value){
-			$type = \gettype($value);
-			switch (strtolower($type)){
-				case 'boolean':
-					$value = $value ? 'true' : 'false';
-				break;
-				case 'array':
-					$value = JSON::encode($value);
-				break;
-				case 'string':
-					// regex test
-					if (preg_match(new RegExp('^/(.*)/([a-z]*)$','u'), $value, $regex_parts))
-						$value = (new RegExp($regex_parts[1],$regex_parts[2]))->jsExport();
-					else $value = JSON::encode($value);
-				break;
-				case 'integer':
-				case 'float':
-					$value = (string) $value;
-				break;
-				case 'null':
-					$value = 'null';
-				break;
-				default:
-					if ($value instanceof RegExp){
-						$value = $value->jsExport();
-						break;
-					}
-					throw new \RuntimeException("Exporting unsupported variable $name of type $type");
-			}
-			$HTML .= "$name=$value,";
+			if ($value instanceof RegExp)
+				$export[$name] = $value->jsExport();
 		}
-		return rtrim($HTML,',').'</script>';
+		return '<aside class="datastore">'.self::escapeHTML(JSON::encode($export))."</aside>\n";
 	}
 
 	/**

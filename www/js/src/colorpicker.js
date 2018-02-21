@@ -2,6 +2,13 @@
 /* global $w,$body,CryptoJS,Key,mk,noUiSlider,HDR2D_BLEND_SRC */
 (function($, undefined){
 	'use strict';
+
+	if (parent === window){
+		alert("You aren't supposed to open this file directly! You will be redirected after you click OK.");
+		window.location.href = '/cg/picker';
+		return;
+	}
+
 	const pluginScope = {
 		menubar: undefined,
 		statusbar: undefined,

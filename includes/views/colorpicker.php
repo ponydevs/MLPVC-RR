@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Color Picker - MLPVC-RR</title>
 <link rel="stylesheet" href="<?=\App\CoreUtils::cachedAssetLink('colorpicker','scss/min','css')?>">
-<script>if(parent===window){alert("You aren't supposed to open this file directly! You will be redirected after you click OK.");window.location.href='/cg/picker'}</script>
 </head>
 <body>
 
@@ -48,7 +47,6 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-<script>if(!window.jQuery)document.write('\x3Cscript src="/js/min/jquery-3.2.1.js">\x3C/script>');</script>
 <script src="<?=\App\CoreUtils::cachedAssetLink('jquery.ba-throttle-debounce','js/min','js')?>"></script>
 <script src="<?=\App\CoreUtils::cachedAssetLink('shared-utils','js/min','js')?>"></script>
 <script src="<?=\App\CoreUtils::cachedAssetLink('dialog','js/min','js')?>"></script>
