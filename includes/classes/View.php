@@ -106,7 +106,7 @@ class View {
 						$bc->setChild('Full List');
 					break;
 					case 'picker':
-						$bc = null;
+						$ret = null;
 					break;
 					case 'sprite':
 						/** @var $appearance \App\Models\Appearance */
