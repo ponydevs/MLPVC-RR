@@ -242,23 +242,13 @@ $(function(){
 			});
 			Time.Update();
 
-			let succ = function(){
-				$lis.find('.title').simplemarquee({
-				    speed: 25,
-				    cycles: Infinity,
-				    space: 25,
-				    handleHover: false,
-				    delayBetweenCycles: 0,
-				}).addClass('marquee');
-			};
-			if (typeof jQuery.fn.simplemarquee !== 'function')
-				$.ajax({
-					url: '/js/min/jquery.simplemarquee.js',
-					dataType: "script",
-					cache: true,
-					success: succ
-				});
-			else succ();
+			$lis.find('.title').simplemarquee({
+			    speed: 25,
+			    cycles: Infinity,
+			    space: 25,
+			    handleHover: false,
+			    delayBetweenCycles: 0,
+			}).addClass('marquee');
 		};
 		window.setUpcomingCountdown();
 	})();

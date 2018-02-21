@@ -205,7 +205,18 @@ class CoreUtils {
 			$customCSS = array_merge($customCSS, $DEFAULT_CSS);
 
 		# JavaScript
-		$DEFAULT_JS = ['datastore','moment', 'jquery.ba-throttle-debounce', 'jquery.swipe', 'shared-utils', 'inert', 'dialog', 'global', 'websocket'];
+		$DEFAULT_JS = [
+			'datastore',
+			'moment',
+			'jquery.ba-throttle-debounce',
+			'jquery.swipe',
+			'jquery.simplemarquee',
+			'shared-utils',
+			'inert',
+			'dialog',
+			'global',
+			'websocket',
+		];
 		$customJS = [];
 		// Only add defaults when needed
 		if (!isset($options['default-js']) || $options['default-js'] === true)
