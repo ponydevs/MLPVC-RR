@@ -26,6 +26,10 @@ define('DISCORD_SERVER_ID', 0);
 define('DISCORD_CLIENT', '');
 define('DISCORD_SECRET', '');
 
+// CSP \\
+define('CSP_ENABLED', false);
+define('CSP_HEADER', '');
+
 // Development
 //define('MAINTENANCE_START', strtotime(''));
 define('SOCKET_SSL_CTX', ['verify_peer' => false]);

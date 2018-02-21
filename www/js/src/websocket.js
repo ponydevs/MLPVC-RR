@@ -19,11 +19,13 @@
 		$notifSb,
 		$notifSbList,
 		auth = false;
+	const scriptUrl = `${connpath}socket.io/socket.io.js`;
 	$.ajax({
-		url: `${connpath}socket.io/socket.io.js`,
+		url: scriptUrl,
 		cache: 'true',
-		dataType: 'script',
+		dataType: 'script text',
 		success: () => {
+			$.mk('script').attr('src', scriptUrl).appendTo($body);
 			$.WS.essentialElements();
 			$.WS.connect();
 		},
