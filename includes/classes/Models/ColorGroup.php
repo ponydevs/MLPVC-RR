@@ -74,9 +74,9 @@ class ColorGroup extends OrderedModel {
 	public function getHTML($AllColors = null, bool $wrap = true, bool $colon = true, bool $colorNames = false, bool $force_extra_info = false):string {
 		$label = CoreUtils::escapeHTML($this->label).($colon?': ':'');
 		$HTML =
-			"<span class='cat'>$label".
+			"\n<span class='cat'>$label".
 				($colorNames && Permission::sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"><span>Edit</span></button><button class="red typcn typcn-trash delete-cg"><span>Delete</span></button></span>':'').
-			'</span>';
+			"</span>\n";
 		$Colors = empty($AllColors) ? $this->colors : ($AllColors[$this->id] ?? null);
 		if (!empty($Colors)){
 			$extraInfo = $force_extra_info || !UserPrefs::get('cg_hideclrinfo');
@@ -93,19 +93,19 @@ class ColorGroup extends OrderedModel {
 
 				if ($colorNames){
 					$label = CoreUtils::escapeHTML($c->label);
-					$append = "<div class='color-line".(!$extraInfo || empty($color)?' no-detail':'')."'>$span<span><span class='label'>$label";
+					$append = "<div class='color-line".(!$extraInfo || empty($color)?' no-detail':'')."'>$span <span><span class='label'>$label";
 					if ($extraInfo && !empty($color)){
 						/** @noinspection NullPointerExceptionInspection */
 						$rgb = RGBAColor::parse($color)->toRGB();
-						$append .= "</span><span class='ext'>$color &bull; $rgb";
+						$append .= "</span><span class='hidden'>: </span><span class='ext'>$color &bull; $rgb";
 					}
 					$append .= '</span></div>';
 				}
 				else $append = (string)$span->set('title', $title);
-				$HTML .= $append;
+				$HTML .= $append."\n";
 			}
 		}
 
-		return $wrap ? "<li id='cg-{$this->id}'>$HTML</li>" : $HTML;
+		return $wrap ? "<li id='cg-{$this->id}'>$HTML</li>\n" : $HTML;
 	}
 }
