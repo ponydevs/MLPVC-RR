@@ -2,8 +2,9 @@
 (function(){
 	"use strict";
 
+	const $scriptTag = $('#wss');
 	let conn,
-		connpath = `https://ws.${location.hostname}:8667/`,
+		connpath = $scriptTag.attr('src').replace(/^(.*?:\d+\/).*$/,'$1'),
 		wsdecoder = f =>
 			data => {
 				if (typeof data === 'string'){
@@ -19,28 +20,16 @@
 		$notifSb,
 		$notifSbList,
 		auth = false;
-	const scriptUrl = `${connpath}socket.io/socket.io.js`;
-	$.ajax({
-		url: scriptUrl,
-		cache: 'true',
-		dataType: 'script text',
-		success: () => {
-			$.mk('script').attr('src', scriptUrl).appendTo($body);
-			$.WS.essentialElements();
-			$.WS.connect();
-		},
-		statusCode: {
-			404: () => {
-				console.log('%c[WS] Server down!','color:red');
-				$.WS.down = true;
-				$sidebar.find('.notif-list').on('click','.mark-read', e => {
-					e.preventDefault();
+	if (typeof window.io !== 'function'){
+		console.log('%c[WS] Server down!', 'color:red');
+		$.WS = { down: true };
+		$sidebar.find('.notif-list').on('click', '.mark-read', e => {
+			e.preventDefault();
 
-					$.Dialog.fail('Mark notification read','The notification server appears to be down. Please <a class="send-feedback">let us know</a>, and sorry for the inconvenience.');
-				});
-			}
-		}
-	});
+			$.Dialog.fail('Mark notification read', 'The notification server appears to be down. Please <a class="send-feedback">let us know</a>, and sorry for the inconvenience.');
+		});
+		return;
+	}
 
 	class WebSocketUtils {
 		constructor(){
@@ -58,7 +47,6 @@
 			this.conn.on('connect', () => {
 				console.log('[WS] %cConnected','color:green');
 
-				this.recvPostUpdates(typeof window.EpisodePage !== 'undefined');
 				this.navigate();
 			});
 			this.conn.on('auth', wsdecoder(data => {
@@ -334,4 +322,6 @@
 	}
 
 	$.WS = new WebSocketUtils();
+	$.WS.essentialElements();
+	$.WS.connect();
 })();
