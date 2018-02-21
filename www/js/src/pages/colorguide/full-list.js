@@ -73,8 +73,7 @@ $(function(){
 					    animation: 300,
 					}));
 				});
-				$('.sort-alpha').show();
-				$ReorderCancelBtn.removeClass('hidden');
+				$('.sort-alpha').add($ReorderCancelBtn).removeClass('hidden');
 			}
 			else {
 				$.Dialog.wait('Re-ordering appearances');
@@ -108,8 +107,7 @@ $(function(){
 				$names.data('sortable-instance').destroy();
 				$names.removeData('sortable-instance');
 			});
-			$('.sort-alpha').hide();
-			$ReorderCancelBtn.addClass('hidden');
+			$('.sort-alpha').add($ReorderCancelBtn).addClass('hidden');
 		});
 	}
 });

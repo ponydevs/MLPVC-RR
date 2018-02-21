@@ -24,7 +24,7 @@ use App\Tags;
 	} ?></p>
 
 <?	if ($isOwner || Permission::sufficient('staff')){ ?>
-	<div class="notice warn align-center appearance-private-notice"<?=!empty($Appearance->private)?'':' style="display:none"'?>><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to <?=isset($Owner)?(($isOwner?'you':$Owner->name).' and '):''?>staff members)</strong></p></div>
+	<div class="notice warn align-center appearance-private-notice <?=!empty($Appearance->private)?'':'hidden"'?>"><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to <?=isset($Owner)?(($isOwner?'you':$Owner->name).' and '):''?>staff members)</strong></p></div>
 <?php
 	}
 

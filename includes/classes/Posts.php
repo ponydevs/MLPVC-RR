@@ -402,7 +402,7 @@ HTML;
 			<label>
 				<span>$Type type</span>
 				<select name="type" required>
-					<option value="" style="display:none" selected>Choose one</option>
+					<option value="" class="hidden" selected>Choose one</option>
 					<optgroup label="$Type types">
 						<option value="chr">Character</option>
 						<option value="obj">Object</option>

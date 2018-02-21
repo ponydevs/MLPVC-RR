@@ -91,7 +91,7 @@ class CGUtils {
 					if (empty($Sorted[$Category]))
 						continue;
 
-					$HTML .= "<section><h2>$CategoryName<button class='sort-alpha blue typcn typcn-sort-alphabetically' style='display:none' title='Sort this section alphabetically'></button></h2><ul>";
+					$HTML .= "<section><h2>$CategoryName<button class='sort-alpha blue typcn typcn-sort-alphabetically hidden' title='Sort this section alphabetically'></button></h2><ul>";
 					/** @var $Sorted Appearance[][] */
 					foreach ($Sorted[$Category] as $p)
 						self::_processFullListLink($p, $HTML, $previews);
