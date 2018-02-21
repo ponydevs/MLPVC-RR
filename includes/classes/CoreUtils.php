@@ -335,7 +335,7 @@ class CoreUtils {
 				}
 				$timec = date('c', $timestamp);
 
-				return "<time datetime='$timec' class'dynt nodt'>$ret{$diff['minute']}:{$diff['second']} $tz</time>";
+				return "<time datetime='$timec' class='dynt nodt'>$ret{$diff['minute']}:{$diff['second']} $tz</time>";
 			}
 		}
 		return Time::tag($timestamp);
