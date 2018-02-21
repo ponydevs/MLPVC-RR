@@ -40,8 +40,8 @@ $(function(){
 						? $cg.parents('li').children().last().children('strong').text().trim()
 						: $content.children('h1').text()
 					),
-					$cg.children().first().text().replace(/:\s+$/,''),
-					$this.attr('oldtitle'),
+					$cg.children().first().html().replace(/(:\s+)?(<span.*)?$/,''),
+					$this.next().find('.label').html(),
 				];
 			return $.Dialog.info(`RGB values for color ${copy}`, `<div class="align-center">${path.join(' &rsaquo; ')}<br><span style="font-size:1.2em">rgb(<code class="color-red">${rgb.red}</code>, <code class="color-green">${rgb.green}</code>, <code class="color-darkblue">${rgb.blue}</code>)</span></div>`);
 		}
