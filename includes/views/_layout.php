@@ -110,19 +110,8 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 		foreach ($customCSS as $css)
 			echo "<link rel='stylesheet' href='$css'>\n";
 	}
-	if (!empty(GA_TRACKING_CODE) && !$fatalErrorPage && Permission::insufficient('developer')){ ?>
-<!--suppress CommaExpressionJS -->
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create','<?=GA_TRACKING_CODE?>','auto');
-ga('require','displayfeatures');
-ga('send','pageview');
-</script>
-<?php } ?>
+	if (!empty(GA_TRACKING_CODE) && !$fatalErrorPage && Permission::insufficient('developer'))
+		require INCPATH.'views/_ga.php'; ?>
 </head>
 <body>
 	<header>
