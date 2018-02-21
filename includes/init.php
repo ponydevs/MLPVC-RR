@@ -36,5 +36,3 @@ catch (Exception $e){
 	$errcause = 'db';
 	die(require INCPATH.'views/error/fatal.php');
 }
-
-header('Access-Control-Allow-Origin: '.(HTTPS?'http':'https').'://'.$_SERVER['SERVER_NAME']);
