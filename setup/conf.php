@@ -28,6 +28,7 @@ define('DISCORD_SECRET', '');
 
 // CSP \\
 define('CSP_ENABLED', false);
+define('CSP_NONCE', base64_encode(random_bytes(16)));
 define('CSP_HEADER', '');
 
 // Development

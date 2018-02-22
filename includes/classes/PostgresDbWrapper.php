@@ -56,11 +56,9 @@ class PostgresDbWrapper extends \PostgresDb {
 	private $_nonexistantClassCache = [];
 
 	/**
-	 * @param \PDOStatement $stmt Statement to execute
-	 *
-	 * @return bool|array|mixed
+	 * @inheritdoc
 	 */
-	protected function _execStatement($stmt){
+	protected function _execStatement($stmt, $reset = true){
 		$className = $this->tableNameToClassName();
 		if ($className !== null && empty($this->_nonexistantClassCache[$className])){
 			try {
@@ -69,7 +67,7 @@ class PostgresDbWrapper extends \PostgresDb {
 			catch (\RuntimeException $e){ $this->_nonexistantClassCache[$className] = true; }
 		}
 
-		$execResult = parent::_execStatement($stmt);
+		$execResult = parent::_execStatement($stmt, $reset);
 		$isarray = \is_array($execResult);
 		if ($isarray && \count($execResult) > 0)
 			$check = $execResult[0];
