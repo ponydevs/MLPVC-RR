@@ -44,7 +44,7 @@ $TFeature:  adjust_hue($_TBase, 20);
 }
 
 @mixin clrp-invalid($fontSize:24px){
-	background: url('/img/transparency.svg') !important;
+	background: url('/img/transparency.svg');
 	background-size: 16px;
 }
 
@@ -60,8 +60,11 @@ $TFeature:  adjust_hue($_TBase, 20);
 		background: #fff;
 	}
 
+	$height: 31px;
+
 	.clrmthd {
 		flex: 0 0 auto;
+		height: $height;
 	}
 
 	&.mthd-hex {
@@ -75,10 +78,10 @@ $TFeature:  adjust_hue($_TBase, 20);
 		}
 	}
 
-	$height: 28px;
 	.clrla, .clrlc {
 		flex: 1 1 auto;
 		min-width: 30%;
+		height: $height;
 	}
 	.clrp {
 		flex: 0 0 auto;
@@ -99,6 +102,8 @@ $TFeature:  adjust_hue($_TBase, 20);
 	.clri {
 		width: 65px;
 		font-family: $monospace;
+		height: $height;
+		box-sizing: border-box;
 	}
 	.clrid {
 		flex: 0 0 auto;
