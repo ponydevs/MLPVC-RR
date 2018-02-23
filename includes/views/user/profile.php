@@ -119,7 +119,9 @@ if ($isUserMember)
 			if ($member->isLinked()){
 				$you = $sameUser?'you':'they';
 				if ($member->isServerMember())
-					echo " and $you've joined our <a href='https://discordapp.com/channels/".DISCORD_SERVER_ID."'>Discord server</a> ".Time::tag($member->joined_at);
+					// TODO Re-enable when restcord is fixed
+					//echo " and $you've joined our <a href='https://discordapp.com/channels/".DISCORD_SERVER_ID."'>Discord server</a> ".Time::tag($member->joined_at);
+					echo " and $you've joined our <a href='https://discordapp.com/channels/".DISCORD_SERVER_ID."'>Discord server</a>";
 				else echo " but $you haven't joined our <a href='".DISCORD_INVITE_LINK."'>Discord server</a> yet";
 			}
 			else echo ' by a staff member, but manual bindings are no longer considered valid'; ?>.</p>
