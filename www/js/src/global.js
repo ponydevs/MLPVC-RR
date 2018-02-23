@@ -137,13 +137,6 @@ $(function(){
 		}
 	};
 
-	// Load footer
-	if (window.ServiceUnavailableError !== true)
-		$.get('/footer-git',$.mkAjaxHandler(function(){
-			if (this.footer)
-				$footer.prepend(this.footer);
-		}));
-
 	// Sidebar toggle handler
 	(function(){
 		let triggerResize = function(){

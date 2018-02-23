@@ -17,6 +17,7 @@
 		"ext-mbstring": "*",
 		"ext-pdo_pgsql": "*",
 		"ext-pdo_sqlite": "*",
+		"ext-redis": "*",
 		"ext-xml": "*",
 		"fightbulc/moment": "^1.25.1",
 		"wisembly/elephant.io": "^3.3.0",

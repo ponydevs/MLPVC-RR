@@ -702,14 +702,14 @@ class CoreUtils {
 	/**
 	 * Returns text HTML of the website's footer
 	 *
-	 * @param bool $with_git_info
+	 * @param bool $disable_git
 	 *
 	 * @return string
 	 */
-	public static function getFooter($with_git_info = false){
+	public static function getFooter(bool $disable_git){
 		$out = [];
-		if ($with_git_info)
-			$out[] = self::getFooterGitInfo(false);
+		if ($disable_git === false)
+			$out[] = self::getFooterGitInfo();
 		$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank' rel='noopener'>Known issues</a>";
 		$out[] = '<a class="send-feedback">Send feedback</a>';
 		return implode(' | ',$out);
@@ -718,20 +718,24 @@ class CoreUtils {
 	/**
 	 * Returns the HTML of the GIT informaiiton in the website's footer
 	 *
-	 * @param bool $appendSeparator
-	 *
 	 * @return string
 	 */
-	public static function getFooterGitInfo(bool $appendSeparator = true):string {
+	public static function getFooterGitInfo():string {
 		$commit_info = "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>";
-		$commit_id = rtrim(shell_exec('git rev-parse --short=4 HEAD'));
+		$commit_id = RedisHelper::get('commit_id');
+		if ($commit_id === null){
+			$commit_id = rtrim(shell_exec('git rev-parse --short=4 HEAD'));
+			RedisHelper::set('commit_id', $commit_id);
+		}
 		if (!empty($commit_id)){
-			$commit_time = Time::tag(date('c',strtotime(shell_exec('git log -1 --date=short --pretty=format:%ci'))));
-			$commit_info .= "@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong> created $commit_time";
+			$commit_time = RedisHelper::get('commit_time');
+			if ($commit_time === null){
+				$commit_time = shell_exec('git log -1 --date=short --pretty=format:%ci');
+				RedisHelper::set('commit_time', $commit_time);
+			}
+			$commit_info .= "@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong> created ".Time::tag(date('c',strtotime($commit_time)));
 		}
 		else $commit_info .= '</strong> (version information unavailable)';
-		if ($appendSeparator)
-			$commit_info .= ' | ';
 		return $commit_info;
 	}
 

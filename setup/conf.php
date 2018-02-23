@@ -31,6 +31,10 @@ define('CSP_ENABLED', false);
 define('CSP_NONCE', base64_encode(random_bytes(16)));
 define('CSP_HEADER', '');
 
+// Redis \\
+define('REDIS_HOST', '127.0.0.1');
+define('REDIS_PORT', 6379);
+
 // Development
 //define('MAINTENANCE_START', strtotime(''));
 define('SOCKET_SSL_CTX', ['verify_peer' => false]);
