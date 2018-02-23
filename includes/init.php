@@ -8,9 +8,9 @@ require $_dir.'init/monolog.php';
 unset($_dir);
 
 if (defined('CSP_ENABLED') && CSP_ENABLED === true){
-	header('Content-Security-Policy-Report-Only: '.CSP_HEADER);
-	header('X-Content-Security-Policy-Report-Only: '.CSP_HEADER);
-	header('X-WebKit-CSP-Report-Only: '.CSP_HEADER);
+	header('Content-Security-Policy: '.CSP_HEADER);
+	header('X-Content-Security-Policy: '.CSP_HEADER);
+	header('X-WebKit-CSP: '.CSP_HEADER);
 }
 
 use App\About;
