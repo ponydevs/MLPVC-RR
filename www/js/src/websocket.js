@@ -19,7 +19,8 @@
 		$notifCnt,
 		$notifSb,
 		$notifSbList,
-		auth = false;
+		auth = false,
+		clientid;
 	if (typeof window.io !== 'function'){
 		console.log('%c[WS] Server down!', 'color:red');
 		$.WS = { down: true };
@@ -50,10 +51,12 @@
 				this.navigate();
 			});
 			this.conn.on('auth', wsdecoder(data => {
+				clientid = data.clientid;
 				auth = true;
 				console.log(`[WS] %cAuthenticated as ${data.name}`,'color:teal');
 			}));
-			this.conn.on('auth-guest', wsdecoder(() => {
+			this.conn.on('auth-guest', wsdecoder(data => {
+				clientid = data.clientid;
 				console.log(`[WS] %cReceiving events as a guest`,'color:teal');
 			}));
 			this.conn.on('notif-cnt', wsdecoder(data => {
@@ -161,6 +164,10 @@
 						break;
 					}
 				}
+			}));
+			this.conn.on('hello', wsdecoder(response => {
+				console.log('[WS] %cHello response (priv=%s)','color:green', response.priv);
+				$w.trigger('ws-hello', [response]);
 			}));
 			this.conn.on('disconnect', () => {
 				auth = false;
@@ -318,6 +325,9 @@
 					});
 				else send();
 			});
+		}
+		getClientId(){
+			return clientid;
 		}
 	}
 

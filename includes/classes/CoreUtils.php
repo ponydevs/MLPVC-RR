@@ -1067,7 +1067,10 @@ HTML;
 		$elephant = new \ElephantIO\Client(new SocketIOEngine('https://ws.'.WS_SERVER_DOMAIN.':8667', [
 			'context' => [
 				'http' => [
-					'header' => 'Cookie: access='.urlencode(WS_SERVER_KEY)
+					'header' => [
+						'Cookie: access='.urlencode(WS_SERVER_KEY),
+						'Origin: '.ORIGIN,
+					]
 				],
 				'ssl' => \defined('SOCKET_SSL_CTX') ? SOCKET_SSL_CTX : [],
 			]

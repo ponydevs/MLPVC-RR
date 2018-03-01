@@ -360,6 +360,31 @@ class AdminController extends Controller {
 		]);
 	}
 
+	public function wshello(){
+		if (Permission::insufficient('developer'))
+			CoreUtils::noPerm();
+
+		CoreUtils::detectUnexpectedJSON();
+
+		$clientid = $_POST['clientid'];
+		if (!preg_match(new RegExp('^[a-zA-Z\d_-]+$'), $clientid))
+			Response::fail('Invalid client ID');
+
+		try {
+			CoreUtils::socketEvent('hello', [
+				'clientid' => $clientid,
+				'priv' => $_POST['priv'],
+			]);
+		}
+		catch (\Throwable $e){
+			$errmsg = 'Failed to send hello: '.$e->getMessage();
+			CoreUtils::error_log($errmsg."\n".$e->getTraceAsString());
+			Response::fail($errmsg);
+		}
+
+		Response::done();
+	}
+
 	public function ip($params){
 		$ip = $params['ip'];
 

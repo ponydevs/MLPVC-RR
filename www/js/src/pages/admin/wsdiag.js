@@ -1,9 +1,10 @@
-/* global DocReady */
+/* global DocReady,$w */
 $(function(){
 	"use strict";
 
 	let interval;
 	const
+		$sendHello = $('#send-hello'),
 		$wssStatus = $('#wss-status').children(),
 		$wssHeartbeat = $('#wss-heartbeat'),
 		updateStatus = function(){
@@ -18,6 +19,7 @@ $(function(){
 				clearInterval(interval);
 				$wssStatus.text('Socket.IO server is down and/or client library failed to load');
 				$wssHeartbeat.addClass('dead');
+				$sendHello.disable();
 				return;
 			}
 			$.WS.devquery('status',{},function(data){
@@ -32,4 +34,40 @@ $(function(){
 
 	updateStatus();
 	interval = setInterval(updateStatus,1000);
+
+	$sendHello.on('click', e => {
+		$.Dialog.wait('Test PHP to WS server connectivity', 'Sending hello');
+
+		const priv = $.randomString();
+		const clientid = $.WS.getClientId();
+		const timeout = 5000;
+		let responseReceived = false;
+
+		$w.on('ws-hello', (e, response) => {
+			if (response.priv !== priv)
+				return;
+
+			$w.off('ws-hello');
+			responseReceived = true;
+
+			$.Dialog.success(false, 'Hello response received', true);
+		});
+
+		$.post('/admin/wsdiag/hello', { priv, clientid }, $.mkAjaxHandler(function(){
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			if (!responseReceived)
+				$.Dialog.success(false, 'Hello sent successfully');
+			if (!responseReceived)
+				$.Dialog.wait(false, `Waiting for reply (timeout ${timeout/1000}s)`);
+
+			setTimeout(() => {
+				if (responseReceived)
+					return;
+
+				$w.off('ws-hello');
+				$.Dialog.fail(false, 'Hello response timed out');
+			}, timeout);
+		}));
+	});
 });

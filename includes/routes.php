@@ -101,6 +101,7 @@ $router->map('POST', '/admin/logs/details/[i:id]',           'AdminController#lo
 $router->map('POST', '/admin/usefullinks',                   'AdminController#usefulLinks');
 $router->map('POST', '/admin/usefullinks/reorder',           'AdminController#reorderUsefulLinks');
 $router->map('POST', '/admin/mass-approve',                  'AdminController#massApprove');
+$router->map('POST', '/admin/wsdiag/hello',                  'AdminController#wshello');
 $router->map('POST', '/admin/discord/member-list',           'AdminController#discordMemberList');
 $router->map('POST', '/admin/discord/member-link/get/[i:id]', 'AdminController#discordMemberLinkGet');
 $router->map('POST', '/admin/discord/member-link/set/[i:id]', 'AdminController#discordMemberLinkSet');

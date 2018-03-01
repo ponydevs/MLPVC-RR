@@ -1,7 +1,8 @@
 <div id="content" class="section-container">
 	<h1>WebSocket Server Diagnostics</h1>
 	<div class='align-center button-block'>
-		<a class='btn darkblue typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
+		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
+		<button class='darkblue typcn typcn-message' id="send-hello">Hello</button>
 	</div>
 
 	<section>
