@@ -1064,7 +1064,7 @@ HTML;
 	}
 
 	public static function socketEvent(string $event, array $data = []){
-		$elephant = new \ElephantIO\Client(new SocketIOEngine('https://ws.'.WS_SERVER_DOMAIN.':8667', [
+		$elephant = new \ElephantIO\Client(new SocketIOEngine('https://'.WS_SERVER_HOST, [
 			'context' => [
 				'http' => [
 					'header' => [

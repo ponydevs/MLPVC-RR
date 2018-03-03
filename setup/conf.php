@@ -16,8 +16,8 @@ define('DA_SECRET', '');
 // Google Analytics Tracking Code \\
 define('GA_TRACKING_CODE', '');
 
-// Websocket \\
-define('WS_SERVER_DOMAIN', '');
+// WebSocket Connection \\
+define('WS_SERVER_HOST', '');
 define('WS_SERVER_KEY', '');
 
 // Discord API \\

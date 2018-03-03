@@ -35,7 +35,7 @@ $(function(){
 	updateStatus();
 	interval = setInterval(updateStatus,1000);
 
-	$sendHello.on('click', e => {
+	$sendHello.on('click', () => {
 		$.Dialog.wait('Test PHP to WS server connectivity', 'Sending hello');
 
 		const priv = $.randomString();
