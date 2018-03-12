@@ -14,4 +14,4 @@ before_script:
   - psql "mlpvc-rr" < ./setup/mlpvc-rr.pg.sql
 dist: trusty
 addons:
-  postgresql: "10.3"
+  postgresql: "9.6"

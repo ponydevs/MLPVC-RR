@@ -30,7 +30,7 @@ do
 		eval ${CMD_MIGRATE}
 		echo "$ $CMD_YARN"
 		eval ${CMD_YARN}
-		echo "$ CMD_REDIS_CLEAR"
+		echo "$ $CMD_REDIS_CLEAR"
 		eval ${CMD_REDIS_CLEAR}
 	else
 		echo "Push ignored (refname=$refname; branch=$branch)"
