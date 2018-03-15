@@ -40,7 +40,6 @@ $TFeature:  adjust_hue($_TBase, 20);
 		background: url('/img/transparency.svg');
 		background-size: 16px;
 	}
-	&:not(:last-child){ margin-right: 4px }
 }
 
 @mixin clrp-invalid($fontSize:24px){
