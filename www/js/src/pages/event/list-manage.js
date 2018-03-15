@@ -96,19 +96,18 @@ $(function(){
 			$.Dialog.request(title,$EventEditorFormTemplate.clone(true,true),'Save', function($form){
 				let eventID, session;
 
-				$.getAceEditor(false, 'markdown', function(mode){
-					try {
-						let div = $form.find('.ace_editor').get(0),
-							editor = ace.edit(div);
-						session = $.aceInit(editor, mode);
-						session.setMode(mode);
-						session.setUseWrapMode(true);
+				try {
+					const mode = 'markdown';
+					let div = $form.find('.ace_editor').get(0),
+						editor = ace.edit(div);
+					session = $.aceInit(editor, mode);
+					session.setMode(mode);
+					session.setUseWrapMode(true);
 
-						if (editing && data.desc_src)
-							session.setValue(data.desc_src);
-					}
-					catch(e){ console.error(e) }
-				});
+					if (editing && data.desc_src)
+						session.setValue(data.desc_src);
+				}
+				catch(e){ console.error(e) }
 
 				if (editing){
 					eventID = data.eventID;

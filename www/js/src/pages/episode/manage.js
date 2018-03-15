@@ -180,15 +180,13 @@ $(function(){
 				value = this.value;
 
 			$.Dialog.request(false, $EditorForm, 'Save', function($form){
-				let session;
-				$.getAceEditor(false, 'html', function(mode){
-				    let editor = ace.edit($.mk('div').appendTo($form).get(0));
-					editor.setShowPrintMargin(false);
-				    session = $.aceInit(editor, mode);
-				    session.setMode(mode);
-				    session.setUseWrapMode(true);
-				    session.setValue(value);
-				});
+				const mode = 'html';
+			    let editor = ace.edit($.mk('div').appendTo($form).get(0));
+				editor.setShowPrintMargin(false);
+			    let session = $.aceInit(editor, mode);
+			    session.setMode(mode);
+			    session.setUseWrapMode(true);
+			    session.setValue(value);
 
 				$form.on('submit', function(e){
 					e.preventDefault();

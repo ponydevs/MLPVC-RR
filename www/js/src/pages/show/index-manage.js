@@ -30,6 +30,10 @@ $(function(){
 					<input type="number" min="1" max="255" name="no" placeholder="Overall #" required>
 				</div>
 			</div>
+			<label class="episode-only"><input type="checkbox" name="twoparter"> Has two parts</label>
+			<div class="notice info align-center episode-only">
+				<p>If this is checked, enter the episode number of the first part</p>
+			</div>
 			<div class="label movie-only">
 				<span>Overall movie number</span>
 				<input type="number" min="1" max="26" name="episode" placeholder="Overall #" required>
@@ -58,10 +62,6 @@ $(function(){
 			</div>
 			<div class="notice info align-center button-here">
 				<p>Specify the <span class="episode-only">episode</span><span class="movie-only">movie</span>'s air date and time in <strong>your computer's timezone</strong>.</p>
-			</div>
-			<label class="episode-only"><input type="checkbox" name="twoparter"> Has two parts</label>
-			<div class="notice info align-center episode-only">
-				<p>If this is checked, only specify the episode number of the first part</p>
 			</div>
 			<div class="label">
 				<span>Notes (optional, 1000 chars. max)</span>
@@ -118,16 +118,15 @@ $(function(){
 
 		$.Dialog.request(`Add ${movie?'Movie':'Episode'}`, $AddEpForm,'Add', function($form){
 			let session;
-			$.getAceEditor(false, 'html', function(mode){
-				try {
-					let div = $form.find('.ace_editor').get(0),
-						editor = ace.edit(div);
-					session = $.aceInit(editor, mode);
-					session.setMode(mode);
-					session.setUseWrapMode(true);
-				}
-				catch(e){ console.error(e) }
-			});
+			try {
+				const mode = 'html';
+				let div = $form.find('.ace_editor').get(0),
+					editor = ace.edit(div);
+				session = $.aceInit(editor, mode);
+				session.setMode(mode);
+				session.setUseWrapMode(true);
+			}
+			catch(e){ console.error(e) }
 
 			$form.on('submit', function(e){
 				e.preventDefault();
@@ -191,19 +190,18 @@ $(function(){
 
 			$.Dialog.request(false, $EditEpForm,'Save', function($form){
 				let session;
-				$.getAceEditor(false, 'html', function(mode){
-					try {
-						let div = $form.find('.ace_editor').get(0),
-							editor = ace.edit(div);
-						session = $.aceInit(editor, mode);
-						session.setMode(mode);
-						session.setUseWrapMode(true);
+				try {
+					const mode = 'html';
+					let div = $form.find('.ace_editor').get(0),
+						editor = ace.edit(div);
+					session = $.aceInit(editor, mode);
+					session.setMode(mode);
+					session.setUseWrapMode(true);
 
-						if (notes)
-							session.setValue(notes);
-					}
-					catch(e){ console.error(e) }
-				});
+					if (notes)
+						session.setValue(notes);
+				}
+				catch(e){ console.error(e) }
 
 				$form.on('submit', function(e){
 					e.preventDefault();

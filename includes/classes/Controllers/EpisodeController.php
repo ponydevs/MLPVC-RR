@@ -571,16 +571,26 @@ class EpisodeController extends Controller {
 			Response::fail();
 
 		/** @var $LastAdded Episode */
-		$LastAdded = DB::$instance->orderBy('posted','DESC')->where('season != 0')->getOne(Episode::$table_name);
+		$LastAdded = DB::$instance->orderBy('no','DESC')->where('season != 0')->getOne(Episode::$table_name);
 
 		if (empty($LastAdded))
 			Response::fail('No last added episode found');
 
+		$season = $LastAdded->season;
+		if ($LastAdded->twoparter && $LastAdded->episode + 1 === 26){
+			$season++;
+			$episode = 1;
+			$airs = date('Y-m-d',strtotime('this saturday'));
+		}
+		else {
+			$episode = min($LastAdded->episode + 1, 26);
+			$airs = $LastAdded->airs->add(new \DateInterval('P1W'))->format('Y-m-d');
+		}
 		Response::done([
-			'season' => $LastAdded->season,
-			'episode' => min($LastAdded->episode + 1, 26),
+			'season' => $season,
+			'episode' => $episode,
 			'no' => $LastAdded->no + ($LastAdded->twoparter ? 2 : 1),
-			'airday' => $LastAdded->airs->add(new \DateInterval('P1W'))->format('Y-m-d'),
+			'airday' => $airs,
 		]);
 	}
 }

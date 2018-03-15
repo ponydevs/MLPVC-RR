@@ -211,6 +211,7 @@ class CoreUtils {
 			'jquery.ba-throttle-debounce',
 			'jquery.swipe',
 			'jquery.simplemarquee',
+			'ace/ace',
 			'shared-utils',
 			'inert',
 			'dialog',

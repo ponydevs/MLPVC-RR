@@ -76,19 +76,18 @@
 			$.Dialog.request(title,$PonyEditorFormTemplate.clone(true,true),'Save', function($form){
 				let appearanceID, session;
 
-				$.getAceEditor(false, 'html', function(mode){
-					try {
-						let div = $form.find('.ace_editor').get(0),
-							editor = ace.edit(div);
-						session = $.aceInit(editor, mode);
-						session.setMode(mode);
-						session.setUseWrapMode(true);
+				try {
+					const mode = html;
+					let div = $form.find('.ace_editor').get(0),
+						editor = ace.edit(div);
+					session = $.aceInit(editor, mode);
+					session.setMode(mode);
+					session.setUseWrapMode(true);
 
-						if (editing && data.notes)
-							session.setValue(data.notes);
-					}
-					catch(e){ console.error(e) }
-				});
+					if (editing && data.notes)
+						session.setValue(data.notes);
+				}
+				catch(e){ console.error(e) }
 
 				if (editing){
 					appearanceID = data.appearanceID;
@@ -1041,16 +1040,15 @@
 				$colors.unbind().hide().text(editorContent.join('\n') + '\n');
 
 				// Create editor
-				$.getAceEditor(false, 'colorguide',mode => {
-					$colors.show();
-					this.editor = ace.edit($colors[0]);
-					let session = $.aceInit(this.editor, mode);
-					session.setTabSize(8);
-					session.setMode(mode);
-					this.editor.navigateFileEnd();
-					this.editor.focus();
-					this.mode = 'text';
-				});
+				const mode = 'colorguide';
+				$colors.show();
+				this.editor = ace.edit($colors[0]);
+				let session = $.aceInit(this.editor, mode);
+				session.setTabSize(8);
+				session.setMode(mode);
+				this.editor.navigateFileEnd();
+				this.editor.focus();
+				this.mode = 'text';
 			}
 			else {
 				// Saving
