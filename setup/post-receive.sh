@@ -16,7 +16,7 @@ do
 		CMD_COMPOSER="sudo -u www-data composer install --no-dev 2>&1"
 		CMD_MIGRATE="sudo -u www-data vendor/bin/phinx migrate"
 		CMD_YARN="sudo -u www-data yarn install"
-		CMD_REDIS_CLEAR="sudo -u www-data php -f setup/clear_redis_git_info.php"
+		CMD_REDIS_CLEAR="sudo -u www-data php -f includes/scripts/clear_redis_keys.php commit_id commit_time"
 
 		echo "$ $CMD_CD"
 		eval ${CMD_CD}

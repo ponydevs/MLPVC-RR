@@ -1,8 +1,8 @@
 <?php
 
 $_dir = rtrim(__DIR__, '\/').DIRECTORY_SEPARATOR;
-require $_dir.'init/minimal.php';
-require $_dir.'init/monolog.php';
+require $_dir.'../init/minimal.php';
+require $_dir.'../init/monolog.php';
 
 use App\Auth;
 use App\CoreUtils;

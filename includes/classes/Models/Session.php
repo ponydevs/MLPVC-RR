@@ -126,7 +126,7 @@ class Session extends NSModel {
 		$this->updating = true;
 		$this->save();
 		// Update access token in the BG
-		exec('nohup /usr/bin/php -f '.INCPATH.'access_token_refresher.php '.escapeshellarg($this->id).' > /dev/null 2>&1 &', $out);
+		exec('nohup /usr/bin/php -f '.INCPATH.'scripts/access_token_refresher.php '.escapeshellarg($this->id).' > /dev/null 2>&1 &', $out);
 	}
 
 	public function getUpdateIndicatorHTML():string {
