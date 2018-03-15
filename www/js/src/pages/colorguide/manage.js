@@ -77,7 +77,7 @@
 				let appearanceID, session;
 
 				try {
-					const mode = html;
+					const mode = 'html';
 					let div = $form.find('.ace_editor').get(0),
 						editor = ace.edit(div);
 					session = $.aceInit(editor, mode);
