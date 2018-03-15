@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use ActiveRecord\DateTime;
 use App\CoreUtils;
 use App\JSON;
 use App\Response;
@@ -9,15 +10,15 @@ use App\Time;
 use App\VideoProvider;
 
 /**
- * @property int     $season
- * @property int     $episode
- * @property int     $part
- * @property bool    $fullep
- * @property string  $provider
- * @property string  $id
- * @property string  $modified
- * @property string  $not_broken_at
- * @property Episode $ep
+ * @property int      $season
+ * @property int      $episode
+ * @property int      $part
+ * @property bool     $fullep
+ * @property string   $provider
+ * @property string   $id
+ * @property DateTime $modified
+ * @property DateTime $not_broken_at
+ * @property Episode  $ep
  */
 class EpisodeVideo extends NSModel {
 	public static $primary_key = ['season', 'episode', 'provider', 'part'];
@@ -29,14 +30,30 @@ class EpisodeVideo extends NSModel {
 	public function isBroken():bool {
 		if (isset($this->not_broken_at)){
 			$nb = strtotime($this->not_broken_at);
-			if ($nb+(Time::IN_SECONDS['hour']*2) > time())
+			if ($this->not_broken_at->getTimestamp() + (Time::IN_SECONDS['hour']*2) > time())
 				return false;
 		}
 
 		switch ($this->provider){
 			case 'yt':
-				$url = VideoProvider::getEmbed($this, VideoProvider::URL_ONLY);
-				$broken = !CoreUtils::isURLAvailable('http://www.youtube.com/oembed?url='.urlencode($url));
+				$client = new \Google_Client();
+				$client->setApplicationName(GITHUB_URL);
+				$client->setDeveloperKey(GOOGLE_API_KEY);
+				$service = new \Google_Service_YouTube($client);
+				$details = $service->videos->listVideos('contentDetails', [ 'id' => $this->id ]);
+
+				if (!empty($details)){
+					/** @var $video \Google_Service_YouTube_Video */
+					$items = $details->getItems();
+					if (empty($items))
+						$broken = true;
+					else {
+						$video = $items[0];
+						$blocked = $video->getContentDetails()->getRegionRestriction()->blocked;
+						$broken = !empty($blocked) && (\count($blocked) > 100 || \in_array('US', $blocked, true));
+					}
+				}
+				else $broken = false;
 			break;
 			case 'dm':
 				$broken = !CoreUtils::isURLAvailable("https://api.dailymotion.com/video/{$this->id}");

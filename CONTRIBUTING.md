@@ -39,7 +39,7 @@ This project makes use of [wtfcmd](https://github.com/blunt1337/wtfcmd) to maint
 
 ### PostrgeSQL
 
-Create a database user with a name and password that you can remember for at least as long as it takes you to enter it in the configuration file. While you're at it, you might as well create the database and extensions.YOu can find the commands to do this below, but if you're not familiar with the command line you can use [Adminer](https://www.adminer.org/) to run the SQL commands and import the `setup/create_extensions.pg.sql` file.
+Create a database user with a name and password that you can remember for at least as long as it takes you to enter it in the configuration file. While you're at it, you might as well create the database and extensions. You can find the commands to do this below, but if you're not familiar with the command line you can use [Adminer](https://www.adminer.org/) to run the SQL commands and import the `setup/create_extensions.pg.sql` file.
 
 ```
 $ su - postgres
@@ -63,16 +63,20 @@ Make sure `short_open_tag` is enabled in `php.ini`. File uploading should be ena
 
 Setting `max_execution_time` to `30` *(seconds)* or below is recommended for development in case an infinite loop breaks loose. You never know. It has to be a reasonably big though, because requests to DeviantArt's API can cause script execution to take longer than usual.
 
-### App-specific config file
+#### App-specific config file
 
 You'll need to copy the `setup/conf.php` file into the `includes` directory and change the empty values to whatever your environment uses. Most values are self-explanatory, but you should find explanations for some of them in this document.
 
-#### OAuth credentials
+##### OAuth credentials
 
 You will need to add OAuth application keys for the following services to your `conf.php` file:
 
  - [DeviantArt](https://www.deviantart.com/developers/register):  `DA_CLIENT`, `DA_SECRET`
  - [Discord](https://discordapp.com/developers/applications/me): `DISCORD_CLIENT`, `DISCORD_SECRET`
+ 
+##### API keys
+
+If you want to test broken YouTube video removal you will need a Google API key from the [Google API Console](https://console.developers.google.com) that has the [YouTube Data v3 API](https://console.developers.google.com/apis/library/youtube.googleapis.com/) enabled. This key should be set as the value of the `GOOGLE_API_KEY` constant. 
 
 #### Dependencies
 

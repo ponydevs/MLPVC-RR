@@ -16,6 +16,9 @@ define('DA_SECRET', '');
 // Google Analytics Tracking Code \\
 define('GA_TRACKING_CODE', '');
 
+// Google API Key \\
+define('GOOGLE_API_KEY', '');
+
 // WebSocket Connection \\
 define('WS_SERVER_HOST', '');
 define('WS_SERVER_KEY', '');
