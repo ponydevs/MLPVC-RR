@@ -171,7 +171,7 @@ class CoreUtils {
 	 * ---------------------
 	 * $options = array(
 	 *     'title' => string,     - Page title
-	 *     'no-robots' => bool,   - Disable crawlers (that respect meta tags)
+	 *     'noindex' => bool,     - Disable crawlers (that respect meta tags)
 	 *     'default-css' => bool, - Disable loading of default CSS files
 	 *     'default-js' => bool,  - Disable loading of default JS files
 	 *     'css' => array,        - Specify a an array of CSS files to load (true = autodetect)
@@ -190,7 +190,7 @@ class CoreUtils {
 		$view = new View($view_name);
 
 		// SE crawling disable
-		if (isset($options['no-robots']) && $options['no-robots'] === true)
+		if (isset($options['noindex']) && $options['noindex'] === true)
 			$norobots = true;
 
 		// Set new URL option

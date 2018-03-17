@@ -48,7 +48,7 @@ class AboutController extends Controller {
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Browser recognition test page',
 			'css' => [true],
-			'no-robots' => true,
+			'noindex' => true,
 			'import' => [
 				'AgentString' => $AgentString,
 				'Session' => $Session ?? null,

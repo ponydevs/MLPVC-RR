@@ -86,7 +86,7 @@ class UserController extends Controller {
 
 		$settings = [
 			'title' => $MSG === null ? ($sameUser?'Your':CoreUtils::posess($User->name)).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
-			'no-robots',
+			'noindex' => true,
 			'css' => [true],
 			'js' => [true],
 			'import' => [

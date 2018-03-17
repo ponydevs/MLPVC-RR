@@ -331,6 +331,7 @@ class ColorGuideController extends Controller {
 		$settings = [
 			'title' => $title,
 			'heading' => $heading,
+			'noindex' => $searching,
 			'css' => [true],
 			'js' => ['jquery.ctxmenu', true, 'paginate'],
 			'import' => [

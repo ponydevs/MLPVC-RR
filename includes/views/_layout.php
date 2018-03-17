@@ -101,14 +101,10 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 	<link rel="shortcut icon" href="/favicon.ico">
 <?php
 	if (isset($norobots))
-		echo'<meta name="robots" content="noindex, nofollow">';
-	if (isset($redirectto))
-		echo'<meta id="redirectto" data-url="'.CoreUtils::escapeHTML($redirectto)."\">\n";
-	if (isset($_oldTitle))
-		echo'<meta id="oldtitle" data-title="'.CoreUtils::escapeHTML($_oldTitle)."\">\n";
+		echo "\t<meta name='robots' content='noindex'>\n";
 	if (isset($customCSS)){
 		foreach ($customCSS as $css)
-			echo "<link rel='stylesheet' href='$css'>\n";
+			echo "\t<link rel='stylesheet' href='$css'>\n";
 	}
 	if (!empty(GA_TRACKING_CODE) && !$fatalErrorPage && Permission::insufficient('developer'))
 		require INCPATH.'views/_ga.php'; ?>

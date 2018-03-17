@@ -9,7 +9,7 @@ class ComponentsController extends Controller {
 	public function index(){
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Components',
-			'no-robots' => true,
+			'noindex' => true,
 		]);
 	}
 }
