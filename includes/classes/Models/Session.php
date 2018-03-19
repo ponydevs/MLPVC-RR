@@ -5,6 +5,7 @@ namespace App\Models;
 use ActiveRecord\DateTime;
 use App\Cookie;
 use App\CoreUtils;
+use App\JSON;
 use App\Time;
 use Ramsey\Uuid\Uuid;
 
@@ -70,11 +71,11 @@ class Session extends NSModel {
 	/** @var array */
 	private $_data;
 	private function _serializeData(){
-		$this->data = serialize($this->_data);
+		$this->data = JSON::encode($this->_data);
 		$this->save();
 	}
 	private function _unserializeData(){
-		$this->_data = $this->data === null ? [] : unserialize($this->data);
+		$this->_data = $this->data === null ? [] : JSON::decode($this->data);
 	}
 	public function importData(string $data){
 		$this->data = $data;
