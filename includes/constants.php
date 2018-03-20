@@ -81,8 +81,8 @@ define('EPISODE_ID_PATTERN','[sS]0*([0-9])[eE]0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1
 $EPISODE_ID_REGEX = new RegExp('^'.EPISODE_ID_PATTERN);
 define('MOVIE_ID_PATTERN','(?:[mM]ovie)#?0*(\d+)(?:\b|$)');
 $MOVIE_ID_REGEX = new RegExp('^'.MOVIE_ID_PATTERN,'i');
-$EP_TITLE_REGEX = new RegExp('^([A-Za-z\s]+: )?[A-Za-z \'"\\\\\-!\d,&:?.()]{5,35}$','u');
-define('INVERSE_EP_TITLE_PATTERN','[^A-Za-z \'"\\\\\-!\d,&:?.()]');
+$EP_TITLE_REGEX = new RegExp('^([A-Za-z\s]+: )?[ -~]{5,35}$','u');
+define('INVERSE_EP_TITLE_PATTERN','[^ -~]');
 $PREFIX_REGEX = new RegExp('^\s*(^|.*?[^\\\\]):\s*');
 # Colors
 $HEX_COLOR_REGEX = new RegExp('^#?([\dA-Fa-f]{6})$','u');
