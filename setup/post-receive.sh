@@ -4,7 +4,7 @@ read oldrev newrev refname
 echo "Push triggered update to revision $newrev ($refname)"
 
 CMD_CD="cd $(readlink -nf "$PWD/..")"
-CMD_FETCH="git fetch"
+CMD_FETCH="env -i git fetch"
 CMD_COMPOSER="sudo -u www-data composer install --no-dev 2>&1"
 CMD_MIGRATE="sudo -u www-data vendor/bin/phinx migrate"
 CMD_YARN="sudo -u www-data yarn install --production"
