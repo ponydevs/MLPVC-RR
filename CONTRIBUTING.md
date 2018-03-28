@@ -143,16 +143,13 @@ If you plan to contribute, trying to conform to the project's code style should 
 
 ## Push-to-deploy setup
 
-Git `post-receive` hooks are used for deploying to the production server. The hook script can be found in the `setup` folder and needs to be copied to a new bare repository and set to be executable.
+Git `post-receive` hooks are used for deploying to the production server. This requires that a repository is used on the server. The hook script can be found in the `setup` folder. It needs to be copied to `/path/to/repo/.git/hooks/post-receive` and set to be executable. An additional command is required to allow pushing to the same branch on the server.
 
 ```
-$ cd /var
-$ mkdir bare && cd bare
-$ mkdir MLPVC-RR.git && cd MLPVC-RR.git
-$ git init --bare
-$ cp /var/www/MLPVC-RR/setup/post-receive.sh hooks/post-receive
-$ nano hooks/post-receive # Change PROJ_DIR to point to /var/www/MLPVC-RR
+$ cd /path/to/repo
+$ cp setup/post-receive.sh .git/hooks/post-receive
 $ chmod +x hooks/post-receive 
+$ git config receive.denyCurrentBranch updateInstead
 ```
 
 On your local machine, ensure that the SSH configuration is set properly, then add the remote and push changes.
@@ -165,6 +162,6 @@ Host production.vps
 	Port <port>
 	User <user>
 	IdentityFile ~/.ssh/id_rsa
-$ git remote add production production.vps:/var/bare/MLPVC-RR.git
+$ git remote add production production.vps:/var/www/MLPVC-RR/
 $ git push production
 ```
