@@ -377,7 +377,7 @@ HTML;
 	 * @return string
 	 */
 	public function getPendingPlaceholder():string {
-		return $this->isPrivate() ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".(isset($this->last_cleared) ? 'This appearance is currently undergoing maintenance and will be available again shortly &mdash; '.Time::tag($this->last_cleared) :  'This appearance will be finished soon, please check back later &mdash; '.Time::tag($this->added)).'</div>' : '';
+		return $this->isPrivate() ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".($this->last_cleared !== null ? 'This appearance is currently undergoing maintenance and will be available again shortly &mdash; '.Time::tag($this->last_cleared) :  'This appearance will be finished soon, please check back later &mdash; '.Time::tag($this->added)).'</div>' : '';
 	}
 
 	/**

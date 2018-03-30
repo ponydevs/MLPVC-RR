@@ -366,7 +366,7 @@ class AdminController extends Controller {
 
 		CoreUtils::detectUnexpectedJSON();
 
-		$clientid = $_POST['clientid'];
+		$clientid = $_POST['clientid'] ?? null;
 		if (!preg_match(new RegExp('^[a-zA-Z\d_-]+$'), $clientid))
 			Response::fail('Invalid client ID');
 
