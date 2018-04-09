@@ -1975,7 +1975,7 @@
 				}},
 				{text: `Delete color group`, icon: 'trash', click: function(){
 					let $group = $(this).closest('li'),
-						groupID = $group.attr('id').substring(2),
+						groupID = $group.attr('id').replace(/\D/g, ''),
 						groupName = $group.find('.cat').contents().first().text().replace(/:\s?$/,''),
 						title = `Delete color group: ${groupName}`;
 					$.Dialog.confirm(title, `By deleting this color group, all colors within will be removed too.<br>Are you sure?`, function(sure){
