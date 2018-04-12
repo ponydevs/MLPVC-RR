@@ -14,10 +14,7 @@ use App\Permission;
 		<a class='btn link typcn typcn-user' href="/admin/pcg-appearances">PCG Appearances</a>
 	</div>
 
-	<section class="overdue-submissions">
-		<h2><span class="typcn typcn-time"></span>Overdue submissions</h2>
-		<div><?=CoreUtils::getOverdueSubmissionList()?></div>
-	</section>
+<?=CoreUtils::getOverdueSubmissionList()?>
 
 	<section class="mass-approve">
 		<h2><span class="typcn typcn-tick"></span>Bulk approve posts <button id="bulk-how" class="darkblue typcn typcn-info-large">How it works</button></h2>

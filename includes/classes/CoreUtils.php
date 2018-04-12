@@ -1024,7 +1024,7 @@ HTML;
 		}
 	}
 
-	public static function getOverdueSubmissionList(){
+	public static function getOverdueSubmissionList():string {
 		$Query = DB::$instance->query(
 			'SELECT reserved_by, COUNT(*) as cnt FROM (
 				SELECT reserved_by FROM reservations
@@ -1038,9 +1038,11 @@ HTML;
 			ORDER BY cnt DESC;');
 
 		if (empty($Query))
-			return;
+			return '';
 
-		$HTML = '<table>';
+		$HTML = '<section class="overdue-submissions">
+		<h2><span class="typcn typcn-time"></span>Overdue submissions</h2>
+		<div><table>';
 		foreach ($Query as $row){
 			$link = User::find($row['reserved_by'])->toAnchor(User::WITH_AVATAR);
 			$r = min(round($row['cnt']/10*255),255);
@@ -1048,7 +1050,7 @@ HTML;
 
 			$HTML .= "<tr><td>$link</td><td>$count</td></tr>";
 		}
-		return "$HTML</table>";
+		return "$HTML</table></div></section>";
 	}
 
 	/**

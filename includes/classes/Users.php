@@ -89,6 +89,10 @@ class Users {
 		if (!$userExists)
 			$insert['id'] = $ID;
 
+		$clubRole = DeviantArt::getClubRoleByName($userdata['username']);
+		if (!empty($clubRole))
+			$insert['role'] = $clubRole;
+
 		if (!($userExists ? DB::$instance->where('id', $ID)->update('users', $insert) : DB::$instance->insert('users',$insert)))
 			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.DB::$instance->getLastError():''));
 
@@ -257,11 +261,15 @@ HTML;
 		}
 
 		$PersonalColorGuides = $User->pcg_appearances;
-		if ($sameUser || \count($PersonalColorGuides) > 0){
-			$HTML .= "<ul class='personal-cg-appearances'>";
-			foreach ($PersonalColorGuides as $p)
-				$HTML .= '<li>'.$p->toAnchorWithPreview().'</li>';
-			$HTML .= '</ul>';
+		$hasPCG = count($PersonalColorGuides) > 0;
+		if ($sameUser || $hasPCG){
+			$el = $hasPCG ? 'ul' : 'div';
+			$HTML .= "<$el class='personal-cg-appearances'>";
+			if ($hasPCG)
+				foreach ($PersonalColorGuides as $p)
+					$HTML .= '<li>'.$p->toAnchorWithPreview().'</li>';
+			else $HTML .= "You haven't added any appearances to your Personal Color Guide yet.";
+			$HTML .= "</$el>";
 		}
 		$Action = $sameUser ? 'Manage' : 'View';
 		$slothistbtn = $User->getPCGPointHistoryButtonHTML($showPrivate);

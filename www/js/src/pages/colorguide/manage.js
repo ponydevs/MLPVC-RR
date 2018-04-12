@@ -2381,7 +2381,7 @@
 			$.post('/cg/reindex',$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
-				$.Dialog.success(false, this.message, true);
+				$.Dialog.segway(false, this.message);
 			}));
 		});
 	});

@@ -448,8 +448,17 @@ class DeviantArt {
 	 * @return null|string
 	 */
 	public static function getClubRole(User $user):?string {
+		return self::getClubRoleByName($user->name);
+	}
+
+	/**
+	 * @param string $username
+	 *
+	 * @return null|string
+	 */
+	public static function getClubRoleByName(string $username):?string {
 		$usernames = self::getMemberList();
-		return $usernames[$user->name] ?? null;
+		return $usernames[$username] ?? null;
 	}
 
 	public static function favmeHttpsUrl(string $favme_id):string {

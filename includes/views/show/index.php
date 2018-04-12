@@ -11,14 +11,11 @@ global $EP_TITLE_REGEX; ?>
 <div id="content">
 	<div class="sidebyside">
 		<h1>Episodes</h1>
-<?  if (empty($Episodes))
-		echo '<p>There are no episodes stored in the database</p>';
-	if (Permission::sufficient('staff')) { ?>
+<?  if (Permission::sufficient('staff')) { ?>
 		<div class="actions">
 			<button id="add-episode" class="green typcn typcn-plus">Add Episode</button>
 		</div>
-<?      echo CoreUtils::exportVars(['EP_TITLE_REGEX' => $EP_TITLE_REGEX]);
-	}
+<?  }
 	echo $EpisodesPagination;
 	if (!empty($Episodes) || (empty($Episodes) && Permission::sufficient('staff'))){ ?>
 		<table id="episodes">
@@ -36,9 +33,7 @@ global $EP_TITLE_REGEX; ?>
 	</div>
 	<div class="sidebyside">
 		<h1>Movies &amp; Shorts</h1>
-<?  if (empty($Movies))
-		echo '<p>There are no movies stored in the database</p>';
-	if (Permission::sufficient('staff')) { ?>
+<?  if (Permission::sufficient('staff')) { ?>
 		<div class="actions">
 			<button id="add-movie" class="green typcn typcn-plus">Add Movie</button>
 		</div>
@@ -58,3 +53,6 @@ global $EP_TITLE_REGEX; ?>
 	echo $MoviesPagination; ?>
 	</div>
 </div>
+<?php
+	if (Permission::sufficient('staff'))
+		echo CoreUtils::exportVars(['EP_TITLE_REGEX' => $EP_TITLE_REGEX]);
