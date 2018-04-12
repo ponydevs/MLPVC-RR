@@ -86,7 +86,7 @@ class AuthController extends Controller {
 			$val = Auth::$user->id;
 			$username = Users::validateName('name');
 			if ($username !== null){
-				if ($unlink || !Permission::sufficient('staff'))
+				if (Permission::insufficient('staff'))
 					Response::fail();
 				/** @var $TargetUser User */
 				$TargetUser = Users::get($username, 'name');
