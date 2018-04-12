@@ -249,11 +249,14 @@ class DeviantArt {
 				Cookie::delete('access', Cookie::HTTPONLY);
 			}
 			$response_body = $e->getResponseBody();
-			CoreUtils::error_log(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
 			try {
 				if (\is_array($response_body))
 					$data = $response_body;
 				else $data = JSON::decode($response_body);
+
+				if ($data['error_description'] === "User has revoked access.")
+					return null;
+
 				$_GET['error'] = rawurlencode($data['error']);
 				$_GET['error_description'] = !empty($data['error_description']) ? $data['error_description'] : (self::OAUTH_RESPONSE[$data['error']] ?? '');
 			}
@@ -261,6 +264,7 @@ class DeviantArt {
 				$_GET['error'] = 'server_error';
 				$_GET['error_description'] = $e->getMessage();
 			}
+			CoreUtils::error_log(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
 			return null;
 		}
 

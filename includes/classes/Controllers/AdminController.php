@@ -11,7 +11,7 @@ use App\JSON;
 use App\Logs;
 use App\Models\Appearance;
 use App\Models\DiscordMember;
-use App\Models\KnownIP;
+use App\Models\Logs\Log;
 use App\Models\UsefulLink;
 use App\Models\User;
 use App\Models\UserPref;
@@ -135,6 +135,7 @@ class AdminController extends Controller {
 		foreach ($whereArgs as $arg)
 			DB::$instance->where(...$arg);
 		$LogItems = DB::$instance
+			->setModel(Log::class)
 			->orderBy('timestamp','DESC')
 			->orderBy('entryid','DESC')
 			->get('log', $Pagination->getLimit());
@@ -383,43 +384,6 @@ class AdminController extends Controller {
 		}
 
 		Response::done();
-	}
-
-	public function ip($params){
-		$ip = $params['ip'];
-
-		try {
-			$ip = (string) IP::parse($ip);
-		}
-		catch(\Throwable $e){
-			CoreUtils::notFound();
-		}
-
-		if (\in_array($ip, Logs::LOCALHOST_IPS, true))
-			$ip = 'localhost';
-
-		CoreUtils::fixPath("/admin/ip/$ip");
-
-		$knownIPs = KnownIP::find_all_by_ip($ip);
-		$Users = [];
-		if (\count($knownIPs) > 0){
-			foreach ($knownIPs as $knownIP){
-				$user = $knownIP->user;
-				if (!empty($user))
-					$Users[] = $user;
-			}
-		}
-
-		CoreUtils::loadPage(__METHOD__, [
-			'css' => [true],
-			'title' => "$ip - IP Address - Admin Area",
-			'import' => [
-				'KnownIPs' => $knownIPs,
-				'ip' => $ip,
-				'Users' => $Users,
-				'nav_adminip' => true,
-			]
-		]);
 	}
 
 	private function _setupPcgAppearances():\PostgresDb {

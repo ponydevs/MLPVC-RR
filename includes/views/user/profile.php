@@ -55,7 +55,6 @@ if ($sameUser || $isStaff){
 <?php
 	}
 }
-echo $User->getKnownIPsSection();
 echo Users::getContributionsHTML($User, $sameUser);
 echo Users::getPersonalColorGuideHTML($User, $sameUser);
 
@@ -161,9 +160,9 @@ if ($isUserMember)
 	}
 	if ($sameUser){ ?>
 		<section>
-			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['private']:''?>Unlink DeviantArt account</h2>
-			<p>All this really does is that the next time you want to log in, you'll be asked to link your account again. Normally this would prevent the site from reading any resources you've given access to when you linked your account, but since we only ask for the bare minimum permissions required to verify your identity there's not much for us to access. This also won't remove any of your data from our site, that's still kept locally.</p>
-	        <button id="unlink" class="orange typcn typcn-user-delete">Unlink Account</button>
+			<h2><?=$sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['private']:''?>Revoke access to your account data</h2>
+			<p>We have no access to any information that isn't publicly available on your DeviantArt profile, except for your user ID, which is used to keep track of which user you are even if you change your name. Nonetheless, if you no longer want to let this site verify your identity you may use the link below to visit your authorized apps on DeviantArt and revoke access to any you wish, including this website. After you sign out or your current token expires you will have to re-allow the application access to your basic user information to continue using the site. Keep in mind that the site is not notified when you do this.</p>
+	        <a href="https://www.deviantart.com/settings/applications" class="btn link typcn typcn-arrow-forward">Visit authorized apps page</a>
 	    </section>
 <?  } ?></div>
 <?php

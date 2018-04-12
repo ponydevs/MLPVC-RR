@@ -81,16 +81,6 @@ class AuthController extends Controller {
 			Response::success("You've already signed out");
 		CSRFProtection::protect();
 
-		$unlink = isset($_REQUEST['unlink']);
-		if ($unlink){
-			try {
-				DeviantArt::request('https://www.deviantart.com/oauth2/revoke', null, ['token' => Auth::$session->access]);
-			}
-			catch (CURLRequestException $e){
-				Response::fail("Could not revoke the site's access: {$e->getMessage()} (HTTP {$e->getCode()})");
-			}
-		}
-
 		if (isset($_REQUEST['everywhere'])){
 			$col = 'user_id';
 			$val = Auth::$user->id;

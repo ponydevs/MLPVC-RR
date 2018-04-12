@@ -2,7 +2,7 @@
 use App\Logs;
 /** @var $heading string */
 /** @var $Pagination App\Pagination */
-/** @var $LogItems array */ ?>
+/** @var $LogItems \App\Models\Logs\Log[] */ ?>
 <div id="content">
 	<h1><?=$heading?></h1>
 <?php

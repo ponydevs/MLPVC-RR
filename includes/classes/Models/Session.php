@@ -40,8 +40,6 @@ class Session extends NSModel {
 	public static $attr_protected = ['data'];
 
 	public static $before_create = ['generate_id'];
-	public static $after_create = ['make_known_ip'];
-	public static $after_update = ['make_known_ip'];
 
 	public function get_expired(){
 		return $this->expires->getTimestamp() < time();
@@ -135,11 +133,6 @@ class Session extends NSModel {
 			return '';
 
 		return ' <span id="session-update-indicator" title="Updating your session"></span>';
-	}
-
-	public function make_known_ip(){
-		if ($this->user_id !== null)
-			KnownIP::record(null, $this->user_id, $this->last_visit);
 	}
 
 	public function generate_id(){

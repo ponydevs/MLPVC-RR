@@ -22,7 +22,6 @@ $router->addMatchTypes([
 	'user' => 'u(ser)?',
 	'v' => '(v|appearance)',
 	'uuid' => '([0-9a-fA-F]{32}|[0-9a-fA-F-]{36})',
-	'ip' => '([\d.]{7,15}|[\da-fA-F:]{3,46})',
 ]);
 
 // Pages
@@ -36,7 +35,6 @@ $router->map('GET', '/admin/logs/[i]?',                'AdminController#log');
 $router->map('GET', '/admin/discord',                  'AdminController#discord');
 $router->map('GET', '/admin/usefullinks',              'AdminController#usefulLinks');
 $router->map('GET', '/admin/wsdiag',                   'AdminController#wsdiag');
-$router->map('GET', '/admin/ip/[ip:ip]',               'AdminController#ip');
 $router->map('GET', '/admin/pcg-appearances/[i]?',     'AdminController#pcgAppearances');
 $router->map('GET', '/blending',                       'ColorGuideController#blending');
 $router->map('GET', '/components',                     'ComponentsController#index');
@@ -178,7 +176,6 @@ $router->map('POST', '/user/setrole/[un:name]',              'UserController#set
 $router->map('POST', '/user/setdevrolemask',                 'UserController#setDevRoleMask');
 $router->map('POST', '/user/awaiting-approval/[un:name]',    'UserController#awaitingApproval');
 $router->map('POST', '/user/avatar-wrap/[un:name]',          'UserController#avatarWrap');
-$router->map('POST', '/user/known-ips/[un:name]',            'UserController#knownIps');
 $router->map('POST', '/user/verify-giftable-slots',          'PersonalGuideController#verifyGiftableSlots');
 $router->map('POST', '/user/gift-pcg-slots/[un:name]',       'PersonalGuideController#giftSlots');
 $router->map('POST', '/user/pending-gifts/[un:name]',        'PersonalGuideController#getPendingSlotGifts');

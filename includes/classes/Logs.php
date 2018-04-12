@@ -7,7 +7,6 @@ use App\Models\Appearance;
 use App\Models\ColorGroup;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
-use App\Models\KnownIP;
 use App\Models\Logs\Log;
 use App\Models\PCGSlotGift;
 use App\Models\Request;
@@ -369,15 +368,6 @@ class Logs {
 				$details[] = ['Browser', $browser === null ? 'Unknown' : "{$browser['browser_name']} {$browser['browser_ver']} on {$browser['platform']}"];
 				if (!empty($data['user_agent']))
 					$details[] = ['User Agent', $data['user_agent']];
-				$knownIps = KnownIP::find_all_by_ip($MainEntry['ip']);
-				if (!empty($knownIps)){
-					$potUsers = [];
-					foreach ($knownIps as $k){
-						if ($k->user_id !== null)
-							$potUsers[] = $k->user->toAnchor();
-					}
-					$details[] = ['Potential users', implode(', ',$potUsers)];
-				}
 			break;
 			default:
 				$details[] = ["<span class=\"typcn typcn-warning\"></span> Couldn't process details", 'No data processor defined for this entry type', self::KEYCOLOR_ERROR];
@@ -468,15 +458,15 @@ class Logs {
 	/**
 	 * Render log page <tbody> content
 	 *
-	 * @param array $LogItems
+	 * @param Log[] $LogItems
 	 *
 	 * @return string
 	 */
 	public static function getTbody($LogItems):string {
 		$HTML = '';
 		if (\count($LogItems) > 0) foreach ($LogItems as $item){
-			if (!empty($item['initiator'])){
-				$inituser = User::find($item['initiator']);
+			if (!empty($item->initiator)){
+				$inituser = $item->actor;
 				if (empty($inituser))
 					$inituser = 'Deleted user';
 				else {
@@ -487,21 +477,21 @@ class Logs {
 					$inituser = "<a class='search-user typcn typcn-zoom$me_class' title='Search for all entries by $me_by'></a> <a class='typcn typcn-user' href='{$inituser->toURL()}' title='Visit profile'></a> <span class='name'>$strongName</span>";
 				}
 			}
-			else $inituser = '<a class="search-user typcn typcn-zoom" title="Search for all entries by this user"></a> <spac class="name">Web server</spac>';
+			else $inituser = '<a class="search-user typcn typcn-zoom" title="Search for all entries by the server"></a> <spac class="name">Web server</spac>';
 
-			$ip = \in_array(strtolower($item['ip']), self::LOCALHOST_IPS, true) ? 'localhost' : $item['ip'];
-			$ownIP = $item['ip'] === $_SERVER['REMOTE_ADDR'];
+			$ip = \in_array(strtolower($item->ip), self::LOCALHOST_IPS, true) ? 'localhost' : $item->ip;
+			$ownIP = $item->ip === $_SERVER['REMOTE_ADDR'];
 			$strongIP = $ownIP ? "<strong title='Your current IP'>$ip</strong>" : $ip;
-			$ip = "<a class='typcn typcn-zoom search-ip".($ownIP?' your-ip':'')."' title='Search for all entries from this IP'></a> <a  class='typcn typcn-info-large' href='/admin/ip/$ip' title='View users associated with this IP'></a> <span class='address'>$strongIP</span>";
+			$ip = "<a class='typcn typcn-zoom search-ip".($ownIP?' your-ip':'')."' title='Search for all entries from this IP'></a> <span class='address'>$strongIP</span>";
 
-			$event = self::$LOG_DESCRIPTION[$item['reftype']] ?? $item['reftype'];
-			if (isset($item['refid']))
+			$event = self::$LOG_DESCRIPTION[$item->reftype] ?? $item->reftype;
+			if (isset($item->refid))
 				$event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
-			$ts = Time::tag($item['timestamp'], Time::TAG_EXTENDED);
+			$ts = Time::tag($item->timestamp, Time::TAG_EXTENDED);
 
 			$HTML .= <<<HTML
 		<tr>
-			<td class='entryid'>{$item['entryid']}</td>
+			<td class='entryid'>{$item->entryid}</td>
 			<td class='timestamp'>$ts<span class="dynt-el"></span></td>
 			<td class='ip'>$inituser<br>$ip</td>
 			<td class='reftype'>$event</td>

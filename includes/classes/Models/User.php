@@ -36,7 +36,6 @@ use App\Users;
  * @property DiscordMember    $discord_member   (Via relations)
  * @property Log[]            $logs             (Via relations)
  * @property DANameChange[]   $name_changes     (Via relations)
- * @property KnownIP[]        $known_ips        (Via relations)
  * @property PCGSlotHistory[] $pcg_slot_history (Via relations)
  * @property string           $role_label       (Via magic method)
  * @property string           $avatar_provider  (Via magic method)
@@ -53,7 +52,6 @@ class User extends AbstractUser implements LinkableInterface {
 		['pcg_appearances', 'class' => 'Appearance', 'foreign_key' => 'owner_id'],
 		['logs', 'class' => 'Logs\Log', 'foreign_key' => 'initiator'],
 		['name_changes', 'class' => 'Logs\DANameChange', 'order' => 'entryid asc'],
-		['known_ips', 'class' => 'KnownIP', 'order' => 'last_seen desc'],
 		['pcg_slot_history', 'class' => 'PCGSlotHistory', 'order' => 'created desc, id desc'],
 	];
 	public static $has_one = [
@@ -143,37 +141,6 @@ class User extends AbstractUser implements LinkableInterface {
 		if (empty($vectorapp))
 			$vectorapp = $this->getVectorAppClassName();
 		return "<div class='avatar-wrap provider-{$this->avatar_provider}$vectorapp' data-for='{$this->name}'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
-	}
-
-	public function getKnownIPsSection(bool $showAll = false, ?bool $sameUser = null):string {
-		if (Permission::insufficient('staff'))
-			return '';
-
-		$KnownIPs = $this->known_ips;
-		if (empty($KnownIPs))
-			return '';
-
-		$IPs = [];
-		foreach ($KnownIPs as $ip){
-			if ($showAll || $ip->getFreshness() >= 0.9)
-				$IPs[] = $ip->toAnchor();
-		}
-		if (empty($IPs)){
-			$IPs[] = '<em>None</em>';
-		}
-		if ($sameUser === null)
-			$sameUser = Auth::$signed_in && Auth::$user->id === $this->id;
-		$privacy = $sameUser ? Users::PROFILE_SECTION_PRIVACY_LEVEL['staffOnly']:'';
-		$showAllBtn = $showAll ? '' : '<button class="btn darkblue typcn typcn-eye">Show all</button>';
-		$list = implode(', ', $IPs);
-		$which = $showAll ? 'Known' : 'Recently used';
-		return <<<HTML
-	<section class="known-ips">
-		<h2>{$privacy}{$which} IP addresses</h2>
-		<div>$list</div>
-		$showAllBtn
-	</section>
-HTML;
 	}
 
 	public function getVectorAppClassName():string {
