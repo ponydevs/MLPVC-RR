@@ -105,9 +105,7 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 	if (isset($customCSS)){
 		foreach ($customCSS as $css)
 			echo "\t<link rel='stylesheet' href='$css'>\n";
-	}
-	if (!empty(GA_TRACKING_CODE) && !$fatalErrorPage && Permission::insufficient('developer'))
-		require INCPATH.'views/_ga.php'; ?>
+	} ?>
 </head>
 <body>
 	<header>

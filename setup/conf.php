@@ -13,9 +13,6 @@ define('LOG_PATH', 'error.log');
 define('DA_CLIENT', '');
 define('DA_SECRET', '');
 
-// Google Analytics Tracking Code \\
-define('GA_TRACKING_CODE', '');
-
 // Google API Key \\
 define('GOOGLE_API_KEY', '');
 
