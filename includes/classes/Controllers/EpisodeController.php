@@ -385,7 +385,7 @@ class EpisodeController extends Controller {
 		CSRFProtection::protect();
 		$this->_getEpisode($params);
 
-		foreach (['yt', 'dm'] as $provider){
+		foreach (['yt', 'dm', 'sv'] as $provider){
 			for ($part = 1; $part <= ($this->_episode->twoparter?2:1); $part++){
 				$set = null;
 				$PostKey = "{$provider}_$part";

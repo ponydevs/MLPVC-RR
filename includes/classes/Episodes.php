@@ -184,7 +184,7 @@ class Episodes {
 			foreach ($EpVideos as $v)
 				$Videos[$v->provider][$v->part] = $v;
 			// YouTube embed preferred
-			$Videos = !empty($Videos['yt']) ? $Videos['yt'] : $Videos['dm'];
+			$Videos = !empty($Videos['yt']) ? $Videos['yt'] : ($Videos['dm'] ?? $Videos['sv']);
 			/** @var $Videos EpisodeVideo[] */
 
 			$Parts = \count($Videos);
@@ -201,10 +201,12 @@ class Episodes {
 		VIDEO_PROVIDER_NAMES = [
 			'yt' => 'YouTube',
 			'dm' => 'Dailymotion',
+			'sv' => 'sendvid'
 		],
 		PROVIDER_BTN_CLASSES = [
 			'yt' => 'red typcn-social-youtube',
 			'dm' => 'darkblue typcn-video',
+			'sv' => 'yellow typcn-video'
 		];
 
 	/**

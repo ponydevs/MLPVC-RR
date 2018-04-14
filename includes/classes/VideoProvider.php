@@ -15,7 +15,8 @@ class VideoProvider {
 	}
 	private static $providerRegexes = [
 		'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
-		'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([a-z\d]+)(?:_|$)' => 'dm'
+		'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([a-z\d]+)(?:_|$)' => 'dm',
+		'sendvid\.com/(?:embed/)?([a-z]+)$' => 'sv',
 	];
 
 	/**
@@ -52,6 +53,9 @@ class VideoProvider {
 			break;
 			case 'dm':
 				$url = $urlOnly ? "http://dai.ly/$video->id" : "https://www.dailymotion.com/embed/video/$video->id?related=0&quality=1080&highlight=2C73B1";
+			break;
+			case 'sv':
+				$url = $urlOnly ? "https://sendvid.com/$video->id" : "https://sendvid.com/embed/$video->id";
 			break;
 			default:
 				throw new \RuntimeException("Unrecognized provider: {$video->provider}");
