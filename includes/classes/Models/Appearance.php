@@ -553,7 +553,7 @@ HTML;
 				$SortedColorGroups[$cg->id] = $cg;
 
 			$AllColors = CGUtils::getColorsForEach($ColorGroups);
-			if (\count($AllColors) > 0){
+			if ($AllColors !== null && \count($AllColors) > 0){
 				foreach ($AllColors as $cg){
 					/** @var $cg Color[] */
 					foreach ($cg as $c)

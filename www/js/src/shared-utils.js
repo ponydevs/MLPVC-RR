@@ -426,7 +426,47 @@
 	// Copy any text to clipboard
 	// Must be called from within an event handler
 	let $notif;
+	const copyDone = (success, e) => {
+		if (typeof $notif === 'undefined' || e){
+			if (typeof $notif === 'undefined')
+				$notif = $.mk('span')
+					.attr({
+						id: 'copy-notify',
+						'class': ! success ? 'fail' : undefined,
+					})
+					.html(`<span class="typcn typcn-clipboard"></span> <span class="typcn typcn-${success?'tick':'cancel'}"></span>`)
+					.appendTo($body);
+			if (e){
+				let w = $notif.outerWidth(),
+					h = $notif.outerHeight(),
+					top = e.clientY - (h/2);
+				return $notif.stop().css({
+					top: top,
+					left: (e.clientX - (w/2)),
+					bottom: 'initial',
+					right: 'initial',
+					opacity: 1,
+				}).animate({top: top-20, opacity: 0}, 1000, function(){
+					$(this).remove();
+					$notif = undefined;
+				});
+			}
+			$notif.fadeTo('fast',1);
+		}
+		else $notif.stop().css('opacity',1);
+		$notif.delay(success ? 300 : 1000).fadeTo('fast',0,function(){
+			$(this).remove();
+			$notif = undefined;
+		});
+	};
 	$.copy = (text, e) => {
+		if (typeof navigator.clipboard !== 'undefined'){
+			navigator.clipboard.writeText(text)
+				.then(res => { copyDone(true, e) })
+				.catch(res => { copyDone(false, e) });
+			return;
+		}
+
 		if (!document.queryCommandSupported('copy')){
 			prompt('Copy with Ctrl+C, close with Enter', text);
 			return true;
@@ -455,37 +495,7 @@
 
 		setTimeout(function(){
 			$helper.remove();
-			if (typeof $notif === 'undefined' || e){
-				if (typeof $notif === 'undefined')
-					$notif = $.mk('span')
-						.attr({
-							id: 'copy-notify',
-							'class': ! success ? 'fail' : undefined,
-						})
-						.html(`<span class="typcn typcn-clipboard fa fa-clipboard"></span> <span class="typcn typcn-${success?'tick':'cancel'} fa fa-${success?'check':'times'}"></span>`)
-						.appendTo($body);
-				if (e){
-					let w = $notif.outerWidth(),
-						h = $notif.outerHeight(),
-						top = e.clientY - (h/2);
-					return $notif.stop().css({
-						top: top,
-						left: (e.clientX - (w/2)),
-						bottom: 'initial',
-						right: 'initial',
-						opacity: 1,
-					}).animate({top: top-20, opacity: 0}, 1000, function(){
-						$(this).remove();
-						$notif = undefined;
-					});
-				}
-				$notif.fadeTo('fast',1);
-			}
-			else $notif.stop().css('opacity',1);
-			$notif.delay(success ? 300 : 1000).fadeTo('fast',0,function(){
-				$(this).remove();
-				$notif = undefined;
-			});
+			copyDone(success, e);
 		}, 1);
 	};
 

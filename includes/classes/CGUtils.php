@@ -1012,7 +1012,7 @@ GPL;
 	 *
 	 * @return Color[][]
 	 */
-	public static function getColorsForEach($Groups){
+	public static function getColorsForEach($Groups):?array {
 		if (empty($Groups)){
 			return null;
 		}
