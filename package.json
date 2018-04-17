@@ -11,7 +11,7 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "chalk": "^2.0.0",
+    "chalk": "^2.4.0",
     "gulp": "^4.0.0",
     "gulp-autoprefixer": "^4.0.0",
     "gulp-babel": "^7.0.0",
