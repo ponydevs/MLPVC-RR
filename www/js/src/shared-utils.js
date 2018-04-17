@@ -462,8 +462,8 @@
 	$.copy = (text, e) => {
 		if (typeof navigator.clipboard !== 'undefined'){
 			navigator.clipboard.writeText(text)
-				.then(res => { copyDone(true, e) })
-				.catch(res => { copyDone(false, e) });
+				.then(() => { copyDone(true, e) })
+				.catch(() => { copyDone(false, e) });
 			return;
 		}
 
