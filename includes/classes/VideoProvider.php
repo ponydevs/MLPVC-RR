@@ -16,7 +16,7 @@ class VideoProvider {
 	private static $providerRegexes = [
 		'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
 		'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([a-z\d]+)(?:_|$)' => 'dm',
-		'sendvid\.com/(?:embed/)?([a-z]+)$' => 'sv',
+		'sendvid\.com/(?:embed/)?([a-z\d]+)$' => 'sv',
 	];
 
 	/**
