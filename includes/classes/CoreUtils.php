@@ -46,8 +46,10 @@ class CoreUtils {
 				$merged[$key] = $item;
 			$fix_query_arr = [];
 			foreach ($merged as $key => $item){
-				if ($item === null || $item !== self::FIXPATH_EMPTY)
-					$fix_query_arr[] = $key.(!empty($item)?'='.urlencode($item):'');
+				if ($item !== null || $item === self::FIXPATH_EMPTY)
+					continue;
+
+				$fix_query_arr[] = http_build_query([$key => $item ?? '']);
 			}
 			$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
 		}
