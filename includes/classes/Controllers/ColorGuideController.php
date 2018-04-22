@@ -319,7 +319,7 @@ class ColorGuideController extends Controller {
 				Response::done([ 'goto' => $Ponies[0]->toURL() ]);
 			}
 			if ($found)
-				HTTP::redirect($Ponies[0]->toURL());
+				HTTP::tempRedirect($Ponies[0]->toURL());
 		}
 
 		$path = $Pagination->toURI();

@@ -113,7 +113,7 @@ class Episodes {
 
 			if ($EpData['season'] === 0){
 				CoreUtils::error_log("Attempted visit to $force from ".(!empty($_SERVER['HTTP_REFERER'])? $_SERVER['HTTP_REFERER']:'[unknown referrer]').', redirecting to /movie page');
-				HTTP::redirect('/movie/'.$EpData['episode']);
+				HTTP::tempRedirect('/movie/'.$EpData['episode']);
 			}
 
 			$CurrentEpisode = empty($EpData)

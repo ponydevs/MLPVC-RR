@@ -123,7 +123,7 @@ class UserController extends Controller {
 		if (empty($User))
 			CoreUtils::notFound();
 
-		HTTP::redirect('/@'.$User->name);
+		HTTP::permRedirect('/@'.$User->name);
 	}
 
 	public function suggestion(){

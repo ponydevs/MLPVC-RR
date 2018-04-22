@@ -5,10 +5,10 @@ use App\HTTP;
 
 class EQGController extends Controller {
 	public function redirectInt($params){
-		HTTP::redirect("/movie/{$params['id']}");
+		HTTP::tempRedirect("/movie/{$params['id']}");
 	}
 
 	public function redirectStr($params){
-		HTTP::redirect("/movie/equestria-girls-{$params['id']}");
+		HTTP::tempRedirect("/movie/equestria-girls-{$params['id']}");
 	}
 }

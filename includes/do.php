@@ -10,7 +10,7 @@
 	$permRedirectPattern = new RegExp('^\s*(.*?)\.php(\?.*)?$','i');
 	$requri = CoreUtils::trim($_SERVER['REQUEST_URI']);
 	if (preg_match($permRedirectPattern,$requri))
-		HTTP::redirect(preg_replace($permRedirectPattern, '$1$2', $requri));
+		HTTP::tempRedirect(preg_replace($permRedirectPattern, '$1$2', $requri));
 	$decoded_uri = CoreUtils::trim(urldecode($requri));
 	if (!CoreUtils::isURLSafe($decoded_uri, $matches)){
 		Users::authenticate();

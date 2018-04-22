@@ -162,10 +162,10 @@ class HTTP {
 	 * @param string $url  Redirection target URL
 	 * @param int    $http HTTP status code
 	 */
-	public static function redirect(string $url = '/', int $http = 301){
+	private static function _redirect(string $url = '/', int $http){
 		header("Location: $url", true, $http);
 		$urlenc = CoreUtils::aposEncode($url);
-		die("HTTP $http - Click <a href='$urlenc'>here</a> if you aren't redirected.");
+		die("<h1>HTTP $http ".self::$STATUS_CODES[$code]."</h1><p>Click <a href='$urlenc'>here</a> if you aren't redirected.</p>");
 	}
 
 	/**
@@ -174,7 +174,16 @@ class HTTP {
 	 * @param string $url Redirection target URL
 	 */
 	public static function tempRedirect(string $url){
-		self::redirect($url, 302);
+		self::_redirect($url, 302);
+	}
+
+	/**
+	 * Redirection
+	 *
+	 * @param string $url Redirection target URL
+	 */
+	public static function permRedirect(string $url){
+		self::_redirect($url, 301);
 	}
 
 	/**

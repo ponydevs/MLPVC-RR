@@ -111,8 +111,11 @@ class AuthController extends Controller {
 	}
 
 	private function _error(?string $err, ?string $errdesc = null){
+		if ($err === 'unauthorized_client' && empty($_GET['code']))
+			$this->_redirectBack();
+
 		if ($err !== 'time_out')
-			CoreUtils::error_log("DeviantArt authentication error ($err): $errdesc");
+			CoreUtils::error_log(rtrim("DeviantArt authentication error ($err): $errdesc",': '));
 
 		HTTP::statusCode(500);
 		CoreUtils::loadPage('ErrorController::auth', [
