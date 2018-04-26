@@ -34,27 +34,31 @@ class CoreUtils {
 
 		$_split = explode('?', $fix_uri, 2);
 		$fix_path = $_split[0];
-		$fix_query = empty($_split[1]) ? '' : "?{$_split[1]}";
+		$fix_query = self::mergeQuery($query, empty($_split[1]) ? '' : "?{$_split[1]}");
 
-		if (empty($fix_query))
-			$fix_query = $query;
-		else {
-			$query_assoc = self::queryStringAssoc($query);
-			$fix_query_assoc = self::queryStringAssoc($fix_query);
-			$merged = $query_assoc;
-			foreach ($fix_query_assoc as $key => $item)
-				$merged[$key] = $item;
-			$fix_query_arr = [];
-			foreach ($merged as $key => $item){
-				if ($item !== null || $item === self::FIXPATH_EMPTY)
-					continue;
-
-				$fix_query_arr[] = http_build_query([$key => $item ?? '']);
-			}
-			$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
-		}
 		if ($path !== $fix_path || $query !== $fix_query)
 			HTTP::tempRedirect("$fix_path$fix_query");
+	}
+
+	public static function mergeQuery(string $query, string $fix_query){
+		if (empty($fix_query))
+			return $query;
+
+		$query_assoc = self::queryStringAssoc($query);
+		$fix_query_assoc = self::queryStringAssoc($fix_query);
+		$merged = $query_assoc;
+		foreach ($fix_query_assoc as $key => $item)
+			$merged[$key] = $item;
+		$fix_query_arr = [];
+		foreach ($merged as $key => $item){
+			if ($item === null || $item === self::FIXPATH_EMPTY)
+				continue;
+
+			$fix_query_arr[] = rtrim(http_build_query([$key => $item ?? '']), '=');
+		}
+		$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
+
+		return $fix_query;
 	}
 
 	/**

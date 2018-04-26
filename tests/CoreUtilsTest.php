@@ -194,4 +194,15 @@ class CoreUtilsTest extends TestCase {
 		$hash = CoreUtils::sha256($data);
 		self::assertEquals('fcb0c71edf2df18c7d39accbbb46083d511ea091d7ec56727a6a9931d40f46d8',$hash);
 	}
+
+	public function testMergeQuery(){
+		$result = CoreUtils::mergeQuery('','?t=12');
+		self::assertEquals('?t=12',$result);
+		$result = CoreUtils::mergeQuery('?a=b','?a=c');
+		self::assertEquals('?a=c',$result);
+		$result = CoreUtils::mergeQuery('?a=b&c=d','?c=e');
+		self::assertEquals('?a=b&c=e',$result);
+		$result = CoreUtils::mergeQuery('?test&a=b','?a=c');
+		self::assertEquals('?test&a=c',$result);
+	}
 }
