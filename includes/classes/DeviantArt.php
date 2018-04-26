@@ -243,6 +243,10 @@ class DeviantArt {
 				$accessToken = $provider->getAccessToken('refresh_token', ['refresh_token' => $code]);
 			else $accessToken = $provider->getAccessToken('authorization_code', ['code' => $code, 'scope' => ['user','browse']]);
 		}
+		catch (TypeError $e){
+			CoreUtils::error_log('Caught Exception '.\get_class($e).': '.$e->getMessage()."\nTrace:\n".var_export($e->getTrace(), true));
+			trigger_error('Authorization failed', E_USER_ERROR);
+		}
 		catch (IdentityProviderException $e){
 			if (Cookie::exists('access')){
 				DB::$instance->where('token', CoreUtils::sha256(Cookie::get('access')))->delete('sessions');
