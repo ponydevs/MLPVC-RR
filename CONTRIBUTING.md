@@ -148,7 +148,7 @@ Git `post-receive` hooks are used for deploying to the production server. This r
 ```
 $ cd /path/to/repo
 $ cp setup/post-receive.sh .git/hooks/post-receive
-$ chmod +x hooks/post-receive 
+$ chmod +x .git/hooks/post-receive 
 $ git config receive.denyCurrentBranch updateInstead
 ```
 
