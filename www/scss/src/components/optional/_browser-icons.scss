@@ -30,9 +30,6 @@
 	&.browser-vivaldi#{$before} {
 		background-image: url(/img/browser/vivaldi.png);
 	}
-	&.browser-palemoon#{$before} {
-		background-image: url(/img/browser/palemoon.png);
-	}
 	&.browser-maxthon#{$before} {
 		background-image: url(/img/browser/maxthon.png);
 	}
@@ -57,7 +54,6 @@
 	&.browser-opera, &.browser-operamini,
 	&.browser-safari,
 	&.browser-vivaldi,
-	&.browser-palemoon,
 	&.browser-maxthon,
 	&.browser-firefoxfocus,
 	&.browser-yandexbrowser,
