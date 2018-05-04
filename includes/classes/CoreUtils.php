@@ -173,6 +173,19 @@ class CoreUtils {
 	}
 
 	/**
+	 * Display a 405 page
+	 */
+	public static function notAllowed(){
+		HTTP::statusCode(405);
+
+		Users::authenticate();
+
+		self::loadPage('ErrorController::notAllowed', [
+			'title' => '405',
+		]);
+	}
+
+	/**
 	 * Page loading function
 	 * ---------------------
 	 * $options = array(
@@ -1354,5 +1367,10 @@ HTML;
 	</div>
 </div>
 HTML;
+	}
+
+	public static function callScript(string $name, array $args = [], &$output = null){
+		$arguments = array_map('escapeshellarg', $args);
+		return exec('nohup /usr/bin/php -f '.INCPATH."scripts/$name.php ".implode(' ', $arguments).' > /dev/null 2>&1 &', $output);
 	}
 }

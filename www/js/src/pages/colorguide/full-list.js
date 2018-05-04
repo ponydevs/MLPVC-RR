@@ -6,7 +6,7 @@ $(function(){
 		$fullList = $('#full-list'),
 		$ReorderBtn = $('#guide-reorder'),
 		$ReorderCancelBtn = $('#guide-reorder-cancel'),
-		EQG = window.EQG,
+		EQG = !!window.EQG,
 		EQGRq = EQG?'?eqg':'';
 	$sortBy.on('change',function(){
 		let baseurl = $sortBy.data('baseurl'),
@@ -83,7 +83,11 @@ $(function(){
 					list.push($(this).children().attr('data-href').split('/').pop().replace(/^(\d+)\D.*$/,'$1'));
 				});
 
-				$.post('/cg/full/reorder'+EQGRq, {list:list.join(',')}, $.mkAjaxHandler(function(){
+				const data = {list:list.join(',')};
+				if (EQG)
+					data.eqg = true;
+
+				$.post('/api/cg/full/reorder', data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$fullList.removeClass('sorting').html(this.html);

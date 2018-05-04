@@ -55,6 +55,9 @@ class ColorGuideController extends Controller {
 
 		if (POST_REQUEST)
 			CSRFProtection::protect();
+
+		$this->_appearancePage = isset($_POST['APPEARANCE_PAGE']);
+		$this->_personalGuide = isset($_POST['PERSONAL_GUIDE']);
 	}
 
 	/** @var bool|int|null */
@@ -68,20 +71,19 @@ class ColorGuideController extends Controller {
 	}
 	protected function _initialize($params, bool $setPath = true){
 		$this->_guide = strtolower($params['guide'] ?? 'pony');
-		$this->_EQG = $this->_guide === 'eqg' || isset($_GET['eqg']);
+		$this->_EQG = $this->_guide === 'eqg' || isset($_REQUEST['eqg']);
 		if ($setPath)
 			$this->_initCGPath();
-		$this->_appearancePage = isset($_POST['APPEARANCE_PAGE']);
-		$this->_personalGuide = isset($_POST['PERSONAL_GUIDE']);
 	}
 
 	/** @var User|null|false */
 	protected $_ownedBy;
 	/** @var bool */
-	protected $_isOwnedByUser;
+	protected $_isOwnedByUser = false;
 	protected function _initPersonal($params, $force = true){
 		$this->_initialize($params, !$force);
 
+		// TODO Remove the name parameter detection from the URL amd check owner of appearance instead
 		$nameSet = isset($params['name']);
 		if (!$nameSet && $force)
 			CoreUtils::notFound();
@@ -97,22 +99,22 @@ class ColorGuideController extends Controller {
 	}
 
 	/** @var \App\Models\Appearance */
-	protected $_appearance;
-	public function _getAppearance($params, $set_properties = true){
+	protected $appearance;
+	public function _getAppearance($params, bool $set_properties = true){
 		if (!isset($params['id']))
 			Response::fail('Missing appearance ID');
-		$this->_appearance = Appearance::find($params['id']);
-		if (empty($this->_appearance))
+		$this->appearance = Appearance::find($params['id']);
+		if (empty($this->appearance))
 			CoreUtils::notFound();
 		if (!$set_properties)
 			return;
 
-		if ($this->_appearance->owner_id === null){
-			if ($this->_appearance->ishuman && !$this->_EQG){
+		if ($this->appearance->owner_id === null){
+			if ($this->appearance->ishuman && !$this->_EQG){
 				$this->_EQG = 1;
 				$this->_cgPath = '/cg/eqg';
 			}
-			else if (!$this->_appearance->ishuman && $this->_EQG){
+			else if (!$this->appearance->ishuman && $this->_EQG){
 				$this->_EQG = 0;
 				$this->_cgPath = '/cg';
 			}
@@ -121,20 +123,26 @@ class ColorGuideController extends Controller {
 				$this->_isOwnedByUser = false;
 				$this->_cgPath = '/cg';
 			}
+			else {
+				$this->_EQG = $this->appearance->ishuman;
+			}
 		}
 		else {
-			$this->_EQG = null;
-			$OwnerName = $this->_appearance->owner->name;
+			$this->_EQG = $this->appearance->ishuman;
+			$OwnerName = $this->appearance->owner->name;
 			$this->_cgPath = "/@$OwnerName/cg";
-			$this->_isOwnedByUser = Auth::$signed_in && ($this->_appearance->owner_id === Auth::$user->id);
+			$this->_isOwnedByUser = Auth::$signed_in && ($this->appearance->owner_id === Auth::$user->id);
 		}
+	}
+	public function _permissionCheck(){
+		if (!$this->_isOwnedByUser && Permission::insufficient('staff'))
+			Response::fail();
 	}
 
 	protected const GUIDE_MANAGE_JS = [
 		'jquery.uploadzone',
 		'jquery.autocomplete',
 		'jquery.ponycolorpalette',
-		'handlebars-v3.0.3',
 		'Sortable',
 		'pages/colorguide/tag-list',
 		'pages/colorguide/manage',
@@ -193,7 +201,7 @@ class ColorGuideController extends Controller {
 			]
 		]))->out());
 
-		Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG,null,null,'id,label'), true, $this->_EQG, NOWRAP)]);
+		Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG), true, $this->_EQG, NOWRAP)]);
 	}
 
 	public function changeList($params){
@@ -512,7 +520,7 @@ class ColorGuideController extends Controller {
 			]
 		]))->out();
 
-		$svgel = CGUtils::untokenizeSvg(CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($svgdata), $this->_appearance->id), $this->_appearance->id);
+		$svgel = CGUtils::untokenizeSvg(CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($svgdata), $this->appearance->id), $this->appearance->id);
 
 		Response::done(['svgel' => $svgel, 'svgdata' => $svgdata, 'keep_dialog' => true]);
 	}

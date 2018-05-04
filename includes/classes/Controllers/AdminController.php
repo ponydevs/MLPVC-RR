@@ -179,48 +179,54 @@ class AdminController extends Controller {
 		Response::done(Logs::formatEntryDetails($MainEntry,$Details));
 	}
 
-	public function usefulLinks(){
-		if (!POST_REQUEST){
-			$heading = 'Manage useful links';
-			CoreUtils::loadPage(__METHOD__, [
-				'heading' => $heading,
-				'title' => "$heading - Admin Area",
-				'view' => [true],
-				'js' => ['Sortable',true],
-				'css' => [true],
-			]);
-		}
+	/**
+	 * @var null|UsefulLink
+	 */
+	private $usefulLink;
+	private function load_useful_link($id){
+			if (empty($id))
+				CoreUtils::notFound();
+			$linkid = \intval($id, 10);
+			$this->usefulLink = UsefulLink::find($linkid);
+			if (empty($this->usefulLink))
+				Response::fail('The specified link does not exist');
+	}
 
+	public function usefulLinks(){
+		$heading = 'Manage useful links';
+		CoreUtils::loadPage(__METHOD__, [
+			'heading' => $heading,
+			'title' => "$heading - Admin Area",
+			'view' => [true],
+			'js' => ['Sortable',true],
+			'css' => [true],
+		]);
+	}
+
+	public function usefulLinksApi($params){
 		CSRFProtection::protect();
 
-		$action = $_GET['action'];
-		$creating = $action === 'make';
+		$action = $_SERVER['REQUEST_METHOD'];
+		$creating = $action === 'POST';
 
-		if (!$creating){
-			if (!isset($_GET['linkid']) || !is_numeric($_GET['linkid']))
-				CoreUtils::notFound();
-			$linkid = \intval($_GET['linkid'],10);
-			$Link = UsefulLink::find($linkid);
-			if (empty($Link))
-				Response::fail('The specified link does not exist');
-		}
+		if (!$creating)
+			$this->load_useful_link($params['id']);
 
 		switch ($action){
-			case 'get':
+			case 'GET':
 				Response::done([
-					'label' => $Link->label,
-					'url' => $Link->url,
-					'title' => $Link->title,
-					'minrole' => $Link->minrole,
+					'label' => $this->usefulLink->label,
+					'url' => $this->usefulLink->url,
+					'title' => $this->usefulLink->title,
+					'minrole' => $this->usefulLink->minrole,
 				]);
-			case 'del':
-				if (!DB::$instance->where('id', $Link->id)->delete('useful_links'))
+			case 'DELETE':
+				if (!DB::$instance->where('id', $this->usefulLink->id)->delete('useful_links'))
 					Response::dbError();
 
 				Response::done();
-			break;
-			case 'make':
-			case 'set':
+			case 'POST':
+			case 'PUT':
 				$data = [];
 
 				$label = (new Input('label','string', [
@@ -230,7 +236,7 @@ class AdminController extends Controller {
 						Input::ERROR_RANGE => 'Link label must be between @min and @max characters long',
 					]
 				]))->out();
-				if ($creating || $Link->label !== $label){
+				if ($creating || $this->usefulLink->label !== $label){
 					CoreUtils::checkStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_PATTERN);
 					$data['label'] = $label;
 				}
@@ -242,7 +248,7 @@ class AdminController extends Controller {
 						Input::ERROR_RANGE => 'Link URL must be between @min and @max characters long',
 					]
 				]))->out();
-				if ($creating || $Link->url !== $url)
+				if ($creating || $this->usefulLink->url !== $url)
 					$data['url'] = $url;
 
 				$title = (new Input('title','string', [
@@ -254,7 +260,7 @@ class AdminController extends Controller {
 				]))->out();
 				if (!isset($title))
 					$data['title'] = '';
-				else if ($creating || $Link->title !== $title){
+				else if ($creating || $this->usefulLink->title !== $title){
 					CoreUtils::checkStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_PATTERN);
 					$data['title'] = $title;
 				}
@@ -268,20 +274,20 @@ class AdminController extends Controller {
 						Input::ERROR_INVALID => 'Minimum role (@value) is invalid',
 					]
 				]))->out();
-				if ($creating || $Link->minrole !== $minrole)
+				if ($creating || $this->usefulLink->minrole !== $minrole)
 					$data['minrole'] = $minrole;
 
 				if (empty($data))
 					Response::fail('Nothing was changed');
 				$query = $creating
 					? UsefulLink::create($data)
-					: $Link->update_attributes($data);
+					: $this->usefulLink->update_attributes($data);
 				if (!$query)
 					Response::dbError();
 
 				Response::done();
 			break;
-			default: CoreUtils::notFound();
+			default: CoreUtils::notAllowed();
 		}
 	}
 

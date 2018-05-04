@@ -67,8 +67,6 @@
 		box-sizing: border-box;
 	}
 	> .tag {
-		@include tag-style($TCharacter);
-
 		&.notice-me {
 			position: relative;
 			z-index: 2;

@@ -14,7 +14,7 @@ $(function(){
 
 		$.Dialog.wait(`Editing link #${linkid}`, 'Retrieving link information from server');
 
-		$.post(`/admin/usefullinks?action=get&linkid=${linkid}`,$.mkAjaxHandler(function(){
+		$.get(`/api/admin/usefullinks/${linkid}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this;
@@ -35,7 +35,7 @@ $(function(){
 
 			$.Dialog.wait(false, 'Removing link');
 
-			$.post(`/admin/usefullinks?action=del&linkid=${linkid}`,$.mkAjaxHandler(function(){
+			$.delete(`/api/admin/usefullinks/${linkid}`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$li.remove();
@@ -85,7 +85,7 @@ $(function(){
 				let data = $(this).serialize();
 				$.Dialog.wait(false);
 
-				$.post(`/admin/usefullinks?action=${linkid?`set&linkid=${linkid}`:'make'}`,data, $.mkAjaxHandler(function(){
+				$[linkid?'put':'post'](`/api/admin/usefullinks${linkid?`/${linkid}`:''}`,data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Navigation.reload(true);
@@ -116,7 +116,7 @@ $(function(){
 				list.push($(this).find('.typcn-arrow-move').remove().end().attr('id').split('-').pop());
 			});
 
-			$.post('/admin/usefullinks/reorder', {list:list.join(',')}, $.mkAjaxHandler(function(){
+			$.post('/api/admin/usefullinks/reorder', {list:list.join(',')}, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Navigation.reload(true);

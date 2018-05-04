@@ -380,7 +380,7 @@
 		}
 	};
 	$.ajaxPrefilter(function(event, origEvent){
-		if ((origEvent.type||event.type).toUpperCase() !== 'POST')
+		if ((origEvent.type||event.type).toUpperCase() === 'GET')
 			return;
 
 		let t = $.getCSRFToken();
@@ -871,4 +871,26 @@
 
 		$.RGBAColor = RGBAColor;
 	})();
+
+	function isFunction(obj) {
+		return typeof obj === "function" && typeof obj.nodeType !== "number";
+	}
+
+	$.each(["put", "delete"], function(i, method) {
+		$[method] = function(url, data, callback, type) {
+			if (isFunction(data)){
+				type = type || callback;
+				callback = data;
+				data = undefined;
+			}
+
+			return jQuery.ajax(jQuery.extend({
+				url: url,
+				type: method,
+				dataType: type,
+				data: data,
+				success: callback
+			}, $.isPlainObject(url) && url));
+		};
+	});
 })(jQuery);

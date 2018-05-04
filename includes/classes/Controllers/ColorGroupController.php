@@ -358,7 +358,7 @@ class ColorGroupController extends ColorGuideController {
 		];
 
 		$list = [];
-		foreach ($this->_appearance->color_groups as $item){
+		foreach ($this->appearance->color_groups as $item){
 			$group = [
 				'label' => $item->label,
 				'colors' => []

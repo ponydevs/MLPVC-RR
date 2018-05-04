@@ -88,7 +88,7 @@ class Input {
 		$this->_silentFail = isset($o[self::SILENT_FAILURE]) && $o[self::SILENT_FAILURE] === true;
 		$this->_noLog = $this->_silentFail && isset($o[self::NO_LOGGING]) && $o[self::NO_LOGGING] === true;
 
-		$this->_source = '_POST';
+		$this->_source = '_REQUEST';
 		if (isset($o[self::SOURCE])){
 			$_source = '_'.$o[self::SOURCE];
 			if (isset($GLOBALS[$_source]))
@@ -147,7 +147,6 @@ class Input {
 					return self::ERROR_INVALID;
 				if (self::checkNumberRange($this->_origValue, $this->_range, $code))
 					return $code;
-				$this->_origValue = $this->_origValue;
 			break;
 			case 'text':
 			case 'string':

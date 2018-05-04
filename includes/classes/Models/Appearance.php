@@ -815,8 +815,8 @@ HTML;
 		}
 
 		foreach ($new as $name => $_){
-			$_POST['tag_name'] = CoreUtils::trim($name);
-			if (empty($_POST['tag_name']))
+			$_REQUEST['tag_name'] = CoreUtils::trim($name);
+			if (empty($_REQUEST['tag_name']))
 				continue;
 
 			$tag_name = CGUtils::validateTagName('tag_name');
@@ -841,5 +841,19 @@ HTML;
 			if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$eqg?'eqg':'pony'][$tag->id]))
 				Appearances::getSortReorder($eqg);
 		}
+	}
+
+	public function getSpriteFilePath(){
+		return SPRITE_PATH.$this->id.'.png';
+	}
+
+	public function deleteSprite(?string $path = null, bool $silent = false){
+		if (!CoreUtils::deleteFile($path ?? $this->getSpriteFilePath())){
+			if ($silent)
+				return;
+			Response::fail('File could not be deleted');
+		}
+		$this->clearRenderedImages();
+		Appearances::clearSpriteColorIssueNotifications($this->appearance->id, 'del', null);
 	}
 }

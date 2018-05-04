@@ -53,18 +53,18 @@ class AppearanceController extends ColorGuideController {
 		if ($this->_ownedBy === null)
 			$this->_initialize($params);
 		$this->_getAppearance($params);
-		if ($this->_ownedBy !== null && $this->_appearance->owner_id !== $this->_ownedBy->id){
+		if ($this->_ownedBy !== null && $this->appearance->owner_id !== $this->_ownedBy->id){
 			$this->_ownedBy = null;
 			$this->_isOwnedByUser = false;
 			$this->_initCGPath();
 		}
 
-		if ($this->_appearance->hidden())
+		if ($this->appearance->hidden())
 			CoreUtils::noPerm();
 
-		$SafeLabel = $this->_appearance->getURLSafeLabel();
-		CoreUtils::fixPath("$this->_cgPath/v/{$this->_appearance->id}-$SafeLabel");
-		$heading = $this->_appearance->label;
+		$SafeLabel = $this->appearance->getURLSafeLabel();
+		CoreUtils::fixPath("$this->_cgPath/v/{$this->appearance->id}-$SafeLabel");
+		$heading = $this->appearance->label;
 
 		$settings = [
 			'title' => "$heading - Color Guide",
@@ -72,16 +72,16 @@ class AppearanceController extends ColorGuideController {
 			'css' => ['pages/colorguide/guide', true],
 			'js' => ['jquery.ctxmenu', 'pages/colorguide/guide', true],
 			'import' => [
-				'Appearance' => $this->_appearance,
+				'Appearance' => $this->appearance,
 				'EQG' => $this->_EQG,
 				'isOwner' => false,
 			],
 		];
-		if (!empty($this->_appearance->owner_id)){
+		if (!empty($this->appearance->owner_id)){
 			$settings['import']['Owner'] = $this->_ownedBy;
 			$settings['import']['isOwner'] = $this->_isOwnedByUser;
 		}
-		else $settings['import']['Changes'] = MajorChange::get($this->_appearance->id, null);
+		else $settings['import']['Changes'] = MajorChange::get($this->appearance->id, null);
 		if ($this->_isOwnedByUser || Permission::sufficient('staff')){
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
@@ -105,8 +105,8 @@ class AppearanceController extends ColorGuideController {
 		$this->_initialize($params);
 		$this->_getAppearance($params);
 
-		$totalChangeCount = TagChange::count(['appearance_id' => $this->_appearance->id]);
-		$Pagination = new Pagination("{$this->_cgPath}/tag-changes/{$this->_appearance->getURLSafeLabel()}", 25, $totalChangeCount);
+		$totalChangeCount = TagChange::count(['appearance_id' => $this->appearance->id]);
+		$Pagination = new Pagination("{$this->_cgPath}/tag-changes/{$this->appearance->getURLSafeLabel()}", 25, $totalChangeCount);
 	}
 
 	public function asFile($params, User $Owner = null){
@@ -114,26 +114,26 @@ class AppearanceController extends ColorGuideController {
 			$this->_initialize($params);
 		$this->_getAppearance($params);
 
-		if ($this->_appearance->hidden())
+		if ($this->appearance->hidden())
 			CoreUtils::notFound();
 
 		switch ($params['ext']){
 			case 'png':
 				switch ($params['type']){
-					case 's': CGUtils::renderSpritePNG($this->_cgPath, $this->_appearance->id, $_GET['s'] ?? null);
+					case 's': CGUtils::renderSpritePNG($this->_cgPath, $this->appearance->id, $_GET['s'] ?? null);
 					case 'p':
-					default: CGUtils::renderAppearancePNG($this->_cgPath, $this->_appearance);
+					default: CGUtils::renderAppearancePNG($this->_cgPath, $this->appearance);
 				}
 			break;
 			case 'svg':
 				if (!empty($params['type'])) switch ($params['type']){
-					case 's': CGUtils::renderSpriteSVG($this->_cgPath, $this->_appearance->id);
-					case 'p': CGUtils::renderPreviewSVG($this->_cgPath, $this->_appearance);
-					case 'f': CGUtils::renderCMFacingSVG($this->_cgPath, $this->_appearance);
+					case 's': CGUtils::renderSpriteSVG($this->_cgPath, $this->appearance->id);
+					case 'p': CGUtils::renderPreviewSVG($this->_cgPath, $this->appearance);
+					case 'f': CGUtils::renderCMFacingSVG($this->_cgPath, $this->appearance);
 					default: CoreUtils::notFound();
 				}
-			case 'json': CGUtils::getSwatchesAI($this->_appearance);
-			case 'gpl': CGUtils::getSwatchesInkscape($this->_appearance);
+			case 'json': CGUtils::getSwatchesAI($this->appearance);
+			case 'gpl': CGUtils::getSwatchesInkscape($this->appearance);
 		}
 		# rendering functions internally call die(), so execution stops above #
 
@@ -146,16 +146,13 @@ class AppearanceController extends ColorGuideController {
 		$this->asFile($params, $this->_ownedBy);
 	}
 
-	public function action($params){
+	public function api($params){
 		$this->_initPersonal($params, false);
 
 		if (!Auth::$signed_in)
 			Response::fail();
 
-		$action = $params['action'];
-		$creating = $action === 'make';
-
-		if ($creating){
+		if ($this->creating){
 			if (!$this->_personalGuide && Permission::insufficient('staff'))
 				Response::fail('You don\'t have permission to add appearances to the official Color Guide');
 
@@ -171,25 +168,19 @@ class AppearanceController extends ColorGuideController {
 		}
 		else {
 			$this->_getAppearance($params);
-
-			if (!$this->_isOwnedByUser && Permission::insufficient('staff'))
-				Response::fail();
+			$this->_permissionCheck();
 		}
 
-		$this->_execAction($action, $creating);
-	}
-
-	protected function _execAction($action, $creating = null, $noResponse = false){
-		switch ($action){
-			case 'get':
+		switch ($this->action){
+			case 'GET':
 				Response::done([
-					'label' => $this->_appearance->label,
-					'notes' => $this->_appearance->notes_src,
-					'private' => $this->_appearance->private,
+					'label' => $this->appearance->label,
+					'notes' => $this->appearance->notes_src,
+					'private' => $this->appearance->private,
 				]);
 			break;
-			case 'set':
-			case 'make':
+			case 'PUT':
+			case 'POST':
 				/** @var $data array */
 				$data = [
 					'ishuman' => $this->_personalGuide ? null : $this->_EQG,
@@ -203,11 +194,11 @@ class AppearanceController extends ColorGuideController {
 					]
 				]))->out();
 				CoreUtils::checkStringValidity($label, 'Appearance name', INVERSE_PRINTABLE_ASCII_PATTERN);
-				$dupe = Appearance::find_dupe($creating, $this->_personalGuide, [
+				$dupe = Appearance::find_dupe($this->creating, $this->_personalGuide, [
 					'owner_id' => Auth::$user->id,
 					'ishuman' => $data['ishuman'],
 					'label' => $label,
-					'id' => $creating ? null : $this->_appearance->id,
+					'id' => $this->creating ? null : $this->appearance->id,
 				]);
 				if (!empty($dupe)){
 					if ($this->_personalGuide)
@@ -215,26 +206,26 @@ class AppearanceController extends ColorGuideController {
 
 					Response::fail("An appearance <a href='{$dupe->toURL()}' target='_blank'>already esists</a> in the ".($this->_EQG?'EQG':'Pony').' guide with this exact name. Consider adding an identifier in backets or choosing a different name.');
 				}
-				if ($creating || $label !== $this->_appearance->label)
+				if ($this->creating || $label !== $this->appearance->label)
 					$data['label'] = $label;
 
 				$notes = (new Input('notes','text', [
 					Input::IS_OPTIONAL => true,
-					Input::IN_RANGE => $creating || $this->_appearance->id !== 0 ? [null,1000] : null,
+					Input::IN_RANGE => $this->creating || $this->appearance->id !== 0 ? [null, 1000] : null,
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_RANGE => 'Appearance notes cannot be longer than @max characters',
 					]
 				]))->out();
 				if ($notes !== null){
 					CoreUtils::checkStringValidity($notes, 'Appearance notes', INVERSE_PRINTABLE_ASCII_PATTERN);
-					if ($creating || $notes !== $this->_appearance->notes_src)
+					if ($this->creating || $notes !== $this->appearance->notes_src)
 						$data['notes_src'] = $notes;
 				}
 				else $data['notes_src'] = null;
 
 				$data['private'] = isset($_POST['private']);
 
-				if ($creating){
+				if ($this->creating){
 					if ($this->_personalGuide || Permission::insufficient('staff')){
 						$data['owner_id'] = Auth::$user->id;
 					}
@@ -248,19 +239,19 @@ class AppearanceController extends ColorGuideController {
 				}
 
 				/** @var $newAppearance Appearance */
-				if ($creating){
+				if ($this->creating){
 					$newAppearance = Appearance::create($data);
 					$newAppearance->reindex();
 				}
 				else {
-					$olddata = $this->_appearance->to_array();
-					$this->_appearance->update_attributes($data);
-					$this->_appearance->reindex();
+					$olddata = $this->appearance->to_array();
+					$this->appearance->update_attributes($data);
+					$this->appearance->reindex();
 				}
 
-				$EditedAppearance = $creating ? $newAppearance : $this->_appearance;
+				$EditedAppearance = $this->creating ? $newAppearance : $this->appearance;
 
-				if ($creating){
+				if ($this->creating){
 					$data['id'] = $newAppearance->id;
 					$response = [
 						'message' => 'Appearance added successfully',
@@ -301,9 +292,9 @@ class AppearanceController extends ColorGuideController {
 					Response::done($response);
 				}
 
-				$this->_appearance->clearRenderedImages([Appearance::CLEAR_PALETTE, Appearance::CLEAR_PREVIEW]);
+				$this->appearance->clearRenderedImages([Appearance::CLEAR_PALETTE, Appearance::CLEAR_PREVIEW]);
 
-				if (!$creating){
+				if (!$this->creating){
 					$diff = [];
 					foreach (['label' => true, 'notes_src' => 'notes', 'private' => true, 'owner_id' => true] as $orig => $mapped){
 						$key = $mapped === true ? $orig : $mapped;
@@ -313,7 +304,7 @@ class AppearanceController extends ColorGuideController {
 						}
 					}
 					if (!empty($diff)) Logs::logAction('appearance_modify', [
-						'appearance_id' => $this->_appearance->id,
+						'appearance_id' => $this->appearance->id,
 						'changes' => JSON::encode($diff),
 					]);
 				}
@@ -321,25 +312,25 @@ class AppearanceController extends ColorGuideController {
 				$response = [];
 				if (!$this->_appearancePage){
 					$response['label'] = $EditedAppearance->label;
-					if (isset($olddata['label']) && $olddata['label'] !== $this->_appearance->label)
+					if (isset($olddata['label']) && $olddata['label'] !== $this->appearance->label)
 						$response['newurl'] = $EditedAppearance->toURL();
 					$response['notes'] = $EditedAppearance->getNotesHTML(NOWRAP);
 				}
 
 				Response::done($response);
 			break;
-			case 'delete':
-				if ($this->_appearance->id === 0)
+			case 'DELETE':
+				if ($this->appearance->id === 0)
 					Response::fail('This appearance cannot be deleted');
 
-				$Tagged = Tags::getFor($this->_appearance->id, null, true);
+				$Tagged = Tags::getFor($this->appearance->id, null, true);
 
-				if (!DB::$instance->where('id', $this->_appearance->id)->delete(Appearance::$table_name))
+				if (!DB::$instance->where('id', $this->appearance->id)->delete(Appearance::$table_name))
 					Response::dbError();
 
-				if ($this->_appearance->owner_id === null){
+				if ($this->appearance->owner_id === null){
 					try {
-						CoreUtils::elasticClient()->delete($this->_appearance->toElasticArray(true));
+						CoreUtils::elasticClient()->delete($this->appearance->toElasticArray(true));
 					}
 					catch (Missing404Exception $e){
 						$message = JSON::decode($e->getMessage());
@@ -349,7 +340,7 @@ class AppearanceController extends ColorGuideController {
 							throw $e;
 					}
 					catch (NoNodesAvailableException $e){
-						CoreUtils::error_log('ElasticSearch server was down when server attempted to remove appearance '.$this->_appearance->id);
+						CoreUtils::error_log('ElasticSearch server was down when server attempted to remove appearance '.$this->appearance->id);
 					}
 				}
 
@@ -357,43 +348,178 @@ class AppearanceController extends ColorGuideController {
 					foreach($Tagged as $tag)
 						$tag->updateUses();
 
-				$fpath = SPRITE_PATH."{$this->_appearance->id}.png";
+				$fpath = SPRITE_PATH."{$this->appearance->id}.png";
 				CoreUtils::deleteFile($fpath);
 
-				$this->_appearance->clearRenderedImages();
+				$this->appearance->clearRenderedImages();
 
 				Logs::logAction('appearances', [
 					'action' => 'del',
-					'id' => $this->_appearance->id,
-					'order' => $this->_appearance->order,
-					'label' => $this->_appearance->label,
-					'notes' => $this->_appearance->notes_src,
-					'ishuman' => $this->_appearance->ishuman,
-					'added' => $this->_appearance->added,
-					'private' => $this->_appearance->private,
-					'owner_id' => $this->_appearance->owner_id,
+					'id' => $this->appearance->id,
+					'order' => $this->appearance->order,
+					'label' => $this->appearance->label,
+					'notes' => $this->appearance->notes_src,
+					'ishuman' => $this->appearance->ishuman,
+					'added' => $this->appearance->added,
+					'private' => $this->appearance->private,
+					'owner_id' => $this->appearance->owner_id,
 				]);
 
 				/** @var $spriteColorNotifs Notification[] */
 				$spriteColorNotifs = DB::$instance
 					->where('type', 'sprite-colors')
-					->where("data->'appearance_id'", $this->_appearance->id)
+					->where("data->'appearance_id'", $this->appearance->id)
 					->get(Notification::$table_name);
 				foreach ($spriteColorNotifs as $notif)
 					$notif->safeMarkRead();
 
-				if ($this->_appearance->owner_id !== null){
-					PCGSlotHistory::record($this->_appearance->owner_id, 'appearance_del', null, [
-						'id' => $this->_appearance->id,
-						'label' => $this->_appearance->label,
+				if ($this->appearance->owner_id !== null){
+					PCGSlotHistory::record($this->appearance->owner_id, 'appearance_del', null, [
+						'id' => $this->appearance->id,
+						'label' => $this->appearance->label,
 					]);
-					$this->_appearance->owner->syncPCGSlotCount();
+					$this->appearance->owner->syncPCGSlotCount();
 				}
 
 				Response::success('Appearance removed');
 			break;
-			case 'getcgs':
-				$cgs = $this->_appearance->color_groups;
+			default: CoreUtils::notAllowed();
+		}
+	}
+
+	public function applyTemplate($params){
+		$this->_getAppearance($params);
+		$this->_permissionCheck();
+
+		try {
+			$this->appearance->applyTemplate();
+		}
+		catch (\Exception $e){
+			Response::fail('Applying the template failed. Reason: '.$e->getMessage());
+		}
+
+		Response::done(['cgs' => $this->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
+	}
+
+	public function selectiveClear($params){
+		$this->_getAppearance($params);
+		$this->_permissionCheck();
+
+		$wipe_cache = (new Input('wipe_cache','bool',[
+			Input::IS_OPTIONAL => true,
+		]))->out();
+		if ($wipe_cache)
+			$this->appearance->clearRenderedImages();
+
+		$wipe_cm_tokenized = (new Input('wipe_cm_tokenized','bool',[
+			Input::IS_OPTIONAL => true,
+		]))->out();
+		if ($wipe_cm_tokenized){
+			foreach ($this->appearance->cutiemarks as $cm)
+				CoreUtils::deleteFile($cm->getTokenizedFilePath());
+		}
+
+		$wipe_cm_source = (new Input('wipe_cm_source','bool',[
+			Input::IS_OPTIONAL => true,
+		]))->out();
+		if ($wipe_cm_source){
+			foreach ($this->appearance->cutiemarks as $cm)
+				CoreUtils::deleteFile($cm->getSourceFilePath());
+		}
+
+		$wipe_sprite = (new Input('wipe_sprite','bool',[
+			Input::IS_OPTIONAL => true,
+		]))->out();
+		if ($wipe_sprite)
+			$this->appearance->deleteSprite();
+
+		$wipe_colors = (new Input('wipe_colors','string',[
+			Input::IS_OPTIONAL => true,
+		]))->out();
+		switch ($wipe_colors){
+			case 'color_hex':
+				if ($this->appearance->hasColors(true)){
+					/** @noinspection NestedPositiveIfStatementsInspection */
+					if (!DB::$instance->query('UPDATE colors SET hex = null WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->appearance->id]))
+						Response::dbError();
+				}
+			break;
+			case 'color_all':
+				if ($this->appearance->hasColors()){
+					/** @noinspection NestedPositiveIfStatementsInspection */
+					if (!DB::$instance->query('DELETE FROM colors WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->appearance->id]))
+						Response::dbError();
+				}
+			break;
+			case 'all':
+				if (ColorGroup::exists(['conditions' => ['appearance_id = ?', $this->appearance->id]])){
+					/** @noinspection NestedPositiveIfStatementsInspection */
+					if (!DB::$instance->query('DELETE FROM color_groups WHERE appearance_id = ?', [$this->appearance->id]))
+						Response::dbError();
+				}
+			break;
+		}
+
+		if (empty($this->appearance->owner_id)){
+			$wipe_tags = (new Input('wipe_tags','bool',[
+				Input::IS_OPTIONAL => true,
+			]))->out();
+			if ($wipe_tags && !empty($this->appearance->tagged)){
+				if (!DB::$instance->where('appearance_id', $this->appearance->id)->delete('tagged'))
+					Response::dbError('Failed to wipe tags');
+				foreach ($this->appearance->tagged as $tag)
+					Tags::updateUses($tag->tag_id);
+			}
+		}
+
+		/**
+		 * @see Appearance::$last_cleared
+		 */
+		$update = ['last_cleared' => date('c')];
+
+		$wipe_notes = (new Input('wipe_notes','bool',[
+			Input::IS_OPTIONAL => true,
+		]))->out();
+		/**
+		 * @see Appearance::$notes_src
+		 * @see Appearance::$notes_rend
+		 */
+		if ($wipe_notes){
+			$update['notes_src'] = null;
+			$update['notes_rend'] = null;
+		}
+
+		$mkpriv = (new Input('mkpriv','bool',[
+			Input::IS_OPTIONAL => true,
+		]))->out();
+		/**
+		 * @see Appearance::$private
+		 */
+		if ($mkpriv)
+			$update['private'] = 1;
+
+		$reset_priv_key = (new Input('reset_priv_key','bool',[
+			Input::IS_OPTIONAL => true,
+		]))->out();
+		/**
+		 * @see Appearance::$token
+		 */
+		if ($reset_priv_key)
+			$update['token'] = Uuid::uuid4();
+
+		if (!empty($update))
+			DB::$instance->where('id', $this->appearance->id)->update('appearances',$update);
+
+		Response::done();
+	}
+
+	public function colorGroupsApi($params){
+		$this->_getAppearance($params);
+		$this->_permissionCheck();
+
+		switch ($this->action){
+			case 'GET':
+				$cgs = $this->appearance->color_groups;
 				if (empty($cgs))
 					Response::fail('This appearance does not have any color groups');
 				if (\count($cgs) < 2)
@@ -403,8 +529,7 @@ class AppearanceController extends ColorGuideController {
 						'only' => ['id','label'],
 					]);
 				Response::done(['cgs' => $cgs]);
-			break;
-			case 'setcgs':
+			case 'PUT':
 				/** @var $order int[] */
 				$order = (new Input('cgs','int[]', [
 					Input::CUSTOM_ERROR_MESSAGES => [
@@ -412,7 +537,7 @@ class AppearanceController extends ColorGuideController {
 						Input::ERROR_INVALID => 'Color group order data (@value) is invalid',
 					]
 				]))->out();
-				$oldCGs = DB::$instance->where('appearance_id', $this->_appearance->id)->get('color_groups');
+				$oldCGs = DB::$instance->where('appearance_id', $this->appearance->id)->get('color_groups');
 				$possibleIDs = [];
 				foreach ($oldCGs as $cg)
 					$possibleIDs[$cg->id] = true;
@@ -423,65 +548,112 @@ class AppearanceController extends ColorGuideController {
 					DB::$instance->where('id', $GroupID)->update('color_groups', ['order' => $i]);
 				}
 				Table::clear_cache();
-				$newCGs = DB::$instance->where('appearance_id', $this->_appearance->id)->get('color_groups');
+				$newCGs = DB::$instance->where('appearance_id', $this->appearance->id)->get('color_groups');
 
-				$this->_appearance->clearRenderedImages([Appearance::CLEAR_PALETTE, Appearance::CLEAR_PREVIEW]);
+				$this->appearance->clearRenderedImages([Appearance::CLEAR_PALETTE, Appearance::CLEAR_PREVIEW]);
 
 				$oldCGs = CGUtils::stringifyColorGroups($oldCGs);
 				$newCGs = CGUtils::stringifyColorGroups($newCGs);
 				if ($oldCGs !== $newCGs) Logs::logAction('cg_order', [
-					'appearance_id' => $this->_appearance->id,
+					'appearance_id' => $this->appearance->id,
 					'oldgroups' => $oldCGs,
 					'newgroups' => $newCGs,
 				]);
 
-				Response::done(['cgs' => $this->_appearance->getColorsHTML(NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
+				Response::done(['cgs' => $this->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
+			default: CoreUtils::notAllowed();
+		}
+	}
+
+	public function sprite($params){
+		if (Permission::insufficient('member'))
+			CoreUtils::noPerm();
+
+		$this->_getAppearance($params);
+		if ($this->appearance->owner_id !== Auth::$user->id && Permission::insufficient('staff'))
+			CoreUtils::noPerm();
+
+		if ($this->appearance->owner_id !== null)
+			$params['name'] = $this->appearance->owner->name;
+		$this->_initPersonal($params, false);
+
+		$Map = CGUtils::getSpriteImageMap($this->appearance->id);
+		if (empty($Map))
+			CoreUtils::notFound();
+
+		[$Colors,$ColorGroups,$AllColors] = $this->appearance->getSpriteRelevantColors();
+
+		$SafeLabel = $this->appearance->getURLSafeLabel();
+		CoreUtils::fixPath("{$this->_cgPath}/sprite/{$this->appearance->id}-$SafeLabel");
+
+		CoreUtils::loadPage('ColorGuideController::sprite', [
+			'title' => "Sprite of {$this->appearance->label}",
+			'css' => [true],
+			'js' => [true],
+			'import' => [
+				'Appearance' => $this->appearance,
+				'ColorGroups' => $ColorGroups,
+				'Colors' => $Colors,
+				'AllColors' => $AllColors,
+				'Map' => $Map,
+				'Owner' => $this->appearance->owner,
+			],
+		]);
+	}
+
+	public function spriteApi($params){
+		$this->_getAppearance($params);
+		$this->_permissionCheck();
+
+		$final_path = $this->appearance->getSpriteFilePath();
+
+		switch ($this->action){
+			case 'POST':
+				if ($this->appearance->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite'))
+					Response::fail('You are not allowed to upload sprite images on your own PCG appearances');
+				CGUtils::processUploadedImage('sprite', $final_path, ['image/png'], [300], [700, 300]);
+				$this->appearance->clearRenderedImages();
+				$this->appearance->checkSpriteColors();
 			break;
-			case 'delsprite':
-			case 'getsprite':
-			case 'setsprite':
-				$finalpath = SPRITE_PATH.$this->_appearance->id.'.png';
+			case 'DELETE':
+				if (empty($this->appearance->getSpriteURL()))
+					Response::fail('No sprite file found');
 
-				switch ($action){
-					case 'setsprite':
-						if ($this->_appearance->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite'))
-							Response::fail('You are not allowed to upload sprite images on your own PCG appearances');
-						CGUtils::processUploadedImage('sprite', $finalpath, ['image/png'], [300], [700, 300]);
-						$this->_appearance->clearRenderedImages();
+				$this->appearance->deleteSprite($final_path);
 
-						$this->_appearance->checkSpriteColors();
-					break;
-					case 'delsprite':
-						if (empty($this->_appearance->getSpriteURL())){
-							if ($noResponse)
-								return;
-							Response::fail('No sprite file found');
-						}
-
-						if (!CoreUtils::deleteFile($finalpath))
-							Response::fail('File could not be deleted');
-						$this->_appearance->clearRenderedImages();
-						Appearances::clearSpriteColorIssueNotifications($this->_appearance->id, 'del', null);
-
-						if ($noResponse)
-							return;
-
-						Response::done(['sprite' => DEFAULT_SPRITE]);
-					break;
-				}
-
-				Response::done(['path' => "/cg/v/{$this->_appearance->id}s.png?t=".filemtime($finalpath)]);
+				Response::done(['sprite' => DEFAULT_SPRITE]);
 			break;
-			case 'getrelations':
-				if (!empty($this->_appearance->owner_id))
+			default: CoreUtils::notAllowed();
+		}
+
+		Response::done(['path' => "/cg/v/{$this->appearance->id}s.png?t=".filemtime($final_path)]);
+	}
+
+	public function spriteColorCheckup(){
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		CoreUtils::callScript('sprite_color_checkup');
+
+		$nagUser = Users::get(Appearances::SPRITE_NAG_USERID);
+		Response::success('Checkup started.'.($nagUser !== null ? " {$nagUser->toAnchor()} will be notified if there are any issues.":''));
+	}
+
+	public function relationsApi($params){
+		$this->_getAppearance($params);
+		$this->_permissionCheck();
+
+		switch ($this->action){
+			case 'GET':
+				if (!empty($this->appearance->owner_id))
 					Response::fail('Relations are unavailable for appearances in personal guides');
 
-				$RelatedAppearances = $this->_appearance->related_appearances;
+				$RelatedAppearances = $this->appearance->related_appearances;
 				$RelatedAppearanceIDs = [];
 				foreach ($RelatedAppearances as $p)
 					$RelatedAppearanceIDs[$p->target_id] = $p->is_mutual;
 
-				$Appearances = DB::$instance->disableAutoClass()->where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->_appearance->id.')')->orderBy('label')->get('appearances',null,'id,label');
+				$Appearances = DB::$instance->disableAutoClass()->where('ishuman', $this->_EQG)->where('"id" NOT IN (0,'.$this->appearance->id.')')->orderBy('label')->get('appearances',null,'id,label');
 
 				$Sorted = [
 					'unlinked' => [],
@@ -495,9 +667,8 @@ class AppearanceController extends ColorGuideController {
 				}
 
 				Response::done($Sorted);
-			break;
-			case 'setrelations':
-				if (!empty($this->_appearance->owner_id))
+			case 'PUT':
+				if ($this->appearance->owner_id !== null)
 					Response::fail('Relations are unavailable for appearances in personal guides');
 
 				/** @var $AppearanceIDs int[] */
@@ -525,28 +696,35 @@ class AppearanceController extends ColorGuideController {
 					foreach ($MutualIDs as $id)
 						$mutuals[$id] = true;
 
-				$this->_appearance->clearRelations();
+				$this->appearance->clearRelations();
 				if (!empty($appearances))
 					foreach ($appearances as $id => $_)
-						RelatedAppearance::make($this->_appearance->id, $id, isset($mutuals[$id]));
+						RelatedAppearance::make($this->appearance->id, $id, isset($mutuals[$id]));
 
 				$out = [];
 				if ($this->_appearancePage)
-					$out['section'] = $this->_appearance->getRelatedHTML();
+					$out['section'] = $this->appearance->getRelatedHTML();
 				Response::done($out);
-			break;
-			case 'getcms':
-				$CMs = Cutiemarks::get($this->_appearance);
+			default: CoreUtils::notAllowed();
+		}
+	}
+
+	public function cutiemarkApi($params){
+		$this->_getAppearance($params);
+		$this->_permissionCheck();
+
+		switch ($this->action){
+			case 'GET':
+				$CMs = Cutiemarks::get($this->appearance);
 				foreach ($CMs as &$CM)
 					$CM = $CM->to_js_response();
 				unset($CM);
 
-				$ProcessedCMs = Cutiemarks::get($this->_appearance);
+				$ProcessedCMs = Cutiemarks::get($this->appearance);
 
 				Response::done(['cms' => $CMs, 'preview' => Cutiemarks::getListForAppearancePage($ProcessedCMs, NOWRAP)]);
-			break;
-			case 'setcms':
-				$GrabCMs = Cutiemarks::get($this->_appearance);
+			case 'PUT':
+				$GrabCMs = Cutiemarks::get($this->appearance);
 				/** @var $CurrentCMs Cutiemark[] */
 				$CurrentCMs = [];
 				foreach ($GrabCMs as $cm)
@@ -573,7 +751,7 @@ class AppearanceController extends ColorGuideController {
 						$NewIDs[] = $cm->id;
 					}
 					else $cm = new Cutiemark([
-						'appearance_id' => $this->_appearance->id,
+						'appearance_id' => $this->appearance->id,
 					]);
 
 					$svg_data_missing = empty($item['svgdata']);
@@ -692,12 +870,12 @@ class AppearanceController extends ColorGuideController {
 							$CurrentCMs[$removedID]->delete();
 					}
 
-					$CutieMarks = Cutiemarks::get($this->_appearance);
+					$CutieMarks = Cutiemarks::get($this->appearance);
 					$olddata = Cutiemarks::convertDataForLogs($CurrentCMs);
 					$newdata = Cutiemarks::convertDataForLogs($CutieMarks);
 					if ($olddata !== $newdata)
 						Logs::logAction('cm_modify',[
-							'appearance_id' => $this->_appearance->id,
+							'appearance_id' => $this->appearance->id,
 							'olddata' => $olddata,
 							'newdata' => $newdata,
 						]);
@@ -706,10 +884,10 @@ class AppearanceController extends ColorGuideController {
 					foreach ($CurrentCMs as $cm)
 						$cm->delete();
 
-					$this->_appearance->clearRenderedImages([Appearance::CLEAR_CMDIR]);
+					$this->appearance->clearRenderedImages([Appearance::CLEAR_CMDIR]);
 
 					Logs::logAction('cm_delete',[
-						'appearance_id' => $this->_appearance->id,
+						'appearance_id' => $this->appearance->id,
 						'data' => Cutiemarks::convertDataForLogs($CurrentCMs),
 					]);
 
@@ -718,202 +896,37 @@ class AppearanceController extends ColorGuideController {
 
 				$data = [];
 				if ($this->_appearancePage && !empty($CutieMarks))
-					$data['html'] = Cutiemarks::getListForAppearancePage(Cutiemarks::get($this->_appearance));
+					$data['html'] = Cutiemarks::getListForAppearancePage(Cutiemarks::get($this->appearance));
 				Response::done($data);
-			break;
-			case 'clear-cache':
-				if (!$this->_appearance->clearRenderedImages())
-					Response::fail('Cache could not be purged');
+			default: CoreUtils::notAllowed();
+		}
+	}
 
-				if ($noResponse)
-					return;
+	public function taggedApi($params){
+		$this->_getAppearance($params);
+		$this->_permissionCheck();
 
-				Response::success('Cached images have been removed, they will be re-generated on the next request');
-			break;
-			case 'gettags':
-			case 'settags':
-				if ($this->_appearance->owner_id !== null)
-					Response::fail('Tagging is unavailable for appearances in personal guides');
+		if ($this->appearance->owner_id !== null)
+			Response::fail('Tagging is unavailable for appearances in personal guides');
 
-				if ($this->_appearance->id === 0)
-					Response::fail('This appearance cannot be tagged');
+		if ($this->appearance->id === 0)
+			Response::fail('This appearance cannot be tagged');
 
-				if ($action === 'gettags')
-					Response::done([ 'tags' => $this->_appearance->getTagsAsText() ]);
-
+		switch ($this->action){
+			case 'GET':
+				Response::done([ 'tags' => $this->appearance->getTagsAsText() ]);
+			case 'PUT':
 				$tags = (new Input('tags','string',[
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'List of tags is missing',
 						Input::ERROR_INVALID => 'List of tags is invalid',
 					]
 				]))->out();
-				$this->_appearance->processTagChanges($tags, $this->_EQG);
-				$this->_appearance->updateIndex();
+				$this->appearance->processTagChanges($tags, $this->_EQG);
+				$this->appearance->updateIndex();
 
 				Response::done();
-			break;
-			case 'applytemplate':
-				try {
-					$this->_appearance->applyTemplate();
-				}
-				catch (\Exception $e){
-					Response::fail('Applying the template failed. Reason: '.$e->getMessage());
-				}
-
-				Response::done(['cgs' => $this->_appearance->getColorsHTML(NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
-			break;
-			case 'selectiveclear':
-				$wipe_cache = (new Input('wipe_cache','bool',[
-					Input::IS_OPTIONAL => true,
-				]))->out();
-				if ($wipe_cache)
-					$this->_execAction('clear-cache',null,true);
-
-				$wipe_cm_tokenized = (new Input('wipe_cm_tokenized','bool',[
-					Input::IS_OPTIONAL => true,
-				]))->out();
-				if ($wipe_cm_tokenized){
-					foreach ($this->_appearance->cutiemarks as $cm)
-						CoreUtils::deleteFile($cm->getTokenizedFilePath());
-				}
-
-				$wipe_cm_source = (new Input('wipe_cm_source','bool',[
-					Input::IS_OPTIONAL => true,
-				]))->out();
-				if ($wipe_cm_source){
-					foreach ($this->_appearance->cutiemarks as $cm)
-						CoreUtils::deleteFile($cm->getSourceFilePath());
-				}
-
-				$wipe_sprite = (new Input('wipe_sprite','bool',[
-					Input::IS_OPTIONAL => true,
-				]))->out();
-				if ($wipe_sprite)
-					$this->_execAction('delsprite',null,true);
-
-				$wipe_colors = (new Input('wipe_colors','string',[
-					Input::IS_OPTIONAL => true,
-				]))->out();
-				switch ($wipe_colors){
-					case 'color_hex':
-						if ($this->_appearance->hasColors(true)){
-							/** @noinspection NestedPositiveIfStatementsInspection */
-							if (!DB::$instance->query('UPDATE colors SET hex = null WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
-								Response::dbError();
-						}
-					break;
-					case 'color_all':
-						if ($this->_appearance->hasColors()){
-							/** @noinspection NestedPositiveIfStatementsInspection */
-							if (!DB::$instance->query('DELETE FROM colors WHERE group_id IN (SELECT id FROM color_groups WHERE appearance_id = ?)', [$this->_appearance->id]))
-								Response::dbError();
-						}
-					break;
-					case 'all':
-						if (ColorGroup::exists(['conditions' => ['appearance_id = ?', $this->_appearance->id]])){
-							/** @noinspection NestedPositiveIfStatementsInspection */
-							if (!DB::$instance->query('DELETE FROM color_groups WHERE appearance_id = ?', [$this->_appearance->id]))
-								Response::dbError();
-						}
-					break;
-				}
-
-				if (empty($this->_appearance->owner_id)){
-					$wipe_tags = (new Input('wipe_tags','bool',[
-						Input::IS_OPTIONAL => true,
-					]))->out();
-					if ($wipe_tags && !empty($this->_appearance->tagged)){
-						if (!DB::$instance->where('appearance_id', $this->_appearance->id)->delete('tagged'))
-							Response::dbError('Failed to wipe tags');
-						foreach ($this->_appearance->tagged as $tag)
-							Tags::updateUses($tag->tag_id);
-					}
-				}
-
-				$update = ['last_cleared' => date('c')];
-
-				$wipe_notes = (new Input('wipe_notes','bool',[
-					Input::IS_OPTIONAL => true,
-				]))->out();
-				if ($wipe_notes)
-					$update['notes'] = null;
-
-				$mkpriv = (new Input('mkpriv','bool',[
-					Input::IS_OPTIONAL => true,
-				]))->out();
-				if ($mkpriv)
-					$update['private'] = 1;
-
-				$reset_priv_key = (new Input('reset_priv_key','bool',[
-					Input::IS_OPTIONAL => true,
-				]))->out();
-				if ($reset_priv_key)
-					$update['token'] = Uuid::uuid4();
-
-				if (!empty($update))
-					DB::$instance->where('id', $this->_appearance->id)->update('appearances',$update);
-
-				Response::done();
-			break;
-			default: CoreUtils::notFound();
+			default: CoreUtils::notAllowed();
 		}
-	}
-
-	public function sprite($params){
-		if (Permission::insufficient('member'))
-			CoreUtils::noPerm();
-
-		$this->_getAppearance($params);
-		if ($this->_appearance->owner_id !== Auth::$user->id && Permission::insufficient('staff'))
-			CoreUtils::noPerm();
-
-		if ($this->_appearance->owner_id !== null)
-			$params['name'] = $this->_appearance->owner->name;
-		$this->_initPersonal($params, false);
-
-		$Map = CGUtils::getSpriteImageMap($this->_appearance->id);
-		if (empty($Map))
-			CoreUtils::notFound();
-
-		[$Colors,$ColorGroups,$AllColors] = $this->_appearance->getSpriteRelevantColors();
-
-		$SafeLabel = $this->_appearance->getURLSafeLabel();
-		CoreUtils::fixPath("{$this->_cgPath}/sprite/{$this->_appearance->id}-$SafeLabel");
-
-		CoreUtils::loadPage('ColorGuideController::sprite', [
-			'title' => "Sprite of {$this->_appearance->label}",
-			'css' => [true],
-			'js' => [true],
-			'import' => [
-				'Appearance' => $this->_appearance,
-				'ColorGroups' => $ColorGroups,
-				'Colors' => $Colors,
-				'AllColors' => $AllColors,
-				'Map' => $Map,
-				'Owner' => $this->_appearance->owner,
-			],
-		]);
-	}
-
-	public function spriteColorCheckup(){
-		if (Permission::insufficient('staff'))
-			Response::fail();
-
-		ini_set('max_execution_time', '0');
-
-		$SpriteDir = new \DirectoryIterator(SPRITE_PATH);
-		foreach ($SpriteDir as $item){
-			if ($item->isDot())
-				continue;
-
-			$id = (int)preg_replace(new RegExp('\..+$'),'',$item->getFilename());
-			$Appearance = Appearance::find($id);
-			if (empty($Appearance))
-				continue;
-
-			$Appearance->checkSpriteColors();
-		}
-
-		Response::success('Checkup finished');
 	}
 }

@@ -146,7 +146,7 @@
 												if (!sure) return;
 
 												$.Dialog.wait(false);
-												$.post(`/cg/appearance/selectiveclear/${appearanceID}`,data,$.mkAjaxHandler(function(){
+												$.delete(`/api/cg/appearance/${appearanceID}/selective`,data,$.mkAjaxHandler(function(){
 													if (!this.status) return $.Dialog.fail(false, this.message);
 
 													$.Navigation.reload(true);
@@ -165,7 +165,7 @@
 									$.Dialog.wait('Appearance relation editor', 'Retrieving relations from server');
 
 									let $cgRelations = $content.find('section.related');
-									$.post(`${PGRq}/cg/appearance/getrelations/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
+									$.get(`/api/cg/appearance/${appearanceID}/relations`,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										let data = this,
@@ -281,7 +281,7 @@
 												};
 												if (AppearancePage)
 													data.APPEARANCE_PAGE = true;
-												$.post(`${PGRq}/cg/appearance/setrelations/${appearanceID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+												$.put(`/api/cg/appearance/${appearanceID}/relations`,data,$.mkAjaxHandler(function(){
 													if (!this.status) return $.Dialog.fail(false, this.message);
 
 													if (this.section){
@@ -312,7 +312,7 @@
 									let ponyLabel = data.label;
 									$.Dialog.close();
 									$.Dialog.wait('Manage Cutie Mark of '+ponyLabel, 'Retrieving CM data from server');
-									$.post(`${PGRq}/cg/appearance/getcms/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
+									$.get(`/api/cg/appearance/${appearanceID}/cutiemarks`,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										CutieMarkEditor.factory(false, appearanceID, ponyLabel, this);
@@ -333,11 +333,12 @@
 						data.APPEARANCE_PAGE = true;
 					if (PersonalGuide)
 						data.PERSONAL_GUIDE = true;
+					if (EQG)
+						data.eqg = true;
 
-					$.post(`${PGRq}/cg/appearance/${editing?`set/${appearanceID}`:'make'}${EQGRq}`,data,$.mkAjaxHandler(function(){
-						if (!this.status) return $.Dialog.fail(false, this.message);
+					$[editing?'put':'post'](`/api/cg/appearance${editing?`/${appearanceID}`:''}`,data,$.mkAjaxHandler(data => {
+						if (!data.status) return $.Dialog.fail(false, data.message);
 
-						data = this;
 						if (editing){
 							if (AppearancePage)
 								return $.Navigation.reload(true);
@@ -345,7 +346,7 @@
 							$ponyLabel.text(data.label);
 							if (data.newurl)
 								$ponyLabel.attr('href',data.newurl);
-							$ponyNotes.html(this.notes);
+							$ponyNotes.html(data.notes);
 							$.Dialog.close();
 							return;
 						}
@@ -1249,7 +1250,7 @@
 				if (AppearancePage)
 					data.APPEARANCE_PAGE = true;
 				$.Dialog.wait(false,'Saving cutie mark data');
-				$.post(`${PGRq}/cg/appearance/setcms/${appearance_id}${EQGRq}`,data,$.mkAjaxHandler(data => {
+				$.put(`/api/cg/appearance/${appearance_id}/cutiemarks`,data,$.mkAjaxHandler(data => {
 					if (!data.status) return $.Dialog.fail(false, data.message);
 
 					$.Dialog.close();
@@ -1506,7 +1507,7 @@
 			let data = {};
 			if (AppearancePage)
 				data.APPEARANCE_PAGE = true;
-			$.post(`${PGRq}/cg/appearance/applytemplate/${appearanceID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+			$.post(`/api/cg/appearance/${appearanceID}/template`,data,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let $pony = $(`#p${appearanceID}`);
@@ -1896,7 +1897,8 @@
 
 					$.Dialog.wait(title, 'Retrieving color group list from server');
 
-					$.post(`${PGRq}/cg/appearance/getcgs/${appearanceID}${EQGRq}`, $.mkAjaxHandler(function(){
+					const endpoint = `/api/cg/appearance/${appearanceID}/colorgroups`;
+					$.get(endpoint, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						let $CGReorderForm = $.mk('form','cg-reorder'),
@@ -1936,7 +1938,7 @@
 								if (AppearancePage)
 									data.APPEARANCE_PAGE = true;
 
-								$.post(`${PGRq}/cg/appearance/setcgs/${appearanceID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+								$.put(endpoint,data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(null, this.message);
 
 									$colors.html(this.cgs);
@@ -1985,7 +1987,10 @@
 
 						$.post(`${PGRq}/cg/colorgroup/del/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
 							if (this.status){
-								$group.remove();
+								const $parent = $group.parent();
+								if ($parent.children().length === 1)
+									$parent.empty();
+								else $group.remove();
 								$.Dialog.close();
 							}
 							else $.Dialog.fail(title, this.message);
@@ -2039,7 +2044,7 @@
 					requestKey: 'sprite',
 					title: 'Upload sprite',
 					accept: 'image/png',
-					target: `${PGRq}/cg/appearance/setsprite/${appearanceID}`,
+					target: `/api/cg/appearance/${appearanceID}/sprite`,
 				}).on('uz-uploadstart',function(){
 					$.Dialog.close();
 				}).on('uz-uploadfinish',function(){
@@ -2089,7 +2094,7 @@
 
 								$.Dialog.wait(title, 'Downloading external image to the server');
 
-								$.post(`${PGRq}/cg/appearance/setsprite/${appearanceID}${EQGRq}`,{image_url: image_url}, $.mkAjaxHandler(function(){
+								$.post(`/api/cg/appearance/${appearanceID}/sprite`,{image_url: image_url}, $.mkAjaxHandler(function(){
 									if (this.status)
 										$uploadInput.trigger('set-image', [this]);
 									else $.Dialog.fail(title,this.message);
@@ -2105,7 +2110,7 @@
 
 							$.Dialog.wait(false, 'Removing image');
 
-							$.post(`${PGRq}/cg/appearance/delsprite/${appearanceID}`, $.mkAjaxHandler(function(){
+							$.delete(`/api/cg/appearance/${appearanceID}/sprite`, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$this.find('img').attr('src', this.sprite);
@@ -2137,7 +2142,7 @@
 
 		$.Dialog.wait(title, 'Retrieving appearance details from server');
 
-		$.post(`${PGRq}/cg/appearance/get/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
+		$.get(`/api/cg/appearance/${appearanceID}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this;
@@ -2159,19 +2164,16 @@
 
 			$.Dialog.wait(title, 'Sending removal request');
 
-			$.post(`${PGRq}/cg/appearance/delete/${appearanceID}${EQGRq}`,$.mkAjaxHandler(function(){
+			$.delete(`/api/cg/appearance/${appearanceID}`,$.mkAjaxHandler(function(){
 				if (this.status){
 					$li.remove();
-					$.Dialog.success(title, this.message, PersonalGuide);
+					$.Dialog.success(title, this.message);
 
-					let path = window.location.pathname;
-					if ($list.children().length === 0)
-						path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
 					if (AppearancePage){
 						$.Dialog.wait('Navigation', 'Loading page 1');
 						$.Navigation.visit(`${PGRq}/cg/1`);
 					}
-					else if (PersonalGuide) $.toPage(path,true,true);
+					else $.Navigation.reload();
 				}
 				else $.Dialog.fail(title, this.message);
 			}));
@@ -2263,15 +2265,15 @@
 					{
 						name: 'tags',
 						display: 'name',
-						source: (query, callback) => {
-							if (TagAutocompleteCache.has(query))
-								return callback(TagAutocompleteCache.get(query));
-							$.get(`${PGRq}/cg/get-tags?s=`+encodeURIComponent(query), $.mkAjaxHandler(function(){
-								callback(TagAutocompleteCache.set(query, this));
+						source: (s, callback) => {
+							if (TagAutocompleteCache.has(s))
+								return callback(TagAutocompleteCache.get(s));
+							$.get(`/api/cg/tags`, { s }, $.mkAjaxHandler(function(){
+								callback(TagAutocompleteCache.set(s, this));
 							}));
 						},
 						templates: {
-							suggestion: Handlebars.compile('<span class="tag id-{{tid}} {{type}} {{#if synonym_of}}synonym{{else}}monospace{{/if}}">{{name}} <span class="uses">{{#if synonym_of}}<span class="typcn typcn-flow-children"></span>{{synonym_target}}{{else}}{{uses}}{{/if}}</span></span>')
+							suggestion: data => `<span class="tag id-${data.tid} ${data.type} ${data.synonym_of?'synonym':'monospace'}">${data.name} <span class="uses">${data.synonym_of?`<span class="typcn typcn-flow-children"></span>${data.synonym_target}`:data.uses}</span></span>`,
 						}
 					}
 				]
@@ -2284,10 +2286,12 @@
 		}
 		importTags(rawTags){
 			this.$editor.children('.tag').remove();
-			let tags = rawTags.split(',');
-			tags.forEach(tag => {
-				this.addTag(tag.trim(), false);
-			});
+			if (rawTags !== ''){
+				let tags = rawTags.split(',');
+				tags.forEach(tag => {
+					this.addTag(tag.trim(), false);
+				});
+			}
 		}
 		addTag(name, updateValue = true){
 			const $tag = $.mk('span').attr('class', 'tag').append(
@@ -2340,13 +2344,13 @@
 		$editTagsBtn.disable().html('Please wait&hellip;');
 
 		const appearanceID = $(this).closest('[id^=p]').attr('id').replace(/\D/g, '');
-		$.post(`/cg/appearance/gettags/${appearanceID}`, $.mkAjaxHandler(function(){
+		$.get(`/api/cg/appearance/${appearanceID}/tagged`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			const editor = new TagEditor(this.tags, tags => {
 				editor.disableButtons();
 
-				$.post(`/cg/appearance/settags/${appearanceID}`, { tags }, $.mkAjaxHandler(function(){
+				$.put(`/api/cg/appearance/${appearanceID}/tagged`, { tags }, $.mkAjaxHandler(function(){
 					if (!this.status){
 						editor.enableButtons();
 						return $.Dialog.fail('Saving tags', this.message);
@@ -2363,13 +2367,7 @@
 	});
 
 	$('.cg-export').on('click',function(){
-		$.mk('form').attr({
-			method:'POST',
-			action:'/cg/export',
-			target: '_blank',
-		}).html(
-			$.mk('input').attr('name','CSRF_TOKEN').val($.getCSRFToken())
-		).appendTo($body).submit().remove();
+		window.open('/api/cg/export', '_blank');
 	});
 
 	$('.cg-reindex').on('click',function(){
@@ -2378,7 +2376,7 @@
 
 			$.Dialog.wait(false);
 
-			$.post('/cg/reindex',$.mkAjaxHandler(function(){
+			$.post('/api/cg/reindex',$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.segway(false, this.message);
@@ -2392,7 +2390,7 @@
 
 			$.Dialog.wait(false,'Checking all sprite colors (this might take a while)');
 
-			$.post('/cg/sprite-color-checkup',$.mkAjaxHandler(function(){
+			$.post('/api/cg/sprite-color-checkup',$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.success(false, this.message, true);

@@ -57,7 +57,7 @@ $(function(){
 
 				$.Dialog.wait(`${Action} ${tagName} ${merging?'into':'with'} another tag`, 'Retrieving tag list from server');
 
-				$.post('/cg/get-tags',{not:tagID,action:action},$.mkAjaxHandler(function(){
+				$.get('/api/cg/tags',{not:tagID,action:action},$.mkAjaxHandler(function(){
 					if (!this.length){
 						if (this.undo)
 							return window.CGTagEditing.call(this, tagName, tagID, 'unsynon', $tr);

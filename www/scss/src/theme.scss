@@ -491,7 +491,7 @@ header, #sidebar .mobile-nav {
 	a:not(.btn) { @include link }
 }
 // Page layout - Sidebar
-#turbo-sign-in:before { vertical-align: top }
+#turbo-sign-in:before { vertical-align: middle }
 .btn-da, .btn-discord {
 	color: white;
 

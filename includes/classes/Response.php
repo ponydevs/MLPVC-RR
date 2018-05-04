@@ -5,7 +5,7 @@ namespace App;
 class Response {
 	public static function fail(string $message = '', $data = [], bool $prettyPrint = false){
 		if (empty($message)){
-			$message = Auth::$signed_in ? 'Insufficient permissions.' : '<p>You are not signed in (or your session expired).</p><p class="align-center"><button class="typcn green da-login" id="turbo-sign-in" data-url="'.DeviantArt::OAuthProviderInstance()->getAuthorizationUrl().'">Sign back in</button></p>';
+			$message = Auth::$signed_in ? 'Insufficient permissions.' : '<p>You are not signed in (or your session expired).</p><p class="align-center"><button class="typcn green btn-da da-login" id="turbo-sign-in" data-url="/da-auth/begin">Sign back in</button></p>';
 		}
 
 		self::_respond(false, $message, $data, $prettyPrint);

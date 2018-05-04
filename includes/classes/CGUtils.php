@@ -186,14 +186,13 @@ class CGUtils {
 			Response::fail('File upload failed; Reason unknown');
 
 		[$width, $height] = Image::checkType($tmp, $allowedMimeTypes);
+		Image::checkSize($tmp, $width, $height, $min, $max);
 		CoreUtils::createFoldersFor($path);
 
 		if (!move_uploaded_file($tmp, $path)){
 			CoreUtils::deleteFile($tmp);
 			Response::fail('File upload failed; Writing image file was unsuccessful');
 		}
-
-		Image::checkSize($path, $width, $height, $min, $max);
 	}
 
 	/**

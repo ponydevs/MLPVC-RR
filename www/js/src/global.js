@@ -181,7 +181,7 @@ $(function(){
 				}
 				if (!cdExists || diff.past){
 					clearCD();
-					$.post('/about/upcoming', $.mkAjaxHandler(function(){
+					$.get('/api/about/upcoming', $.mkAjaxHandler(function(){
 						if (!this.status) return console.error(`Failed to load upcoming event list: ${this.message}`);
 
 						const $uc = $('#upcoming');

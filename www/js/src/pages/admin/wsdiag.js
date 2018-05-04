@@ -53,7 +53,7 @@ $(function(){
 			$.Dialog.success(false, 'Hello response received', true);
 		});
 
-		$.post('/admin/wsdiag/hello', { priv, clientid }, $.mkAjaxHandler(function(){
+		$.get('/api/admin/wsdiag/hello', { priv, clientid }, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			if (!responseReceived)
