@@ -17,6 +17,7 @@ class VideoProvider {
 		'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
 		'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([a-z\d]+)(?:_|$)' => 'dm',
 		'sendvid\.com/(?:embed/)?([a-z\d]+)$' => 'sv',
+		'mega.nz/(?:embed)?#([A-Za-z\d_!]+)$' => 'mg',
 	];
 
 	/**
@@ -56,6 +57,9 @@ class VideoProvider {
 			break;
 			case 'sv':
 				$url = $urlOnly ? "https://sendvid.com/$video->id" : "https://sendvid.com/embed/$video->id";
+			break;
+			case 'mg':
+				$url = $urlOnly ? "https://mega.nz/#$video->id" : "https://mega.nz/embed#$video->id";
 			break;
 			default:
 				throw new \RuntimeException("Unrecognized provider: {$video->provider}");
