@@ -23,12 +23,14 @@ $(function(){
 			let yt_input = `<input type='url' class='yt' name='yt_1' placeholder='YouTube' spellcheck='false' autocomplete='off'>`,
 				dm_input = `<input type='url' class='dm' name='dm_1' placeholder='Dailymotion' spellcheck='false' autocomplete='off'>`,
 				sv_input = `<input type='url' class='sv' name='sv_1' placeholder='sendvid' spellcheck='false' autocomplete='off'>`,
+				mg_input = `<input type='url' class='mg' name='mg_1' placeholder='Mega' spellcheck='false' autocomplete='off'>`,
 				$VidLinksForm = $.mk('form').attr('id','vidlinks').attr('class','align-center').html(
 					`<p>Enter vido links below, leave any input blank to remove that video from the ${what} page.</p>
 					<div class='inputs'>
 						${yt_input}
 						${dm_input}
 						${sv_input}
+						${mg_input}
 					</div>`
 				);
 			if (data.twoparter){
@@ -39,12 +41,14 @@ $(function(){
 						<label><input type='checkbox' name='yt_1_full'> YouTube</label>
 						<label><input type='checkbox' name='dm_1_full'> Dailymotion</label>
 						<label><input type='checkbox' name='sv_1_full'> sendvid</label>
+						<label><input type='checkbox' name='mg_1_full'> Mega</label>
 					</div>
 					<p><strong>~ Part 2 ~</strong></p>
 					<div class='inputs'>
 						${yt_input.replace('yt_1', 'yt_2')}
 						${dm_input.replace('dm_1', 'dm_2')}
 						${sv_input.replace('sv_1', 'sv_2')}
+						${sv_input.replace('mg_1', 'mg_2')}
 					</div>`
 				);
 				$VidLinksForm.find('input[type="checkbox"]').on('change',function(){
