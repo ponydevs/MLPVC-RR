@@ -10,12 +10,13 @@ class CSRFProtection {
 	 * Checks POSTed data for CSRF token validity
 	 */
 	public static function detect(){
-		if (self::$isForged !== null || $_SERVER['REQUEST_METHOD'] === 'GET')
+		$cookieMissing = !Cookie::exists(self::$_cookieKey);
+		if (self::$isForged !== null || ($_SERVER['REQUEST_METHOD'] === 'GET' && !$cookieMissing))
 			return;
 
-		self::$isForged = !isset($_REQUEST[self::$_cookieKey]) || !Cookie::exists(self::$_cookieKey) || $_REQUEST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
+		self::$isForged = !isset($_REQUEST[self::$_cookieKey]) || $cookieMissing || $_REQUEST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
 		if (self::$isForged)
-			Cookie::set(self::$_cookieKey,bin2hex(random_bytes(16)), Cookie::SESSION);
+			Cookie::set(self::$_cookieKey, bin2hex(random_bytes(16)), Cookie::SESSION);
 	}
 
 	/**
