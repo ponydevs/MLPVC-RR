@@ -6,8 +6,7 @@ $(function(){
 		$fullList = $('#full-list'),
 		$ReorderBtn = $('#guide-reorder'),
 		$ReorderCancelBtn = $('#guide-reorder-cancel'),
-		EQG = !!window.EQG,
-		EQGRq = EQG?'?eqg':'';
+		EQG = !!window.EQG;
 	$sortBy.on('change',function(){
 		let baseurl = $sortBy.data('baseurl'),
 			val = $sortBy.val(),

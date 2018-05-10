@@ -5,6 +5,7 @@ require $_dir.'../../vendor/autoload.php';
 require $_dir.'../conf.php';
 
 use App\Models\Appearance;
+use App\RegExp;
 
 ini_set('max_execution_time', '0');
 

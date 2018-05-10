@@ -48,8 +48,7 @@
 		});
 	};
 
-	let $list = $('.appearance-list'),
-		$PonyEditorFormTemplate = $.mk('form','pony-editor')
+	let $PonyEditorFormTemplate = $.mk('form','pony-editor')
 			.append(
 				`<label>
 					<span>Name (2-70 chars.)</span>

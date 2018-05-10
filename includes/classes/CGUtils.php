@@ -469,7 +469,7 @@ HTML;
 		$SpritePath = SPRITE_PATH."{$Appearance->id}.png";
 		$SpriteExists = file_exists($SpritePath);
 		if ($SpriteExists){
-			/** @var $SpriteSize int[] */
+			/** @var $SpriteSize int[]|false */
 			$SpriteSize = getimagesize($SpritePath);
 			if ($SpriteSize === false)
 				throw new \RuntimeException("The sprite image located at $SpritePath could not be loaded by getimagesize");
