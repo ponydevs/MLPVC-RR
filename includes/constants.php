@@ -35,6 +35,7 @@ define('ONLY_RESERVATIONS', 2); // Posts::Get
 # string
 define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
 define('SPRITE_PATH', FSPATH.'sprites/');
+define('GDPR_IP_PLACEHOLDER', '127.168.80.82');
 # boolean
 define('AND_DIE', true); // CoreUtils::StatusCode
 define('AS_ARRAY',true); // Episode::FormatTitle

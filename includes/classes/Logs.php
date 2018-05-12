@@ -479,10 +479,13 @@ class Logs {
 			}
 			else $inituser = '<a class="search-user typcn typcn-zoom" title="Search for all entries by the server"></a> <spac class="name">Web server</spac>';
 
-			$ip = \in_array(strtolower($item->ip), self::LOCALHOST_IPS, true) ? 'localhost' : $item->ip;
-			$ownIP = $item->ip === $_SERVER['REMOTE_ADDR'];
-			$strongIP = $ownIP ? "<strong title='Your current IP'>$ip</strong>" : $ip;
-			$ip = "<a class='typcn typcn-zoom search-ip".($ownIP?' your-ip':'')."' title='Search for all entries from this IP'></a> <span class='address'>$strongIP</span>";
+			if ($item->ip !== GDPR_IP_PLACEHOLDER){
+				$ip = \in_array(strtolower($item->ip), self::LOCALHOST_IPS, true) ? 'localhost' : $item->ip;
+				$ownIP = $item->ip === $_SERVER['REMOTE_ADDR'];
+				$strongIP = $ownIP ? "<strong title='Your current IP'>$ip</strong>" : $ip;
+				$ip = "<a class='typcn typcn-zoom search-ip".($ownIP?' your-ip':'')."' title='Search for all entries from this IP'></a> <span class='address'>$strongIP</span>";
+			}
+			else $ip = '<em>IP wiped (GDPR)</em>';
 
 			$event = self::$LOG_DESCRIPTION[$item->reftype] ?? $item->reftype;
 			if (isset($item->refid))
