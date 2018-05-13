@@ -17,7 +17,7 @@ class VideoProvider {
 		'youtu(?:\.be/|be.com/watch.*[&?]v=)([^&?=]+)(?:&|$)' => 'yt',
 		'dai(?:\.ly/|lymotion.com/video/(?:embed/)?)([a-z\d]+)(?:_|$)' => 'dm',
 		'sendvid\.com/(?:embed/)?([a-z\d]+)$' => 'sv',
-		'mega.nz/(?:embed)?#([A-Za-z\d_!]+)$' => 'mg',
+		'mega(?:\.co)?\.nz/(?:embed)?#([A-Za-z\d!_-]+)$' => 'mg',
 	];
 
 	/**
