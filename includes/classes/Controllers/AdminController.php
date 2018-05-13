@@ -12,6 +12,7 @@ use App\Logs;
 use App\Models\Appearance;
 use App\Models\DiscordMember;
 use App\Models\Logs\Log;
+use App\Models\Notice;
 use App\Models\UsefulLink;
 use App\Models\User;
 use App\Models\UserPref;
@@ -35,6 +36,8 @@ class AdminController extends Controller {
 
 		if (!Permission::sufficient('staff'))
 			CoreUtils::noPerm();
+
+		CSRFProtection::protect();
 	}
 
 	public function index(){
@@ -156,8 +159,6 @@ class AdminController extends Controller {
 	}
 
 	public function logDetail($params){
-		CSRFProtection::protect();
-
 		if (!isset($params['id']) || !is_numeric($params['id']))
 			Response::fail('Entry ID is missing or invalid');
 
@@ -204,8 +205,6 @@ class AdminController extends Controller {
 	}
 
 	public function usefulLinksApi($params){
-		CSRFProtection::protect();
-
 		$action = $_SERVER['REQUEST_METHOD'];
 		$creating = $action === 'POST';
 
@@ -292,8 +291,6 @@ class AdminController extends Controller {
 	}
 
 	public function reorderUsefulLinks(){
-		CSRFProtection::protect();
-
 		$list = (new Input('list','int[]', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Missing ordering information',
@@ -309,8 +306,6 @@ class AdminController extends Controller {
 	}
 
 	public function massApprove(){
-		CSRFProtection::protect();
-
 		$ids = (new Input('ids','int[]', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 			    Input::ERROR_MISSING => 'List of deviation IDs is missing',
@@ -415,5 +410,90 @@ class AdminController extends Controller {
 				'Pagination' => $Pagination,
 			],
 		]);
+	}
+
+	public function notices(){
+		$ItemsPerPage = 25;
+		$Pagination = new Pagination('/admin/notices', $ItemsPerPage, Notice::count());
+		[$offset, $limit] = $Pagination->getLimit();
+
+		$notices = Notice::find('all', [
+			'limit' => $limit,
+			'offset' => $offset,
+		]);
+
+		$heading = 'Manage notices';
+		CoreUtils::loadPage(__METHOD__, [
+			'heading' => $heading,
+			'title' => "Page {$Pagination->getPage()} - $heading - Admin Area",
+			'view' => [true],
+			#'js' => [true],
+			'css' => [true],
+			'import' => [
+				'Pagination' => $Pagination,
+				'notices' => $notices,
+			],
+		]);
+	}
+	/** @var Notice|null */
+	private $_notice;
+	private function load_notice($params){
+		$this->_notice = Notice::find($params['id']);
+
+		if (!$this->creating && empty($this->_notice))
+			Response::fail('The specified notice does not exist');
+	}
+	public function noticesApi($params){
+		# TODO Implement notice editing on the client side
+		CoreUtils::notFound();
+
+		$this->load_notice($params);
+
+		switch ($this->action){
+			case 'GET':
+				Response::done($this->_notice->to_array());
+			break;
+			case 'POST':
+			case 'PUT':
+				if ($this->creating){
+					$this->_notice = new Notice([
+						'posted_by' => Auth::$user->id,
+					]);
+				}
+
+				$message_html = (new Input('message_html','string', [
+					Input::IN_RANGE => [null, 500],
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Message is missing',
+						Input::ERROR_INVALID => 'Message is invalid',
+						Input::ERROR_RANGE => 'Message cannot be longer than @max chars',
+					],
+				]))->out();
+				CoreUtils::checkStringValidity($message_html, INVERSE_PRINTABLE_ASCII_PATTERN, 'Message');
+				$this->_notice->message_html = $message_html;
+
+				$hide_after = (new Input('hide_after', 'timestamp', [
+					Input::IN_RANGE => [time(), null],
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Hide after date is missing',
+						Input::ERROR_INVALID => 'Hide after date is invalid',
+						Input::ERROR_RANGE => 'Hide after date cannot be in the past',
+					],
+				]))->out();
+				$this->_notice->hide_after = $hide_after;
+
+				# TODO Validate notice type
+				$this->_notice->type = (new Input('type','string'))->out();
+
+				$this->_notice->save();
+				Response::done(['notice' => $this->_notice->to_array()]);
+			break;
+			case 'DELETE':
+				$this->_notice->delete();
+
+				Response::done();
+			break;
+			default: CoreUtils::notAllowed();
+		}
 	}
 }

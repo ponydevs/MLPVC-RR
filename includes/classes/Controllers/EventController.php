@@ -131,7 +131,7 @@ class EventController extends Controller {
 		CoreUtils::checkStringValidity($description, 'Event description', INVERSE_PRINTABLE_ASCII_PATTERN);
 		$update['desc_src'] = $description;
 		/** @noinspection PhpUndefinedMethodInspection */
-		$update['desc_rend'] = \Parsedown::instance()->setUrlsLinked(false)->setBreaksEnabled(true)->setMarkupEscaped(true)->text($description);
+		$update['desc_rend'] = CoreUtils::parseMarkdown($description);
 
 		if (!$editing){
 			$type = (new Input('type',function($value){

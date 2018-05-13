@@ -34,6 +34,7 @@ $router->map('GET', '/',                               'UserController#homepage'
 $router->map('GET', '/about',                          'AboutController#index');
 $router->map('GET', '/about/browser/[uuid:session]?',  'AboutController#browser');
 $router->map('GET', '/browser/[uuid:session]?',        'AboutController#browser');
+$router->map('GET', '/about/privacy',                  'AboutController#privacy');
 $router->map('GET', '/admin',                          'AdminController#index');
 $router->map('GET', '/logs/[i]?',                      'AdminController#log');
 $router->map('GET', '/admin/logs/[i]?',                'AdminController#log');
@@ -41,6 +42,7 @@ $router->map('GET', '/admin/discord',                  'AdminController#discord'
 $router->map('GET', '/admin/usefullinks',              'AdminController#usefulLinks');
 $router->map('GET', '/admin/wsdiag',                   'AdminController#wsdiag');
 $router->map('GET', '/admin/pcg-appearances/[i]?',     'AdminController#pcgAppearances');
+$router->map('GET', '/admin/notices',                  'AdminController#notices');
 $router->map('GET', '/blending',                       'ColorGuideController#blending');
 $router->map('GET', '/components',                     'ComponentsController#index');
 $router->map('GET', '/[cg]/blending',                                      'ColorGuideController#blending');
@@ -104,6 +106,7 @@ $router->map(CRUD,     '/api/admin/usefullinks/[i:id]?',        'AdminController
 $router->map('POST',   '/api/admin/usefullinks/reorder',        'AdminController#reorderUsefulLinks');
 $router->map('POST',   '/api/admin/wsdiag/hello',               'AdminController#wshello');
 $router->map('POST',   '/api/admin/mass-approve',               'AdminController#massApprove');
+$router->map(CRUD,     '/api/admin/notices/[i:id]?',            'AdminController#noticesApi');
 $router->map(CRUD,     '/api/cg/appearance/[i:id]?',            'AppearanceController#api');
 $router->map(GET_PUT,  '/api/cg/appearance/[i:id]/colorgroups', 'AppearanceController#colorGroupsApi');
 $router->map(POST_DEL, '/api/cg/appearance/[i:id]/sprite',      'AppearanceController#spriteApi');

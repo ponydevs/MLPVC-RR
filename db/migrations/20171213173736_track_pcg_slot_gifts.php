@@ -11,7 +11,7 @@ class TrackPcgSlotGifts extends AbstractMigration {
 			->addColumn('claimed',     'boolean', ['default' => false])
 			->addColumn('rejected',    'boolean', ['default' => false])
 			->addColumn('refunded_by', 'uuid',    ['default' => null, 'null' => true])
-			->addTimestamps()
+			->addTimestamps(null, null, true)
 			->addIndex('sender_id')
 			->addIndex('receiver_id')
 			->addIndex('refunded_by')

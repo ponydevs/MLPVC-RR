@@ -147,6 +147,8 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function api($params){
+		CSRFProtection::protect();
+
 		$this->_initPersonal($params, false);
 
 		if (!Auth::$signed_in)
@@ -514,6 +516,8 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function colorGroupsApi($params){
+		CSRFProtection::protect();
+
 		$this->_getAppearance($params);
 		$this->_permissionCheck();
 
@@ -602,6 +606,8 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function spriteApi($params){
+		CSRFProtection::protect();
+
 		$this->_getAppearance($params);
 		$this->_permissionCheck();
 
@@ -640,6 +646,8 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function relationsApi($params){
+		CSRFProtection::protect();
+
 		$this->_getAppearance($params);
 		$this->_permissionCheck();
 
@@ -710,6 +718,8 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function cutiemarkApi($params){
+		CSRFProtection::protect();
+
 		$this->_getAppearance($params);
 		$this->_permissionCheck();
 
@@ -903,6 +913,8 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function taggedApi($params){
+		CSRFProtection::protect();
+
 		$this->_getAppearance($params);
 		$this->_permissionCheck();
 

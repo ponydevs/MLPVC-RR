@@ -7,6 +7,7 @@ use ActiveRecord\SQLBuilder;
 use App\Models\Episode;
 use App\Models\Event;
 use App\Models\FailsafeUser;
+use App\Models\Notice;
 use App\Models\UsefulLink;
 use App\Models\User;
 use Elasticsearch\Client;
@@ -197,6 +198,7 @@ class CoreUtils {
 	 *     'js' => array,         - Specify a an array of JS files to load (true = autodetect)
 	 *     'view' => string,      - Which view file to open (defaults to $do)
 	 *     'url' => string,       - A URL which will replace the one sent to the browser
+	 *     'import' => array,     - An array containing key-value pairs to pass to the view as local variables
 	 * );
 	 *
 	 * @param string $view_name
@@ -730,8 +732,8 @@ class CoreUtils {
 		$out = [];
 		if ($disable_git === false)
 			$out[] = self::getFooterGitInfo();
-		$out[] = "<a class='issues' href='".GITHUB_URL."/issues' target='_blank' rel='noopener'>Known issues</a>";
-		$out[] = '<a class="send-feedback">Send feedback</a>';
+		$out[] = '<a href="/about/privacy">Privacy Policy</a>';
+		$out[] = '<a class="send-feedback">Contact</a>';
 		return implode(' | ',$out);
 	}
 
@@ -1343,5 +1345,51 @@ HTML;
 	public static function callScript(string $name, array $args = [], &$output = null){
 		$arguments = array_map('escapeshellarg', $args);
 		return exec('nohup /usr/bin/php -f '.INCPATH."scripts/$name.php ".implode(' ', $arguments).' > /dev/null 2>&1 &', $output);
+	}
+
+	public static function parseMarkdown(string $text):string {
+		return \Parsedown::instance()->setUrlsLinked(false)->setBreaksEnabled(true)->setMarkupEscaped(true)->text($text);
+	}
+
+	public static function renderNotices(){
+		$HTML = '';
+
+		$notices = Notice::find('all', [
+			'conditions' => 'hide_after > now()'
+		]);
+
+		$HTML = implode('', $notices);
+
+		if (empty($HTML))
+			return;
+
+		echo $HTML;
+	}
+
+	/**
+	 * @param Notice[] $notices
+	 * @param bool     $wrap
+	 *
+	 * @return string
+	 */
+	public static function getNoticeListHTML(array $notices, bool $wrap = WRAP):string {
+		$HTML = '';
+
+		foreach ($notices as $notice){
+			$time = Time::tag($notice->hide_after);
+			$HTML .= <<<HTML
+<li class="notice-item">
+	<span class="text">{$notice->message_html}</span>
+	&ndash;
+	<span class="time">Hidden $time</span>
+	<span class="actions">
+		<button class="red typcn typcn-trash delete" title="Delete" disabled></button>
+		<button class="blue typcn typcn-pencil edit" title="Edit" disabled></button>
+	</span>
+</li>
+HTML;
+		}
+
+		return $wrap ? "<ul id='notice-list'>$HTML</ul>" : $HTML;
 	}
 }

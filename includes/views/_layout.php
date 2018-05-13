@@ -119,7 +119,10 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 <?php include INCPATH.'views/_sidebar.php'; ?>
 	</aside>
 
-	<ol id="breadcrumbs" itemscope itemtype="http://schema.org/BreadcrumbList"><?=CoreUtils::getBreadcrumbsHTML($fatalErrorPage, $scope, $view ?? null)?></ol>
+	<div id="above-content">
+		<ol id="breadcrumbs" itemscope itemtype="http://schema.org/BreadcrumbList"><?=CoreUtils::getBreadcrumbsHTML($fatalErrorPage, $scope, $view ?? null)?></ol>
+		<div id="notices"><?=CoreUtils::renderNotices()?></div>
+	</div>
 
 	<div id="main">
 <?php  if (isset($view) && $view instanceof View)

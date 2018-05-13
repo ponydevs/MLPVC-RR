@@ -31,7 +31,7 @@ class View {
 	public function getBreadcrumb(array $scope):?NavBreadcrumb {
 		switch ($this->class){
 			case 'about':
-				$bc = new NavBreadcrumb('About');
+				$bc = new NavBreadcrumb('About','/about');
 				switch ($this->method){
 					case 'browser':
 						if (isset($scope['Session'])){
@@ -41,7 +41,10 @@ class View {
 								(new NavBreadcrumb($session->user->name, $session->user->toURL()))->setChild('Session #'.$session->id)
 							);
 						}
-						else $bc->setChild('Browser Recongition Testing Page');
+						else $bc->setChild($scope['title']);
+					break;
+					case 'privacy':
+						$bc->setChild($scope['title']);
 					break;
 					default:
 						$bc->setActive();
@@ -50,24 +53,11 @@ class View {
 			case 'admin':
 				$bc = new NavBreadcrumb('Admin Area', '/admin');
 				switch ($this->method){
-					case 'discord':
-						$bc->setChild('Discord Server Members');
-					break;
-					case 'ip':
-						$bc->setChild(
-							(new NavBreadcrumb('Known IPs'))->setChild($scope['ip'])
-						);
-					break;
 					case 'log':
-						$bc->setChild('Global Logs');
-					break;
 					case 'usefullinks':
-						$bc->setChild('Manage Useful Links');
-					break;
 					case 'wsdiag':
-						$bc->setChild('WebSocket Server Diagnostics');
-					break;
 					case 'pcgappearances':
+					case 'notices':
 						$bc->setChild($scope['heading']);
 					break;
 					case 'index':

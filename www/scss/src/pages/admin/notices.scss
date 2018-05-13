@@ -1,0 +1,17 @@
+#notice-list {
+	&:empty:before {
+		content: "No notices to display.";
+		display: block;
+		font-size: 1.2em;
+		font-style: italic;
+		text-align: center;
+		margin: 10px 0;
+	}
+
+	.notice-item .actions button {
+		margin: 0;
+		display: inline;
+		vertical-align: baseline;
+		padding: 2px;
+	}
+}

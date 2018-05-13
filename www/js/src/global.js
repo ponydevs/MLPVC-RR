@@ -252,17 +252,16 @@ $(function(){
 		e.stopPropagation();
 		$('#ctxmenu').hide();
 
-		// Screw JS file scraping spambots
+		// Screw JS file scraping spam bots
 		const email = ['seinopsys','gmail.com'].join('@');
 
-		$.Dialog.info($.Dialog.isOpen() ? undefined : 'Send feedback',
-			`<h3>How to send feedback</h3>
-			<p>If you're having an issue with the site and would like to let us know or have an idea/feature request you'd like to share, here's how:</p>
+		$.Dialog.info($.Dialog.isOpen() ? undefined : 'Contact',
+			`<h3>How to contact us</h3>
+			<p>You can use any of the following methods to reach out to us:</p>
 			<ul>
 				<li><a href='https://discord.gg/0vv70fepSILbdJOD'>Join our Discord server</a> and describe your issue/idea in the <strong>#support</strong> channel</li>
 				<li><a href='http://mlp-vectorclub.deviantart.com/notes/'>Send a note </a>to the group on DeviantArt</li>
 				<li><a href='mailto:${email}'>Send an e-mail</a> to ${email}</li>
-				<li>If you have a GitHub account, you can also  <a href="${$footer.find('a.issues').attr('href')}">create an issue</a> on the project's GitHub page.
 			</ul>`
 		);
 	});
@@ -343,82 +342,71 @@ $(function(){
 	checkToTop();
 
 	// Sign in button handler
-	$.LocalStorage.remove('cookie_consent');
-	let consent = $.LocalStorage.get('cookie_consent_v2');
-
+	$.LocalStorage.remove('cookie_consent_v2');
 	$('#signin').off('click').on('click',function(){
-		let $this = $(this),
-			opener = function(sure){
-				if (!sure) return;
+		let $this = $(this);
+		$this.disable();
 
-				$.Dialog.close();
-				$.LocalStorage.set('cookie_consent_v2',1);
-				$this.disable();
+		let redirect = function(){
+			$.Dialog.wait(false, 'Redirecting you to DeviantArt');
+			location.href = '/da-auth/begin?return='+encodeURIComponent($.hrefToPath(location.href));
+		};
 
-				let redirect = function(){
-					$.Dialog.wait(false, 'Redirecting you to DeviantArt');
-					location.href = '/da-auth/begin?return='+encodeURIComponent($.hrefToPath(location.href));
-				};
+		if (navigator.userAgent.indexOf('Trident') !== -1)
+			return redirect();
 
-				if (navigator.userAgent.indexOf('Trident') !== -1)
-					return redirect();
+		$.Dialog.wait('Sign-in process', "Opening popup window");
 
-				$.Dialog.wait('Sign-in process', "Opening popup window");
-
-				let success = false, closeCheck, popup, waitForIt = false;
-				window.__authCallback = function(fail, openedWindow){
-					clearInterval(closeCheck);
-					if (fail === true){
-						if (!openedWindow.jQuery)
-							$.Dialog.fail(false, 'Sign in failed, check popup for details.');
-						else {
-							const
-								pageTitle = openedWindow.$('#content').children('h1').html(),
-								noticeText = openedWindow.$('#content').children('.notice').html();
-							$.Dialog.fail(false, `<p class="align-center"><strong>${pageTitle}</strong></p><p>${noticeText}</p>`);
-							popup.close();
-						}
-						$this.enable();
-						return;
-					}
-
-					success = true;
-					$.Dialog.success(false, 'Signed in successfully');
+		let success = false, closeCheck, popup, waitForIt = false;
+		window.__authCallback = function(fail, openedWindow){
+			clearInterval(closeCheck);
+			if (fail === true){
+				if (!openedWindow.jQuery)
+					$.Dialog.fail(false, 'Sign in failed, check popup for details.');
+				else {
+					const
+						pageTitle = openedWindow.$('#content').children('h1').html(),
+						noticeText = openedWindow.$('#content').children('.notice').html();
+					$.Dialog.fail(false, `<p class="align-center"><strong>${pageTitle}</strong></p><p>${noticeText}</p>`);
 					popup.close();
-					$.Navigation.reload(true);
-				};
-				try {
-					popup = $.PopupOpenCenter('/da-auth/begin','login','450','580');
-				}catch(e){}
-				// http://stackoverflow.com/a/25643792
-				let onWindowClosed = function(){
-						if (success)
-							return;
+				}
+				$this.enable();
+				return;
+			}
 
-						if (document.cookie.indexOf('auth=') !== -1)
-							return window.__authCallback;
+			success = true;
+			$.Dialog.success(false, 'Signed in successfully');
+			popup.close();
+			$.Navigation.reload(true);
+		};
+		try {
+			popup = $.PopupOpenCenter('/da-auth/begin','login','450','580');
+		}catch(e){}
+		// http://stackoverflow.com/a/25643792
+		let onWindowClosed = function(){
+				if (success)
+					return;
 
-						$.Dialog.fail(false, 'Popup-based login failed');
-						redirect();
-					};
-				closeCheck = setInterval(function(){
-					try {
-						if (!popup || popup.closed){
-							clearInterval(closeCheck);
-							onWindowClosed();
-						}
-					}catch(e){}
-				}, 500);
-				$w.on('beforeunload', function(){
-					success = true;
-					if (!waitForIt)
-						popup.close();
-				});
-				$.Dialog.wait(false, "Waiting for you to sign in");
+				if (document.cookie.indexOf('auth=') !== -1)
+					return window.__authCallback;
+
+				$.Dialog.fail(false, 'Popup-based login failed');
+				redirect();
 			};
-
-		if (!consent) $.Dialog.confirm('Privacy Notice',`<p>We must inform you that our website will store cookies on your device to remember your logged in status between browser sessions.</p><p>If you would like to avoid these completly harmless pieces of text which are required to log in to this website, click "Decline" and continue browsing as a guest.</p><p><em>This warning will not appear again if you accept our use of persistent cookies.</em></p>`,['Accept','Decline'],opener);
-		else opener(true);
+		closeCheck = setInterval(function(){
+			try {
+				if (!popup || popup.closed){
+					clearInterval(closeCheck);
+					onWindowClosed();
+				}
+			}catch(e){}
+		}, 500);
+		$w.on('beforeunload', function(){
+			success = true;
+			if (!waitForIt)
+				popup.close();
+		});
+		$.Dialog.wait(false, "Waiting for you to sign in");
 	});
 
 	// Sign out button handler

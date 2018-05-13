@@ -25,7 +25,7 @@ class Pagination {
 	/**
 	 * Creates an instance of the class and return the generated HTML
 	 *
-	 * @param string $basePath     The starting path of ech paginated page without the page number
+	 * @param string $basePath     The starting path of each paginated page
 	 * @param int    $itemsPerPage Number of items to display on a single page
 	 * @param int    $entryCount   Number of available entries
 	 * @param string $noConflict   Specify a name to use for the query string parameter
@@ -189,7 +189,7 @@ class Pagination {
 	/**
 	 * Creates the LIMIT array that can be used with PostgresDb's get() method
 	 *
-	 * @return int[]
+	 * @return int[] Array in the format [offset, limit]
 	 */
 	public function getLimit(){
 		return [($this->_page-1)*$this->_itemsPerPage, $this->_itemsPerPage ];

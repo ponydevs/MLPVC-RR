@@ -2,7 +2,7 @@
 <div id="content">
 	<h1><?=$heading?></h1>
 	<p>Add, reorder and remove useful links</p>
-	<div class='align-center links'>
+	<div class='align-center button-block'>
 		<button class="green typcn typcn-plus" id="add-link">Add link</button>
 		<button class='blue typcn typcn-arrow-unsorted' id="reorder-links">Re-order links</button>
 		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>

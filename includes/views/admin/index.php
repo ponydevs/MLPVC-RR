@@ -7,6 +7,7 @@ use App\Permission;
 	<p>Various tools related to managing the site</p>
 	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-document-text' href="/admin/logs">Logs</a>
+		<a class='btn link typcn typcn-info' href="/admin/notices">Notices</a>
 <?php   if (Permission::sufficient('developer')){ ?>
 		<a class='btn link typcn typcn-code' href="/admin/wsdiag">WS</a>
 <?php   } ?>

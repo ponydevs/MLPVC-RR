@@ -106,8 +106,10 @@
 			}
 		}
 	}
-	#breadcrumbs, #main {
+	#above-content, #main {
 		position: initial;
+	}
+	#breadcrumbs, #main {
 		padding: 5px;
 	}
 	#main {
@@ -187,7 +189,7 @@
 		}
 	}
 
-	#main, #breadcrumbs {
+	#main, #above-content {
 		position: relative;
 		z-index: 1;
 	}
@@ -226,7 +228,8 @@
 // Sidebar always visible
 @media all and (min-width: $SidebarBreakpoint){
 	#sidebar { left: 0 !important }
-	#main, #breadcrumbs { padding-left: $SidebarWidth + $MainMargin }
+	#main { padding-left: $SidebarWidth + $MainMargin }
+	#above-content { padding-left: $SidebarWidth }
 
 	header nav ul {
 		padding-left: $HeaderLiTopMargin !important;
@@ -456,6 +459,12 @@ header, #sidebar .mobile-nav {
 			font-weight: normal;
 		}
 	}
+}
+// Page layout - Notices
+#notices .notice {
+	margin: 0;
+	border-width: 0 0 2px;
+	border-radius: 0;
 }
 // Page layout - Content
 #main {

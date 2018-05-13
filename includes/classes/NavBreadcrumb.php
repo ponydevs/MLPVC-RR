@@ -2,6 +2,11 @@
 
 namespace App;
 
+/**
+ * A class for recursively storing navigation breadcrumbs
+ *
+ * @see View::getBreadcrumb For rendering implementation
+ */
 class NavBreadcrumb {
 	/** @var string */
 	private $name;

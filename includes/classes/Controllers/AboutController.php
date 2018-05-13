@@ -60,4 +60,11 @@ class AboutController extends Controller {
 	public function upcoming(){
 		Response::done(['html' => CoreUtils::getSidebarUpcoming(NOWRAP)]);
 	}
+
+	public function privacy(){
+		CoreUtils::loadPage(__METHOD__, [
+			'title' => 'Privacy Policy',
+			'css' => [true],
+		]);
+	}
 }
