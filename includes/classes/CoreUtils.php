@@ -1351,9 +1351,7 @@ HTML;
 		return \Parsedown::instance()->setUrlsLinked(false)->setBreaksEnabled(true)->setMarkupEscaped(true)->text($text);
 	}
 
-	public static function renderNotices(){
-		$HTML = '';
-
+	public static function getNoticesHTML():string {
 		$notices = Notice::find('all', [
 			'conditions' => 'hide_after > now()'
 		]);
@@ -1361,9 +1359,9 @@ HTML;
 		$HTML = implode('', $notices);
 
 		if (empty($HTML))
-			return;
+			return '';
 
-		echo $HTML;
+		return $HTML;
 	}
 
 	/**
