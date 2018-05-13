@@ -11,7 +11,7 @@ class CreateNoticesTable extends AbstractMigration {
 			->addColumn('type', 'string', ['length' => 16])
 			->addColumn('posted_by', 'uuid')
 			->addTimestamps(null, null, true)
-			->addColumn('hide_after', 'timestamp')
+			->addColumn('hide_after', 'timestamp', ['timezone' => true])
 			->addForeignKey('posted_by', 'users', 'id', ['update' => 'CASCADE', 'delete' => 'RESTRICT'])
 			->addIndex('posted_by')
 			->create();
