@@ -77,7 +77,9 @@ $(function(){
 
 			$.Dialog.wait('Bulk approve posts', `Attempting to approve ${deviationIDArray.length} post${deviationIDArray.length!==1?'s':''}`);
 
-			$.post('/admin/mass-approve',{ids:deviationIDArray.join(',')},$.mkAjaxHandler(function(){
+			const ids = deviationIDArray.join(',');
+
+			$.post('/api/admin/mass-approve', { ids }, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				if (this.html){
