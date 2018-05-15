@@ -96,7 +96,8 @@ class View {
 						$bc->setChild('Full List');
 					break;
 					case 'picker':
-						$ret = null;
+						$ret->setLink('/cg');
+						$ret->setChild('Color Picker');
 					break;
 					case 'sprite':
 						/** @var $appearance \App\Models\Appearance */

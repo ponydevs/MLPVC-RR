@@ -931,3 +931,17 @@ body {
 		}
 	}
 }
+
+#paste-div {
+	width: 100%;
+	border: 1px dotted;
+	padding: 10px;
+	box-sizing: border-box;
+	text-align: center;
+	cursor: text;
+
+	&:before {
+		content: "Paste here";
+		opacity: .7;
+	}
+}

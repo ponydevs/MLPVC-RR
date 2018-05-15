@@ -43,7 +43,6 @@
                 (cont = el.container || el)[addEventListener](
                     mousedown,
                     cont.md = function(e) {
-                        console.log('mousedown');
                         if (!el.hasAttribute('nochilddrag') ||
                             _document.elementFromPoint(
                                 e.pageX, e.pageY
@@ -65,7 +64,6 @@
                 _window[addEventListener](
                     mousemove,
                     cont.mm = $.throttle(100, function(e) {
-                        console.log('mousemove', pushed);
                         if (pushed) {
                             (scroller = el.scroller||el).scrollLeft -=
                                 newScrollX = (- lastClientX + (lastClientX=e.clientX));

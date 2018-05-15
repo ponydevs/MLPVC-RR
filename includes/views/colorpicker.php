@@ -11,7 +11,8 @@
 	<li>
 		<a class="dropdown">File</a>
 		<ul class="hidden">
-			<li><a id="open-image">Open&hellip; <span class="kbd">(Ctrl+K)</span></a></li>
+			<li><a id="open-image">Open&hellip; <span class="kbd">(Ctrl+O)</span></a></li>
+			<li><a id="paste-image">Open from Clipboard&hellip; <span class="kbd">(Ctrl+Shift+O)</span></a></li>
 		</ul>
 	</li>
 	<li>
@@ -54,6 +55,7 @@
 <script src="<?=\App\CoreUtils::cachedAssetLink('dragscroll','js/min','js')?>"></script>
 <script src="<?=\App\CoreUtils::cachedAssetLink('canvas.hdr','js/min','js')?>"></script>
 <script src="<?=\App\CoreUtils::cachedAssetLink('nouislider','js/min','js')?>"></script>
+<script src="<?=\App\CoreUtils::cachedAssetLink('paste','js/min','js')?>"></script>
 <script src="<?=\App\CoreUtils::cachedAssetLink('colorpicker','js/min','js')?>"></script>
 </body>
 </html>

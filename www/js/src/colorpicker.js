@@ -17,6 +17,7 @@
 		settings: undefined,
 	};
 	const LEVEL_FULL_RANGE = () => ({ low: 0, high: 255 });
+	const NOOP = function(){};
 
 	const
 		Tools = {
@@ -313,16 +314,22 @@
 				this._$menubar.find('a.active').removeClass('active').next().addClass('hidden');
 				$this.addClass('active').next().removeClass('hidden');
 			});
-			this._$filein = $.mk('input','screenshotin').attr({
+			this._$filein = $.mk('input').attr({
 				type: 'file',
 				accept: 'image/png,image/jpeg,image/bmp',
 				tabindex: -1,
 				'class': 'fileinput',
 			}).prop('multiple',true).appendTo($body);
-			this._$openImage = $('#open-image').on('click',e => {
+			this._$openImage = $('#open-image').on('click', e => {
 				e.preventDefault();
 
 				this.requestFileOpen();
+			});
+			this.pasteCounter = 1;
+			this._$pasteImage = $('#paste-image').on('click', e => {
+				e.preventDefault();
+
+				this.requestFilePaste();
 			});
 			this._$filein.on('change',() => {
 				const files = this._$filein[0].files;
@@ -330,7 +337,7 @@
 					return;
 
 				const s = files.length !== 1 ? 's' : '';
-				$.Dialog.wait('Opening file'+s,'Reading opened file'+s+', please wait');
+				$.Dialog.wait(`Opening file${s}`,`Reading opened file${s}, please wait`);
 
 				let ptr = 0;
 				const next = () => {
@@ -385,6 +392,21 @@
 		}
 		requestFileOpen(){
 			this._$filein.trigger('click');
+		}
+		requestFilePaste(){
+			const $pasteArea = $.mk('div','paste-div').attr('contenteditable', 'true');
+			$.Dialog.request('Open from Clipboard', $pasteArea, false, () => {
+				$pasteArea.pastableContenteditable();
+				$pasteArea.on('pasteImage', (e, data) => {
+					$.Dialog.close();
+					ColorPicker.getInstance().openImage(data.dataURL, data.name || `paste${this.pasteCounter++}-${data.width}x${data.height}.png`);
+				}).on('pasteImageError', function(e, data) {
+					$.Dialog.fail('Could not read pasted data: ' + data.message);
+				}).on('pasteText', function() {
+					$pasteArea.html('');
+				});
+				$pasteArea[0].focus();
+			});
 		}
 		/** @return {Menubar} */
 		static getInstance(){
@@ -496,17 +518,15 @@
 	}
 
 	const
-		areaColorFormUpdatePreview = function($form, data){
+		areaColorFormUpdatePreview = function($form){
 			const $preview = $form.find('.color-preview');
-
-			$preview.html($.mk('div').css('background-color',`rgba(${data.red},${data.green},${data.blue},${data.opacity/100})`));
+			const formData = $form.mkData();
+			$preview.html($.mk('div').css('background-color',`rgba(${formData.red},${formData.green},${formData.blue},${Math.round(formData.opacity/100)})`));
 		},
 		areaColorFormInputChange = function(e){
-			const
-				$form =  $(e.target).closest('form'),
-				data = $form.mkData();
+			const $form = $(e.target).closest('form');
 
-			areaColorFormUpdatePreview($form, data);
+			areaColorFormUpdatePreview($form);
 		},
 		$AreaColorForm = $.mk('form','set-area-color').append(
 			`<div class="label">
@@ -526,10 +546,11 @@
 			</div>`
 		).on('change keyup input','.change',areaColorFormInputChange).on('set-color',function(_, color){
 			const $form = $(this);
-			$.each(['red','green','blue','opacity'],(_,key) => {
+			$.each($.RGBAColor.COMPONENTS, (_,key) => {
 				$form.find(`input[name="${key}"]`).val(color[key]);
 			});
-			areaColorFormUpdatePreview($form, color);
+			$form.find(`input[name="opacity"]`).val(Math.round(color.alpha * 100));
+			areaColorFormUpdatePreview($form);
 		});
 
 	class Tab {
@@ -618,7 +639,7 @@
 					tmpc.height = 1;
 					const tmpctx = tmpc.getContext('2d');
 					tmpctx.drawImage(imgel,0,0,1,1);
-					const px = new Pixel(...tmpctx.getImageData(0,0,1,1).data, 127).invert();
+					const px = new Pixel(...tmpctx.getImageData(0,0,1,1).data, 0.5).invert();
 					this.savePickingAreaColor($.RGBAColor.fromRGB(px));
 				}
 
@@ -1854,7 +1875,7 @@
 			if (levelsEnabled)
 				this.getImageCanvasCtx().initialize();
 		}
-		openImage(src, fname, callback){
+		openImage(src, fname, callback = NOOP){
 			if (this._$picker.hasClass('loading'))
 				throw new Error('The picker is already loading another image');
 
@@ -2037,7 +2058,9 @@
 				if (!e.ctrlKey || e.altKey)
 					return;
 
-				Menubar.getInstance().requestFileOpen();
+				if (e.shiftKey)
+					Menubar.getInstance().requestFilePaste();
+				else Menubar.getInstance().requestFileOpen();
 			break;
 			case Key.Z:
 				ColorPicker.getInstance().switchTool(Tools.zoom);
