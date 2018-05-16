@@ -301,10 +301,15 @@ class CoreUtils {
 					$defaults[$k] = $v;
 			}
 		}
-		if ($defaults['image'][0] === '/')
-			$defaults['image'] = ABSPATH.ltrim($defaults['image'], '/');
+		self::toAbsoluteUrl($defaults['image']);
+		self::toAbsoluteUrl($defaults['url']);
 
 		return $defaults;
+	}
+
+	public static function toAbsoluteUrl(string &$url){
+		if (preg_match('~^/([^/].*)?$~',$url))
+			$url = ABSPATH.ltrim($url, '/');
 	}
 
 	/**

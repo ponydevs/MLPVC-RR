@@ -214,4 +214,19 @@ class CoreUtilsTest extends TestCase {
 		CoreUtils::appendFragment('/a?b#c', $result);
 		self::assertEquals('?b#c',$result);
 	}
+
+	public function testAbsoluteUrl(){
+		$result = 'https://example.com/path';
+		CoreUtils::toAbsoluteUrl($result);
+		self::assertEquals('https://example.com/path',$result);
+		$result = '/test';
+		CoreUtils::toAbsoluteUrl($result);
+		self::assertEquals(ABSPATH.'test',$result);
+		$result = '//example.com/path';
+		CoreUtils::toAbsoluteUrl($result);
+		self::assertEquals('//example.com/path',$result);
+		$result = '/a/b/c';
+		CoreUtils::toAbsoluteUrl($result);
+		self::assertEquals(ABSPATH.'a/b/c',$result);
+	}
 }

@@ -26,12 +26,13 @@ use App\View;
 
 $fatalErrorPage = defined('FATAL_ERROR'); ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 <head>
 	<meta charset="utf-8">
 	<title><?=CoreUtils::escapeHTML($title)?></title>
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta property="og:type" content="website">
+	<meta property="og:locale" content="en_US">
 <?php
 	foreach ($og as $k => $v)
 		echo "\t<meta property='og:$k' content='". CoreUtils::aposEncode($v) ."'>\n";
