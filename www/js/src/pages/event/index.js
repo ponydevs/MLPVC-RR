@@ -192,9 +192,9 @@ $(function(){
 			$.get('/event/entry/lazyload/'+entryid,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Failed to load preview for entry #'+entryid, this.message);
 
-				$.loadImages(this.html).then(function($el){
+				$.loadImages(this.html).then(function(resp){
 					const $parent = $this.closest('li[id]');
-					$this.replaceWith($el);
+					$this.replaceWith(resp.$el);
 					$parent.rebindFluidbox();
 				});
 			}));

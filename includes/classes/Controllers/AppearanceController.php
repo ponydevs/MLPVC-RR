@@ -71,6 +71,10 @@ class AppearanceController extends ColorGuideController {
 			'heading' => $heading,
 			'css' => ['pages/colorguide/guide', true],
 			'js' => ['jquery.ctxmenu', 'pages/colorguide/guide', true],
+			'og' => [
+				'image' => $this->appearance->getSpriteURL(),
+				'description' => "Show accurate colors for \"{$this->appearance->label}\" from the MLP-VectorClub's Official Color Guide",
+			],
 			'import' => [
 				'Appearance' => $this->appearance,
 				'EQG' => $this->_EQG,
@@ -80,6 +84,7 @@ class AppearanceController extends ColorGuideController {
 		if (!empty($this->appearance->owner_id)){
 			$settings['import']['Owner'] = $this->_ownedBy;
 			$settings['import']['isOwner'] = $this->_isOwnedByUser;
+			$settings['og']['description'] = "Colors for \"{$this->appearance->label}\" from ".CoreUtils::posess($this->_ownedBy)." Personal Color Guide on the the MLP-VectorClub's website";
 		}
 		else $settings['import']['Changes'] = MajorChange::get($this->appearance->id, null);
 		if ($this->_isOwnedByUser || Permission::sufficient('staff')){

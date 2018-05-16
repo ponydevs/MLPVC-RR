@@ -36,12 +36,13 @@ class CoreUtils {
 		$_split = explode('?', $fix_uri, 2);
 		$fix_path = $_split[0];
 		$fix_query = self::mergeQuery($query, empty($_split[1]) ? '' : "?{$_split[1]}");
+		self::appendFragment($fix_uri, $fix_query);
 
 		if ($path !== $fix_path || $query !== $fix_query)
 			HTTP::tempRedirect("$fix_path$fix_query");
 	}
 
-	public static function mergeQuery(string $query, string $fix_query){
+	public static function mergeQuery(string $query, string $fix_query):string {
 		if (empty($fix_query))
 			return $query;
 
@@ -60,6 +61,14 @@ class CoreUtils {
 		$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
 
 		return $fix_query;
+	}
+
+	public static function appendFragment($fix_uri, string &$fix_query):void {
+		if (strpos($fix_uri, '#') === false)
+			return;
+
+		strtok($fix_uri, '#');
+		$fix_query .= '#'.strtok('#');
 	}
 
 	/**
@@ -199,6 +208,8 @@ class CoreUtils {
 	 *     'view' => string,      - Which view file to open (defaults to $do)
 	 *     'url' => string,       - A URL which will replace the one sent to the browser
 	 *     'import' => array,     - An array containing key-value pairs to pass to the view as local variables
+	 *     'og' => array,         - OpenGraph data replacement to override defaults
+	 *     'canonical' => string, - If specified, provides the supplied URL as the canonical URL in a meta tag
 	 * );
 	 *
 	 * @param string $view_name
@@ -207,16 +218,18 @@ class CoreUtils {
 	 * @throws \RuntimeException
 	 */
 	public static function loadPage(string $view_name, array $options = []){
+		if (self::isJSONExpected()){
+			HTTP::statusCode(400);
+			$path = self::escapeHTML($_SERVER['REQUEST_URI']);
+			Response::fail("The requested endpoint ($path) does not support JSON responses");
+		}
+
 		// Resolve view
 		$view = new View($view_name);
 
-		// SE crawling disable
+		// Disable crawling
 		if (isset($options['noindex']) && $options['noindex'] === true)
 			$norobots = true;
-
-		// Set new URL option
-		if (!empty($options['url']))
-			$redirectto = $options['url'];
 
 		# CSS
 		$DEFAULT_CSS = ['theme'];
@@ -248,35 +261,50 @@ class CoreUtils {
 		self::_checkAssets($options, $customCSS, 'scss/min', 'css', $view);
 		self::_checkAssets($options, $customJS, 'js/min', 'js', $view);
 
-		# Import variables
-		if (isset($options['import']) && \is_array($options['import'])){
-			$scope = $options['import'];
-			/** @noinspection ForeachSourceInspection */
-			foreach ($scope as $k => $v)
-				/** @noinspection IssetArgumentExistenceInspection */
-				/** @noinspection UnSafeIsSetOverArrayInspection */
-				if (!isset($$k))
-					$$k = $v;
-		}
-		else $scope = [];
+		// Variables
+		$scope = $options['import'] ?? [];
 
 		// Page <title>
 		if (isset($options['title']))
-			$scope['title'] = $title = $options['title'];
+			$scope['title'] = $options['title'];
 
 		// Page heading
 		if (isset($options['heading']))
-			$scope['heading'] = $heading = $options['heading'];
+			$scope['heading'] = $options['heading'];
 
-		if (self::isJSONExpected()){
-			HTTP::statusCode(400);
-			$path = self::escapeHTML($_SERVER['REQUEST_URI']);
-			Response::fail("The requested endpoint ($path) does not support JSON responses");
-		}
+		// Canonical URLs
+		if (isset($options['canonical']))
+			$scope['canonicalURL'] = $options['canonical'];
+
+		$scope['og'] = self::processOpenGraph($options, [
+			'url' => ABSPATH.ltrim($_SERVER['REQUEST_URI'], '/'),
+			'title' => (isset($scope['title'])?$scope['title'].' - ':'').SITE_TITLE,
+			'description' => 'Handling requests, reservations & the Color Guide since 2015',
+			'image' => '/img/logo.png',
+		]);
+
+		# Import variables
+		foreach ($scope as $k => $v)
+			/** @noinspection IssetArgumentExistenceInspection */
+			if (!isset($$k))
+				$$k = $v;
 
 		header('Content-Type: text/html; charset=utf-8;');
 		require INCPATH.'views/_layout.php';
 		die();
+	}
+
+	public static function processOpenGraph(array $options, array $defaults = []):array {
+		if (!empty($options['og'])){
+			foreach ($options['og'] as $k => $v){
+				if ($v !== null)
+					$defaults[$k] = $v;
+			}
+		}
+		if ($defaults['image'][0] === '/')
+			$defaults['image'] = ABSPATH.ltrim($defaults['image'], '/');
+
+		return $defaults;
 	}
 
 	/**

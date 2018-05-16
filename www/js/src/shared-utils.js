@@ -685,9 +685,9 @@
 			const $imgs = $el.find('img');
 			if ($imgs.length)
 				$el.find('img').on('load error',function(e){
-					fulfill($el, e);
+					fulfill({ $el, e });
 				});
-			else fulfill($el);
+			else fulfill({ $el });
 		});
 	};
 

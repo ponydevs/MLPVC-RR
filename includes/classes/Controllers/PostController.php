@@ -829,8 +829,8 @@ class PostController extends Controller {
 			CoreUtils::socketEvent('post-add',[
 				'id' => $Post->id,
 				'type' => 'reservation',
-				'season' => (int)$insert['season'],
-				'episode' => (int)$insert['episode'],
+				'season' => $insert['season'],
+				'episode' => $insert['episode'],
 			]);
 		}
 		catch (\Exception $e){
@@ -860,6 +860,6 @@ class PostController extends Controller {
 		if (empty($Episode))
 			CoreUtils::notFound();
 
-		Episodes::loadPage($Episode, false, $LinkedPost);
+		Episodes::loadPage($Episode, $LinkedPost);
 	}
 }

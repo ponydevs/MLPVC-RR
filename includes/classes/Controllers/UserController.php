@@ -89,6 +89,10 @@ class UserController extends Controller {
 			'noindex' => true,
 			'css' => [true],
 			'js' => [true],
+			'og' => [
+				'image' => $User ? $User->avatar_url : null,
+				'description' => CoreUtils::posess($User->name)." profile on the MLP-VectorClub's website",
+			],
 			'import' => [
 				'User' => $User ?? null,
 				'canEdit' => $canEdit,

@@ -90,7 +90,7 @@ use App\Models\Episode;
 		echo CoreUtils::exportVars($export);
 	} else { ?>
 	<h1>There's nothing here yet&hellip;</h1>
-	<p>&hellip;but there will be!</p>
+	<p>&hellip;but there could be!</p>
 
 <?php   if (Permission::sufficient('staff'))
 			echo CoreUtils::notice('info','No episodes found',"To make the site functional, you must add an episode to the database first. Head on over to the <a href='/episodes'>Episodes</a> page and add one now!");
@@ -102,4 +102,7 @@ use App\Models\Episode;
 		global $EP_TITLE_REGEX;
 		$exp['EP_TITLE_REGEX'] = $EP_TITLE_REGEX;
 	}
+	/** @var $LinkedPost \App\Models\Post|null */
+	if (isset($LinkedPost))
+		$exp['linkedPostURL'] = $LinkedPost->toURL();
 	echo CoreUtils::exportVars($exp);

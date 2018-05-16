@@ -205,4 +205,13 @@ class CoreUtilsTest extends TestCase {
 		$result = CoreUtils::mergeQuery('?test&a=b','?a=c');
 		self::assertEquals('?test&a=c',$result);
 	}
+
+	public function testAppendFragment(){
+		$result = '';
+		CoreUtils::appendFragment('/a#c', $result);
+		self::assertEquals('#c',$result);
+		$result = '?b';
+		CoreUtils::appendFragment('/a?b#c', $result);
+		self::assertEquals('?b#c',$result);
+	}
 }

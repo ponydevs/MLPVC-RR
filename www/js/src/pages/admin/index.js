@@ -109,8 +109,8 @@ $(function(){
 			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
 
-				$.loadImages(this.html).then(function($el){
-					$(el).closest('.image').replaceWith($el);
+				$.loadImages(this.html).then(function(resp){
+					$(el).closest('.image').replaceWith(resp.$el);
 				});
 			}));
 		});

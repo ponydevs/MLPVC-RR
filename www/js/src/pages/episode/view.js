@@ -454,10 +454,14 @@ $(function(){
 				viewonly = el.dataset.viewonly;
 
 			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
+				const $el = $(el);
+				if (!this.status){
+					$el.trigger('error');
+					return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
+				}
 
-				$.loadImages(this.html).then(function($el){
-					$(el).closest('.image').replaceWith($el);
+				$.loadImages(this.html).then(function(resp){
+					$el.trigger(resp.e).closest('.image').replaceWith(resp.$el);
 				});
 			}));
 		});
@@ -476,9 +480,12 @@ $(function(){
 			image.src = el.dataset.src;
 			$link.attr('href', el.dataset.href).append(image);
 
-			$(image).on('load', function(){
-				$(el).closest('.image').html($link);
+			const $el = $(el);
+			$(image).on('load', function(e){
+				$(el).trigger(e).closest('.image').html($link);
 				$link.closest('li').rebindFluidbox();
+			}).on('error', function(e){
+				$el.trigger(e);
 			});
 		});
 	});
@@ -493,8 +500,11 @@ $(function(){
 			const image = new Image();
 			image.src = el.dataset.src;
 			image.classList = 'avatar';
-			$(image).on('load', function(){
-				$(el).replaceWith(image);
+			const $el = $(el);
+			$(image).on('load', function(e){
+				$el.trigger(e).replaceWith(image);
+			}).on('error', function(e){
+				$el.trigger(e);
 			});
 		});
 	});
@@ -503,11 +513,11 @@ $(function(){
 	$('.post-image-promise').each((_, el) => screencapIO.observe(el));
 	$('.user-avatar-promise').each((_, el) => avatarIO.observe(el));
 
+	if (window.linkedPostURL)
+		history.replaceState({}, null, window.linkedPostURL);
 	let postHashRegex = /^#(request|reservation)-\d+$/,
 		showDialog = location.hash.length > 1 && postHashRegex.test(location.hash);
 
-	if (showDialog)
-		$.Dialog.wait('Scroll post into view', 'Waiting for images to load');
 	directLinkHandler();
 
 	let reloading = {};
@@ -574,76 +584,46 @@ $(function(){
 	};
 
 	function directLinkHandler(){
-		let $imgs = $content.find('img[src]'),
-			total = $imgs.length, loaded = 0;
+		let found = window._HighlightHash({type:'load'});
+		if (found === false && showDialog){
+			const title = 'Scroll post into view';
+			// Attempt to find the post as a last resort, it might be on a different episode page
+			$.post('/post/locate/'+location.hash.substring(1).replace('-','/'),{SEASON,EPISODE},$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.info(title, this.message);
 
-		if (!total)
-			return $.Dialog.close();
-
-		let $progress;
-		if (showDialog){
-			$progress = $.mk('progress').attr({max:total,value:0}).css({display:'block',width:'100%',marginTop:'5px'});
-			$('#dialogContent').children('div:not([id])').last().addClass('align-center').append($progress);
-		}
-		$content.imagesLoaded()
-			.progress(function(_, image){
-				if (image.isLoaded){
-					loaded++;
-					if (showDialog)
-						$progress.attr('value', loaded);
+				if (this.refresh){
+					$(`#${this.refresh}s`).triggerHandler('pls-update');
+					return;
 				}
-				else if (image.img.src){
-					// Attempt to re-load the post to fix image link
-					let $li = $(image.img).closest('li[id]');
-					if ($li.length === 1)
-						$li.reloadLi();
-					total--;
-					if (showDialog)
-						$progress.attr('max', total);
-				}
-			})
-			.always(function(){
-				let found = window._HighlightHash({type:'load'});
-				if (found === false && showDialog){
-					const title = 'Scroll post into view';
-					// Attempt to find the post as a last resort, it might be on a different episode page
-					$.post('/post/locate/'+location.hash.substring(1).replace('-','/'),{SEASON,EPISODE},$.mkAjaxHandler(function(){
-						if (!this.status) return $.Dialog.info(title, this.message);
 
-						if (this.refresh){
-							$(`#${this.refresh}s`).triggerHandler('pls-update');
-							return;
-						}
+				const castle = this.castle;
 
-						const castle = this.castle;
-
-						const $contents =
-							$(`<p>Looks like the post you were linked to is in another castle. Want to follow the path?</p>
-							<div id="post-road-sign">
-								<div class="sign-wrap">
-									<div class="sign-inner">
-										<span class="sign-text"></span>
-										<span class="sign-arrow">\u2794</span>
-									</div>
-								</div>
-								<div class="sign-pole"></div>
+				const $contents =
+					$(`<p>Looks like the post you were linked to is in another castle. Want to follow the path?</p>
+					<div id="post-road-sign">
+						<div class="sign-wrap">
+							<div class="sign-inner">
+								<span class="sign-text"></span>
+								<span class="sign-arrow">\u2794</span>
 							</div>
-							<div class="notice info">If you're seeing this message after clicking a link within the site please <a class="send-feedback">let us know</a>.</div>`);
+						</div>
+						<div class="sign-pole"></div>
+					</div>
+					<div class="notice info">If you're seeing this message after clicking a link within the site please <a class="send-feedback">let us know</a>.</div>`);
 
-						$contents.find('.sign-text').text(castle.name);
+				$contents.find('.sign-text').text(castle.name);
 
-						$.Dialog.close(function(){
-							$.Dialog.confirm(title, $contents, ['Take me there','Stay here'], sure => {
-								if (!sure) return;
+				$.Dialog.close(function(){
+					$.Dialog.confirm(title, $contents, ['Take me there','Stay here'], sure => {
+						if (!sure) return;
 
-								$.Dialog.wait(false, 'Quicksaving');
+						$.Dialog.wait(false, 'Quicksaving');
 
-								$.Navigation.visit(castle.url);
-							});
-						});
-					}));
-				}
-			});
+						$.Navigation.visit(castle.url);
+					});
+				});
+			}));
+		}
 	}
 
 	function bindVideoButtons(){

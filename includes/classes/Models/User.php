@@ -104,7 +104,7 @@ class User extends AbstractUser implements LinkableInterface {
 	public function toAnchor(bool $with_avatar = false, bool $enablePromises = false):string {
 		$avatar = $with_avatar ? (
 			$enablePromises
-			? "<div class='user-avatar-promise avatar' data-src='{$this->avatar_url}'></div>"
+			? "<div class='user-avatar-promise avatar image-promise' data-src='{$this->avatar_url}'></div>"
 			: "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> "
 		) : '';
 
@@ -730,7 +730,7 @@ HTML;
 				$HTML .= <<<HTML
 <li id="{$Post->getID()}">
 	<div class="image deviation">
-		<div class="post-deviation-promise" data-post="{$Post->getID()}"></div>
+		<div class="post-deviation-promise image-promise" data-post="{$Post->getID()}"></div>
 	</div>
 	<span class="label hidden"><a href="$url" target="_blank" rel="noopener"></a></span>
 	<em>Posted under $postAnchor</em>

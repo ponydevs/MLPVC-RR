@@ -335,7 +335,7 @@ HTML;
 	private static function _contribItemFinished(Post $item):string {
 		if ($item->deviation_id === null)
 			return self::NOPE;
-		$HTML = "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>";
+		$HTML = "<div class='deviation-promise image-promise' data-favme='{$item->deviation_id}'></div>";
 		if ($item->finished_at !== null){
 			$finished_at = Time::tag($item->finished_at);
 			$HTML .= "<div class='finished-at-ts'><span class='typcn typcn-time'></span> $finished_at</div>";
@@ -412,7 +412,7 @@ HTML;
 					/** @var $item \App\Models\Cutiemark */
 					$appearance = $item->appearance;
 					$preview = $appearance->toAnchorWithPreview();
-					$deviation = $item->favme !== null ? "<div class='deviation-promise' data-favme='{$item->favme}'></div>" : self::NOPE;
+					$deviation = $item->favme !== null ? "<div class='deviation-promise image-promise' data-favme='{$item->favme}'></div>" : self::NOPE;
 
 					$TR = <<<HTML
 <td class="pony-link">$preview</td>
@@ -484,7 +484,7 @@ HTML;
 					$requested_at = Time::tag($item->requested_at);
 					$posted = "<span class='typcn typcn-user' title='By'></span> $posted_by<br><span class='typcn typcn-time'></span> $requested_at";
 					$finished = $item->finished_at === null ? '<span class="typcn typcn-time missing-time" title="Time data missing"></span>' : Time::tag($item->finished_at);
-					$deviation = "<div class='deviation-promise' data-favme='{$item->deviation_id}'></div>";
+					$deviation = "<div class='deviation-promise image-promise' data-favme='{$item->deviation_id}'></div>";
 					$TR = <<<HTML
 <td>$preview</td>
 <td class='by-at'>$posted</td>

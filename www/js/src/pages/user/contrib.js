@@ -15,8 +15,8 @@ $(function(){
 			$.get('/user/contrib/lazyload/'+favme,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load deviation '+favme, this.message);
 
-				$.loadImages(this.html).then(function($el){
-					$(el).replaceWith($el);
+				$.loadImages(this.html).then(function(resp){
+					$(el).replaceWith(resp.$el);
 				});
 			}));
 		});

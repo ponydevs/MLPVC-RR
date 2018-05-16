@@ -128,7 +128,7 @@ HTML;
 			$title = "<a href='http://{$this->sub_prov}/{$this->sub_id}' target='_blank' rel='noopener'>$title</a>";
 		}
 		if ($lazyload)
-			$preview = "<div class='entry-deviation-promise' data-entryid='{$this->id}'></div>";
+			$preview = "<div class='entry-deviation-promise image-promise' data-entryid='{$this->id}'></div>";
 		else $preview = $this->getListItemPreview();
 
 		$voting = $this->getListItemVoting($event);

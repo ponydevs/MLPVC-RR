@@ -100,12 +100,12 @@ class Episodes {
 	/**
 	 * Loads the episode page
 	 *
-	 * @param null|string|Episode $force              If null: Parses $data and loads approperiate epaisode
-	 *                                             If array: Uses specified arra as Episode data
-	 * @param bool                $serverSideRedirect Handle redirection to the correct page on the server/client side
-	 * @param Post                $LinkedPost         Linked post (when sharing)
+	 * @param null|string|Episode $force      If null: Parses $data and loads appropriate episode
+	 *                                        If string: Loads episode by specified ID
+	 *                                        If Episode: Uses the object as Episode data
+	 * @param Post                $LinkedPost Linked post (when sharing)
 	 */
-	public static function loadPage($force = null, $serverSideRedirect = true, Post $LinkedPost = null){
+	public static function loadPage($force = null, Post $LinkedPost = null){
 		if ($force instanceof Episode)
 			$CurrentEpisode = $force;
 		else if (\is_string($force)){
@@ -123,11 +123,10 @@ class Episodes {
 		if (empty($CurrentEpisode))
 			CoreUtils::notFound();
 
-		$url = $LinkedPost !== null ? $LinkedPost->toURL() : $CurrentEpisode->toURL();
-		if ($serverSideRedirect)
-			CoreUtils::fixPath($url);
+		if (!$LinkedPost)
+			CoreUtils::fixPath($CurrentEpisode->toURL());
 
-		$js = ['imagesloaded.pkgd', 'jquery.fluidbox', true, 'pages/episode/manage'];
+		$js = ['jquery.fluidbox', true, 'pages/episode/manage'];
 		if (Permission::sufficient('staff')){
 			$js[] = 'moment-timezone';
 			$js[] = 'pages/show/index-manage';
@@ -136,13 +135,36 @@ class Episodes {
 		$PrevEpisode = $CurrentEpisode->getPrevious();
 		$NextEpisode = $CurrentEpisode->getNext();
 
+		$ogImage = null;
+		$ogDescription = null;
+		if ($LinkedPost){
+			if ($LinkedPost->is_request)
+				$ogDescription = 'A request';
+			else $ogDescription = "A reservation by {$LinkedPost->reserver->name}";
+			$ogDescription .= " on the MLP Vector Club's website";
+
+			if (!$LinkedPost->finished)
+				$ogImage = $LinkedPost->preview;
+			else {
+				$finishdeviation = DeviantArt::getCachedDeviation($LinkedPost->deviation_id);
+				if (!empty($finishdeviation->preview))
+					$ogImage  = $finishdeviation->preview;
+			}
+		}
+
 		$heading = $CurrentEpisode->formatTitle();
 		CoreUtils::loadPage('EpisodeController::view', [
 			'title' => "$heading - Vector Requests & Reservations",
 			'heading' => $heading,
 			'css' => [true],
 			'js' => $js,
-			'url' => $serverSideRedirect ? null : $url,
+			'canonical' => $LinkedPost ? $LinkedPost->toURL() : null,
+			'og' => [
+				'url' => $LinkedPost ? $LinkedPost->toURL() : null,
+				'image' => $ogImage,
+				'description' => $ogDescription,
+				'title' => $LinkedPost ? $LinkedPost->label : null,
+			],
 			'import' => [
 				'CurrentEpisode' => $CurrentEpisode,
 				'PrevEpisode' => $PrevEpisode,

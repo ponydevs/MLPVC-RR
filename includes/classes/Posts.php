@@ -568,7 +568,7 @@ HTML;
 		$cachebust = $cachebust_url ? '?t='.time() : '';
 		$HTML = "<div class='image screencap'>".(
 			$enablePromises
-				? "<div class='post-image-promise' data-href='$ImageLink' data-src='{$post->preview}$cachebust'></div>"
+				? "<div class='post-image-promise image-promise' data-href='$ImageLink' data-src='{$post->preview}$cachebust'></div>"
 				: "<a href='$ImageLink'><img src='{$post->preview}$cachebust' alt='$alt'></a>"
 			).'</div>';
 		$post_label = $post->getLabelHTML();
@@ -602,7 +602,7 @@ HTML;
 				$approved = $post->lock;
 				if ($enablePromises){
 					$view_only_promise = $view_only ? "data-viewonly='$view_only'" : '';
-					$HTML = "<div class='image deviation'><div class='post-deviation-promise' data-post='{$post->getID()}' $view_only_promise></div></div>";
+					$HTML = "<div class='image deviation'><div class='post-deviation-promise image-promise' data-post='{$post->getID()}' $view_only_promise></div></div>";
 				}
 				else $HTML = $post->getFinishedImage($view_only, $cachebust);
 				$finished_at = $post->finished_at !== null

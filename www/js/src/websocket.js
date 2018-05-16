@@ -20,21 +20,19 @@
 		$notifSb,
 		$notifSbList,
 		auth = false,
-		clientid;
-	if (typeof window.io !== 'function'){
+		clientLibLoaded = typeof window.io === 'function';
+	if (!clientLibLoaded){
 		console.log('%c[WS] Server down!', 'color:red');
-		$.WS = { down: true };
 		$sidebar.find('.notif-list').on('click', '.mark-read', e => {
 			e.preventDefault();
 
 			$.Dialog.fail('Mark notification read', 'The notification server appears to be down. Please <a class="send-feedback">let us know</a>, and sorry for the inconvenience.');
 		});
-		return;
 	}
 
 	class WebSocketUtils {
 		constructor(){
-			this.down = false;
+			this.down = !clientLibLoaded;
 			this.substatus = {
 				postUpdates: false,
 				entryUpdates: false,
@@ -51,12 +49,12 @@
 				this.navigate();
 			});
 			this.conn.on('auth', wsdecoder(data => {
-				clientid = data.clientid;
+				this.clientid = data.clientid;
 				auth = true;
 				console.log(`[WS] %cAuthenticated as ${data.name}`,'color:teal');
 			}));
 			this.conn.on('auth-guest', wsdecoder(data => {
-				clientid = data.clientid;
+				this.clientid = data.clientid;
 				console.log(`[WS] %cReceiving events as a guest`,'color:teal');
 			}));
 			this.conn.on('notif-cnt', wsdecoder(data => {
@@ -327,11 +325,12 @@
 			});
 		}
 		getClientId(){
-			return clientid;
+			return this.clientid;
 		}
 	}
 
 	$.WS = new WebSocketUtils();
 	$.WS.essentialElements();
-	$.WS.connect();
+	if (clientLibLoaded)
+		$.WS.connect();
 })();

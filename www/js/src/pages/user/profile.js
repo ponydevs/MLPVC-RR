@@ -345,9 +345,9 @@ $(function(){
 			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
 
-				$.loadImages(this.html).then(function($el){
+				$.loadImages(this.html).then(function(resp){
 					const $li = $this.closest('li[id]');
-					$li.children('.image').replaceWith($el);
+					$li.children('.image').replaceWith(resp.$el);
 					const title = $li.children('.image').find('img').attr('alt');
 					if (title)
 						$li.children('.label').removeClass('hidden').find('a').text(title);
