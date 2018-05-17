@@ -213,6 +213,9 @@ class CoreUtilsTest extends TestCase {
 		$result = '?b';
 		CoreUtils::appendFragment('/a?b#c', $result);
 		self::assertEquals('?b#c',$result);
+		$result = '?c='.CoreUtils::FIXPATH_EMPTY;
+		CoreUtils::appendFragment('/?c='.CoreUtils::FIXPATH_EMPTY.'#d', $result);
+		self::assertEquals('?c='.CoreUtils::FIXPATH_EMPTY.'#d',$result,'Should not explode if empty parameter is encountered');
 	}
 
 	public function testAbsoluteUrl(){
@@ -228,5 +231,8 @@ class CoreUtilsTest extends TestCase {
 		$result = '/a/b/c';
 		CoreUtils::toAbsoluteUrl($result);
 		self::assertEquals(ABSPATH.'a/b/c',$result);
+		$result = '/a/b/c#d';
+		CoreUtils::toAbsoluteUrl($result);
+		self::assertEquals(ABSPATH.'a/b/c#d',$result);
 	}
 }

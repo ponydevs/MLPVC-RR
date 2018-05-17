@@ -28,7 +28,7 @@ class EpisodeVideo extends NSModel {
 	];
 
 	public function isBroken():bool {
-		if (isset($this->not_broken_at) && $this->not_broken_at->getTimestamp() + (Time::IN_SECONDS['hour']*2) > time())
+		if ($this->not_broken_at !== null && $this->not_broken_at->getTimestamp() + (Time::IN_SECONDS['hour']*2) > time())
 			return false;
 
 		switch ($this->provider){

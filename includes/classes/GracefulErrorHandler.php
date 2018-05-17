@@ -44,7 +44,7 @@ p, h1 { font-family: sans-serif }
 		<span id="emoji">&#x1F5A5;&#x1F525;&#x1F692;</span>
 		<h1>$title</h1>
 		<p>The issue has been logged & the developer will be notified.</p>
-		<p>You can also <a href="https://discord.gg/0vv70fepSILbdJOD">join our Discord server</a> to notify the rest of the staff.</p>
+		<p>You can also <a href="https://discord.gg/hrffb8k">join our Discord server</a> to notify the rest of the staff.</p>
 	</div>
 </div>
 </body></html>
