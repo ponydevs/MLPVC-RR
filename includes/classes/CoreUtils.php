@@ -22,7 +22,7 @@ use Monolog\Logger;
 
 class CoreUtils {
 	public const
-		FIXPATH_EMPTY = '#';
+		FIXPATH_EMPTY = '§';
 	/**
 	 * Forces an URL rewrite to the specified path
 	 *
