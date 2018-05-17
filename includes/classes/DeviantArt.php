@@ -244,8 +244,14 @@ class DeviantArt {
 			else $accessToken = $provider->getAccessToken('authorization_code', ['code' => $code, 'scope' => ['user','browse']]);
 		}
 		catch (\TypeError $e){
-			CoreUtils::error_log('Caught Exception '.\get_class($e).': '.$e->getMessage()."\nTrace:\n".var_export($e->getTrace(), true));
-			trigger_error('Authorization failed', E_USER_ERROR);
+			$trace = $e->getTrace();
+			if (!empty($trace[0]['function']) && $trace[0]['function'] === 'prepareAccessTokenResponse' && !empty($trace[0]['args']) && strpos($trace[0]['args'][0], 'DeviantArt: 403 Forbidden') !== false){
+				$_GET['error'] = 'server_error';
+				$_GET['error_description'] = 'DeviantArt returned a 403 Forbidden response. Please try again or contact us if this persists.';
+				return null;
+			}
+
+			CoreUtils::error_log('Caught '.\get_class($e).': '.$e->getMessage()."\nTrace:\n".var_export($trace, true));
 		}
 		catch (IdentityProviderException $e){
 			if (Cookie::exists('access')){
@@ -258,7 +264,7 @@ class DeviantArt {
 					$data = $response_body;
 				else $data = JSON::decode($response_body);
 
-				if ($data['error_description'] === "User has revoked access.")
+				if ($data['error_description'] === 'User has revoked access.')
 					return null;
 
 				$_GET['error'] = rawurlencode($data['error']);
