@@ -37,6 +37,7 @@ use App\UserPrefs;
 use App\Appearances;
 use App\Tags;
 use App\Users;
+use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
@@ -289,6 +290,17 @@ class ColorGuideController extends Controller {
 			}
 			catch (Missing404Exception $e){
 				$elasticAvail = false;
+				$search = [];
+			}
+			catch (ServerErrorResponseException | BadRequest400Exception $e){
+				$message = $e->getMessage();
+				if (
+					strpos($message, 'Result window is too large, from + size must be less than or equal to') === false
+					&& strpos($message, 'Failed to parse int parameter [from] with value') === false
+				){
+					throw $e;
+				}
+
 				$search = [];
 			}
 
