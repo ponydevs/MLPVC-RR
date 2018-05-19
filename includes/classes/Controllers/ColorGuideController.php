@@ -511,29 +511,6 @@ class ColorGuideController extends Controller {
 		include INCPATH.'views/colorpicker.php';
 	}
 
-	public function sanitizeSvg($params){
-		if (!Auth::$signed_in)
-			Response::fail();
-
-		CSRFProtection::protect();
-
-		$this->_getAppearance($params, false);
-
-		$svgdata = (new Input('file','svg_file',[
-			Input::SOURCE => 'FILES',
-			Input::IN_RANGE => [null, UploadedFile::SIZES['megabyte']],
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'SVG data is missing',
-				Input::ERROR_INVALID => 'SVG data is invalid',
-				Input::ERROR_RANGE => 'SVG file size exceeds @max bytes.',
-			]
-		]))->out();
-
-		$svgel = CGUtils::untokenizeSvg(CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($svgdata), $this->appearance->id), $this->appearance->id);
-
-		Response::done(['svgel' => $svgel, 'svgdata' => $svgdata, 'keep_dialog' => true]);
-	}
-
 	public function spriteColorCheckup(){
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();

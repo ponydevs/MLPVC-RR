@@ -532,7 +532,7 @@
 
 	const AppearanceListCache = (function(){
 		let _list;
-		const fetch = () => {
+		const loadItems = () => {
 			return new Promise((fulfill, desert) => {
 				if (typeof _list !== 'undefined'){
 					fulfill(_list);
@@ -542,7 +542,7 @@
 				const data = {};
 				if (PersonalGuide)
 					data.PERSONAL_GUIDE = PersonalGuide;
-				$.post('/cg/colorgroup/appearance-list',data,$.mkAjaxHandler(function(){
+				$.get('/api/cg/appearances/list',data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail('Appearance list retrieval', this.message);
 
 					_list = this.list;
@@ -552,20 +552,20 @@
 				});
 			});
 		};
-		return { read: () => fetch() };
+		return { read: () => loadItems() };
 	})();
 
 	const ColorListCache = (function(){
 		let _list = {};
-		const fetch = appearance_id => {
+		const loadItems = appearance_id => {
 			return new Promise((fulfill, desert) => {
 				if (typeof _list[appearance_id] !== 'undefined'){
 					fulfill(_list[appearance_id]);
 					return;
 				}
 
-				$.post('/cg/colorgroup/list/'+appearance_id,$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail('Appearance list retrieval', this.message);
+				$.get(`/api/cg/appearance/${appearance_id}/link-targets`,$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail('Color group list retrieval', this.message);
 
 					_list[appearance_id] = this.list;
 					fulfill(_list[appearance_id]);
@@ -574,7 +574,7 @@
 				});
 			});
 		};
-		return { read: appearance_id => fetch(appearance_id) };
+		return { read: appearance_id => loadItems(appearance_id) };
 	})();
 
 	class ColorGroupEditor {
@@ -801,7 +801,7 @@
 
 				$.Dialog.wait(false, 'Saving changes');
 
-				$.post(`${PGRq}/cg/colorgroup/${this.editing?`set/${this.group_id}`:'make'}${EQGRq}`, data, $.mkAjaxHandler(function(){
+				$[this.editing?'put':'post'](`/api/cg/colorgroup${this.editing?`/${this.group_id}`:''}`, data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.cgs){
@@ -1031,7 +1031,7 @@
 				const mode = 'colorguide';
 				$colors.show();
 				this.editor = ace.edit($colors[0]);
-				let session = $.aceInit(this.editor, mode);
+				let session = $.aceInit(this.editor);
 				session.setTabSize(8);
 				session.setMode(mode);
 				this.editor.navigateFileEnd();
@@ -1960,7 +1960,7 @@
 
 					$.Dialog.wait(title, `Retrieving color group details from server`);
 
-					$.post(`${PGRq}/cg/colorgroup/get/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
+					$.get(`/api/cg/colorgroup/${groupID}`,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(title, this.message);
 
 						ColorGroupEditor.factory(title, $group, this);
@@ -1976,7 +1976,7 @@
 
 						$.Dialog.wait(title, 'Sending removal request');
 
-						$.post(`${PGRq}/cg/colorgroup/del/${groupID}${EQGRq}`,$.mkAjaxHandler(function(){
+						$.delete(`/cg/colorgroup/${groupID}`,$.mkAjaxHandler(function(){
 							if (this.status){
 								const $parent = $group.parent();
 								if ($parent.children().length === 1)

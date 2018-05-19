@@ -942,4 +942,87 @@ class AppearanceController extends ColorGuideController {
 			default: CoreUtils::notAllowed();
 		}
 	}
+
+	public function listApi(){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
+		$list = [];
+		$personalGuide = $_REQUEST['PERSONAL_GUIDE'] ?? null;
+		if ($personalGuide !== null){
+			$owner = Users::get($personalGuide, 'name');
+			if (empty($owner))
+				Response::fail('Personal Color Guide owner could not be found');
+			$cond = ['owner_id = ?', $owner->id];
+		}
+		else $cond = 'owner_id IS NULL';
+
+		foreach (Appearance::all([
+			'conditions' => $cond,
+			'select' => 'id, label, ishuman',
+			'order' => 'label asc',
+		]) as $item)
+			$list[] = $item->to_array();
+		Response::done([ 'list' =>  $list, 'pcg' => $personalGuide !== null ]);
+	}
+
+	/**
+	 * Responds with an array of potential colors to link other colors to for the color group editor
+	 *
+	 * @param $params
+	 */
+	public function linkTargets($params){
+		if (!$this->action === 'GET')
+			CoreUtils::notAllowed();
+
+		$this->_getAppearance($params);
+
+		$returnedColorFields = [
+			isset($_GET['hex']) ? 'hex' : 'id',
+			'label',
+		];
+
+		$list = [];
+		foreach ($this->appearance->color_groups as $item){
+			$group = [
+				'label' => $item->label,
+				'colors' => []
+			];
+			foreach ($item->colors as $c){
+				$arr = $c->to_array(['only' => $returnedColorFields]);
+				if ($c->linked_to !== null)
+					unset($arr['id']);
+				$group['colors'][] = $arr;
+			}
+			if (\count($group['colors']) > 0)
+				$list[] = $group;
+		}
+		Response::done([ 'list' =>  $list ]);
+	}
+
+	public function sanitizeSvg($params){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
+		if (!Auth::$signed_in)
+			Response::fail();
+
+		CSRFProtection::protect();
+
+		$this->_getAppearance($params, false);
+
+		$svgdata = (new Input('file','svg_file',[
+			Input::SOURCE => 'FILES',
+			Input::IN_RANGE => [null, UploadedFile::SIZES['megabyte']],
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_MISSING => 'SVG data is missing',
+				Input::ERROR_INVALID => 'SVG data is invalid',
+				Input::ERROR_RANGE => 'SVG file size exceeds @max bytes.',
+			]
+		]))->out();
+
+		$svgel = CGUtils::untokenizeSvg(CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($svgdata), $this->appearance->id), $this->appearance->id);
+
+		Response::done(['svgel' => $svgel, 'svgdata' => $svgdata, 'keep_dialog' => true]);
+	}
 }

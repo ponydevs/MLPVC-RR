@@ -17,6 +17,7 @@ use ActiveRecord\Model;
  * @property Appearance $appearance       (Via magic method)
  * @property Color[]    $dependant_colors (Via magic method)
  * @method static Color|Color[] find(...$args)
+ * @method static Color[] find_all_by_group_id(int $group_id)
  */
 class Color extends OrderedModel {
 	public static $table_name = 'colors';
