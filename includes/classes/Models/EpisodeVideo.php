@@ -60,6 +60,9 @@ class EpisodeVideo extends NSModel {
 				$file_info = $mega->public_file_info(...explode('!',$this->id));
 				$broken = $file_info === -16;
 			break;
+			case 'sv':
+				$broken = !CoreUtils::isURLAvailable(VideoProvider::getEmbed($this, VideoProvider::URL_ONLY));
+			break;
 			default:
 				throw new \RuntimeException("No breakage check defined for provider {$this->provider}");
 		}
