@@ -810,8 +810,10 @@ HTML;
 		}
 		if (!empty($removed)){
 			DB::$instance->where('tag_id', $removed)->where('appearance_id', $this->id)->delete(Tagged::$table_name);
-			foreach ($removed as $tag_id)
+			foreach ($removed as $tag_id){
 				TagChange::record(false, $tag_id, $this->id);
+				Tags::updateUses($tag_id);
+			}
 		}
 
 		foreach ($new as $name => $_){
@@ -835,12 +837,28 @@ HTML;
 					'type' => $tag_type,
 				]);
 
-			Tagged::make($tag->id, $this->id)->save();
-			TagChange::record(true, $tag->id, $this->id);
-			$tag->updateUses();
+			$this->addTag($tag);
 			if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$eqg?'eqg':'pony'][$tag->id]))
 				Appearances::getSortReorder($eqg);
 		}
+	}
+
+	/**
+	 * @param Tag  $tag
+	 * @param bool $update_uses
+	 *
+	 * @return self
+	 */
+	public function addTag(Tag $tag, bool $update_uses = true):self {
+		if (!Tagged::make($tag->id, $this->id)->save()){
+			CoreUtils::error_log(__METHOD__.": Failed to add tag {$tag->name} (#{$tag->id}) to appearance {$this->label} (#{$this->id}), skipping");
+			return $this;
+		}
+		TagChange::record(true, $tag->id, $this->id);
+		if ($update_uses)
+			$tag->updateUses();
+
+		return $this;
 	}
 
 	public function getSpriteFilePath(){

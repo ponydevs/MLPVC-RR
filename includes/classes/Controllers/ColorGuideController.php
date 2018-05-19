@@ -189,6 +189,9 @@ class ColorGuideController extends Controller {
 	}
 
 	public function reorderFullList($params){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		$this->_initialize($params);
 
 		if (!Permission::sufficient('staff'))
@@ -357,6 +360,9 @@ class ColorGuideController extends Controller {
 	}
 
 	public function export(){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		if (Permission::insufficient('developer'))
 			CoreUtils::noPerm();
 		$JSON = [
@@ -446,6 +452,9 @@ class ColorGuideController extends Controller {
 	}
 
 	public function reindex(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		if (Permission::insufficient('developer'))
 			Response::fail();
 		Appearances::reindex();
@@ -523,5 +532,18 @@ class ColorGuideController extends Controller {
 		$svgel = CGUtils::untokenizeSvg(CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($svgdata), $this->appearance->id), $this->appearance->id);
 
 		Response::done(['svgel' => $svgel, 'svgdata' => $svgdata, 'keep_dialog' => true]);
+	}
+
+	public function spriteColorCheckup(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		CoreUtils::callScript('sprite_color_checkup');
+
+		$nagUser = Users::get(Appearances::SPRITE_NAG_USERID);
+		Response::success('Checkup started.'.($nagUser !== null ? " {$nagUser->toAnchor()} will be notified if there are any issues.":''));
 	}
 }

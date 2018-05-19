@@ -24,7 +24,7 @@ $router->addMatchTypes([
 ]);
 
 \define('GET_POST', 'GET|POST');
-\define('CRUD', 'GET|POST|PUT|DELETE');
+\define('CRUD', 'POST|GET|PUT|DELETE');
 \define('GET_PUT', 'GET|PUT');
 \define('PUT_DEL', 'PUT|DELETE');
 \define('POST_DEL', 'POST|DELETE');
@@ -99,32 +99,33 @@ $router->map('GET', '/event/entry/lazyload/[i:id]',    'EventController#lazyload
 $router->map('GET', '/discord-connect/begin',          'DiscordAuthController#begin');
 $router->map('GET', '/discord-connect/end',            'DiscordAuthController#end');
 
-// Proper REST API endpoints
-$router->map('GET',    '/api/admin/logs/details/[i:id]',        'AdminController#logDetail');
-$router->map('GET',    '/api/about/upcoming',                   'AboutController#upcoming');
-$router->map(CRUD,     '/api/admin/usefullinks/[i:id]?',        'AdminController#usefulLinksApi');
-$router->map('POST',   '/api/admin/usefullinks/reorder',        'AdminController#reorderUsefulLinks');
-$router->map('POST',   '/api/admin/wsdiag/hello',               'AdminController#wshello');
-$router->map('POST',   '/api/admin/mass-approve',               'AdminController#massApprove');
-$router->map(CRUD,     '/api/admin/notices/[i:id]?',            'AdminController#noticesApi');
-$router->map(CRUD,     '/api/cg/appearance/[i:id]?',            'AppearanceController#api');
-$router->map(GET_PUT,  '/api/cg/appearance/[i:id]/colorgroups', 'AppearanceController#colorGroupsApi');
-$router->map(POST_DEL, '/api/cg/appearance/[i:id]/sprite',      'AppearanceController#spriteApi');
-$router->map(GET_PUT,  '/api/cg/appearance/[i:id]/relations',   'AppearanceController#relationsApi');
-$router->map(GET_PUT,  '/api/cg/appearance/[i:id]/cutiemarks',  'AppearanceController#cutiemarkApi');
-$router->map(GET_PUT,  '/api/cg/appearance/[i:id]/tagged',      'AppearanceController#taggedApi');
-$router->map('POST',   '/api/cg/appearance/[i:id]/template',    'AppearanceController#applyTemplate');
-$router->map('DELETE', '/api/cg/appearance/[i:id]/selective',   'AppearanceController#selectiveClear');
-$router->map('POST',   '/api/cg/sprite-color-checkup',          'AppearanceController#spriteColorCheckup');
-$router->map('POST',   '/api/cg/full/reorder',                  'ColorGuideController#reorderFullList');
-$router->map('GET',    '/api/cg/export',                        'ColorGuideController#export');
-$router->map('POST',   '/api/cg/reindex',                       'ColorGuideController#reindex');
-$router->map('GET',    '/api/cg/tags',                          'TagController#autocomplete');
+// Proper REST API endpoints (sort of)
+// CRUD is used everywhere to allow 405 responses to unsupported methods
+$router->map(CRUD, '/api/about/upcoming',                   'AboutController#upcoming');
+$router->map(CRUD, '/api/admin/logs/details/[i:id]',        'AdminController#logDetail');
+$router->map(CRUD, '/api/admin/usefullinks/[i:id]?',        'AdminController#usefulLinksApi');
+$router->map(CRUD, '/api/admin/usefullinks/reorder',        'AdminController#reorderUsefulLinks');
+$router->map(CRUD, '/api/admin/wsdiag/hello',               'AdminController#wshello');
+$router->map(CRUD, '/api/admin/mass-approve',               'AdminController#massApprove');
+$router->map(CRUD, '/api/admin/notices/[i:id]?',            'AdminController#noticesApi');
+$router->map(CRUD, '/api/cg/appearance/[i:id]?',            'AppearanceController#api');
+$router->map(CRUD, '/api/cg/appearance/[i:id]/colorgroups', 'AppearanceController#colorGroupsApi');
+$router->map(CRUD, '/api/cg/appearance/[i:id]/sprite',      'AppearanceController#spriteApi');
+$router->map(CRUD, '/api/cg/appearance/[i:id]/relations',   'AppearanceController#relationsApi');
+$router->map(CRUD, '/api/cg/appearance/[i:id]/cutiemarks',  'AppearanceController#cutiemarkApi');
+$router->map(CRUD, '/api/cg/appearance/[i:id]/tagged',      'AppearanceController#taggedApi');
+$router->map(CRUD, '/api/cg/appearance/[i:id]/template',    'AppearanceController#applyTemplate');
+$router->map(CRUD, '/api/cg/appearance/[i:id]/selective',   'AppearanceController#selectiveClear');
+$router->map(CRUD, '/api/cg/sprite-color-checkup',          'ColorGuideController#spriteColorCheckup');
+$router->map(CRUD, '/api/cg/full/reorder',                  'ColorGuideController#reorderFullList');
+$router->map(CRUD, '/api/cg/export',                        'ColorGuideController#export');
+$router->map(CRUD, '/api/cg/reindex',                       'ColorGuideController#reindex');
+$router->map(CRUD, '/api/cg/tags',                          'TagController#autocomplete');
+$router->map(CRUD, '/api/cg/tags/recount-uses',             'TagController#recountUses');
+$router->map(CRUD, '/api/cg/tag/[i:id]?',                   'TagController#api');
+$router->map(CRUD, '/api/cg/tag/[i:id]/synonym',            'TagController#synonymApi');
 
 // "API" Endpoints
-$router->map('POST', '/cg/tag/[ad:action]/[i:id]',           'TagController#action');
-$router->map('POST', '/cg/tag/[make:action]',                'TagController#action');
-$router->map('POST', '/cg/tags/recount-uses',                'TagController#recountUses');
 $router->map('POST', '/cg/colorgroup/[gsd:action]/[i:id]',   'ColorGroupController#action');
 $router->map('POST', '/cg/colorgroup/[make:action]',         'ColorGroupController#action');
 $router->map('POST', '/cg/colorgroup/appearance-list',       'ColorGroupController#appearanceList');

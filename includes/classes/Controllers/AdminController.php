@@ -159,6 +159,9 @@ class AdminController extends Controller {
 	}
 
 	public function logDetail($params){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		if (!isset($params['id']) || !is_numeric($params['id']))
 			Response::fail('Entry ID is missing or invalid');
 
@@ -291,6 +294,9 @@ class AdminController extends Controller {
 	}
 
 	public function reorderUsefulLinks(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		$list = (new Input('list','int[]', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Missing ordering information',
@@ -306,6 +312,9 @@ class AdminController extends Controller {
 	}
 
 	public function massApprove(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		$ids = (new Input('ids','int[]', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 			    Input::ERROR_MISSING => 'List of deviation IDs is missing',
@@ -349,6 +358,9 @@ class AdminController extends Controller {
 	}
 
 	public function wsdiag(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		if (Permission::insufficient('developer'))
 			CoreUtils::noPerm();
 

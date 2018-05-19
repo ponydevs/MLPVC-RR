@@ -10,17 +10,11 @@ $(function(){
 			if (typeof $tr === 'function')
 				return $tr.call(this, action);
 
-			$tr.remove();
-			$.Dialog.success(false, this.message);
-
-			let path = window.location.pathname;
-			if ($tbody.children().length === 0)
-				path = path.replace(/(\d+)$/,function(n){ return n > 1 ? n-1 : n });
-			$.toPage(path,true,true);
+			$.Dialog.segway(false, this.message ? $.mk('span').attr('class','color-green').html(this.message) : undefined);
 		},
 		tagUseUpdateHandler = function(successDialog){
 			return $.mkAjaxHandler(function(){
-				if (!this.status) $.Dialog.fail(false, this.message);
+				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				if (this.counts){
 					let counts = this.counts;
@@ -40,22 +34,18 @@ $(function(){
 	window.CGTagEditing = function(tagName, tagID, action, $tr){
 		switch (action){
 			case "delete":
-				$.Dialog.confirm(`Delete tag: ${tagName}`,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
+				$.Dialog.confirm(`Deleting the ${tagName} tag`,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
 					if (!sure) return;
 
-					$.Dialog.wait(false,'Sending removal request');
+					$.Dialog.wait(false,'Deleting tag');
 
-					$.post(`/cg/tag/del/${tagID}`,$.mkAjaxHandler(function(){
+					$.delete(`/api/cg/tag/${tagID}`, {sanitycheck: true},$.mkAjaxHandler(function(){
 						updateList.call(this, $tr, action);
 					}));
 				});
 			break;
 			case "synon":
-			case "merge":
-				let merging = action === 'merge',
-					Action = (merging?'Merge':'Synonymize');
-
-				$.Dialog.wait(`${Action} ${tagName} ${merging?'into':'with'} another tag`, 'Retrieving tag list from server');
+				$.Dialog.wait(`Make ${tagName} a synonym`, 'Retrieving tag list from server');
 
 				$.get('/api/cg/tags',{not:tagID,action:action},$.mkAjaxHandler(function(){
 					if (!this.length){
@@ -85,25 +75,21 @@ $(function(){
 					$.each(ogorder, function(_, key){ $select.append(optgroups[key]) });
 
 					$TagActionForm.append(
-						`<p>${
-							merging
-							? 'Merging a tag into another will permanently delete it, while replacing it with the merge target on every appearance which used it.'
-							: 'Synonymizing a tag will keep both tags in the database, but when searching, the source tag will automatically redirect to the target tag.'
-						}</p>`,
+						`<p>Making a tag a synonym will keep it the database, but when searching, it will automatically show results with the target tag.</p>`,
 						$.mk('label').append(
-							`<span>${Action} <strong>${tagName}</strong> ${merging?'into':'with'} the following:</span>`,
+							`<span>Select synonym of <strong>${tagName}</strong>:</span>`,
 							$select
 						)
 					);
 
-					$.Dialog.request(false, $TagActionForm, Action, function($form){
+					$.Dialog.request(false, $TagActionForm, 'Make synonym', function($form){
 						$form.on('submit', function(e){
 							e.preventDefault();
 
 							let sent = $form.mkData();
-							$.Dialog.wait(false, (merging?'Merging':'Synonymizing')+' tags');
+							$.Dialog.wait(false, 'Creating tag synonym');
 
-							$.post(`/cg/tag/${action}/${tagID}`,sent, $.mkAjaxHandler(function(){
+							$.put(`/api/cg/tag/${tagID}/synonym`,sent, $.mkAjaxHandler(function(){
 								updateList.call(this, $tr, action);
 							}));
 						});
@@ -130,7 +116,7 @@ $(function(){
 								let data = $form.mkData();
 								$.Dialog.wait(false, 'Removing synonym');
 
-								$.post(`/cg/tag/unsynon/${tagID}`,data,$.mkAjaxHandler(function(){
+								$.delete(`/api/cg/tag/${tagID}/synonym`,data,$.mkAjaxHandler(function(){
 									updateList.call(this, $tr, action);
 								}));
 							});
@@ -141,7 +127,7 @@ $(function(){
 			case "refresh":
 				$.Dialog.wait(`Refresh use count of ${tagName}`, 'Updating use count');
 
-				$.post('/cg/tags/recount-uses',{tagids:tagID}, tagUseUpdateHandler());
+				$.post('/api/cg/tags/recount-uses',{tagids:tagID}, tagUseUpdateHandler());
 			break;
 		}
 	};
@@ -159,12 +145,12 @@ $(function(){
 	$('.refresh-all').on('click',function(){
 		let tagIDs = [],
 			title = 'Recalculate tag usage data';
-		$tbody.children().each(function(){
-			tagIDs.push($(this).children().first().text().trim());
+		$tbody.find('button.refresh').each(function(){
+			tagIDs.push($(this).closest('tr').children().first().text().trim());
 		});
 
 		$.Dialog.wait(title, 'Updating use count'+(tagIDs.length!==1?'s':''));
 
-		$.post('/cg/tags/recount-uses',{tagids:tagIDs.join(',')}, tagUseUpdateHandler(true));
+		$.post('/api/cg/tags/recount-uses',{tagids:tagIDs.join(',')}, tagUseUpdateHandler(true));
 	});
 });

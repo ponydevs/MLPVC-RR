@@ -57,6 +57,9 @@ class Tag extends NSModel {
 	}
 
 	public function updateUses(){
+		if ($this->synonym_of !== null)
+			return;
+
 		return Tags::updateUses($this->id);
 	}
 }

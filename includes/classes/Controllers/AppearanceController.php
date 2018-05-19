@@ -395,6 +395,9 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function applyTemplate($params){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		$this->_getAppearance($params);
 		$this->_permissionCheck();
 
@@ -409,6 +412,9 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function selectiveClear($params){
+		if ($this->action !== 'DELETE')
+			CoreUtils::notAllowed();
+
 		$this->_getAppearance($params);
 		$this->_permissionCheck();
 
@@ -625,6 +631,8 @@ class AppearanceController extends ColorGuideController {
 				CGUtils::processUploadedImage('sprite', $final_path, ['image/png'], [300], [700, 300]);
 				$this->appearance->clearRenderedImages();
 				$this->appearance->checkSpriteColors();
+
+				Response::done(['path' => "/cg/v/{$this->appearance->id}s.png?t=".filemtime($final_path)]);
 			break;
 			case 'DELETE':
 				if (empty($this->appearance->getSpriteURL()))
@@ -636,18 +644,6 @@ class AppearanceController extends ColorGuideController {
 			break;
 			default: CoreUtils::notAllowed();
 		}
-
-		Response::done(['path' => "/cg/v/{$this->appearance->id}s.png?t=".filemtime($final_path)]);
-	}
-
-	public function spriteColorCheckup(){
-		if (Permission::insufficient('staff'))
-			Response::fail();
-
-		CoreUtils::callScript('sprite_color_checkup');
-
-		$nagUser = Users::get(Appearances::SPRITE_NAG_USERID);
-		Response::success('Checkup started.'.($nagUser !== null ? " {$nagUser->toAnchor()} will be notified if there are any issues.":''));
 	}
 
 	public function relationsApi($params){

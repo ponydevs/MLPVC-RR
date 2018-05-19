@@ -27,8 +27,9 @@ class Tags {
 	 */
 	public static function getFor($PonyID = null, $limit = null, $showEpTags = false, $exporting = false){
 		if (!$exporting){
+			if ($PonyID !== null)
+				DB::$instance->where('"synonym_of" IS NULL');
 			DB::$instance
-				->where('"synonym_of" IS NULL')
 				->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
 				->orderBy('tags.type')
 				->orderBy('tags.name');
@@ -112,8 +113,8 @@ class Tags {
 		$canEdit = Permission::sufficient('staff');
 		if ($canEdit){
 			$refresh = " <button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>";
-			$utils = "<td class='utils align-center'><button class='typcn typcn-minus delete' title='Delete'></button> ".
-			         "<button class='typcn typcn-flow-merge merge' title='Merge'></button> <button class='typcn typcn-flow-children synon' title='Synonymize'></button></td>";
+			$utils = "<td class='utils align-center'><button class='typcn typcn-trash delete' title='Delete'></button> ".
+			         "<button class='typcn typcn-flow-children synon' title='Make synonym'></button></td>";
 		}
 
 		if (!empty($Tags)) foreach ($Tags as $t){
@@ -121,6 +122,7 @@ class Tags {
 			$type = $t->type ? self::TAG_TYPES[$t->type] : '';
 			$search = CoreUtils::aposEncode(urlencode($t->name));
 			$titleName = CoreUtils::aposEncode($t->name);
+			$name = CoreUtils::escapeHTML($t->name);
 
 			$title = $t->synonym_of !== null
 				? (
@@ -130,13 +132,15 @@ class Tags {
 				)."<em>Synonym of <strong>{$t->synonym->name}</strong></em>"
 				: $t->title;
 
+			$localRefresh = $t->synonym_of === null ? $refresh : '';
+
 			$HTML .= <<<HTML
 			<tr $trClass>
 				<td class="tid">{$t->id}</td>
-				<td class="name"><a href='/cg?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>{$t->name}</a></td>$utils
+				<td class="name"><a href='/cg?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>$name</a></td>$utils
 				<td class="title">$title</td>
 				<td class="type">$type</td>
-				<td class="uses"><span>{$t->uses}</span>$refresh</td>
+				<td class="uses"><span>{$t->uses}</span>$localRefresh</td>
 			</tr>
 HTML;
 		}

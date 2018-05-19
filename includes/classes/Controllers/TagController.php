@@ -7,6 +7,7 @@ use App\DB;
 use App\Input;
 use App\Models\Appearance;
 use App\Models\Tag;
+use App\Models\TagChange;
 use App\Models\Tagged;
 use App\Pagination;
 use App\Permission;
@@ -41,6 +42,9 @@ class TagController extends ColorGuideController {
 	}
 
 	public function autocomplete(){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		global $TAG_NAME_REGEX;
 
 		if (!Permission::sufficient('staff'))
@@ -93,6 +97,9 @@ class TagController extends ColorGuideController {
 	}
 
 	public function recountUses(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
@@ -124,45 +131,45 @@ class TagController extends ColorGuideController {
 		);
 	}
 
-	public function action($params){
+	/** @var Tag|null */
+	private $tag;
+	private function load_tag($params){
 		$this->_initialize($params);
 		if (Permission::insufficient('staff'))
 			CoreUtils::noPerm();
 
-		$action = $params['action'];
-		$adding = $action === 'make';
-
-		if (!$adding){
+		if (!$this->creating){
 			if (!isset($params['id']))
 				Response::fail('Missing tag ID');
-			$TagID = \intval($params['id'], 10);
-			$Tag = Tag::find($TagID);
-			if (empty($Tag))
+			$id = \intval($params['id'], 10);
+			$this->tag = Tag::find($id);
+			if (empty($this->tag))
 				Response::fail('This tag does not exist');
 		}
+	}
+	public function api($params){
+		$this->load_tag($params);
 
-		$data = [];
-
-		switch ($action){
-			case 'get':
-				Response::done($Tag->to_array());
-			case 'del':
+		switch ($this->action){
+			case 'GET':
+				Response::done($this->tag->to_array());
+			case 'DELETE':
 				$AppearanceID = CGUtils::validateAppearancePageID();
 
-				$tid = $Tag->synonym_of ?? $Tag->id;
+				$tid = $this->tag->synonym_of ?? $this->tag->id;
 				$Uses = Tagged::by_tag($tid);
 				$UseCount = \count($Uses);
-				if (!isset($_POST['sanitycheck']) && $UseCount > 0)
+				if (!isset($_REQUEST['sanitycheck']) && $UseCount > 0)
 					Response::fail('<p>This tag is currently used on '.CoreUtils::makePlural('appearance',$UseCount,PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>', ['confirm' => true]);
 
-				$Tag->delete();
+				$this->tag->delete();
 
-				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$this->_EQG?'eqg':'pony'][$Tag->id]))
+				if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$this->_EQG?'eqg':'pony'][$this->tag->id]))
 					Appearances::getSortReorder($this->_EQG);
 				foreach ($Uses as $use)
 					$use->appearance->updateIndex();
 
-				if ($AppearanceID !== null && $Tag->type === 'ep'){
+				if ($AppearanceID !== null && $this->tag->type === 'ep'){
 					$Appearance = Appearance::find($AppearanceID);
 					$resp = [
 						'needupdate' => true,
@@ -172,35 +179,8 @@ class TagController extends ColorGuideController {
 				else $resp = null;
 				Response::success('Tag deleted successfully', $resp);
 			break;
-			case 'unsynon':
-				if ($Tag->synonym_of === null)
-					Response::done();
-
-				$keep_tagged = isset($_POST['keep_tagged']);
-				$uses = 0;
-				if (!empty($Tag->synonym)){
-					$TargetTagged = Tagged::by_tag($Tag->synonym->id);
-					if ($keep_tagged){
-						foreach ($TargetTagged as $tg){
-							if (!Tagged::make($Tag->id, $tg->appearance_id)->save())
-								Response::fail('Tag synonym removal process failed, please re-try.<br>Technical details: '.$tg->to_json());
-							$uses++;
-						}
-					}
-					else {
-						foreach ($TargetTagged as $tg)
-							$tg->appearance->updateIndex();
-					}
-				}
-				else $keep_tagged = false;
-
-				if (!$Tag->update_attributes(['synonym_of' => null, 'uses' => $uses]))
-					Response::dbError('Could not update tag');
-
-				Response::done(['keep_tagged' => $keep_tagged]);
-			break;
-			case 'make':
-			case 'set':
+			case 'POST':
+			case 'PUT':
 				$data['name'] = CGUtils::validateTagName('name');
 
 				$epTagName = CGUtils::normalizeEpisodeTagName($data['name']);
@@ -248,8 +228,8 @@ HTML;
 					$data['type'] = $type;
 				}
 
-				if (!$adding)
-					DB::$instance->where('id', $Tag->id,'!=');
+				if (!$this->creating)
+					DB::$instance->where('id', $this->tag->id,'!=');
 				if (DB::$instance->where('name', $data['name'])->where('type', $data['type'])->has('tags'))
 					Response::fail('A tag with the same name and type already exists');
 
@@ -261,7 +241,7 @@ HTML;
 					]
 				]))->out();
 
-				if ($adding){
+				if ($this->creating){
 					$Tag = new Tag($data);
 					if (!$Tag->save())
 						Response::dbError();
@@ -275,9 +255,7 @@ HTML;
 						if (empty($Appearance))
 							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.");
 
-						if (!Tagged::make($Tag->id, $Appearance->id)->save()) Response::dbError();
-						$Appearance->updateIndex();
-						$Tag->updateUses();
+						$Appearance->addTag($Tag)->updateIndex();
 						$r = ['tags' => $Appearance->getTagsHTML(NOWRAP)];
 						if ($this->_appearancePage){
 							$r['needupdate'] = true;
@@ -287,10 +265,10 @@ HTML;
 					}
 				}
 				else {
-					$Tag->update_attributes($data);
-					$data = $Tag->to_array();
-					$AppearanceID = !empty($this->_appearancePage) ? (int) $_POST['APPEARANCE_PAGE'] : null;
-					$tagrelations = Tagged::by_tag($Tag->id);
+					$this->tag->update_attributes($data);
+					$data = $this->tag->to_array();
+					$AppearanceID = !empty($this->_appearancePage) ? \intval($_REQUEST['APPEARANCE_PAGE'], 10) : null;
+					$tagrelations = Tagged::by_tag($this->tag->id);
 					foreach ($tagrelations as $tagged){
 						$tagged->appearance->updateIndex();
 
@@ -304,55 +282,87 @@ HTML;
 
 				Response::done($data);
 			break;
+			default:
+				CoreUtils::notAllowed();
 		}
+	}
 
-		$merging = $action === 'merge';
-		$synoning = $action === 'synon';
-		if ($merging || $synoning){
-			if ($synoning && $Tag->synonym_of !== null)
-				Response::fail('The selected tag is already a synonym of the "'.$Tag->synonym->name.'" ('.Tags::TAG_TYPES[$Tag->synonym->type].') tag');
+	public function synonymApi($params){
+		$this->load_tag($params);
 
-			$targetid = (new Input('targetid','int', [
-				Input::CUSTOM_ERROR_MESSAGES => [
-					Input::ERROR_MISSING => 'Missing target tag ID',
-				]
-			]))->out();
-			$Target = Tag::find($targetid);
-			if (empty($Target))
-				Response::fail('Target tag does not exist');
-			if ($Target->synonym_of !== null)
-				Response::fail('The selected tag is already a synonym of the "'.$Target->synonym->name.'" ('.Tags::TAG_TYPES[$Target->synonym->type].') tag');
+		switch ($this->action){
+			case 'PUT':
+				if ($this->tag->synonym_of !== null)
+					Response::fail("The selected tag is already a synonym of the \"{$this->tag->synonym->name}\" (".Tags::TAG_TYPES[$this->tag->synonym->type].') tag');
 
-			$TargetTagged = Tagged::by_tag($Target->id);
-			$TaggedAppearanceIDs = [];
-			foreach ($TargetTagged as $tg)
-				$TaggedAppearanceIDs[] = $tg->appearance_id;
+				$targetid = (new Input('targetid', 'int', [
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Target tag ID is missing',
+						Input::ERROR_INVALID => 'Target tag ID is invalid',
+					],
+				]))->out();
+				$target = Tag::find($targetid);
+				if (empty($target))
+					Response::fail('Target tag does not exist');
+				if ($target->synonym_of !== null)
+					Response::fail("The selected tag is already a synonym of the \"{$target->synonym->name}\" (".Tags::TAG_TYPES[$target->synonym->type].') tag');
 
-			$Tagged = Tagged::by_tag($Tag->id);
-			foreach ($Tagged as $tg){
-				if (\in_array($tg->appearance_id, $TaggedAppearanceIDs, true))
-					continue;
+				$TargetTagged = Tagged::by_tag($target->id);
+				$TaggedAppearanceIDs = [];
+				foreach ($TargetTagged as $tg)
+					$TaggedAppearanceIDs[] = $tg->appearance_id;
 
-				if (!Tagged::make($Target->id, $tg->appearance_id)->save())
-					Response::fail('Tag '.($merging?'merging':'synonymizing').' failed, please re-try.<br>Technical details: '.$tg->to_json());
-			}
-			if ($merging)
-				// No need to delete "tagged" table entries, constraints do it for us
-				$Tag->delete();
-			else {
-				Tagged::delete_all(['conditions' => ['tag_id = ?', $Tag->id]]);
-				$Tag->update_attributes([
-					'synonym_of' => $Target->id,
+				$Tagged = Tagged::by_tag($this->tag->id);
+				foreach ($Tagged as $tg){
+					if (\in_array($tg->appearance_id, $TaggedAppearanceIDs, true))
+						continue;
+
+					if (!Tagged::make($target->id, $tg->appearance_id)->save())
+						Response::fail('Creating tag synonym failed, please retry.<br>Technical details: '.$tg->to_json());
+				}
+				Tagged::delete_all(['conditions' => ['tag_id = ?', $this->tag->id]]);
+				$this->tag->update_attributes([
+					'synonym_of' => $target->id,
 					'uses' => 0,
 				]);
-			}
-			foreach ($TaggedAppearanceIDs as $id)
-				Appearance::find($id)->updateIndex();
+				if (!empty($TaggedAppearanceIDs)){
+					$TaggedAppearances = Appearance::find('all', [
+						'conditions' => [
+							'id IN (?)',
+							$TaggedAppearanceIDs
+						]
+					]);
+					foreach ($TaggedAppearances as $tapp)
+						$tapp->updateIndex();
+				}
 
-			$Target->updateUses();
-			Response::success('Tags successfully '.($merging?'merged':'synonymized'), $synoning || $merging ? ['target' => $Target->to_array()] : null);
+				$target->updateUses();
+				Response::success('Tag synonyms created', ['target' => $target->to_array()]);
+			break;
+			case 'DELETE':
+				if ($this->tag->synonym_of === null)
+					Response::done();
+
+				if (!empty($this->tag->synonym)){
+					$keep_tagged = isset($_REQUEST['keep_tagged']);
+					if ($keep_tagged){
+						$TargetTagged = Tagged::by_tag($this->tag->synonym->id);
+						foreach ($TargetTagged as $tg)
+							$tg->appearance->addTag($this->tag);
+					}
+				}
+				else $keep_tagged = false;
+
+				if (!$this->tag->update_attributes(['synonym_of' => null]))
+					Response::dbError('Could not update tag');
+
+				foreach ($this->tag->appearances as $app)
+					$app->updateIndex();
+
+				Response::done(['keep_tagged' => $keep_tagged]);
+			break;
+			default:
+				CoreUtils::notAllowed();
 		}
-
-		CoreUtils::notFound();
 	}
 }

@@ -405,59 +405,47 @@
 			<textarea name="title" maxlength="255"></textarea>
 		</label>`,
 		$.mk('div').attr('class','align-center edit-only').append(
-			$.mk('button').attr('class','blue typcn typcn-flow-merge merge').html('Merge&hellip;'),
-			$.mk('button').attr('class','blue typcn typcn-flow-children synon').html('Synonymize&hellip;')
-		).on('click','button', function(e){
-			e.preventDefault();
+			$.mk('button').attr('class','blue typcn typcn-flow-children synon').html('Synonymize&hellip;').on('click',function(e){
+				e.preventDefault();
 
-			let $form = $(this).closest('form'),
-				tag = $form.data('tag'),
-				tagName = tag.name,
-				tagID = tag.id,
-				action = this.className.split(' ').pop();
+				let $form = $(this).closest('form'),
+					tag = $form.data('tag'),
+					tagName = tag.name,
+					tagID = tag.id;
 
-			$.Dialog.close(function(){
-				window.CGTagEditing(tagName, tagID, action, function(action){
-					let $affected = $('.tag.id-'+tagID), target;
+				$.Dialog.close(() => {
+					window.CGTagEditing(tagName, tagID, 'synon', function(action){
+						let $affected = $('.tag.id-'+tagID), target;
 
-					if ($affected.length)
-						switch (action){
-							case "synon":
-								target = this.target;
-								$affected.addClass('synonym');
-								//noinspection ES6ConvertVarToLetConst
-								var $ssp = $affected.eq(0).clone().removeClass('ctxmenu-bound'),
-									$tsp = new TagSpan(target),
-									$tagsDivs = $affected.add($('.tag.id-' + target.id)).closest('.tags');
-								$tagsDivs.filter(function(){
-									return $(this).children('.id-'+tagID).length === 0;
-								}).append($ssp).reorderTags();
-								$tagsDivs.filter(function(){
-									return $(this).children('.id-'+target.id).length === 0;
-								}).append($tsp).reorderTags();
-								ctxmenus();
-							break;
-							case "unsynon":
-								if (this.keep_tagged)
-									$affected.removeClass('synonym');
-								else $affected.remove();
-							break;
-							case "merge":
-								target = this.target;
-								$affected.each(function(){
-									let $this = $(this);
-									if ($this.siblings('.id-'+target.id).length === 0)
-										$this.replaceWith(new TagSpan(target));
-									else $this.remove();
-								});
-								ctxmenus();
-							break;
-						}
+						if ($affected.length)
+							switch (action){
+								case "synon":
+									target = this.target;
+									$affected.addClass('synonym');
+									//noinspection ES6ConvertVarToLetConst
+									var $ssp = $affected.eq(0).clone().removeClass('ctxmenu-bound'),
+										$tsp = new TagSpan(target),
+										$tagsDivs = $affected.add($('.tag.id-' + target.id)).closest('.tags');
+									$tagsDivs.filter(function(){
+										return $(this).children('.id-'+tagID).length === 0;
+									}).append($ssp).reorderTags();
+									$tagsDivs.filter(function(){
+										return $(this).children('.id-'+target.id).length === 0;
+									}).append($tsp).reorderTags();
+									ctxmenus();
+								break;
+								case "unsynon":
+									if (this.keep_tagged)
+										$affected.removeClass('synonym');
+									else $affected.remove();
+								break;
+							}
 
-					$.Dialog.close();
+						$.Dialog.close();
+					});
 				});
-			});
-		})
+			})
+		)
 	);
 
 
@@ -523,7 +511,7 @@
 				if (data.addto && AppearancePage)
 					data.APPEARANCE_PAGE = true;
 
-				$.post(`${PGRq}/cg/tag/make${EQGRq}`,data,$.mkAjaxHandler(function(){
+				$.post(`/api/cg/tag`,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					if (this.tags){
@@ -1791,9 +1779,9 @@
 					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
 					title = `Editing tag: ${tagName}`;
 
-				$.Dialog.wait(title, 'Retrieveing tag details from server');
+				$.Dialog.wait(title, 'Retrieving tag details from server');
 
-				$.post(`${PGRq}/cg/tag/get/${tagID}${EQGRq}`,$.mkAjaxHandler(function(){
+				$.get(`/api/cg/tag/${tagID}`,$.mkAjaxHandler(function(){
 					let tag = this;
 					if (this.status) $.Dialog.request(title,$EditTagFormTemplate.clone(true, true).data('tag', tag),'Save', function($form){
 						$form.find(`input[name=type][value=${tag.type}]`).prop('checked', true);
@@ -1809,7 +1797,7 @@
 								data.APPEARANCE_PAGE = $tag.closest('div[id^=p]').attr('id').replace(/\D/g, '');
 							$.Dialog.wait(false, 'Saving changes');
 
-							$.post(`${PGRq}/cg/tag/set/${tagID}${EQGRq}`, data, $.mkAjaxHandler(function(){
+							$.put(`/api/cg/tag/${tagID}`, data, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								let data = this,
@@ -1818,11 +1806,15 @@
 								else $affected.removeAttr('title');
 								$affected.text(data.name).data('ctxmenu-items').eq(0).text(`Tag: ${data.name}`);
 								$affected.each(function(){
+									if (data.synonym_of){
+										$(this).remove();
+										return;
+									}
+
 									if (/typ-[a-z]+/.test(this.className))
 										this.className = this.className.replace(/typ-[a-z]+/, data.type ? `typ-${data.type}` : '');
 									else if (data.type)
 										this.className += ` typ-${data.type}`;
-									$(this)[data.synonym_of?'addClass':'removeClass']('synonym').parent().reorderTags();
 								});
 
 								if (AppearancePage && data.needupdate){
@@ -1841,7 +1833,7 @@
 				let $tag = $(this),
 					tagName = $tag.text().trim(),
 					tagID = $tag.attr('class').match(/id-(\d+)(?:\s|$)/)[1],
-					title = 'Detele tag: '+tagName;
+					title = `Delete the ${tagName} tag`;
 
 				$.Dialog.confirm(title,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
 					if (!sure) return;
@@ -1852,7 +1844,7 @@
 					(function send(data){
 						$.Dialog.wait(title,'Sending removal request');
 
-						$.post(`${PGRq}/cg/tag/del/${tagID}${EQGRq}`,data,$.mkAjaxHandler(function(){
+						$.delete(`/api/cg/tag/${tagID}`,data,$.mkAjaxHandler(function(){
 							if (this.status){
 								if (this.needupdate === true){
 									let $eps = $(this.eps);

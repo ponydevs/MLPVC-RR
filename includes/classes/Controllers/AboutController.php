@@ -58,6 +58,9 @@ class AboutController extends Controller {
 	}
 
 	public function upcoming(){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		Response::done(['html' => CoreUtils::getSidebarUpcoming(NOWRAP)]);
 	}
 
