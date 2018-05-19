@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "38dbc279709d9748e80e9b92cfd77a65",
+    "content-hash": "a42b9d2a79500c5452dae38c7b5765b9",
     "packages": [
         {
             "name": "airmanbzh/php-html-generator",
@@ -200,69 +200,6 @@
                 "text"
             ],
             "time": "2014-05-19T10:25:02+00:00"
-        },
-        {
-            "name": "defuse/php-encryption",
-            "version": "v2.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/defuse/php-encryption.git",
-                "reference": "0d4d27c368ca6798bc162469e43248c363c73495"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/defuse/php-encryption/zipball/0d4d27c368ca6798bc162469e43248c363c73495",
-                "reference": "0d4d27c368ca6798bc162469e43248c363c73495",
-                "shasum": ""
-            },
-            "require": {
-                "ext-openssl": "*",
-                "paragonie/random_compat": "~2.0",
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "nikic/php-parser": "^2.0|^3.0|^4.0",
-                "phpunit/phpunit": "^4|^5"
-            },
-            "bin": [
-                "bin/generate-defuse-key"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Defuse\\Crypto\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Taylor Hornby",
-                    "email": "taylor@defuse.ca",
-                    "homepage": "https://defuse.ca/"
-                },
-                {
-                    "name": "Scott Arciszewski",
-                    "email": "info@paragonie.com",
-                    "homepage": "https://paragonie.com"
-                }
-            ],
-            "description": "Secure PHP Encryption Library",
-            "keywords": [
-                "aes",
-                "authenticated encryption",
-                "cipher",
-                "crypto",
-                "cryptography",
-                "encrypt",
-                "encryption",
-                "openssl",
-                "security",
-                "symmetric key cryptography"
-            ],
-            "time": "2018-04-23T19:33:40+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -3021,48 +2958,6 @@
             "time": "2016-08-21T15:57:09+00:00"
         },
         {
-            "name": "seinopsys/mega-php-client",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/SeinopSys/mega-php-client.git",
-                "reference": "57a9f8fecfcc65f5ec2e5a3fd8725f6712229132"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/mega-php-client/zipball/57a9f8fecfcc65f5ec2e5a3fd8725f6712229132",
-                "reference": "57a9f8fecfcc65f5ec2e5a3fd8725f6712229132",
-                "shasum": ""
-            },
-            "require": {
-                "defuse/php-encryption": "^2.2",
-                "ext-curl": "*",
-                "ext-openssl": "*",
-                "php": ">=7.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "SeinopSys\\MEGA\\": "lib/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "MEGA API Client Library for PHP.",
-            "homepage": "https://github.com/SeinopSys/mega-php-client",
-            "keywords": [
-                "api",
-                "client",
-                "mega",
-                "mega.co.nz"
-            ],
-            "support": {
-                "source": "https://github.com/SeinopSys/mega-php-client/tree/master"
-            },
-            "time": "2018-05-19T08:54:07+00:00"
-        },
-        {
             "name": "seinopsys/oauth2-deviantart",
             "version": "v1.1.0",
             "source": {
@@ -5490,7 +5385,6 @@
     "stability-flags": {
         "php-activerecord/php-activerecord": 20,
         "robmorgan/phinx": 20,
-        "seinopsys/mega-php-client": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
