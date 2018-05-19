@@ -3,6 +3,7 @@ php:
   - '7.2'
 before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "extension = mcrypt.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
   - cp ./setup/conf.php ./includes/conf.php
   - composer install --no-dev
@@ -13,6 +14,6 @@ before_script:
   - psql -c "CREATE USER \"mlpvc-rr\" WITH LOGIN PASSWORD 'example-password'" -U postgres
   - psql "mlpvc-rr" < ./setup/create_extensions.pg.sql
   - vendor/bin/phinx migrate
-dist: trusty
+dist: xenial
 addons:
   postgresql: "9.6"
