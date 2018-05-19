@@ -3,7 +3,6 @@ php:
   - '7.2'
 before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - echo "extension = mcrypt.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
   - cp ./setup/conf.php ./includes/conf.php
   - composer install --no-dev

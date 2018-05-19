@@ -56,9 +56,7 @@ class EpisodeVideo extends NSModel {
 				$broken = !CoreUtils::isURLAvailable("https://api.dailymotion.com/video/{$this->id}");
 			break;
 			case 'mg':
-				$mega = new \MEGA();
-				$file_info = $mega->public_file_info(...explode('!',$this->id));
-				$broken = $file_info === -16;
+				// Skip over
 			break;
 			case 'sv':
 				$broken = !CoreUtils::isURLAvailable(VideoProvider::getEmbed($this, VideoProvider::URL_ONLY));
