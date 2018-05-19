@@ -55,6 +55,11 @@ class EpisodeVideo extends NSModel {
 			case 'dm':
 				$broken = !CoreUtils::isURLAvailable("https://api.dailymotion.com/video/{$this->id}");
 			break;
+			case 'mg':
+				$mega = new \MEGA();
+				$file_info = $mega->public_file_info(...explode('!',$this->id));
+				$broken = $file_info === -16;
+			break;
 			default:
 				throw new \RuntimeException("No breakage check defined for provider {$this->provider}");
 		}

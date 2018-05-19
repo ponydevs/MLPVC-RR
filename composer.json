@@ -41,7 +41,8 @@
 		"peertopark/uribuilder": "^1.0",
 		"wohali/oauth2-discord-new": "^1.0",
 		"google/apiclient": "^2.0",
-		"google/apiclient-services": "^0.50.0"
+		"google/apiclient-services": "^0.50.0",
+		"biocoderh/mega-php-client": "^1.0.1"
 	},
 	"require-dev": {
 		"roave/security-advisories": "dev-master",

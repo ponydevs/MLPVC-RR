@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a42b9d2a79500c5452dae38c7b5765b9",
+    "content-hash": "9801499a8a6e28d96ce3481821f8195f",
     "packages": [
         {
             "name": "airmanbzh/php-html-generator",
@@ -105,8 +105,48 @@
             "time": "2015-11-30T00:47:43+00:00"
         },
         {
+            "name": "biocoderh/mega-php-client",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biocoderh/mega-php-client.git",
+                "reference": "02f9a3c839e3ef8790e6e3b974cd325f5921e3b6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biocoderh/mega-php-client/zipball/02f9a3c839e3ef8790e6e3b974cd325f5921e3b6",
+                "reference": "02f9a3c839e3ef8790e6e3b974cd325f5921e3b6",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-mcrypt": "*",
+                "ext-openssl": "*",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "MEGA API Client Library for PHP.",
+            "homepage": "https://github.com/biocoderh/mega-php-client",
+            "keywords": [
+                "api",
+                "client",
+                "mega",
+                "mega.co.nz"
+            ],
+            "time": "2017-04-01T16:39:36+00:00"
+        },
+        {
             "name": "cakephp/collection",
-            "version": "3.6.2",
+            "version": "3.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/collection.git",
@@ -2818,12 +2858,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/phinx.git",
-                "reference": "085cd54da5b14eff8e4754f82e3129c281eacfd8"
+                "reference": "bc4b99c5fab7674f48994608f4ecc926d43040a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/085cd54da5b14eff8e4754f82e3129c281eacfd8",
-                "reference": "085cd54da5b14eff8e4754f82e3129c281eacfd8",
+                "url": "https://api.github.com/repos/SeinopSys/phinx/zipball/bc4b99c5fab7674f48994608f4ecc926d43040a0",
+                "reference": "bc4b99c5fab7674f48994608f4ecc926d43040a0",
                 "shasum": ""
             },
             "require": {
@@ -2905,7 +2945,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/phinx/tree/add-timestamps-tz"
             },
-            "time": "2018-05-13T02:13:37+00:00"
+            "time": "2018-05-19T06:03:35+00:00"
         },
         {
             "name": "s1lentium/iptools",

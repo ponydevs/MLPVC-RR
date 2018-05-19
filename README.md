@@ -34,6 +34,7 @@
    [IPTools](https://github.com/S1lentium/IPTools),
    [svg-sanitizer](https://github.com/darylldoyle/svg-sanitizer),
    [svgo](https://github.com/svg/svgo)
+   [mega-php-client](https://github.com/biocoderh/mega-php-client)
  - Development tools:
    [Gulp](http://gulpjs.com/),
    [Uglify-js](https://www.npmjs.com/package/uglify-js),
