@@ -1,5 +1,4 @@
-/* global DocReady,Chart,$w,Time,moment */
-$(function(){
+(function(){
 	'use strict';
 
 	const
@@ -12,4 +11,4 @@ $(function(){
 		$butwhy.addClass('hidden');
 		$thisiswhy.removeClass('hidden');
 	});
-});
+})();

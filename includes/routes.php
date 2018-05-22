@@ -23,120 +23,131 @@ $router->addMatchTypes([
 	'uuid' => '([0-9a-fA-F]{32}|[0-9a-fA-F-]{36})',
 ]);
 
-\define('GET_POST', 'GET|POST');
-\define('CRUD', 'POST|GET|PUT|DELETE');
-\define('GET_PUT', 'GET|PUT');
-\define('PUT_DEL', 'PUT|DELETE');
-\define('POST_DEL', 'POST|DELETE');
-
 // Pages
-$router->map('GET', '/',                               'UserController#homepage');
-$router->map('GET', '/about',                          'AboutController#index');
-$router->map('GET', '/about/browser/[uuid:session]?',  'AboutController#browser');
-$router->map('GET', '/browser/[uuid:session]?',        'AboutController#browser');
-$router->map('GET', '/about/privacy',                  'AboutController#privacy');
-$router->map('GET', '/admin',                          'AdminController#index');
-$router->map('GET', '/logs/[i]?',                      'AdminController#log');
-$router->map('GET', '/admin/logs/[i]?',                'AdminController#log');
-$router->map('GET', '/admin/discord',                  'AdminController#discord');
-$router->map('GET', '/admin/usefullinks',              'AdminController#usefulLinks');
-$router->map('GET', '/admin/wsdiag',                   'AdminController#wsdiag');
-$router->map('GET', '/admin/pcg-appearances/[i]?',     'AdminController#pcgAppearances');
-$router->map('GET', '/admin/notices',                  'AdminController#notices');
-$router->map('GET', '/blending',                       'ColorGuideController#blending');
-$router->map('GET', '/components',                     'ComponentsController#index');
-$router->map('GET', '/[cg]/blending',                                      'ColorGuideController#blending');
-$router->map('GET', '/[cg]/blending-reverse',                              'ColorGuideController#blendingReverse');
-$router->map('GET', '/[cg]/picker',                                        'ColorGuideController#picker');
-$router->map('GET', '/[cg]/picker/frame',                                  'ColorGuideController#pickerFrame');
-$router->map('GET', '/[cg]/[guide:guide]?/[i]?',                                'ColorGuideController#guide');
-$router->map('GET', '/[cg]/[guide:guide]?/full',                                'ColorGuideController#fullList');
-$router->map('GET', '/[cg]/[guide:guide]?/tags/[i]?',                           'TagController#list');
-$router->map('GET', '/[cg]/[guide:guide]?/changes/[i]?',                        'ColorGuideController#changeList');
-$router->map('GET', '/[cg]/[guide:guide]?/[v]',                                 'ColorGuideController#guide');
-$router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id]',                          'AppearanceController#view');
-$router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id]-[adi]',                    'AppearanceController#view');
-$router->map('GET', '/[cg]/[guide:guide]?/[v]/[adi]-[i:id]',                    'AppearanceController#view');
-$router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id][cgimg:type]?.[cgext:ext]', 'AppearanceController#asFile');
-$router->map('GET', '/[cg]/[guide:guide]?/sprite(-colors)?/[i:id][adi]?',       'AppearanceController#sprite');
-$router->map('GET', '/[cg]/[guide:guide]?/tag-changes/[i:id][adi]?',       'AppearanceController#tagChanges');
-$router->map('GET', '/[cg]/cutiemark/[i:id].svg',                          'CutiemarkController#view');
-$router->map('GET', '/[cg]/cutiemark/download/[i:id][adi]?',               'CutiemarkController#download');
-$router->map('GET', '/da-auth',                        'AuthController#end');
-$router->map('GET', '/da-auth/begin',                  'AuthController#begin');
-$router->map('GET', '/da-auth/end',                    'AuthController#end');
-$router->map('GET', '/episode/[epid:id]',              'EpisodeController#page');
-$router->map('GET', '/episode/latest',                 'EpisodeController#latest');
-$router->map('GET', '/episodes/[i]?',                  'ShowController#index');
-$router->map('GET', '/movies/[i]?',                    'ShowController#index');
-$router->map('GET', '/show',                           'ShowController#index');
-$router->map('GET', '/eqg/[i:id]',                     'EQGController#redirectInt');
-$router->map('GET', '/eqg/[adi:id]',                   'EQGController#redirectStr');
-$router->map('GET', '/events/[i]?',                    'EventController#list');
-$router->map('GET', '/event/[i:id][adi]?',             'EventController#index');
-$router->map('GET', '/movie/[i:id][adi]?',             'MovieController#pageID');
-$router->map('GET', '/movie/[adi:title]',              'MovieController#pageTitle');
-$router->map('GET', '/logs/[i]',                       'AdminController#logs');
-$router->map('GET', '/muffin-rating',                  'MuffinRatingController#image');
-$router->map('GET', '/s/[rr:thing]/[i:id]',            'PostController#share');
-$router->map('GET', '/users',                          'UserController#list');
-$router->map('GET', '/@[un:name]',                     'UserController#profile');
-$router->map('GET', '/u/[un:name]?',                   'UserController#profile');
-$router->map('GET', '/u/[uuid:uuid]',                  'UserController#profileByUuid');
-$router->map('GET', '/@[un:name]/contrib/[ad:type]/[i]?', 'UserController#contrib');
-$router->map('GET', '/@[un:name]/[cg]/[i]?',                               'PersonalGuideController#list');
-$router->map('GET', '/@[un:name]/[cg]/slot-history/[i]?',                  'PersonalGuideController#pointHistory');
-$router->map('GET', '/@[un:name]/[cg]/point-history/[i]?',                 'PersonalGuideController#pointHistory');
-$router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]',                         'AppearanceController#viewPersonal');
-$router->map('GET', '/@[un:name]/[cg]/[v]/[i:id]-[adi]',                   'AppearanceController#viewPersonal');
-$router->map('GET', '/@[un:name]/[cg]/[v]/[adi]-[i:id]',                   'AppearanceController#viewPersonal');
-$router->map('GET', '/@[un:name]/[cg]/[v]/[i:id][cgimg:type].[cgext:ext]', 'AppearanceController#personalAsFile');
-$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/sprite(-colors)?/[i:id][adi]?', 'AppearanceController#sprite');
-$router->map('GET', '/manifest',                       'ManifestController#json');
-$router->map('GET', '/user/contrib/lazyload/[favme:favme]', 'UserController#contribLazyload');
+# AboutController
+$router->map('GET', '/about',                         'AboutController#index');
+$router->map('GET', '/about/browser/[uuid:session]?', 'AboutController#browser');
+$router->map('GET', '/browser/[uuid:session]?',       'AboutController#browser');
+$router->map('GET', '/about/privacy',                 'AboutController#privacy');
+# AdminController
+$router->map('GET', '/admin',                      'AdminController#index');
+$router->map('GET', '/logs/[i]?',                  'AdminController#log');
+$router->map('GET', '/logs/[i]',                   'AdminController#log');
+$router->map('GET', '/admin/logs/[i]?',            'AdminController#log');
+$router->map('GET', '/admin/discord',              'AdminController#discord');
+$router->map('GET', '/admin/usefullinks',          'AdminController#usefulLinks');
+$router->map('GET', '/admin/wsdiag',               'AdminController#wsdiag');
+$router->map('GET', '/admin/pcg-appearances/[i]?', 'AdminController#pcgAppearances');
+$router->map('GET', '/admin/notices',              'AdminController#notices');
+# ColorGuideController
+$router->map('GET', '/blending',                           'ColorGuideController#blending');
+$router->map('GET', '/[cg]/blending',                      'ColorGuideController#blending');
+$router->map('GET', '/[cg]/blending-reverse',              'ColorGuideController#blendingReverse');
+$router->map('GET', '/[cg]/picker',                        'ColorGuideController#picker');
+$router->map('GET', '/[cg]/picker/frame',                  'ColorGuideController#pickerFrame');
+$router->map('GET', '/[cg]/[guide:guide]?/[i]?',           'ColorGuideController#guide');
+$router->map('GET', '/[cg]/[guide:guide]?/full',           'ColorGuideController#fullList');
+$router->map('GET', '/[cg]/[guide:guide]?/changes/[i]?',   'ColorGuideController#changeList');
+$router->map('GET', '/[cg]/[guide:guide]?/[v]',            'ColorGuideController#guide');
+$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]', 'ColorGuideController#guide');
+# AppearanceController
+$router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id]',                                        'AppearanceController#view');
+$router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id]-[adi]',                                  'AppearanceController#view');
+$router->map('GET', '/[cg]/[guide:guide]?/[v]/[adi]-[i:id]',                                  'AppearanceController#view');
+$router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id][cgimg:type]?.[cgext:ext]',               'AppearanceController#asFile');
+$router->map('GET', '/[cg]/[guide:guide]?/sprite(-colors)?/[i:id][adi]?',                     'AppearanceController#sprite');
+$router->map('GET', '/[cg]/[guide:guide]?/tag-changes/[i:id][adi]?',                          'AppearanceController#tagChanges');
+$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[i:id]',                             'AppearanceController#view');
+$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[i:id]-[adi]',                       'AppearanceController#view');
+$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[adi]-[i:id]',                       'AppearanceController#view');
+$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[i:id][cgimg:type]?.[cgext:ext]',    'AppearanceController#asFile');
+$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/sprite(-colors)?/[i:id][adi]?',          'AppearanceController#sprite');
+# ComponentsController
+$router->map('GET', '/components', 'ComponentsController#index');
+# TagController
+$router->map('GET', '/[cg]/[guide:guide]?/tags/[i]?', 'TagController#list');
+# CutiemarkController
+$router->map('GET', '/[cg]/cutiemark/[i:id].svg',            'CutiemarkController#view');
+$router->map('GET', '/[cg]/cutiemark/download/[i:id][adi]?', 'CutiemarkController#download');
+# AuthController
+$router->map('GET', '/da-auth',       'AuthController#end');
+$router->map('GET', '/da-auth/begin', 'AuthController#begin');
+$router->map('GET', '/da-auth/end',   'AuthController#end');
+# DiscordAuthController
+$router->map('GET', '/discord-connect/begin', 'DiscordAuthController#begin');
+$router->map('GET', '/discord-connect/end',   'DiscordAuthController#end');
+# EpisodeController
+$router->map('GET', '/episode/[epid:id]', 'EpisodeController#view');
+$router->map('GET', '/episode/latest',    'EpisodeController#latest');
+# ShowController
+$router->map('GET', '/episodes/[i]?', 'ShowController#index');
+$router->map('GET', '/movies/[i]?',   'ShowController#index');
+$router->map('GET', '/show',          'ShowController#index');
+# EQGController
+$router->map('GET', '/eqg/[i:id]',   'EQGController#redirectInt');
+$router->map('GET', '/eqg/[adi:id]', 'EQGController#redirectStr');
+# EventController
+$router->map('GET', '/events/[i]?',                 'EventController#list');
+$router->map('GET', '/event/[i:id][adi]?',          'EventController#index');
+$router->map('GET', '/event/entry/lazyload/[i:id]', 'EventController#lazyloadEntry');
+# MovieController
+$router->map('GET', '/movie/[i:id][adi]?', 'MovieController#view');
+# MuffinRatingController
+$router->map('GET', '/muffin-rating', 'MuffinRatingController#image');
+# PostController
+$router->map('GET', '/s/[rr:thing]/[i:id]', 'PostController#share');
 $router->map('GET', '/post/lazyload/[rrl:thing]/[i:id]', 'PostController#lazyload');
-$router->map('GET', '/event/entry/lazyload/[i:id]',    'EventController#lazyloadEntry');
-$router->map('GET', '/discord-connect/begin',          'DiscordAuthController#begin');
-$router->map('GET', '/discord-connect/end',            'DiscordAuthController#end');
+# UserController
+$router->map('GET', '/',                                    'UserController#homepage');
+$router->map('GET', '/users',                               'UserController#list');
+$router->map('GET', '/@[un:name]',                          'UserController#profile');
+$router->map('GET', '/u/[un:name]?',                        'UserController#profile');
+$router->map('GET', '/u/[uuid:uuid]',                       'UserController#profileByUuid');
+$router->map('GET', '/@[un:name]/contrib/[ad:type]/[i]?',   'UserController#contrib');
+$router->map('GET', '/user/contrib/lazyload/[favme:favme]', 'UserController#contribLazyload');
+# PersonalGuideController
+$router->map('GET', '/@[un:name]/[cg]/[i]?',               'PersonalGuideController#list');
+$router->map('GET', '/@[un:name]/[cg]/slot-history/[i]?',  'PersonalGuideController#pointHistory');
+$router->map('GET', '/@[un:name]/[cg]/point-history/[i]?', 'PersonalGuideController#pointHistory');
+# ManifestController
+$router->map('GET', '/manifest', 'ManifestController#json');
 
 // Proper REST API endpoints (sort of)
-// CRUD is used everywhere to allow 405 responses to unsupported methods
-$router->map(CRUD, '/api/about/upcoming',                    'AboutController#upcoming');
-$router->map(CRUD, '/api/admin/logs/details/[i:id]',         'AdminController#logDetail');
-$router->map(CRUD, '/api/admin/usefullinks/[i:id]?',         'AdminController#usefulLinksApi');
-$router->map(CRUD, '/api/admin/usefullinks/reorder',         'AdminController#reorderUsefulLinks');
-$router->map(CRUD, '/api/admin/wsdiag/hello',                'AdminController#wshello');
-$router->map(CRUD, '/api/admin/mass-approve',                'AdminController#massApprove');
-$router->map(CRUD, '/api/admin/notices/[i:id]?',             'AdminController#noticesApi');
-$router->map(CRUD, '/api/cg/appearances/list',               'AppearanceController#listApi');
-$router->map(CRUD, '/api/cg/appearance/[i:id]?',             'AppearanceController#api');
-$router->map(CRUD, '/api/cg/appearance/[i:id]/colorgroups',  'AppearanceController#colorGroupsApi');
-$router->map(CRUD, '/api/cg/appearance/[i:id]/sprite',       'AppearanceController#spriteApi');
-$router->map(CRUD, '/api/cg/appearance/[i:id]/relations',    'AppearanceController#relationsApi');
-$router->map(CRUD, '/api/cg/appearance/[i:id]/cutiemarks',   'AppearanceController#cutiemarkApi');
-$router->map(CRUD, '/api/cg/appearance/[i:id]/tagged',       'AppearanceController#taggedApi');
-$router->map(CRUD, '/api/cg/appearance/[i:id]/template',     'AppearanceController#applyTemplate');
-$router->map(CRUD, '/api/cg/appearance/[i:id]/sanitize-svg', 'AppearanceController#sanitizeSvg');
-$router->map(CRUD, '/api/cg/appearance/[i:id]/selective',    'AppearanceController#selectiveClear');
-$router->map(CRUD, '/api/cg/appearance/[i:id]/link-targets', 'AppearanceController#linkTargets');
-$router->map(CRUD, '/api/cg/sprite-color-checkup',           'ColorGuideController#spriteColorCheckup');
-$router->map(CRUD, '/api/cg/full/reorder',                   'ColorGuideController#reorderFullList');
-$router->map(CRUD, '/api/cg/export',                         'ColorGuideController#export');
-$router->map(CRUD, '/api/cg/reindex',                        'ColorGuideController#reindex');
-$router->map(CRUD, '/api/cg/tags',                           'TagController#autocomplete');
-$router->map(CRUD, '/api/cg/tags/recount-uses',              'TagController#recountUses');
-$router->map(CRUD, '/api/cg/tag/[i:id]?',                    'TagController#api');
-$router->map(CRUD, '/api/cg/tag/[i:id]/synonym',             'TagController#synonymApi');
-$router->map(CRUD, '/api/cg/colorgroup/[i:id]?',             'ColorGroupController#api');
+// CRUD is used everywhere to allow 405 responses to unsupported methods at the controller level
+\define('CRUD', 'POST|GET|PUT|DELETE');
+$API = '/api';
+$router->map(CRUD, "$API/about/upcoming",                    'AboutController#upcoming');
+$router->map(CRUD, "$API/admin/logs/details/[i:id]",         'AdminController#logDetail');
+$router->map(CRUD, "$API/admin/usefullinks/[i:id]?",         'AdminController#usefulLinksApi');
+$router->map(CRUD, "$API/admin/usefullinks/reorder",         'AdminController#reorderUsefulLinks');
+$router->map(CRUD, "$API/admin/wsdiag/hello",                'AdminController#wshello');
+$router->map(CRUD, "$API/admin/mass-approve",                'AdminController#massApprove');
+$router->map(CRUD, "$API/admin/notices/[i:id]?",             'AdminController#noticesApi');
+$router->map(CRUD, "$API/cg/appearances/list",               'AppearanceController#listApi');
+$router->map(CRUD, "$API/cg/appearance/[i:id]?",             'AppearanceController#api');
+$router->map(CRUD, "$API/cg/appearance/[i:id]/colorgroups",  'AppearanceController#colorGroupsApi');
+$router->map(CRUD, "$API/cg/appearance/[i:id]/sprite",       'AppearanceController#spriteApi');
+$router->map(CRUD, "$API/cg/appearance/[i:id]/relations",    'AppearanceController#relationsApi');
+$router->map(CRUD, "$API/cg/appearance/[i:id]/cutiemarks",   'AppearanceController#cutiemarkApi');
+$router->map(CRUD, "$API/cg/appearance/[i:id]/tagged",       'AppearanceController#taggedApi');
+$router->map(CRUD, "$API/cg/appearance/[i:id]/template",     'AppearanceController#applyTemplate');
+$router->map(CRUD, "$API/cg/appearance/[i:id]/sanitize-svg", 'AppearanceController#sanitizeSvg');
+$router->map(CRUD, "$API/cg/appearance/[i:id]/selective",    'AppearanceController#selectiveClear');
+$router->map(CRUD, "$API/cg/appearance/[i:id]/link-targets", 'AppearanceController#linkTargets');
+$router->map(CRUD, "$API/cg/sprite-color-checkup",           'ColorGuideController#spriteColorCheckup');
+$router->map(CRUD, "$API/cg/full/reorder",                   'ColorGuideController#reorderFullList');
+$router->map(CRUD, "$API/cg/export",                         'ColorGuideController#export');
+$router->map(CRUD, "$API/cg/reindex",                        'ColorGuideController#reindex');
+$router->map(CRUD, "$API/cg/tags",                           'TagController#autocomplete');
+$router->map(CRUD, "$API/cg/tags/recount-uses",              'TagController#recountUses');
+$router->map(CRUD, "$API/cg/tag/[i:id]?",                    'TagController#api');
+$router->map(CRUD, "$API/cg/tag/[i:id]/synonym",             'TagController#synonymApi');
+$router->map(CRUD, "$API/cg/colorgroup/[i:id]?",             'ColorGroupController#api');
 
 // "API" Endpoints
+$router->map('POST', '/@[un:name]/cg/slot-check',           'PersonalGuideController#checkAvailSlots');
+$router->map('POST', '/@[un:name]/cg/point-history/recalc', 'PersonalGuideController#pointRecalc');
 $router->map('POST', '/da-auth/status',                      'AuthController#sessionStatus');
-$router->map('POST', '/@[un:name]/cg/slot-check',            'PersonalGuideController#checkAvailSlots');
-$router->map('POST', '/@[un:name]/cg/point-history/recalc',  'PersonalGuideController#pointRecalc');
-$router->map('POST', '/@[un:name]/cg/appearance/[ad:action]/[i:id]',  'AppearanceController#action');
-$router->map('POST', '/@[un:name]/cg/appearance/[make:action]',       'AppearanceController#action');
-$router->map('POST', '/@[un:name]/cg/colorgroup/[gsd:action]/[i:id]', 'ColorGroupController#action');
-$router->map('POST', '/@[un:name]/cg/colorgroup/[make:action]',       'ColorGroupController#action');
 $router->map('POST', '/da-auth/signout',                     'AuthController#signout');
 $router->map('POST', '/episode/postlist/[epid:id]',          'EpisodeController#postList');
 $router->map('POST', '/episode/get/[epid:id]',               'EpisodeController#get');
@@ -175,10 +186,8 @@ $router->map('POST', '/post/fix-stash/[rrl:thing]/[i:id]',   'PostController#fix
 $router->map('POST', '/post/add-reservation',                'PostController#addReservation');
 $router->map('POST', '/post/delete-request/[i:id]',          'PostController#deleteRequest');
 $router->map('POST', '/post/locate/[rrl:thing]/[i:id]',      'PostController#locate');
-$router->map('POST', '/preference/set/[au:key]',             'PreferenceController#set');
-$router->map('POST', '/preference/get/[au:key]',             'PreferenceController#get');
-$router->map('POST', '/@[un:name]/preference/set/[au:key]',  'PreferenceController#set');
-$router->map('POST', '/@[un:name]/preference/get/[au:key]',  'PreferenceController#get');
+$router->map('POST', '/@[un:name]?/preference/set/[au:key]',  'PreferenceController#set');
+$router->map('POST', '/@[un:name]?/preference/get/[au:key]',  'PreferenceController#get');
 $router->map('POST', '/setting/set/[au:key]',                'SettingController#set');
 $router->map('POST', '/setting/get/[au:key]',                'SettingController#get');
 $router->map('POST', '/user/suggestion',                     'UserController#suggestion');

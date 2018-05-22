@@ -1,5 +1,4 @@
-/* global DocReady,$w */
-$(function(){
+(function(){
 	'use strict';
 
 	const PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN;
@@ -205,4 +204,4 @@ $(function(){
 	});
 	$w.on('scroll mousewheel', window._EventScroll);
 	fulfill_promise();
-});
+})();

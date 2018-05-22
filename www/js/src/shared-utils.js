@@ -1,6 +1,5 @@
 /* jshint bitwise: false */
-/* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io,moment,Time,ace,mk,WSNotifications */
-(function($){
+(function(){
 	'use strict';
 
 	if (typeof $.Navigation !== 'undefined' && $.Navigation.firstLoadDone === true)
@@ -893,4 +892,4 @@
 			}, $.isPlainObject(url) && url));
 		};
 	});
-})(jQuery);
+})();

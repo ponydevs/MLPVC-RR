@@ -9,8 +9,8 @@ class MuffinRatingController extends Controller {
 
 	public function image(){
 		$ScorePercent = 100;
-		if (isset($_GET['w']) && preg_match(new RegExp('^(\d|[1-9]\d|100)$'), $_GET['w']))
-			$ScorePercent = \intval($_GET['w'], 10);
+		if (isset($_GET['w']) && is_numeric($_GET['w']))
+			$ScorePercent = max(min(\intval($_GET['w'], 10), 0), 100);
 		$RatingFile = File::get(APPATH.'img/muffin-rating.svg');
 		header('Content-Type: image/svg+xml');
 		echo str_replace("width='100'", "width='$ScorePercent'", $RatingFile);

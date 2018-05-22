@@ -29,7 +29,7 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 <html lang="en" prefix="og: http://ogp.me/ns#">
 <head>
 	<meta charset="utf-8">
-	<title><?=CoreUtils::escapeHTML($title)?></title>
+	<title><?=ltrim(CoreUtils::escapeHTML($title).' - '.SITE_TITLE, ' -')?></title>
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta property="og:type" content="website">
 	<meta property="og:locale" content="en_US">

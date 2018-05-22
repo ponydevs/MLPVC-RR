@@ -7,23 +7,7 @@ use App\Models\Episode;
 use App\Episodes;
 
 class MovieController extends Controller {
-	public function pageID($params){
-		DB::$instance->where('season', 0)->where('episode', $params['id']);
-
-		$this->_page();
-	}
-	public function pageTitle($params){
-		$data = strtolower(CoreUtils::trim($params['title'], false, ' -'));
-		DB::$instance->where("regexp_replace(regexp_replace(lower(\"title\"), '[^a-z]', '-', 'g'), '-{2,}', '-', 'g') = '$data'");
-
-		$this->_page();
-	}
-	private function _page(){
-		/** @var $CurrtentEpisode Episode */
-		$CurrtentEpisode = DB::$instance->getOne('episodes');
-		if (empty($CurrtentEpisode))
-			CoreUtils::notFound();
-
-		Episodes::loadPage($CurrtentEpisode);
+	public function view($params){
+		Episodes::loadPage(Episode::find_by_season_and_episode(0, $params['id']));
 	}
 }

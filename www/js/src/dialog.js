@@ -1,4 +1,3 @@
-/* globals $body,Key,$w,Time */
 (function ($, undefined) {
 	'use strict';
 	let colors = {
@@ -8,7 +7,7 @@
 			request: '',
 			confirm: 'orange',
 			info: 'darkblue',
-			segway: 'lavander',
+			segway: 'lavender',
 		},
 		noticeClasses = {
 			fail: 'fail',
@@ -46,13 +45,13 @@
 			$.each(options, (k,v)=>this[k]=v);
 		}
 
-		setLabel(newlabel){
-			this.label = newlabel;
+		setLabel(newLabel){
+			this.label = newLabel;
 			return this;
 		}
 
-		setFormId(formid){
-			this.formid = formid;
+		setFormId(formId){
+			this.formid = formId;
 			return this;
 		}
 	}
@@ -207,13 +206,13 @@
 
 			$.callCallback(params.callback, [$requestContentDiv]);
 			if (append){
-				let $lastdiv = this.$dialogContent.children(':not(#dialogButtons)').last();
+				let $lastDiv = this.$dialogContent.children(':not(#dialogButtons)').last();
 				if (appendingToRequest)
-					$lastdiv = $lastdiv.children('.notice').last();
+					$lastDiv = $lastDiv.children('.notice').last();
 				this.$dialogOverlay.stop().animate(
 					{
 						scrollTop: '+=' +
-						($lastdiv.position().top + parseFloat($lastdiv.css('margin-top'), 10) + parseFloat($lastdiv.css('border-top-width'), 10))
+						($lastDiv.position().top + parseFloat($lastDiv.css('margin-top'), 10) + parseFloat($lastDiv.css('border-top-width'), 10))
 					},
 					'fast'
 				);
@@ -224,9 +223,9 @@
 		/**
 		 * Display a dialog asking for user input
 		 *
-		 * @param {string}        title
-		 * @param {string|jQuery} content
-		 * @param {bool}          forceNew
+		 * @param {string}   title
+		 * @param {string|$} content
+		 * @param {boolean}  forceNew
 		 */
 		fail(title = defaultTitles.fail, content = defaultContent.fail, forceNew = false){
 			this._display({
@@ -241,10 +240,10 @@
 		/**
 		 * Display a dialog asking for user input
 		 *
-		 * @param {string}        title
-		 * @param {string|jQuery} content
-		 * @param {bool}          closeBtn
-		 * @param {function}      callback
+		 * @param {string}   title
+		 * @param {string|$} content
+		 * @param {boolean}  closeBtn
+		 * @param {function} callback
 		 */
 		success(title = defaultTitles.success, content = defaultContent.success, closeBtn = false, callback = undefined){
 			this._display({
@@ -259,10 +258,10 @@
 		/**
 		 * Display a dialog informing the user of an action in progress
 		 *
-		 * @param {string}        title
-		 * @param {string|jQuery} content
-		 * @param {bool}          forceNew
-		 * @param {function}      callback
+		 * @param {string}   title
+		 * @param {string|$} content
+		 * @param {boolean}  forceNew
+		 * @param {function} callback
 		 */
 		wait(title = defaultTitles.wait, content = defaultContent.wait, forceNew = false, callback = undefined){
 			this._display({
@@ -278,7 +277,7 @@
 		 * Display a dialog asking for user input
 		 *
 		 * @param {string}          title
-		 * @param {string|jQuery}   content
+		 * @param {string|$}        content
 		 * @param {string|function} confirmBtn
 		 * @param {function}        callback
 		 */
@@ -288,19 +287,19 @@
 				confirmBtn = undefined;
 			}
 			let buttons = [],
-				formid;
-			if (content instanceof jQuery)
-				formid = content.attr('id');
+				formId;
+			if (content instanceof $)
+				formId = content.attr('id');
 			else if (typeof content === 'string'){
 				let match = content.match(/<form\sid=["']([^"']+)["']/);
 				if (match)
-					formid = match[1];
+					formId = match[1];
 			}
 			if (confirmBtn !== false){
-				if (formid)
+				if (formId)
 					buttons.push(new DialogButton(confirmBtn, {
 						submit: true,
-						form: formid,
+						form: formId,
 					}));
 				buttons.push(new DialogButton('Cancel', { action: closeAction }));
 			}
@@ -319,7 +318,7 @@
 		 * Display a dialog asking for confirmation regarding an action
 		 *
 		 * @param {string}            title
-		 * @param {string|jQuery}     content
+		 * @param {string|$}          content
 		 * @param {string[]|function} btnTextArray
 		 * @param {function}          handlerFunc
 		 */
@@ -349,9 +348,9 @@
 		/**
 		 * Display a dialog with some information
 		 *
-		 * @param {string}        title
-		 * @param {string|jQuery} content
-		 * @param {function}      callback
+		 * @param {string}   title
+		 * @param {string|$} content
+		 * @param {function} callback
 		 */
 		info(title = defaultTitles.info, content = defaultContent.info, callback = undefined){
 			this._display({
@@ -366,10 +365,10 @@
 		/**
 		 * Display a dialog that causes a page reload when dismissed
 		 *
-		 * @param {string}        title
-		 * @param {string|jQuery} content
-		 * @param {string}        btnText
-		 * @param {function}      handlerFunc
+		 * @param {string}   title
+		 * @param {string|$} content
+		 * @param {string}   btnText
+		 * @param {function} handlerFunc
 		 */
 		segway(title = defaultTitles.reload, content = defaultContent.reload, btnText = 'Reload', handlerFunc = undefined){
 			if (typeof handlerFunc === 'undefined' && typeof btnText === 'function'){
@@ -385,17 +384,17 @@
 		}
 
 		setFocusedElement($el){
-			if ($el instanceof jQuery)
+			if ($el instanceof $)
 				this._$focusedElement = $el;
 		}
 		_storeFocus(){
-			if (typeof this._$focusedElement !== 'undefined' && this._$focusedElement instanceof jQuery)
+			if (typeof this._$focusedElement !== 'undefined' && this._$focusedElement instanceof $)
 				return;
 			let $focus = $(':focus');
 			this._$focusedElement = $focus.length > 0 ? $focus.last() : undefined;
 		}
 		_restoreFocus(){
-			if (typeof this._$focusedElement !== 'undefined' && this._$focusedElement instanceof jQuery){
+			if (typeof this._$focusedElement !== 'undefined' && this._$focusedElement instanceof $){
 				this._$focusedElement.focus();
 				this._$focusedElement = undefined;
 			}

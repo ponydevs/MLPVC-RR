@@ -1,5 +1,4 @@
-/* global DocReady,$w,Time */
-$(function(){
+(function(){
 	'use strict';
 
 	let requesting = false,
@@ -163,4 +162,4 @@ $(function(){
 		}).length === 0 ? 'addClass' : 'removeClass']('empty');
 		$btn.removeClass(state).addClass(nextState.className).text(nextState.title);
 	});
-});
+})();

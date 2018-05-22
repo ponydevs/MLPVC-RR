@@ -11,7 +11,7 @@
 		<button class="orange">Orange button</button>
 		<button class="red">Red button</button>
 		<button class="link">Link button</button>
-		<button class="lavander">Link button</button>
+		<button class="lavender">Link button</button>
 	</div>
 
 	<div class="align-center">
@@ -23,7 +23,7 @@
 		<button class="typcn typcn-brush orange">With icon</button>
 		<button class="typcn typcn-brush red">With icon</button>
 		<button class="typcn typcn-brush link">With icon</button>
-		<button class="typcn typcn-brush lavander">With icon</button>
+		<button class="typcn typcn-brush lavender">With icon</button>
 	</div>
 
 	<div>

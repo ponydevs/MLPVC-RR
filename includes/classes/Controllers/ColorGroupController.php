@@ -22,7 +22,7 @@ class ColorGroupController extends ColorGuideController {
 	/** @var ColorGroup|null */
 	private $colorgroup;
 	private function load_colorgroup($params){
-		$this->_initPersonal($params, false);
+		$this->_initialize($params, false);
 		if (!Auth::$signed_in)
 			Response::fail();
 
@@ -65,13 +65,13 @@ class ColorGroupController extends ColorGuideController {
 				if ($this->creating){
 					$ponyid = (new Input('ponyid', 'int', [
 						Input::CUSTOM_ERROR_MESSAGES => [
-							Input::ERROR_MISSING => 'Missing appearance ID',
+							Input::ERROR_MISSING => 'Appearance ID is missing',
+							Input::ERROR_INVALID => 'Appearance ID is invalid',
 						],
 					]))->out();
 					$params['id'] = $ponyid;
 					$this->_getAppearance($params);
-					if (!$isStaff && !$this->_isOwnedByUser)
-						Response::fail();
+					$this->appearance->checkManagePermission(Auth::$user);
 					$this->colorgroup = new ColorGroup();
 					$this->colorgroup->appearance_id = $ponyid;
 				}

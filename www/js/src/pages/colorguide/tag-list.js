@@ -1,5 +1,4 @@
-/* globals DocReady */
-$(function(){
+(function(){
 	'use strict';
 
 	let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC,
@@ -153,4 +152,4 @@ $(function(){
 
 		$.post('/api/cg/tags/recount-uses',{tagids:tagIDs.join(',')}, tagUseUpdateHandler(true));
 	});
-});
+})();

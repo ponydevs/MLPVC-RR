@@ -44,7 +44,7 @@ class Notification extends NSModel {
 			'recheck' => [
 				'label' => 'Recheck',
 				'icon' => 'refresh',
-				'color' => 'lavander',
+				'color' => 'lavender',
 				'confirm' => false,
 				'action' => 'Recheck sprite colors',
 			],

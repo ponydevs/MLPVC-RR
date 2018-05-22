@@ -1,4 +1,3 @@
-/* global Key,$body */
 (function($){
 	'use strict';
 
@@ -44,7 +43,7 @@
 
 			waitingList[this.appearanceId] = [this];
 
-			$.post(`/cg/colorgroup/list/${this.appearanceId}?hex`, $.mkAjaxHandler(data => {
+			$.post(`/api/cg/appearance/${this.appearanceId}/link-targets?hex`, $.mkAjaxHandler(data => {
 				if (!data.status) return this.displayError(data.message);
 
 				$.each(waitingList[this.appearanceId], (_, picker) => {

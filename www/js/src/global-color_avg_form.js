@@ -1,4 +1,4 @@
-/* global $ColorAvgForm */
+/* global $ColorAvgFormTemplate */
 // Color Average form
 window.$ColorAvgFormTemplate = (function($){
 	'use strict';

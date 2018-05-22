@@ -1,5 +1,4 @@
-/* global $d,$w,$navbar,HandleNav,Time */
-(function Paginate(){
+(function(){
 	'use strict';
 
 	let $pagination = $('.pagination'),
@@ -49,6 +48,6 @@
 				location.href = href.replace('*',page);
 			});
 		});
-	})
+	});
 
 })();

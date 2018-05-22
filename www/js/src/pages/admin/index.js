@@ -1,5 +1,4 @@
-/* global DocReady,HandleNav,Sortable,DOMStringList,$w,IntersectionObserver */
-$(function(){
+(function(){
 	'use strict';
 
 	// Mass-aprove posts
@@ -157,4 +156,4 @@ $(function(){
 		$('.user-avatar-promise').each((_, el) => avatarIO.observe(el));
 	}
 	reobserve();
-});
+})();

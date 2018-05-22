@@ -1,5 +1,4 @@
-/* global DocReady,HEX_COLOR_PATTERN */
-$(function(){
+(function(){
 	'use strict';
 
 	function reverseComponent(backgroundC, blendedC, alpha){
@@ -149,4 +148,4 @@ $(function(){
 		$hex.html(hex);
 		$rgba.html(rgba);
 	}
-});
+})();

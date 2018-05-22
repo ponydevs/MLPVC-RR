@@ -1,5 +1,4 @@
-/* globals DocReady */
-$(function(){
+(function(){
 	'use strict';
 
 	let $pendingReservations = $('.pending-reservations'),
@@ -73,4 +72,4 @@ $(function(){
 			}
 		);
 	});
-});
+})();

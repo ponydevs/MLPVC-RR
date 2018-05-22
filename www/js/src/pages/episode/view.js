@@ -1,5 +1,4 @@
-/* global DocReady,$content,$body,$w,$footer,$header,$navbar,moment,Chart,Time,ace,IntersectionObserver */
-$(function(){
+(function(){
 	'use strict';
 
 	let SEASON = window.SEASON,
@@ -702,4 +701,4 @@ $(function(){
 	bindVideoButtons();
 
 	$.WS.recvPostUpdates(true);
-});
+})();

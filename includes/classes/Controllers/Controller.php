@@ -8,6 +8,8 @@ use App\Users;
 abstract class Controller {
 	protected static $auth = true;
 	/** @var string */
+	protected $path;
+	/** @var string */
 	protected $action;
 	/** @var bool */
 	protected $creating;

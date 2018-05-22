@@ -1,5 +1,4 @@
-/* global DocReady */
-$(function(){
+(function(){
 	'use strict';
 
 	const USERNAME_REGEX = window.USERNAME_REGEX;
@@ -143,4 +142,4 @@ $(function(){
 
 		$list.html(this.list).removeClass('loading');
 	}));
-});
+})();

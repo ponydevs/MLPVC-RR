@@ -10,7 +10,7 @@ use App\Models\Post;
 
 class Episodes {
 	public const TITLE_CUTOFF = 26;
-	public static $ALLOWED_PREFIXES = [
+	public const ALLOWED_PREFIXES = [
 		'Equestria Girls' => 'EQG',
 		'My Little Pony' => 'MLP',
 	];
@@ -38,7 +38,7 @@ class Episodes {
 
 	public const ALLOW_MOVIES = true;
 
-	private static $EP_CACHE = [];
+	private static $episodeCache = [];
 
 	/**
 	 * If an episode is a two-parter's second part, then returns the first part
@@ -54,22 +54,23 @@ class Episodes {
 	 * @return Episode|null
 	 */
 	public static function getActual(int $season, int $episode, bool $allowMovies = false, $cache = false){
+		$cacheKey = "$season-$episode";
 		if (!$allowMovies && $season === 0)
 			throw new \InvalidArgumentException('This action cannot be performed on movies');
 
-		if ($cache && isset(self::$EP_CACHE["$season-$episode"]))
-			return self::$EP_CACHE["$season-$episode"];
+		if ($cache && isset(self::$episodeCache[$cacheKey]))
+			return self::$episodeCache[$cacheKey];
 
 		$Ep = Episode::find_by_season_and_episode($season, $episode);
 		if (!empty($Ep))
 			return $Ep;
 
 		$Part1 = Episode::find_by_season_and_episode($season, $episode-1);
-		$output = !empty($Part1) && !empty($Part1->twoparter)
+		$output = !empty($Part1) && $Part1->twoparter === true
 			? $Part1
 			: null;
 		if ($cache)
-			self::$EP_CACHE["$season-$episode"] = $output;
+			self::$episodeCache[$cacheKey] = $output;
 		return $output;
 	}
 
@@ -91,10 +92,10 @@ class Episodes {
 	public static function shortenTitlePrefix($title){
 		global $PREFIX_REGEX;
 
-		if (!$PREFIX_REGEX->match($title, $match) || !isset(self::$ALLOWED_PREFIXES[$match[1]]))
+		if (!$PREFIX_REGEX->match($title, $match) || !isset(self::ALLOWED_PREFIXES[$match[1]]))
 			return $title;
 
-		return self::$ALLOWED_PREFIXES[$match[1]].': '.self::removeTitlePrefix($title);
+		return self::ALLOWED_PREFIXES[$match[1]].': '.self::removeTitlePrefix($title);
 	}
 
 	/**
@@ -108,18 +109,6 @@ class Episodes {
 	public static function loadPage($force = null, Post $LinkedPost = null){
 		if ($force instanceof Episode)
 			$CurrentEpisode = $force;
-		else if (\is_string($force)){
-			$EpData = Episode::parseID($force);
-
-			if ($EpData['season'] === 0){
-				CoreUtils::error_log("Attempted visit to $force from ".(!empty($_SERVER['HTTP_REFERER'])? $_SERVER['HTTP_REFERER']:'[unknown referrer]').', redirecting to /movie page');
-				HTTP::tempRedirect('/movie/'.$EpData['episode']);
-			}
-
-			$CurrentEpisode = empty($EpData)
-				? self::getLatest()
-				: self::getActual($EpData['season'], $EpData['episode']);
-		}
 		if (empty($CurrentEpisode))
 			CoreUtils::notFound();
 

@@ -1,5 +1,4 @@
-/* globals $w,$d,$content,DocReady,HandleNav */
-$(function(){
+(function(){
 	'use strict';
 
 	//noinspection JSUnusedLocalSymbols
@@ -137,4 +136,4 @@ $(function(){
 
 		$.Dialog.info(`Download swatch file for ${ponyName}`,$SwatchDlForm);
 	}
-});
+})();

@@ -1,5 +1,4 @@
-/* global DocReady,$w */
-$(function(){
+(function(){
 	"use strict";
 
 	let interval;
@@ -70,4 +69,4 @@ $(function(){
 			}, timeout);
 		}));
 	});
-});
+})();

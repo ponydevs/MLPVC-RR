@@ -1,5 +1,4 @@
-/* globals DocReady,$sidebar,$content,HandleNav,Time,$w,$body */
-$(function(){
+(function(){
 	'use strict';
 	const name = $content.children('.briefing').find('.username').text().trim();
 
@@ -511,4 +510,4 @@ $(function(){
 			$el.siblings('.save').attr('disabled', $val.val() === $el.data('orig'));
 		});
 	});
-});
+})();

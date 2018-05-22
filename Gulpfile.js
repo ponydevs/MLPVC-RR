@@ -94,12 +94,12 @@ gulp.task('js', () => {
 		.pipe(gulp.dest('www/js/min'));
 });
 
-gulp.task('watch', done => {
+gulp.task('default', gulp.parallel('js', 'scss'));
+
+gulp.task('watch', gulp.series('default', done => {
 	gulp.watch(JSWatchArray, {debounceDelay: 2000}, gulp.series('js'));
 	JSL.log('File watcher active');
 	gulp.watch(SASSWatchArray, {debounceDelay: 2000}, gulp.series('scss'));
 	SASSL.log('File watcher active');
 	done();
-});
-
-gulp.task('default', gulp.series(gulp.parallel('js', 'scss'), 'watch'));
+}));

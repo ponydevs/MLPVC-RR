@@ -12,6 +12,7 @@ use App\Episodes;
 use App\Models\Logs\MajorChange;
 use App\Permission;
 use App\RegExp;
+use App\Response;
 use App\Tags;
 use App\Time;
 use App\UserPrefs;
@@ -873,5 +874,32 @@ HTML;
 		}
 		$this->clearRenderedImages();
 		Appearances::clearSpriteColorIssueNotifications($this->appearance->id, 'del', null);
+	}
+
+	/* Permission-related functions only beyond this point */
+
+	public static function checkCreatePermission(User $user, bool $personal){
+		if ($personal){
+			if (!$user->perm('staff'))
+				Response::fail("You don't have permission to add appearances to the official Color Guide");
+		}
+		else {
+			$availPoints = $user->getPCGAvailablePoints(false);
+			if ($availPoints < 10){
+				$remain = Users::calculatePersonalCGNextSlot($user->getPCGAppearanceCount());
+				Response::fail("You don\'t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'. Visit <a href="/u">your profile</a> and click the <strong class="color-darkblue"><span class="typcn typcn-info-large"></span> What?</strong> button next to the Personal Color Guide heading for more information.');
+			}
+			if (!UserPrefs::get('a_pcgmake', $user))
+				Response::fail(Appearances::PCG_APPEARANCE_MAKE_DISABLED);
+		}
+	}
+
+	public function checkManagePermission(User $user){
+		if ($user->id === $this->owner_id || $user->perm('staff'))
+			return true;
+
+		if (CoreUtils::isJSONExpected())
+			Response::fail();
+		else CoreUtils::noPerm();
 	}
 }

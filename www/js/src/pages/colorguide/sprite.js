@@ -1,5 +1,4 @@
-/* global DocReady,$content,SHORT_HEX_COLOR_PATTERN */
-$(function(){
+(function(){
 	'use strict';
 
 	let AppearanceID = window.AppearanceID,
@@ -93,4 +92,4 @@ $(function(){
 			)
 		);
 	});
-});
+})();

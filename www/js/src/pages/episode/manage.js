@@ -1,5 +1,5 @@
-/* global DocReady,$content,$w,$header,$footer,ace,Time,moment,bindVideoButtons */
-$(function(){
+/* global bindVideoButtons */
+(function(){
 	'use strict';
 
 	let SEASON = window.SEASON,
@@ -780,4 +780,4 @@ $(function(){
 	$('#requests, #reservations')
 		.on('bind-more-handlers','li[id]',additionalHandlerAttacher)
 		.find('li[id]').each(additionalHandlerAttacher);
-});
+})();

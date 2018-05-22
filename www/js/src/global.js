@@ -1,6 +1,5 @@
-/* jshint bitwise: false */
-/* global $w,$d,$head,$navbar,$body,$header,$sidebar,$sbToggle,$main,$footer,console,prompt,HandleNav,getTimeDiff,one,createTimeStr,PRINTABLE_ASCII_PATTERN,io,moment,Time,ace,mk,WSNotifications */
-$(function(){
+/* global moment,ace */
+(function(){
 	"use strict";
 
 	let fluidboxThisAction = (jQueryObject) => {
@@ -465,7 +464,7 @@ $(function(){
 
 		$sbToggle.trigger('click');
 	}));
-});
+})();
 
 // Remove loading animation from header on load
 $w.on('load',function(){

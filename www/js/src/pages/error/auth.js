@@ -1,5 +1,4 @@
-/* global DocReady */
-$(function(){
+(function(){
 	'use strict';
 
 	const rndkey = window.rndkey;
@@ -8,4 +7,4 @@ $(function(){
 			window.opener[' '+rndkey](true, window);
 	}
 	catch(e){}
-});
+})();

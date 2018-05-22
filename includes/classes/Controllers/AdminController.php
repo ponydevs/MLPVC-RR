@@ -187,13 +187,13 @@ class AdminController extends Controller {
 	 * @var null|UsefulLink
 	 */
 	private $usefulLink;
-	private function load_useful_link($id){
-			if (empty($id))
-				CoreUtils::notFound();
-			$linkid = \intval($id, 10);
-			$this->usefulLink = UsefulLink::find($linkid);
-			if (empty($this->usefulLink))
-				Response::fail('The specified link does not exist');
+	private function load_useful_link($params){
+		if (empty($params['id']))
+			CoreUtils::notFound();
+		$linkid = \intval($params['id'], 10);
+		$this->usefulLink = UsefulLink::find($linkid);
+		if (empty($this->usefulLink))
+			Response::fail('The specified link does not exist');
 	}
 
 	public function usefulLinks(){
@@ -208,13 +208,10 @@ class AdminController extends Controller {
 	}
 
 	public function usefulLinksApi($params){
-		$action = $_SERVER['REQUEST_METHOD'];
-		$creating = $action === 'POST';
+		if (!$this->creating)
+			$this->load_useful_link($params);
 
-		if (!$creating)
-			$this->load_useful_link($params['id']);
-
-		switch ($action){
+		switch ($this->action){
 			case 'GET':
 				Response::done([
 					'label' => $this->usefulLink->label,
@@ -238,7 +235,7 @@ class AdminController extends Controller {
 						Input::ERROR_RANGE => 'Link label must be between @min and @max characters long',
 					]
 				]))->out();
-				if ($creating || $this->usefulLink->label !== $label){
+				if ($this->creating || $this->usefulLink->label !== $label){
 					CoreUtils::checkStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_PATTERN);
 					$data['label'] = $label;
 				}
@@ -250,7 +247,7 @@ class AdminController extends Controller {
 						Input::ERROR_RANGE => 'Link URL must be between @min and @max characters long',
 					]
 				]))->out();
-				if ($creating || $this->usefulLink->url !== $url)
+				if ($this->creating || $this->usefulLink->url !== $url)
 					$data['url'] = $url;
 
 				$title = (new Input('title','string', [
@@ -262,7 +259,7 @@ class AdminController extends Controller {
 				]))->out();
 				if (!isset($title))
 					$data['title'] = '';
-				else if ($creating || $this->usefulLink->title !== $title){
+				else if ($this->creating || $this->usefulLink->title !== $title){
 					CoreUtils::checkStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_PATTERN);
 					$data['title'] = $title;
 				}
@@ -276,12 +273,12 @@ class AdminController extends Controller {
 						Input::ERROR_INVALID => 'Minimum role (@value) is invalid',
 					]
 				]))->out();
-				if ($creating || $this->usefulLink->minrole !== $minrole)
+				if ($this->creating || $this->usefulLink->minrole !== $minrole)
 					$data['minrole'] = $minrole;
 
 				if (empty($data))
 					Response::fail('Nothing was changed');
-				$query = $creating
+				$query = $this->creating
 					? UsefulLink::create($data)
 					: $this->usefulLink->update_attributes($data);
 				if (!$query)
@@ -450,6 +447,8 @@ class AdminController extends Controller {
 	/** @var Notice|null */
 	private $_notice;
 	private function load_notice($params){
+		if (empty($params['id']))
+			CoreUtils::notFound();
 		$this->_notice = Notice::find($params['id']);
 
 		if (!$this->creating && empty($this->_notice))

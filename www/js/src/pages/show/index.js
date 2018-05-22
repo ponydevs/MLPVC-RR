@@ -1,5 +1,4 @@
-/* global DocReady,moment */
-$(function(){
+(function(){
 	'use strict';
 
 	let $eptableBody = $('#content').children('table').children('tbody');
@@ -8,4 +7,4 @@ $(function(){
 			this.innerHTML = moment($(this).attr('datetime')).format('D-MMMM-YYYY H:mm:ss').replace(/:00$/, '');
 		});
 	}).trigger('updatetimes');
-});
+})();

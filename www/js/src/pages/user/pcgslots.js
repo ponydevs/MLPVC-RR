@@ -1,5 +1,4 @@
-/* global DocReady,$w,IntersectionObserver */
-$(function(){
+(function(){
 	'use strict';
 
 	const username = window.username;
@@ -106,4 +105,4 @@ $(function(){
 			});
 		}));
 	});
-});
+})();

@@ -52,7 +52,7 @@ class Pagination {
 	}
 
 	/**
-	 * Set a specific page as the currrent
+	 * Set a specific page as the current
 	 *
 	 * @param int $page
 	 *

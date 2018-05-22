@@ -1,5 +1,5 @@
 /* Color Picker | by @SeinopSys + Trildar & Masem | for gh:ponydevs/MLPVC-RR */
-/* global $w,$body,CryptoJS,Key,mk,noUiSlider,HDR2D_BLEND_SRC */
+/* global CryptoJS,noUiSlider,HDR2D_BLEND_SRC */
 (function($, undefined){
 	'use strict';
 
@@ -63,25 +63,25 @@
 		 * A filter function can be specified which is passed the x and y coordinates
 		 * of the looped color and if a boolean false value is returned the color is skipped.
 		 *
-		 * @param {ImageData} imgd
+		 * @param {ImageData} imgData
 		 * @param {Function} filter
 		 */
-		static getPixels(imgd, filter = undefined){
+		static getPixels(imgData, filter = undefined){
 			const
 				pixels = [],
 				useFilter = typeof filter === 'function';
 
-			for (let ptr = 0; ptr < imgd.data.length; ptr += 4){
+			for (let ptr = 0; ptr < imgData.data.length; ptr += 4){
 				if (useFilter){
-					const pxix = ptr/4;
+					const pixelIndex = ptr/4;
 					const
-						x = pxix % imgd.width,
-						y = Math.floor(pxix / imgd.width);
+						x = pixelIndex % imgData.width,
+						y = Math.floor(pixelIndex / imgData.width);
 					if (filter(x,y) === false)
 						continue;
 				}
 
-				pixels.push(new Pixel(...imgd.data.slice(ptr,ptr+4)));
+				pixels.push(new Pixel(...imgData.data.slice(ptr,ptr+4)));
 			}
 
 			return pixels;
@@ -142,9 +142,9 @@
 			}
 		}
 		/**
-		 * @param {object} pos
-		 * @param {int}    size
-		 * @param {bool}   square
+		 * @param {object}  pos
+		 * @param {int}     size
+		 * @param {boolean} square
 		 * @return {PickingArea}
 		 */
 		static getArea(pos, size, square){
@@ -176,7 +176,7 @@
 			return new RoundedPickingArea(this.boundingRect, slices);
 		}
 		//noinspection JSMethodCanBeStatic
-		/** @return {bool} */
+		/** @return {boolean} */
 		toSquare(){ return false }
 	}
 
@@ -194,7 +194,7 @@
 			return PickingArea.averageColor(this._getPixels( (x, y) => this.slices[y].skip < x && x < this.slices[y].skip+this.slices[y].length ));
 		}
 		//noinspection JSMethodCanBeStatic
-		/** @return {bool} */
+		/** @return {boolean} */
 		toRound(){ return false }
 		/** @return {SquarePickingArea} */
 		toSquare(){ return new SquarePickingArea(this.boundingRect) }
@@ -202,12 +202,12 @@
 
 	class Geometry {
 		static calcRectanglePoints(cx, cy, side){
-			const halfside = Math.floor(side/2);
+			const halfSide = Math.floor(side/2);
 			return {
 				sideLength: side,
 				topLeft: {
-					x: cx-halfside,
-					y: cy-halfside,
+					x: cx-halfSide,
+					y: cy-halfSide,
 				},
 				center: {
 					x: cx,
@@ -276,13 +276,13 @@
 		}
 		get(k){
 			if (typeof availableSettings[k] === 'undefined')
-				throw new Error('Trying to get non-existant setting: '+k);
+				throw new Error('Trying to get non-existent setting: '+k);
 
 			return this._settings[k];
 		}
 		set(k,v){
 			if (typeof availableSettings[k] === 'undefined')
-				throw new Error('Trying to set non-existant setting: '+k);
+				throw new Error('Trying to set non-existent setting: '+k);
 			this._settings[k] = v;
 
 			this.save();
@@ -427,9 +427,9 @@
 	        reader.readAsDataURL(file);
 		}
 		askLevelsToggle(levelsEnabled = PersistentSettings.getInstance().get('levelsDialogEnabled')){
-			const theend = 'will <strong>reload</strong> the picker causing you to <strong>lose</strong> any opened images and picking areas.';
+			const theEnd = 'will <strong>reload</strong> the picker causing you to <strong>lose</strong> any opened images and picking areas.';
 			if (levelsEnabled)
-				$.Dialog.confirm('Disable levels dialog','Are you sure you want to disable the levels dialog? This '+theend,['Disable & reload','Keep enabled'],sure => {
+				$.Dialog.confirm('Disable levels dialog','Are you sure you want to disable the levels dialog? This '+theEnd,['Disable & reload','Keep enabled'],sure => {
 					if (!sure) return;
 
 					$.Dialog.wait(false, 'Disabling levels dialog');
@@ -438,7 +438,7 @@
 					window.location.reload();
 				});
 			else
-				$.Dialog.confirm('Enable levels dialog','<p>The levels tool can be used to adjust the visible colors of images on a per-tab basis without affecting the colors reported by the picking areas, which in some cases can be useful to weed out ambigous areas that have a lot of artifacts.</p><p>This feature is disabled by default due to the drastic <strong>performance decrease</strong> it causes. Would you like to enable this feature anyway? If you change your mind, you will be able to disable the dialog from the Tools menu.</p><p><strong>Note:</strong> Clicking <q>Enable & reload</q> '+theend,['Enable & reload','Keep disabled'],sure => {
+				$.Dialog.confirm('Enable levels dialog','<p>The levels tool can be used to adjust the visible colors of images on a per-tab basis without affecting the colors reported by the picking areas, which in some cases can be useful to weed out ambiguous areas that have a lot of artifacts.</p><p>This feature is disabled by default due to the drastic <strong>performance decrease</strong> it causes. Would you like to enable this feature anyway? If you change your mind, you will be able to disable the dialog from the Tools menu.</p><p><strong>Note:</strong> Clicking <q>Enable & reload</q> '+theEnd,['Enable & reload','Keep disabled'],sure => {
 					if (!sure) return;
 
 					$.Dialog.wait(false, 'Enabling levels dialog');
@@ -488,17 +488,17 @@
 
 			this._$info.text(text);
 		}
-		setPosition(which, tl = { top: NaN, left: NaN }, zoomlevel = 1){
-			const elkey = this.Pos[which];
-			if (typeof elkey !== 'string')
+		setPosition(which, tl = { top: NaN, left: NaN }, zoomLevel = 1){
+			const elKey = this.Pos[which];
+			if (typeof elKey !== 'string')
 				throw new Error('[Statusbar.setPosition] Invalid position display key: '+which);
 
-			if (zoomlevel !== 1){
-				tl.left *= zoomlevel;
-				tl.top *= zoomlevel;
+			if (zoomLevel !== 1){
+				tl.left *= zoomLevel;
+				tl.top *= zoomLevel;
 			}
 
-			this[`_$${elkey}`].text(isNaN(tl.left) || isNaN(tl.top) ? '' : `${$.roundTo(tl.left,2)},${$.roundTo(tl.top,2)}`);
+			this[`_$${elKey}`].text(isNaN(tl.left) || isNaN(tl.top) ? '' : `${$.roundTo(tl.left,2)},${$.roundTo(tl.top,2)}`);
 		}
 		setColorAt(hex = '', opacity = ''){
 			if (hex.length){
@@ -623,23 +623,23 @@
 			return this._fileHash;
 		}
 		setImage(src, callback){
-			const imgel = new Image();
-			$(imgel).attr('src', src).on('load',() => {
+			const imgElement = new Image();
+			$(imgElement).attr('src', src).on('load',() => {
 				this._imgdata.size = {
-					width: imgel.width,
-					height: imgel.height,
+					width: imgElement.width,
+					height: imgElement.height,
 				};
 				this._canvas.width = this._imgdata.size.width;
 				this._canvas.height = this._imgdata.size.height;
-				this._canvas.getContext('2d').drawImage(imgel,0,0);
+				this._canvas.getContext('2d').drawImage(imgElement,0,0);
 
 				if (typeof this._pickingAreaColor === 'undefined'){
-					const tmpc = mk('canvas');
-					tmpc.width = 1;
-					tmpc.height = 1;
-					const tmpctx = tmpc.getContext('2d');
-					tmpctx.drawImage(imgel,0,0,1,1);
-					const px = new Pixel(...tmpctx.getImageData(0,0,1,1).data, 0.5).invert();
+					const tmpCanvas = mk('canvas');
+					tmpCanvas.width = 1;
+					tmpCanvas.height = 1;
+					const tmpCtx = tmpCanvas.getContext('2d');
+					tmpCtx.drawImage(imgElement,0,0,1,1);
+					const px = new Pixel(...tmpCtx.getImageData(0,0,1,1).data, 0.5).invert();
 					this.savePickingAreaColor($.RGBAColor.fromRGB(px));
 				}
 
@@ -649,9 +649,9 @@
 			});
 		}
 		setName(imageName){
-			let fileparts = imageName.split(/\./g);
-			this.file.extension = fileparts.pop();
-			this.file.name = fileparts.join('.');
+			let fileParts = imageName.split(/\./g);
+			this.file.extension = fileParts.pop();
+			this.file.name = fileParts.join('.');
 		}
 		getName(){
 			return `${this.file.name}.${this.file.extension}`;
@@ -872,11 +872,11 @@
 			$high = $this.find('input[name="high"]'),
 			high = parseInt($high.val(),10);
 
-		let hdrctx = ColorPicker.getInstance().getImageCanvasCtx();
+		let hdrCtx = ColorPicker.getInstance().getImageCanvasCtx();
 
 		const range = { low, high };
 
-		hdrctx.setRange({
+		hdrCtx.setRange({
 			r: range,
 			g: range,
 			b: range,
@@ -1223,9 +1223,9 @@
 				else if (e.shiftKey && !e.altKey && !e.ctrlKey){
 					const
 						$lastClicked = this._$areasSidebar.find('.lastclicked'),
-						lClen = $lastClicked.length;
+						lastClickedLength = $lastClicked.length;
 
-					if (lClen > 0){
+					if (lastClickedLength > 0){
 						const isTabItem = $li.children('ul').length > 0;
 						let startIndex, endIndex, $sameLevelEntries;
 						if (!isTabItem){
@@ -1259,7 +1259,7 @@
 								endIndex = tmp;
 							}
 
-							for (let i = startIndex; i <= endIndex || i < lClen; i++){
+							for (let i = startIndex; i <= endIndex || i < lastClickedLength; i++){
 								$sameLevelEntries.eq(i).addClass('selected');
 							}
 						}
@@ -1315,9 +1315,9 @@
 						const data = $AreaUpdateForm.mkData();
 						$.Dialog.wait(false, 'Updating area');
 
-						const newsize = $.clamp(parseInt(data.size,10), 1, 400);
-						if (newsize !== area.boundingRect.sideLength)
-							area.resize(newsize);
+						const newSize = $.clamp(parseInt(data.size,10), 1, 400);
+						if (newSize !== area.boundingRect.sideLength)
+							area.resize(newSize);
 
 						const replacement = area['to'+$.capitalize(data.type)]();
 						if (replacement !== false)
@@ -1344,7 +1344,7 @@
 			);
 
 			let initial,
-				initialmouse;
+				initialMouse;
 			$body.on('mousemove', $.throttle(50,e => {
 				if (areaListResizing){
 					const listSize = Math.max(e.pageX-2,0)/$body.width();
@@ -1359,14 +1359,14 @@
 				this.updateMousePosition(e);
 
 				// Canvas movement if these are defined
-				if (initial && initialmouse){
+				if (initial && initialMouse){
 					let mouse = {
 							top: e.pageY,
 							left: e.pageX,
 						},
-						pickeroffset = this.getPickerPosition(),
-						top = (initial.top+(mouse.top-initialmouse.top))-pickeroffset.top,
-						left = (initial.left+(mouse.left-initialmouse.left))-pickeroffset.left;
+						pickerOffset = this.getPickerPosition(),
+						top = (initial.top+(mouse.top-initialMouse.top))-pickerOffset.top,
+						left = (initial.left+(mouse.left-initialMouse.left))-pickerOffset.left;
 					this.move({ top, left });
 
 					this.updateZoomLevelInputs();
@@ -1432,7 +1432,7 @@
 				e.preventDefault();
 				this._$imageOverlay.addClass('dragging');
 				initial = this.getImagePosition();
-				initialmouse = {
+				initialMouse = {
 					top: e.pageY,
 					left: e.pageX,
 				};
@@ -1448,7 +1448,7 @@
 
 				if (e.type === 'mouseup'){
 					initial = undefined;
-					initialmouse = undefined;
+					initialMouse = undefined;
 					this._$imageOverlay.removeClass('dragging');
 				}
 			});
@@ -1459,13 +1459,13 @@
 				pluginScope.picker = new ColorPicker();
 			return pluginScope.picker;
 		}
-		getZoomedTopLeft(imgoffset, scalefactor, center = this.getPickerCenterPosition()){
-			let TX = imgoffset.left,
-				TY = imgoffset.top,
+		getZoomedTopLeft(imgOffset, scaleFactor, center = this.getPickerCenterPosition()){
+			let TX = imgOffset.left,
+				TY = imgOffset.top,
 				FX = center.left,
 				FY = center.top,
-				NTX = FX + scalefactor * ( TX - FX ),
-				NTY = FY + scalefactor * ( TY - FY );
+				NTX = FX + scaleFactor * ( TX - FX ),
+				NTY = FY + scaleFactor * ( TY - FY );
 			return {
 				top: NTY,
 				left: NTX,
@@ -1477,11 +1477,11 @@
 				height: this._$imageCanvas.height(),
 			};
 		}
-		getImagePosition(imgoffset = this._$imageCanvas.offset()){
-			const pickeroffset = this.getPickerPosition();
-			imgoffset.left -= pickeroffset.left;
-			imgoffset.right -= pickeroffset.right;
-			return imgoffset;
+		getImagePosition(imgOffset = this._$imageCanvas.offset()){
+			const pickerOffset = this.getPickerPosition();
+			imgOffset.left -= pickerOffset.left;
+			imgOffset.right -= pickerOffset.right;
+			return imgOffset;
 		}
 		getPickerCenterPosition(){
 			return {
@@ -1563,7 +1563,7 @@
 			$.each(Tabbar.getInstance().getTabs(),(_,tab) => {
 				const
 					areas = tab.loadPickingAreas(),
-					areaGuids = Object.keys(areas),
+					areaGUIDs = Object.keys(areas),
 					$areaList = $.mk('ul'),
 					$tabLi = $.mk('li').append(
 						$.mk('span').attr('class','entry').append(
@@ -1574,44 +1574,44 @@
 					);
 				this._$areasList.append($tabLi);
 
-				if (!areaGuids.length)
+				if (!areaGUIDs.length)
 					return;
 
 				imgCount++;
-				areaCount += areaGuids.length;
+				areaCount += areaGUIDs.length;
 
 				let ix = 0;
 				$.each(areas,(_,area) => {
 					const
-						avgc = area.getAverageColor(),
+						avgColor = area.getAverageColor(),
 						hexOut = this._sidebarDisplayFormat === 'hex',
-						avgchex = $.RGBAColor.fromRGB(avgc).toHex();
-					let avgcbg, avgcsout;
+						avgColorHex = $.RGBAColor.fromRGB(avgColor).toHex();
+					let avgColorBackground, avgColorString;
 					if (hexOut){
-						avgcbg = $.RGBAColor.fromRGB(avgc).toString();
-						avgcsout = avgchex+(avgc.alpha !== 255 ? ` @ ${$.roundTo((avgc.alpha/255)*100,2)}%`:'');
+						avgColorBackground = $.RGBAColor.fromRGB(avgColor).toString();
+						avgColorString = avgColorHex+(avgColor.alpha !== 255 ? ` @ ${$.roundTo((avgColor.alpha/255)*100,2)}%`:'');
 					}
 					else {
-						avgcbg = $.RGBAColor.fromRGB(avgc).toRGBString();
-						avgcsout = avgcbg.replace(/^rgba?\((.+)\)$/,'$1').split(',');
-						if (avgcsout.length === 4){
-							const opacity = $.roundTo(parseFloat(avgcsout.pop())*100, 2);
-							avgcsout = avgcsout.join(', ')+` @ ${opacity}%`;
+						avgColorBackground = $.RGBAColor.fromRGB(avgColor).toRGBString();
+						avgColorString = avgColorBackground.replace(/^rgba?\((.+)\)$/,'$1').split(',');
+						if (avgColorString.length === 4){
+							const opacity = $.roundTo(parseFloat(avgColorString.pop())*100, 2);
+							avgColorString = avgColorString.join(', ')+` @ ${opacity}%`;
 						}
-						else avgcsout = avgcsout.join(', ');
+						else avgColorString = avgColorString.join(', ');
 					}
 					$areaList.append(
 						$.mk('li','picking-area-'+area.id).attr({'class':'entry','data-info':'Picking area (Double click to change shape and size)'}).append(
 							$.mk('span').attr('class','index').text(++ix),
 							$.mk('span').attr('class','color').css({
-								backgroundColor: avgcbg,
-								color: $.RGBAColor.parse(avgchex).isLight() ? 'black' : 'white',
-							}).html(avgcsout),
+								backgroundColor: avgColorBackground,
+								color: $.RGBAColor.parse(avgColorHex).isLight() ? 'black' : 'white',
+							}).html(avgColorString),
 							$.mk('span').attr('class','size '+(area instanceof RoundedPickingArea?'rounded':'square')).html($.mk('span').text(area.boundingRect.sideLength)),
 							$.mk('span').attr({'class':'select-handle','data-info':'Picking area selection handle (Click to select, Ctrl/Shift+Click to select multiple)'})
 						)
 					);
-					pixels.push(avgc);
+					pixels.push(avgColor);
 				});
 			});
 
@@ -1632,8 +1632,8 @@
 				this._$averageColorRgb.html(averageColor.toRGB());
 			}
 		}
-		selectAllAreas(unselect = false){
-			this._$areasList.children()[unselect?'removeClass':'addClass']('selected');
+		selectAllAreas(deselect = false){
+			this._$areasList.children()[deselect?'removeClass':'addClass']('selected');
 		}
 		deleteSelectedAreas(){
 			const $selected = this._$areasList.find('.selected');
@@ -1641,7 +1641,7 @@
 				return;
 
 			const
-				guids = {},
+				GUIDs = {},
 				tabs = Tabbar.getInstance().getTabs();
 			$selected.each((_,el) => {
 				const
@@ -1654,14 +1654,14 @@
 				}
 				else {
 					const tabIndex = $this.parents('li').index();
-					if (typeof guids[tabIndex] === 'undefined')
-						guids[tabIndex] = [];
-					guids[tabIndex].push($this.attr('id').replace(/^picking-area-/,''));
+					if (typeof GUIDs[tabIndex] === 'undefined')
+						GUIDs[tabIndex] = [];
+					GUIDs[tabIndex].push($this.attr('id').replace(/^picking-area-/,''));
 				}
 			});
 
-			$.each(guids,(tabIndex,guids) => {
-				$.each(guids,(_,guid) =>{
+			$.each(GUIDs,(tabIndex,GUIDList) => {
+				$.each(GUIDList,(_,guid) =>{
 					tabs[tabIndex].removePickingArea(guid, true);
 				});
 			});
@@ -1670,7 +1670,7 @@
 		}
 		setSidebarDisplayFormat(format, store = true){
 			if (!/^(hex|rgb)$/.test(format))
-				throw new Error('Invalid sidebar displa format: '+format);
+				throw new Error('Invalid sidebar display format: '+format);
 			const isHex = format === 'hex';
 			this._$displayFormatSwitch.attr({
 				'class':'fa fa-'+(isHex?'tint':'hashtag'),
@@ -1705,20 +1705,20 @@
 			this._$zoomin.attr('disabled', this._zoomlevel >= Zoom.max);
 		}
 		updateMousePosition(e){
-			const imgpos = this.getImagePosition();
-			this._mouseImagePos.top  = Math.floor((e.pageY - imgpos.top ) / this._zoomlevel);
-			this._mouseImagePos.left = Math.floor((e.pageX - imgpos.left) / this._zoomlevel);
+			const imgPos = this.getImagePosition();
+			this._mouseImagePos.top  = Math.floor((e.pageY - imgPos.top ) / this._zoomlevel);
+			this._mouseImagePos.left = Math.floor((e.pageX - imgPos.left) / this._zoomlevel);
 			Statusbar.getInstance().setPosition('mouse', this._mouseImagePos);
 
 			const activeTab = Tabbar.getInstance().getActiveTab();
 			if (activeTab instanceof Tab){
-				const imgsize = activeTab.getImageSize();
+				const imgSize = activeTab.getImageSize();
 
 				const isOffImage = (
 					this._mouseImagePos.top < 0 ||
-					this._mouseImagePos.top > imgsize.height-1 ||
+					this._mouseImagePos.top > imgSize.height-1 ||
 					this._mouseImagePos.left < 0 ||
-					this._mouseImagePos.left > imgsize.width-1
+					this._mouseImagePos.left > imgSize.width-1
 				);
 				if (isOffImage)
 					Statusbar.getInstance().setColorAt();
@@ -1738,8 +1738,8 @@
 				return;
 
 			if (updateCanvas){
-				const hdrctx = this.getImageCanvasCtx();
-				hdrctx.setRange({
+				const hdrCtx = this.getImageCanvasCtx();
+				hdrCtx.setRange({
 					r: range,
 					g: range,
 					b: range,
@@ -1755,23 +1755,23 @@
 				return;
 
 			const size = activeTab.getImageSize();
-			let newzoomlevel = $.clamp(perc, Zoom.min, Zoom.max),
-				newsize,
-				oldzoomlevel;
-			if (this._zoomlevel !== newzoomlevel){
-				newsize = $.scaleResize(size.width, size.height, {scale: newzoomlevel});
-				oldzoomlevel = this._zoomlevel;
-				this._zoomlevel = newsize.scale;
+			let newZoomLevel = $.clamp(perc, Zoom.min, Zoom.max),
+				newSize,
+				oldZoomLevel;
+			if (this._zoomlevel !== newZoomLevel){
+				newSize = $.scaleResize(size.width, size.height, {scale: newZoomLevel});
+				oldZoomLevel = this._zoomlevel;
+				this._zoomlevel = newSize.scale;
 
 				const
-					pickeroffset = this.getPickerPosition(),
-					zoomed = this.getZoomedTopLeft(this.getImagePosition(), newzoomlevel/oldzoomlevel, center ? { top: center.pageY, left: center.pageX } : undefined);
+					pickerOffset = this.getPickerPosition(),
+					zoomed = this.getZoomedTopLeft(this.getImagePosition(), newZoomLevel/oldZoomLevel, center ? { top: center.pageY, left: center.pageX } : undefined);
 
 				this.move({
-					top: zoomed.top-pickeroffset.top,
-					left: zoomed.left-pickeroffset.left,
-					width: newsize.width,
-					height: newsize.height,
+					top: zoomed.top-pickerOffset.top,
+					left: zoomed.left-pickerOffset.left,
+					width: newSize.width,
+					height: newSize.height,
 				});
 			}
 
@@ -1781,11 +1781,11 @@
 		setZoomFit(){
 			this._fitImageHandler(size => {
 				const
-					pickerwide = this._pickerWidth > this._pickerHeight,
+					pickerWide = this._pickerWidth > this._pickerHeight,
 					square = size.width === size.height,
-					wide = square ? pickerwide : size.width > size.height;
+					wide = square ? pickerWide : size.width > size.height;
 				let ret = $.scaleResize(size.width, size.height, wide ? {height:this._pickerHeight} : {width:this._pickerWidth});
-				if (pickerwide){
+				if (pickerWide){
 					if (ret.width > this._pickerWidth){
 						ret = $.scaleResize(size.width, size.height, {width:this._pickerWidth});
 					}
@@ -1793,7 +1793,7 @@
 						ret = $.scaleResize(size.width, size.height, {height:this._pickerHeight});
 					}
 				}
-				if (!pickerwide){
+				if (!pickerWide){
 					if (ret.height > this._pickerHeight){
 						ret = $.scaleResize(size.width, size.height, {height:this._pickerHeight});
 					}
@@ -1811,28 +1811,28 @@
 				scale: 1,
 			}));
 		}
-		_fitImageHandler(nscalc){
+		_fitImageHandler(newSizeCalculator){
 			const activeTab = Tabbar.getInstance().getActiveTab();
 			if (!activeTab)
 				return;
 
 			const size = activeTab.getImageSize();
-			let newsize = nscalc(size),
-				top = (this._pickerHeight-newsize.height)/2,
-				left = (this._pickerWidth-newsize.width)/2;
+			let newSize = newSizeCalculator(size),
+				top = (this._pickerHeight-newSize.height)/2,
+				left = (this._pickerWidth-newSize.width)/2;
 			this.move({
 				top: top,
 				left: left,
-				width: newsize.width,
-				height: newsize.height,
+				width: newSize.width,
+				height: newSize.height,
 			});
-			this._zoomlevel = newsize.scale;
+			this._zoomlevel = newSize.scale;
 			this.setZoomLevel(this._zoomlevel);
 		}
 		setPickerWidth(perc){
-			const pickerwidth = $.clamp(parseFloat(perc),50,85);
-			this._$picker.width(pickerwidth+'%');
-			this._$areasSidebar.outerWidth((100-pickerwidth)+'%');
+			const pickerWidth = $.clamp(parseFloat(perc),50,85);
+			this._$picker.width(pickerWidth+'%');
+			this._$areasSidebar.outerWidth((100-pickerWidth)+'%');
 			this.resizeHandler();
 		}
 		storeSidebarWidth(){
@@ -1875,7 +1875,7 @@
 			if (levelsEnabled)
 				this.getImageCanvasCtx().initialize();
 		}
-		openImage(src, fname, callback = NOOP){
+		openImage(src, fName, callback = NOOP){
 			if (this._$picker.hasClass('loading'))
 				throw new Error('The picker is already loading another image');
 
@@ -1902,7 +1902,7 @@
 				return;
 			}
 
-			const tab = Tabbar.getInstance().newTab(fname, hash);
+			const tab = Tabbar.getInstance().newTab(fName, hash);
 			tab.setImage(src,success => {
 				this._$picker.removeClass('loading');
 
@@ -1915,24 +1915,24 @@
 		}
 		/** @param {Tab} tab */
 		openTab(tab){
-			const imgsize = tab.getImageSize();
-			if (!imgsize)
+			const imgSize = tab.getImageSize();
+			if (!imgSize)
 				throw new Error('Attempt to open a tab without an image');
 
 			this._$imageCanvas.appendTo(this._$picker);
 
-			this.setCanvasSize(imgsize.width, imgsize.height);
+			this.setCanvasSize(imgSize.width, imgSize.height);
 			tab.drawImage();
 
-			const storedimgpos = tab.loadImagePosition();
-			if (!storedimgpos)
+			const storedImgPos = tab.loadImagePosition();
+			if (!storedImgPos)
 				this.setZoomFit();
 			else {
-				this.move(storedimgpos, true);
-				const storedzoomlevel = tab.loadZoomLevel();
-				if (typeof storedzoomlevel !== 'undefined'){
-					this._zoomlevel = storedzoomlevel;
-					this.setZoomLevel(storedzoomlevel);
+				this.move(storedImgPos, true);
+				const storedZoomLevel = tab.loadZoomLevel();
+				if (typeof storedZoomLevel !== 'undefined'){
+					this._zoomlevel = storedZoomLevel;
+					this.setZoomLevel(storedZoomLevel);
 				}
 			}
 			this.setLevels(tab.loadLevels() || this._levels);
@@ -2025,8 +2025,8 @@
 	ColorPicker.getInstance();
 
 	$body.on('keydown',function(e){
-		const tagname = e.target.tagName.toLowerCase();
-		if ((tagname === 'input' && e.target.type !== 'file') || tagname === 'textarea' || e.target.getAttribute('contenteditable') !== null)
+		const tagName = e.target.tagName.toLowerCase();
+		if ((tagName === 'input' && e.target.type !== 'file') || tagName === 'textarea' || e.target.getAttribute('contenteditable') !== null)
 			return;
 
 		switch (e.keyCode){
@@ -2096,8 +2096,8 @@
 		e.preventDefault();
 	});
 	$body.on('keyup',function(e){
-		const tagname = e.target.tagName.toLowerCase();
-		if ((tagname === 'input' && e.target.type !== 'file') || tagname === 'textarea' || e.target.getAttribute('contenteditable') !== null)
+		const tagName = e.target.tagName.toLowerCase();
+		if ((tagName === 'input' && e.target.type !== 'file') || tagName === 'textarea' || e.target.getAttribute('contenteditable') !== null)
 			return;
 
 		switch (e.keyCode){
@@ -2117,7 +2117,7 @@
 		e.preventDefault();
 	});
 	// http://stackoverflow.com/a/17545260/1344955
-	$body.on('paste', '[contenteditable]', function(e){
+	$body.on('paste', `[contenteditable]`, function(e){
 		let text = '';
 		let $this = $(this);
 

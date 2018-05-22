@@ -799,4 +799,15 @@ HTML;
 			WHERE refunded_by IS NULL AND rejected = FALSE AND claimed = FALSE AND receiver_id = ?
 			ORDER BY created_at ASC', [$this->id]);
 	}
+
+	/**
+	 * Returns whether the user has permissions for the specified role
+	 *
+	 * @param string $role
+	 *
+	 * @return bool
+	 */
+	public function perm(string $role):bool {
+		return Permission::sufficient($this->role, $role);
+	}
 }

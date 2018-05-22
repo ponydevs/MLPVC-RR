@@ -1,5 +1,4 @@
-/* global DocReady,HEX_COLOR_PATTERN,noUiSlider,saveAs */
-$(function(){
+(function(){
 	'use strict';
 
 	const RGB = ['red','green','blue'];
@@ -519,4 +518,4 @@ $(function(){
 	}
 
 	new MultiplyReverseForm();
-});
+})();

@@ -33,8 +33,19 @@ class EpisodeController extends Controller {
 		Episodes::loadPage($CurrentEpisode);
 	}
 
-	public function page($params){
-		Episodes::loadPage($params['id'] ?? null);
+	public function view($params){
+		if (empty($params['id']))
+			CoreUtils::notFound();
+
+		$EpData = Episode::parseID($params['id']);
+		if ($EpData['season'] === 0)
+			HTTP::tempRedirect('/movie/'.$EpData['episode']);
+
+		$CurrentEpisode = empty($EpData)
+			? Episodes::getLatest()
+			: Episodes::getActual($EpData['season'], $EpData['episode']);
+
+		Episodes::loadPage($CurrentEpisode);
 	}
 
 	private $_episode;
@@ -143,10 +154,10 @@ class EpisodeController extends Controller {
 				if (!$isMovie){
 					return 'prefix-movieonly';
 				}
-				if (!isset(Episodes::$ALLOWED_PREFIXES[$match[1]])){
+				if (!isset(Episodes::ALLOWED_PREFIXES[$match[1]])){
 					$mostSimilar = null;
 					$mostMatcing = 0;
-					foreach (Episodes::$ALLOWED_PREFIXES as $prefix => $shorthand){
+					foreach (Episodes::ALLOWED_PREFIXES as $prefix => $shorthand){
 						foreach ([$prefix, $shorthand] as $test){
 							$matchingChars = similar_text(strtolower($match[1]), strtolower($test));
 							if ($matchingChars >= 3 && $matchingChars > $mostMatcing){

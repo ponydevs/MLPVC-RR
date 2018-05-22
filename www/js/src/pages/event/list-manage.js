@@ -1,5 +1,4 @@
-/* global DocReady,ace,$content,moment */
-$(function(){
+(function(){
 	'use strict';
 
 	const PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN, EVENT_TYPES = window.EVENT_TYPES, EventPage = Boolean(window.EventPage);
@@ -265,4 +264,4 @@ $(function(){
 			}));
 		});
 	});
-});
+})();

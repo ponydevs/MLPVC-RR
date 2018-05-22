@@ -1,9 +1,9 @@
-/* globals $body,$content,DocReady,HandleNav,mk,Sortable,Bloodhound,Handlebars,SHORT_HEX_COLOR_PATTERN,PRINTABLE_ASCII_PATTERN,Key,ace,Time */
-(function($, undefined){
+(function(undefined){
 	'use strict';
 
 	let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups, HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN,
-	isWebkit = 'WebkitAppearance' in document.documentElement.style, EQG = window.EQG, EQGRq = EQG?'?eqg':'',
+		isWebkit = 'WebkitAppearance' in document.documentElement.style, EQG = window.EQG, EQGRq = EQG?'?eqg':'',
+		PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN,
 		AppearancePage = !!window.AppearancePage, PersonalGuide = window.PersonalGuide,
 		PGRq = PersonalGuide?`/@${PersonalGuide}`:'',
 		TAG_NAME_REGEX = window.TAG_NAME_REGEX,
@@ -2388,4 +2388,4 @@
 			}));
 		});
 	});
-})(jQuery);
+})();

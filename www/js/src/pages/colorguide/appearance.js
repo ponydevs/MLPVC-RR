@@ -1,5 +1,4 @@
-/* global DocReady */
-$(function(){
+(function(){
 	"use strict";
 
 	window.copyHashToggler();
@@ -40,4 +39,4 @@ $(function(){
 			$('#dialogContent').find('.share-link').select();
 		});
 	});
-});
+})();

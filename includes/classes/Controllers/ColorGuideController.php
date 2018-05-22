@@ -66,37 +66,29 @@ class ColorGuideController extends Controller {
 	/** @var bool */
 	protected $_appearancePage, $_personalGuide;
 	/** @var string */
-	protected $_cgPath, $_guide;
+	protected $_guide;
 	protected function _initCGPath(){
-		$this->_cgPath = rtrim("/cg/{$this->_guide}", '/');
+		$this->path = rtrim("/cg/{$this->_guide}", '/');
 	}
-	protected function _initialize($params, bool $setPath = true){
+	/** @var User|null|false */
+	protected $owner;
+	/** @var bool */
+	protected $ownerIsCurrentUser = false;
+	protected function _initialize($params){
 		$this->_guide = strtolower($params['guide'] ?? 'pony');
 		$this->_EQG = $this->_guide === 'eqg' || isset($_REQUEST['eqg']);
-		if ($setPath)
-			$this->_initCGPath();
-	}
-
-	/** @var User|null|false */
-	protected $_ownedBy;
-	/** @var bool */
-	protected $_isOwnedByUser = false;
-	protected function _initPersonal($params, $force = true){
-		$this->_initialize($params, !$force);
-
-		// TODO Remove the name parameter detection from the URL amd check owner of appearance instead
 		$nameSet = isset($params['name']);
-		if (!$nameSet && $force)
-			CoreUtils::notFound();
+
 		if ($nameSet){
-			$this->_ownedBy = Users::get($params['name'], 'name');
-			if (empty($this->_ownedBy))
+			$this->owner = Users::get($params['name'], 'name');
+			if (empty($this->owner))
 				CoreUtils::notFound();
 		}
-		$this->_isOwnedByUser = $nameSet ? (Auth::$signed_in && Auth::$user->id === $this->_ownedBy->id) : false;
+		$this->ownerIsCurrentUser = $nameSet ? (Auth::$signed_in && Auth::$user->id === $this->owner->id) : false;
 
 		if ($nameSet)
-			$this->_cgPath = "/@{$this->_ownedBy->name}/cg";
+			$this->path = "/@{$this->owner->name}/cg";
+		else $this->_initCGPath();
 	}
 
 	/** @var \App\Models\Appearance */
@@ -110,19 +102,21 @@ class ColorGuideController extends Controller {
 		if (!$set_properties)
 			return;
 
-		if ($this->appearance->owner_id === null){
+		$this->_personalGuide = $this->appearance->owner_id !== null;
+		$this->owner = $this->appearance->owner;
+		if (!$this->_personalGuide){
 			if ($this->appearance->ishuman && !$this->_EQG){
 				$this->_EQG = 1;
-				$this->_cgPath = '/cg/eqg';
+				$this->path = '/cg/eqg';
 			}
 			else if (!$this->appearance->ishuman && $this->_EQG){
 				$this->_EQG = 0;
-				$this->_cgPath = '/cg';
+				$this->path = '/cg';
 			}
-			else if ($this->_ownedBy !== null){
-				$this->_ownedBy = null;
-				$this->_isOwnedByUser = false;
-				$this->_cgPath = '/cg';
+			else if ($this->owner !== null){
+				$this->owner = null;
+				$this->ownerIsCurrentUser = false;
+				$this->path = '/cg';
 			}
 			else {
 				$this->_EQG = $this->appearance->ishuman;
@@ -131,13 +125,9 @@ class ColorGuideController extends Controller {
 		else {
 			$this->_EQG = $this->appearance->ishuman;
 			$OwnerName = $this->appearance->owner->name;
-			$this->_cgPath = "/@$OwnerName/cg";
-			$this->_isOwnedByUser = Auth::$signed_in && ($this->appearance->owner_id === Auth::$user->id);
+			$this->path = "/@$OwnerName/cg";
+			$this->ownerIsCurrentUser = Auth::$signed_in && ($this->appearance->owner_id === Auth::$user->id);
 		}
-	}
-	public function _permissionCheck(){
-		if (!$this->_isOwnedByUser && Permission::insufficient('staff'))
-			Response::fail();
 	}
 
 	protected const GUIDE_MANAGE_JS = [
@@ -160,7 +150,7 @@ class ColorGuideController extends Controller {
 			DB::$instance->orderBy('label');
 		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
-		$path = new NSUriBuilder("{$this->_cgPath}/full");
+		$path = new NSUriBuilder("{$this->path}/full");
 		if (!$GuideOrder)
 			$path->append_query_param('alphabetically', null);
 
@@ -210,7 +200,7 @@ class ColorGuideController extends Controller {
 
 	public function changeList($params){
 		$this->_initialize($params);
-		$Pagination = new Pagination("{$this->_cgPath}/changes", 9, MajorChange::total($this->_EQG));
+		$Pagination = new Pagination("{$this->path}/changes", 9, MajorChange::total($this->_EQG));
 
 		CoreUtils::fixPath($Pagination->toURI());
 		$heading = 'Major '.CGUtils::GUIDE_MAP[$this->_guide].' Color Changes';
@@ -249,7 +239,7 @@ class ColorGuideController extends Controller {
 		if ($elasticAvail){
 			$search = new ElasticsearchDSL\Search();
 			$inOrder = true;
-		    $Pagination = new Pagination($this->_cgPath, $AppearancesPerPage);
+		    $Pagination = new Pagination($this->path, $AppearancesPerPage);
 
 			// Search query exists
 			if ($searching){
@@ -330,7 +320,7 @@ class ColorGuideController extends Controller {
 			$SearchQuery = null;
 		    $_EntryCount = DB::$instance->where('ishuman',$this->_EQG)->where('id != 0')->count('appearances');
 
-		    $Pagination = new Pagination($this->_cgPath, $AppearancesPerPage, $_EntryCount);
+		    $Pagination = new Pagination($this->path, $AppearancesPerPage, $_EntryCount);
 		    $Ponies = Appearances::get($this->_EQG, $Pagination->getLimit());
 		}
 

@@ -1,5 +1,4 @@
-/* globals DocReady,HandleNav,$content */
-$(function(){
+(function(){
 	'use strict';
 
 	if (typeof window.ROLES === 'undefined') return;
@@ -61,4 +60,4 @@ $(function(){
 			});
 		});
 	});
-});
+})();

@@ -1,5 +1,4 @@
-/* global DocReady,HandleNav,Sortable,DOMStringList,$w */
-$(function(){
+(function(){
 	'use strict';
 
 	const PRINTABLE_ASCII_PATTERN = $.attributifyRegex(window.PRINTABLE_ASCII_PATTERN),
@@ -123,4 +122,4 @@ $(function(){
 			}));
 		}
 	});
-});
+})();

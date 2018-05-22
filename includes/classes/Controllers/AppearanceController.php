@@ -50,20 +50,15 @@ use Ramsey\Uuid\Uuid;
 
 class AppearanceController extends ColorGuideController {
 	public function view($params){
-		if ($this->_ownedBy === null)
+		if ($this->owner === null)
 			$this->_initialize($params);
 		$this->_getAppearance($params);
-		if ($this->_ownedBy !== null && $this->appearance->owner_id !== $this->_ownedBy->id){
-			$this->_ownedBy = null;
-			$this->_isOwnedByUser = false;
-			$this->_initCGPath();
-		}
 
 		if ($this->appearance->hidden())
 			CoreUtils::noPerm();
 
 		$SafeLabel = $this->appearance->getURLSafeLabel();
-		CoreUtils::fixPath("$this->_cgPath/v/{$this->appearance->id}-$SafeLabel");
+		CoreUtils::fixPath("$this->path/v/{$this->appearance->id}-$SafeLabel");
 		$heading = $this->appearance->label;
 
 		$settings = [
@@ -82,12 +77,12 @@ class AppearanceController extends ColorGuideController {
 			],
 		];
 		if (!empty($this->appearance->owner_id)){
-			$settings['import']['Owner'] = $this->_ownedBy;
-			$settings['import']['isOwner'] = $this->_isOwnedByUser;
-			$settings['og']['description'] = "Colors for \"{$this->appearance->label}\" from ".CoreUtils::posess($this->_ownedBy->name)." Personal Color Guide on the the MLP-VectorClub's website";
+			$settings['import']['Owner'] = $this->owner;
+			$settings['import']['isOwner'] = $this->ownerIsCurrentUser;
+			$settings['og']['description'] = "Colors for \"{$this->appearance->label}\" from ".CoreUtils::posess($this->owner->name)." Personal Color Guide on the the MLP-VectorClub's website";
 		}
 		else $settings['import']['Changes'] = MajorChange::get($this->appearance->id, null);
-		if ($this->_isOwnedByUser || Permission::sufficient('staff')){
+		if ($this->ownerIsCurrentUser || Permission::sufficient('staff')){
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
 		}
@@ -95,7 +90,9 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function viewPersonal($params){
-		$this->_initPersonal($params);
+		$this->_initialize($params);
+		if ($this->owner === null)
+			CoreUtils::notFound();
 
 		$this->view($params);
 	}
@@ -110,13 +107,15 @@ class AppearanceController extends ColorGuideController {
 		$this->_initialize($params);
 		$this->_getAppearance($params);
 
+		if ($this->appearance->owner_id !== null)
+			CoreUtils::notFound();
+
 		$totalChangeCount = TagChange::count(['appearance_id' => $this->appearance->id]);
-		$Pagination = new Pagination("{$this->_cgPath}/tag-changes/{$this->appearance->getURLSafeLabel()}", 25, $totalChangeCount);
+		$Pagination = new Pagination("{$this->path}/tag-changes/{$this->appearance->getURLSafeLabel()}", 25, $totalChangeCount);
 	}
 
-	public function asFile($params, User $Owner = null){
-		if ($Owner === null)
-			$this->_initialize($params);
+	public function asFile($params){
+		$this->_initialize($params);
 		$this->_getAppearance($params);
 
 		if ($this->appearance->hidden())
@@ -125,16 +124,16 @@ class AppearanceController extends ColorGuideController {
 		switch ($params['ext']){
 			case 'png':
 				switch ($params['type']){
-					case 's': CGUtils::renderSpritePNG($this->_cgPath, $this->appearance->id, $_GET['s'] ?? null);
+					case 's': CGUtils::renderSpritePNG($this->path, $this->appearance->id, $_GET['s'] ?? null);
 					case 'p':
-					default: CGUtils::renderAppearancePNG($this->_cgPath, $this->appearance);
+					default: CGUtils::renderAppearancePNG($this->path, $this->appearance);
 				}
 			break;
 			case 'svg':
 				if (!empty($params['type'])) switch ($params['type']){
-					case 's': CGUtils::renderSpriteSVG($this->_cgPath, $this->appearance->id);
-					case 'p': CGUtils::renderPreviewSVG($this->_cgPath, $this->appearance);
-					case 'f': CGUtils::renderCMFacingSVG($this->_cgPath, $this->appearance);
+					case 's': CGUtils::renderSpriteSVG($this->path, $this->appearance->id);
+					case 'p': CGUtils::renderPreviewSVG($this->path, $this->appearance);
+					case 'f': CGUtils::renderCMFacingSVG($this->path, $this->appearance);
 					default: CoreUtils::notFound();
 				}
 			case 'json': CGUtils::getSwatchesAI($this->appearance);
@@ -145,37 +144,20 @@ class AppearanceController extends ColorGuideController {
 		CoreUtils::notFound();
 	}
 
-	public function personalAsFile($params){
-		$this->_initPersonal($params);
-
-		$this->asFile($params, $this->_ownedBy);
-	}
-
 	public function api($params){
 		CSRFProtection::protect();
 
-		$this->_initPersonal($params, false);
+		$this->_initialize($params, false);
 
 		if (!Auth::$signed_in)
 			Response::fail();
 
 		if ($this->creating){
-			if (!$this->_personalGuide && Permission::insufficient('staff'))
-				Response::fail('You don\'t have permission to add appearances to the official Color Guide');
-
-			if ($this->_personalGuide){
-				$availPoints = Auth::$user->getPCGAvailablePoints(false);
-				if ($availPoints < 10){
-					$remain = Users::calculatePersonalCGNextSlot(Auth::$user->getPCGAppearanceCount());
-					Response::fail("You don\'t have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'. Visit <a href="/u">your profile</a> and click the <strong class="color-darkblue"><span class="typcn typcn-info-large"></span> What?</strong> button next to the Personal Color Guide heading for more information.');
-				}
-				if (!UserPrefs::get('a_pcgmake'))
-					Response::fail(Appearances::PCG_APPEARANCE_MAKE_DISABLED);
-			}
+			Appearance::checkCreatePermission(Auth::$user, $this->_personalGuide);
 		}
 		else {
 			$this->_getAppearance($params);
-			$this->_permissionCheck();
+			$this->appearance->checkManagePermission(Auth::$user);
 		}
 
 		switch ($this->action){
@@ -399,7 +381,7 @@ class AppearanceController extends ColorGuideController {
 			CoreUtils::notAllowed();
 
 		$this->_getAppearance($params);
-		$this->_permissionCheck();
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		try {
 			$this->appearance->applyTemplate();
@@ -416,7 +398,7 @@ class AppearanceController extends ColorGuideController {
 			CoreUtils::notAllowed();
 
 		$this->_getAppearance($params);
-		$this->_permissionCheck();
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		$wipe_cache = (new Input('wipe_cache','bool',[
 			Input::IS_OPTIONAL => true,
@@ -530,7 +512,7 @@ class AppearanceController extends ColorGuideController {
 		CSRFProtection::protect();
 
 		$this->_getAppearance($params);
-		$this->_permissionCheck();
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		switch ($this->action){
 			case 'GET':
@@ -585,12 +567,11 @@ class AppearanceController extends ColorGuideController {
 			CoreUtils::noPerm();
 
 		$this->_getAppearance($params);
-		if ($this->appearance->owner_id !== Auth::$user->id && Permission::insufficient('staff'))
-			CoreUtils::noPerm();
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		if ($this->appearance->owner_id !== null)
 			$params['name'] = $this->appearance->owner->name;
-		$this->_initPersonal($params, false);
+		$this->_initialize($params, false);
 
 		$Map = CGUtils::getSpriteImageMap($this->appearance->id);
 		if (empty($Map))
@@ -599,7 +580,7 @@ class AppearanceController extends ColorGuideController {
 		[$Colors,$ColorGroups,$AllColors] = $this->appearance->getSpriteRelevantColors();
 
 		$SafeLabel = $this->appearance->getURLSafeLabel();
-		CoreUtils::fixPath("{$this->_cgPath}/sprite/{$this->appearance->id}-$SafeLabel");
+		CoreUtils::fixPath("{$this->path}/sprite/{$this->appearance->id}-$SafeLabel");
 
 		CoreUtils::loadPage('ColorGuideController::sprite', [
 			'title' => "Sprite of {$this->appearance->label}",
@@ -620,7 +601,7 @@ class AppearanceController extends ColorGuideController {
 		CSRFProtection::protect();
 
 		$this->_getAppearance($params);
-		$this->_permissionCheck();
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		$final_path = $this->appearance->getSpriteFilePath();
 
@@ -650,7 +631,7 @@ class AppearanceController extends ColorGuideController {
 		CSRFProtection::protect();
 
 		$this->_getAppearance($params);
-		$this->_permissionCheck();
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		switch ($this->action){
 			case 'GET':
@@ -722,7 +703,7 @@ class AppearanceController extends ColorGuideController {
 		CSRFProtection::protect();
 
 		$this->_getAppearance($params);
-		$this->_permissionCheck();
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		switch ($this->action){
 			case 'GET':
@@ -917,7 +898,7 @@ class AppearanceController extends ColorGuideController {
 		CSRFProtection::protect();
 
 		$this->_getAppearance($params);
-		$this->_permissionCheck();
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		if ($this->appearance->owner_id !== null)
 			Response::fail('Tagging is unavailable for appearances in personal guides');
@@ -976,6 +957,7 @@ class AppearanceController extends ColorGuideController {
 			CoreUtils::notAllowed();
 
 		$this->_getAppearance($params);
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		$returnedColorFields = [
 			isset($_GET['hex']) ? 'hex' : 'id',
@@ -1010,6 +992,7 @@ class AppearanceController extends ColorGuideController {
 		CSRFProtection::protect();
 
 		$this->_getAppearance($params, false);
+		$this->appearance->checkManagePermission(Auth::$user);
 
 		$svgdata = (new Input('file','svg_file',[
 			Input::SOURCE => 'FILES',

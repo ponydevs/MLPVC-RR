@@ -24,19 +24,19 @@ use App\Users;
 
 class PersonalGuideController extends ColorGuideController {
 	public function list($params){
-		$this->_initPersonal($params);
+		$this->_initialize($params);
 
-		if (!$this->_ownedBy->canVisitorSeePCG())
+		if (!$this->owner->canVisitorSeePCG())
 			CoreUtils::noPerm();
 
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
-	    $_EntryCount = $this->_ownedBy->getPCGAppearanceCount();
+	    $_EntryCount = $this->owner->getPCGAppearanceCount();
 
-	    $Pagination = new Pagination($this->_cgPath, $AppearancesPerPage, $_EntryCount);
-	    $Ponies = $this->_ownedBy->getPCGAppearances($Pagination);
+	    $Pagination = new Pagination($this->path, $AppearancesPerPage, $_EntryCount);
+	    $Ponies = $this->owner->getPCGAppearances($Pagination);
 
 		CoreUtils::fixPath($Pagination->toURI());
-		$heading = CoreUtils::posess($this->_ownedBy->name).' Personal Color Guide';
+		$heading = CoreUtils::posess($this->owner->name).' Personal Color Guide';
 		$title = "Page {$Pagination->getPage()} - $heading";
 
 		$settings = [
@@ -47,11 +47,11 @@ class PersonalGuideController extends ColorGuideController {
 			'import' => [
 				'Ponies' => $Ponies,
 				'Pagination' => $Pagination,
-				'User' => $this->_ownedBy,
-				'isOwner' => $this->_isOwnedByUser,
+				'User' => $this->owner,
+				'isOwner' => $this->ownerIsCurrentUser,
 			],
 		];
-		if ($this->_isOwnedByUser || Permission::sufficient('staff')){
+		if ($this->ownerIsCurrentUser || Permission::sufficient('staff')){
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
 		}
@@ -59,23 +59,23 @@ class PersonalGuideController extends ColorGuideController {
 	}
 
 	public function pointHistory($params){
-		$this->_initPersonal($params);
+		$this->_initialize($params);
 
-		if (!$this->_isOwnedByUser && Permission::insufficient('staff'))
+		if (!$this->ownerIsCurrentUser && Permission::insufficient('staff'))
 			CoreUtils::noPerm();
 
 		$EntriesPerPage = 20;
-	    $_EntryCount = $this->_ownedBy->getPCGSlotHistoryEntryCount();
+	    $_EntryCount = $this->owner->getPCGSlotHistoryEntryCount();
 
-	    $Pagination = new Pagination("{$this->_cgPath}/point-history", $EntriesPerPage, $_EntryCount);
-	    $Entries = $this->_ownedBy->getPCGSlotHistoryEntries($Pagination);
+	    $Pagination = new Pagination("{$this->path}/point-history", $EntriesPerPage, $_EntryCount);
+	    $Entries = $this->owner->getPCGSlotHistoryEntries($Pagination);
 	    if (\count($Entries) === 0){
-	        $this->_ownedBy->recalculatePCGSlotHistroy();
-	        $Entries = $this->_ownedBy->getPCGSlotHistoryEntries($Pagination);
+	        $this->owner->recalculatePCGSlotHistroy();
+	        $Entries = $this->owner->getPCGSlotHistoryEntries($Pagination);
 	    }
 
 		CoreUtils::fixPath($Pagination->toURI());
-		$heading = ($this->_isOwnedByUser ? 'Your' : CoreUtils::posess($this->_ownedBy->name)).' Point History';
+		$heading = ($this->ownerIsCurrentUser ? 'Your' : CoreUtils::posess($this->owner->name)).' Point History';
 		$title = "Page {$Pagination->getPage()} - $heading";
 
 		$js = ['paginate'];
@@ -89,8 +89,8 @@ class PersonalGuideController extends ColorGuideController {
 			'import' => [
 				'Entries' => $Entries,
 				'Pagination' => $Pagination,
-				'User' => $this->_ownedBy,
-				'isOwner' => $this->_isOwnedByUser,
+				'User' => $this->owner,
+				'isOwner' => $this->ownerIsCurrentUser,
 			],
 		]);
 	}
@@ -99,9 +99,9 @@ class PersonalGuideController extends ColorGuideController {
 		if (Permission::insufficient('developer'))
 			CoreUtils::noPerm();
 
-		$this->_initPersonal($params);
+		$this->_initialize($params);
 
-		$this->_ownedBy->recalculatePCGSlotHistroy();
+		$this->owner->recalculatePCGSlotHistroy();
 
 		Response::done();
 	}

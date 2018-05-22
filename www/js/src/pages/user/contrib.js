@@ -1,5 +1,4 @@
-/* global DocReady,$w,IntersectionObserver */
-$(function(){
+(function(){
 	'use strict';
 
 	const io = new IntersectionObserver(entries => {
@@ -26,4 +25,4 @@ $(function(){
 		$('.deviation-promise').each((_, el) => io.observe(el));
 	}
 	reobserve();
-});
+})();

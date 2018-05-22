@@ -1,5 +1,4 @@
-/* global $w,DocReady,Sortable,$content,IntersectionObserver */
-$(function(){
+(function(){
 	'use strict';
 
 	let $sortBy = $('#sort-by'),
@@ -113,4 +112,4 @@ $(function(){
 			$('.sort-alpha').add($ReorderCancelBtn).addClass('hidden');
 		});
 	}
-});
+})();
