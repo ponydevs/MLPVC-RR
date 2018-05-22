@@ -355,7 +355,7 @@ class AdminController extends Controller {
 	}
 
 	public function wsdiag(){
-		if ($this->action !== 'POST')
+		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
 		if (Permission::insufficient('developer'))
