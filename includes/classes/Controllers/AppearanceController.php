@@ -147,7 +147,7 @@ class AppearanceController extends ColorGuideController {
 	public function api($params){
 		CSRFProtection::protect();
 
-		$this->_initialize($params, false);
+		$this->_initialize($params);
 
 		if (!Auth::$signed_in)
 			Response::fail();
@@ -571,7 +571,7 @@ class AppearanceController extends ColorGuideController {
 
 		if ($this->appearance->owner_id !== null)
 			$params['name'] = $this->appearance->owner->name;
-		$this->_initialize($params, false);
+		$this->_initialize($params);
 
 		$Map = CGUtils::getSpriteImageMap($this->appearance->id);
 		if (empty($Map))

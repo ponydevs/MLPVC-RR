@@ -1,3 +1,4 @@
+/* global DOMStringList */
 (function(){
 	'use strict';
 

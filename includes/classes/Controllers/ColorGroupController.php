@@ -22,7 +22,7 @@ class ColorGroupController extends ColorGuideController {
 	/** @var ColorGroup|null */
 	private $colorgroup;
 	private function load_colorgroup($params){
-		$this->_initialize($params, false);
+		$this->_initialize($params);
 		if (!Auth::$signed_in)
 			Response::fail();
 
@@ -61,7 +61,6 @@ class ColorGroupController extends ColorGuideController {
 			case 'PUT':
 				global $HEX_COLOR_REGEX;
 
-				$isStaff = Permission::sufficient('staff');
 				if ($this->creating){
 					$ponyid = (new Input('ponyid', 'int', [
 						Input::CUSTOM_ERROR_MESSAGES => [

@@ -16,6 +16,7 @@ use App\Response;
 use App\Tags;
 use App\Time;
 use App\UserPrefs;
+use App\Users;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use HtmlGenerator\HtmlTag;
 use SeinopSys\RGBAColor;

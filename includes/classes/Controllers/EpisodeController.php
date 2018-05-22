@@ -8,6 +8,7 @@ use App\CSRFProtection;
 use App\DB;
 use App\DeviantArt;
 use App\Episodes;
+use App\HTTP;
 use App\Input;
 use App\Logs;
 use App\Models\Appearance;
