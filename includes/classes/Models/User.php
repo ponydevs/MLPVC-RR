@@ -808,6 +808,6 @@ HTML;
 	 * @return bool
 	 */
 	public function perm(string $role):bool {
-		return Permission::sufficient($this->role, $role);
+		return Permission::sufficient($role, $this->role);
 	}
 }

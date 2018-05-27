@@ -52,7 +52,7 @@
 			.append(
 				`<label>
 					<span>Name (2-70 chars.)</span>
-					<input type="text" name="label" placeholder="Enter a name" pattern="${PRINTABLE_ASCII_PATTERN.replace('+', '{4,70}')}" required maxlength="70">
+					<input type="text" name="label" placeholder="Enter a name" pattern="${PRINTABLE_ASCII_PATTERN.replace('+', '{2,70}')}" required maxlength="70">
 				</label>
 				<div class="label">
 					<span>Additional notes (1000 chars. max, optional)</span>

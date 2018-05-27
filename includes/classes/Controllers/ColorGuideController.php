@@ -57,8 +57,8 @@ class ColorGuideController extends Controller {
 		if (POST_REQUEST)
 			CSRFProtection::protect();
 
-		$this->_appearancePage = isset($_POST['APPEARANCE_PAGE']);
-		$this->_personalGuide = isset($_POST['PERSONAL_GUIDE']);
+		$this->_appearancePage = isset($_REQUEST['APPEARANCE_PAGE']);
+		$this->_personalGuide = isset($_REQUEST['PERSONAL_GUIDE']);
 	}
 
 	/** @var bool|int|null */
