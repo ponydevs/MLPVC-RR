@@ -356,7 +356,7 @@ class Episode extends NSModel implements LinkableInterface {
 	public function getVideoEmbeds():array {
 		$parts = 0;
 		$embed = '';
-		if ($this->videos){
+		if (\count($this->videos) > 0){
 			$Videos = [];
 			foreach ($this->videos as $v)
 				$Videos[$v->provider][$v->part] = $v;
