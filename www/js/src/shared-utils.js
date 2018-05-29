@@ -393,13 +393,26 @@
 		else event.data.CSRF_TOKEN = t;
 	});
 	let lastUrl,
+		simpleStatusHandler = xhr => {
+			let resp;
+			if (xhr.responseJSON)
+				resp = xhr.responseJSON.message;
+			else {
+				try {
+					resp = JSON.parse(xhr.responseText).message;
+				}
+				catch(err){}
+			}
+			$.Dialog.fail(false, resp);
+		},
 		statusCodeHandlers = {
+			400: simpleStatusHandler,
 			401: function(){
 				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please <a class='send-feedback'>let us know</a> about this issue so we can look into it.");
 			},
-			404: function(){
-				$.Dialog.fail(false, "Error 404: The requested endpoint ("+lastUrl.replace(/</g,'&lt;').replace(/\//g,'/<wbr>')+") could not be found");
-			},
+			403: simpleStatusHandler,
+			404: simpleStatusHandler,
+			405: simpleStatusHandler,
 			500: function(){
 				$.Dialog.fail(false, 'A request failed due to an internal server error. If this persists, please <a class="send-feedback">let us know</a>!');
 			},

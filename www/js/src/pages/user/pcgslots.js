@@ -16,7 +16,7 @@
 				if (!sure) return;
 
 				$.Dialog.wait(false, 'Recalculating');
-				$.post(`/@${username}/cg/point-history/recalc`, $.mkAjaxHandler(function(){
+				$.post(`/api/@${username}/cg/point-history/recalc`, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Navigation.reload(true);

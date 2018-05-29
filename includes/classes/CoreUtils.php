@@ -141,39 +141,13 @@ class CoreUtils {
 	}
 
 	/**
-	 * Display a 404 page
-	 */
-	public static function notFound(){
-		HTTP::statusCode(404);
-
-		if (self::isJSONExpected())
-			Response::fail('HTTP 404: '.(POST_REQUEST?'Endpoint':'Page')." ({$_SERVER['REQUEST_URI']}) does not exist");
-
-		Users::authenticate();
-
-		self::loadPage('ErrorController::notFound', [
-			'title' => '404',
-		]);
-	}
-
-	/**
-	 * Display a 403 page
-	 */
-	public static function noPerm(){
-		HTTP::statusCode(403);
-
-		Users::authenticate();
-
-		self::loadPage('ErrorController::noPerm', [
-			'title' => '403',
-		]);
-	}
-
-	/**
 	 * Display a 400 page
 	 */
 	public static function badReq(){
 		HTTP::statusCode(400);
+
+		if (self::isJSONExpected())
+			Response::fail('HTTP 400: Bad Request (e.g. invalid characters in the URL)');
 
 		Users::authenticate();
 
@@ -183,10 +157,45 @@ class CoreUtils {
 	}
 
 	/**
+	 * Display a 403 page
+	 */
+	public static function noPerm(){
+		HTTP::statusCode(403);
+
+		if (self::isJSONExpected())
+			Response::fail("HTTP 403: You don't have permission to access {$_SERVER['REQUEST_URI']}");
+
+		Users::authenticate();
+
+		self::loadPage('ErrorController::noPerm', [
+			'title' => '403',
+		]);
+	}
+
+	/**
+	 * Display a 404 page
+	 */
+	public static function notFound(){
+		HTTP::statusCode(404);
+
+		if (self::isJSONExpected())
+			Response::fail("HTTP 404: Endpoint ({$_SERVER['REQUEST_URI']}) does not exist");
+
+		Users::authenticate();
+
+		self::loadPage('ErrorController::notFound', [
+			'title' => '404',
+		]);
+	}
+
+	/**
 	 * Display a 405 page
 	 */
 	public static function notAllowed(){
 		HTTP::statusCode(405);
+
+		if (self::isJSONExpected())
+			Response::fail("HTTP 405: The endpoint {$_SERVER['REQUEST_URI']} does not support the {$_SERVER['REQUEST_METHOD']} method");
 
 		Users::authenticate();
 
@@ -220,6 +229,7 @@ class CoreUtils {
 	public static function loadPage(string $view_name, array $options = []){
 		if (self::isJSONExpected()){
 			HTTP::statusCode(400);
+			self::error_log(__METHOD__.": JSON expected, but this was called instead.\nView: $view_name\nOptions:\n".var_export($options, true)."\nStacktrace:\n".(new \Exception())->getTraceAsString());
 			$path = self::escapeHTML($_SERVER['REQUEST_URI']);
 			Response::fail("The requested endpoint ($path) does not support JSON responses");
 		}

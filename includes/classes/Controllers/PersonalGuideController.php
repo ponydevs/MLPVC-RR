@@ -96,10 +96,16 @@ class PersonalGuideController extends ColorGuideController {
 	}
 
 	public function pointRecalc($params){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		if (Permission::insufficient('developer'))
 			CoreUtils::noPerm();
 
 		$this->_initialize($params);
+
+		if (!$this->owner)
+			Response::fail('Target user not found');
 
 		$this->owner->recalculatePCGSlotHistroy();
 
@@ -107,6 +113,9 @@ class PersonalGuideController extends ColorGuideController {
 	}
 
 	public function checkAvailSlots($params){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		CSRFProtection::protect();
 
 		if (!isset($params['name']))
