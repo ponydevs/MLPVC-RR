@@ -38,7 +38,7 @@
 
 					$.Dialog.wait(false,'Deleting tag');
 
-					$.delete(`/api/cg/tag/${tagID}`, {sanitycheck: true},$.mkAjaxHandler(function(){
+					$.API.delete(`/cg/tag/${tagID}`, {sanitycheck: true},$.mkAjaxHandler(function(){
 						updateList.call(this, $tr, action);
 					}));
 				});
@@ -46,7 +46,7 @@
 			case "synon":
 				$.Dialog.wait(`Make ${tagName} a synonym`, 'Retrieving tag list from server');
 
-				$.get('/api/cg/tags',{not:tagID,action:action},$.mkAjaxHandler(function(){
+				$.API.get('/cg/tags',{not:tagID,action:action},$.mkAjaxHandler(function(){
 					if (!this.length){
 						if (this.undo)
 							return window.CGTagEditing.call(this, tagName, tagID, 'unsynon', $tr);
@@ -88,7 +88,7 @@
 							let sent = $form.mkData();
 							$.Dialog.wait(false, 'Creating tag synonym');
 
-							$.put(`/api/cg/tag/${tagID}/synonym`,sent, $.mkAjaxHandler(function(){
+							$.API.put(`/cg/tag/${tagID}/synonym`,sent, $.mkAjaxHandler(function(){
 								updateList.call(this, $tr, action);
 							}));
 						});
@@ -115,7 +115,7 @@
 								let data = $form.mkData();
 								$.Dialog.wait(false, 'Removing synonym');
 
-								$.delete(`/api/cg/tag/${tagID}/synonym`,data,$.mkAjaxHandler(function(){
+								$.API.delete(`/cg/tag/${tagID}/synonym`,data,$.mkAjaxHandler(function(){
 									updateList.call(this, $tr, action);
 								}));
 							});
@@ -126,7 +126,7 @@
 			case "refresh":
 				$.Dialog.wait(`Refresh use count of ${tagName}`, 'Updating use count');
 
-				$.post('/api/cg/tags/recount-uses',{tagids:tagID}, tagUseUpdateHandler());
+				$.API.post('/cg/tags/recount-uses',{tagids:tagID}, tagUseUpdateHandler());
 			break;
 		}
 	};
@@ -150,6 +150,6 @@
 
 		$.Dialog.wait(title, 'Updating use count'+(tagIDs.length!==1?'s':''));
 
-		$.post('/api/cg/tags/recount-uses',{tagids:tagIDs.join(',')}, tagUseUpdateHandler(true));
+		$.API.post('/cg/tags/recount-uses',{tagids:tagIDs.join(',')}, tagUseUpdateHandler(true));
 	});
 })();

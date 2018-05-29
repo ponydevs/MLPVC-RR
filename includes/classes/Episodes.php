@@ -163,51 +163,6 @@ class Episodes {
 		]);
 	}
 
-	/**
-	 * Get user's vote for an episode
-	 *
-	 * Accepts a single array containing values
-	 *  for the keys 'season' and 'episode'
-	 * Return's the user's vote entry from the DB
-	 *
-	 * @param Episode $Ep
-	 * @return EpisodeVote|null
-	 */
-	public static function getUserVote($Ep){
-		if (!Auth::$signed_in) return null;
-		/** @noinspection PhpIncompatibleReturnTypeInspection */
-		return EpisodeVote::find_for($Ep, Auth::$user);
-	}
-
-	/**
-	 * Get video embed HTML for an episode
-	 *
-	 * @param Episode $Episode
-	 *
-	 * @return array
-	 */
-	public static function getVideoEmbeds($Episode):array {
-		$EpVideos = $Episode->videos;
-		$Parts = 0;
-		$embed = '';
-		if (!empty($EpVideos)){
-			$Videos = [];
-			foreach ($EpVideos as $v)
-				$Videos[$v->provider][$v->part] = $v;
-			// YouTube embed preferred
-			$Videos = !empty($Videos['yt']) ? $Videos['yt'] : ($Videos['dm'] ?? $Videos['sv'] ?? $Videos['mg']);
-			/** @var $Videos EpisodeVideo[] */
-
-			$Parts = \count($Videos);
-			foreach ($Videos as $v)
-				$embed .= "<div class='responsive-embed".($Episode->twoparter && $v->part!==1?' hidden':'')."'>".VideoProvider::getEmbed($v).'</div>';
-		}
-		return [
-			'parts' => $Parts,
-			'html' => $embed
-		];
-	}
-
 	public const
 		VIDEO_PROVIDER_NAMES = [
 			'yt' => 'YouTube',

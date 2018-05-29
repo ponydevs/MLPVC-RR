@@ -180,7 +180,7 @@
 				}
 				if (!cdExists || diff.past){
 					clearCD();
-					$.get('/api/about/upcoming', $.mkAjaxHandler(function(){
+					$.API.get('/about/upcoming', $.mkAjaxHandler(function(){
 						if (!this.status) return console.error(`Failed to load upcoming event list: ${this.message}`);
 
 						const $uc = $('#upcoming');
@@ -416,7 +416,7 @@
 
 			$.Dialog.wait(title,'Signing out');
 
-			$.post('/api/da-auth/sign-out',$.mkAjaxHandler(function(){
+			$.API.post('/da-auth/sign-out',$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(title,this.message);
 
 				$.Navigation.reload();
@@ -433,7 +433,7 @@
 			if ($sessionUpdating === null)
 				return;
 
-			$.get('/api/da-auth/status', $.mkAjaxHandler(function(){
+			$.API.get('/da-auth/status', $.mkAjaxHandler(function(){
 				if ($sessionUpdating === null)
 					return;
 

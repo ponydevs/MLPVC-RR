@@ -10,6 +10,7 @@ use App\Episodes;
 use App\Permission;
 use App\Posts;
 use App\RegExp;
+use App\VideoProvider;
 
 /**
  * @property int            $season
@@ -329,5 +330,47 @@ class Episode extends NSModel implements LinkableInterface {
 				$EpTagIDs[] = $t['id'];
 		}
 		return $EpTagIDs;
+	}
+
+
+	/**
+	 * Get a user's vote for this episode
+	 *
+	 * Accepts a single array containing values
+	 *  for the keys 'season' and 'episode'
+	 * Return's the user's vote entry from the DB
+	 *
+	 * @param User $user
+	 * @return EpisodeVote|null
+	 */
+	public function getVoteOf(?User $user = null):?EpisodeVote {
+		if ($user === null) return null;
+		return EpisodeVote::find_for($this, $user);
+	}
+
+	/**
+	 * Get video embed HTML for an episode
+	 *
+	 * @return array
+	 */
+	public function getVideoEmbeds():array {
+		$parts = 0;
+		$embed = '';
+		if ($this->videos){
+			$Videos = [];
+			foreach ($this->videos as $v)
+				$Videos[$v->provider][$v->part] = $v;
+			// YouTube embed preferred
+			$Videos = !empty($Videos['yt']) ? $Videos['yt'] : ($Videos['dm'] ?? $Videos['sv'] ?? $Videos['mg']);
+			/** @var $Videos EpisodeVideo[] */
+
+			$parts = \count($Videos);
+			foreach ($Videos as $v)
+				$embed .= "<div class='responsive-embed".($this->twoparter && $v->part!==1?' hidden':'')."'>".VideoProvider::getEmbed($v).'</div>';
+		}
+		return [
+			'parts' => $parts,
+			'html' => $embed
+		];
 	}
 }

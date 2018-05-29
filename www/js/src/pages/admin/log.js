@@ -32,7 +32,7 @@
 						$this.addClass('typcn-times color-red').css('cursor','not-allowed').off('click');
 					};
 
-				$.get(`/api/admin/logs/details/${EntryID}`,$.mkAjaxHandler(function(){
+				$.API.get(`/admin/logs/details/${EntryID}`,$.mkAjaxHandler(function(){
 					if (!this.status){
 						if (this.unclickable === true)
 							$this.replaceWith($this.text().trim());

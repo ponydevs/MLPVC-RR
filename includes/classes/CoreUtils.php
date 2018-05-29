@@ -1149,7 +1149,7 @@ HTML;
 	 *
 	 * @return bool
 	 */
-	public static function isURLAvailable(string $url, array $onlyFails = []):bool{
+	public static function isURLAvailable(string $url, array $onlyFails = []):bool {
 		$ch = curl_init();
 		curl_setopt_array($ch, [
 			CURLOPT_URL => $url,
@@ -1157,6 +1157,7 @@ HTML;
 			CURLOPT_FAILONERROR => 1,
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HTTPGET => true,
 		]);
 		$available = curl_exec($ch) !== false;
 		$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

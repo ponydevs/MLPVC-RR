@@ -15,7 +15,7 @@
 	$('#video').on('click',function(){
 		$.Dialog.wait('Set video links', 'Requesting links from the server');
 
-		$.post(`/episode/video-data/${EpID}?action=get`,$.mkAjaxHandler(function(){
+		$.API.get(`/episode/${EpID}/video-data`,$.mkAjaxHandler(function(){
 			let data = this;
 
 			if (!data.status) return $.Dialog.fail(false, data.message);
@@ -77,7 +77,7 @@
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Saving links');
 
-					$.post(`/episode/video-data/${EpID}?action=set`,data,$.mkAjaxHandler(function(){
+					$.API.put(`/episode/${EpID}/video-data`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.epsection){
@@ -103,7 +103,7 @@
 	$('#cg-relations').on('click',function(){
 		$.Dialog.wait('Guide relation editor', 'Retrieving relations from server');
 
-		$.post(`/episode/guide-relations/${EpID}?action=get`,$.mkAjaxHandler(function(){
+		$.API.get(`/episode/${EpID}/guide-relations`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this,
@@ -151,7 +151,7 @@
 					$selectLinked.children().each(function(_, el){ ids.push(el.value) });
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.post(`/episode/guide-relations/${EpID}?action=set`,{ids:ids.join(',')},$.mkAjaxHandler(function(){
+					$.API.put(`/episode/${EpID}/guide-relations`,{ids:ids.join(',')},$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.section){

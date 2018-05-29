@@ -79,7 +79,7 @@
 
 			const ids = deviationIDArray.join(',');
 
-			$.post('/api/admin/mass-approve', { ids }, $.mkAjaxHandler(function(){
+			$.API.post('/admin/mass-approve', { ids }, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				if (this.html){

@@ -85,7 +85,7 @@
 				if (EQG)
 					data.eqg = true;
 
-				$.post('/api/cg/full/reorder', data, $.mkAjaxHandler(function(){
+				$.API.post('/cg/full/reorder', data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$fullList.removeClass('sorting').html(this.html);

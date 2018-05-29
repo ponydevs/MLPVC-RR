@@ -95,7 +95,7 @@
 
 						$this.disable();
 
-						$.post('/episode/prefill', $.mkAjaxHandler(function(){
+						$.API.get('/episode/prefill', $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							let airs = setSat830(this.airday);
@@ -137,7 +137,7 @@
 
 				$.Dialog.wait(false, `Adding ${movie?'movie':'episode'} to database`);
 
-				$.post('/episode/add', data, $.mkAjaxHandler(function(){
+				$.API.post('/episode', data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.wait(false, `Opening ${movie?'movie':'episode'} page`, true);
@@ -163,7 +163,7 @@
 		if (movie)
 			epid = `S0E${epid.split('#')[1]}`;
 
-		$.post(`/episode/get/${epid}`, $.mkAjaxHandler(function(){
+		$.API.get(`/episode/${epid}`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false,this.message);
 
 			let $EditEpForm = $EditEpFormTemplate.clone(true, true);
@@ -214,7 +214,7 @@
 
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.post(`/episode/set/${epid}`, data, $.mkAjaxHandler(function(){
+					$.API.put(`/episode/${epid}`, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.wait(false, 'Updating page', true);
@@ -237,7 +237,7 @@
 
 			$.Dialog.wait(false, 'Removing episode');
 
-			$.post(`/episode/delete/${epid}`, $.mkAjaxHandler(function(){
+			$.API.delete(`/episode/${epid}`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Navigation.reload(true);

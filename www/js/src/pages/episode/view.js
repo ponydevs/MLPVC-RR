@@ -84,7 +84,7 @@
 
 				$.Dialog.wait(false, 'Submitting your rating');
 
-				$.post(`/episode/vote/${EpID}`,data,$.mkAjaxHandler(function(){
+				$.API.post(`/episode/${EpID}/vote`,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					let $section = $voteButton.closest('section');
@@ -101,7 +101,7 @@
 		if (diff.past !== true) return;
 
 		if (!$voting.children('.rate').length){
-			$.post(`/episode/vote/${EpID}?html`,$.mkAjaxHandler(function(){
+			$.API.get(`/episode/${EpID}vote?html`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Display voting buttons',this.message);
 
 				$voting.children('h2').nextAll().remove();
@@ -120,7 +120,7 @@
 
 			$.Dialog.wait('Voting details','Getting vote distribution information');
 
-			$.post(`/episode/vote/${EpID}?detail`, $.mkAjaxHandler(function(){
+			$.API.get(`/episode/${EpID}/vote`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				const $ul = $.mk('ul');
@@ -195,21 +195,18 @@
 				typeWithS = type.replace(/([^s])$/,'$1s');
 			if (silent !== true)
 				$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list of '+typeWithS, true);
-			$.ajax(`/episode/postlist/${EpID}?section=${typeWithS}`,{
-				method: "POST",
-				success: $.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
+			$.API.get(`/episode/${EpID}/posts?section=${typeWithS}`, $.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(false, this.message);
 
-					let $newChildren = $(this.render).filter('section').children();
-					$section.empty().append($newChildren).rebindHandlers();
-					$section.find('.post-form').attr('data-type',type).formBind();
-					$section.find('h2 > button').enable();
-					Time.Update();
-					window._HighlightHash();
-					if (typeof callback === 'function') callback();
-					else if (silent !== true) $.Dialog.close();
-				}),
-			});
+				let $newChildren = $(this.render).filter('section').children();
+				$section.empty().append($newChildren).rebindHandlers();
+				$section.find('.post-form').attr('data-type',type).formBind();
+				$section.find('h2 > button').enable();
+				Time.Update();
+				window._HighlightHash();
+				if (typeof callback === 'function') callback();
+				else if (silent !== true) $.Dialog.close();
+			}));
 		})
 		.on('bind-more-handlers','li[id]',additionalHandlerAttacher)
 		.find('li[id]').each(additionalHandlerAttacher);
@@ -642,7 +639,7 @@
 				if (typeof $embedWrap === 'undefined'){
 					$.Dialog.wait($showPlayers.text());
 
-					$.post(`/episode/video-embeds/${EpID}`, $.mkAjaxHandler(function(){
+					$.API.get(`/episode/${EpID}/video-embeds`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.parts === 2){
@@ -680,7 +677,7 @@
 
 					$.Dialog.wait(false, 'Sending report');
 
-					$.post(`/episode/broken-videos/${EpID}`, $.mkAjaxHandler(function(){
+					$.API.post(`/episode/${EpID}/broken-videos`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (typeof this.epsection !== 'undefined'){
