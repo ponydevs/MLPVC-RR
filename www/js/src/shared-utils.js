@@ -392,45 +392,41 @@
 		}
 		else event.data.CSRF_TOKEN = t;
 	});
-	let lastUrl,
-		simpleStatusHandler = xhr => {
-			let resp;
-			if (xhr.responseJSON)
-				resp = xhr.responseJSON.message;
-			else {
-				try {
-					resp = JSON.parse(xhr.responseText).message;
-				}
-				catch(err){}
+	const simpleStatusHandler = xhr => {
+		let resp;
+		if (xhr.responseJSON)
+			resp = xhr.responseJSON.message;
+		else {
+			try {
+				resp = JSON.parse(xhr.responseText).message;
 			}
-			$.Dialog.fail(false, resp);
+			catch(err){}
+		}
+		$.Dialog.fail(false, resp);
+	};
+	const statusCodeHandlers = {
+		400: simpleStatusHandler,
+		401: function(){
+			$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please <a class='send-feedback'>let us know</a> about this issue so we can look into it.");
 		},
-		statusCodeHandlers = {
-			400: simpleStatusHandler,
-			401: function(){
-				$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please <a class='send-feedback'>let us know</a> about this issue so we can look into it.");
-			},
-			403: simpleStatusHandler,
-			404: simpleStatusHandler,
-			405: simpleStatusHandler,
-			500: function(){
-				$.Dialog.fail(false, 'A request failed due to an internal server error. If this persists, please <a class="send-feedback">let us know</a>!');
-			},
-			503: function(){
-				$.Dialog.fail(false, `A request failed because the server is temporarily unavailable. This shouldn't take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.`);
-			},
-			504: function(){
-				$.Dialog.fail(false, `A request failed because the server took too long to respond. A refresh should fix this issue, but if it doesn't, please <a class="send-feedback">let us know</a>.`);
-			},
-		};
+		403: simpleStatusHandler,
+		404: simpleStatusHandler,
+		405: simpleStatusHandler,
+		500: function(){
+			$.Dialog.fail(false, 'A request failed due to an internal server error. If this persists, please <a class="send-feedback">let us know</a>!');
+		},
+		503: function(){
+			$.Dialog.fail(false, `A request failed because the server is temporarily unavailable. This shouldn't take too long, please try again in a few seconds.<br>If the problem still persist after a few minutes, please let us know by clicking the "Send feedback" link in the footer.`);
+		},
+		504: function(){
+			$.Dialog.fail(false, `A request failed because the server took too long to respond. A refresh should fix this issue, but if it doesn't, please <a class="send-feedback">let us know</a>.`);
+		},
+	};
 	$.ajaxSetup({
 		dataType: "json",
 		error: function(xhr){
 			if (typeof statusCodeHandlers[xhr.status] !== 'function')
 				$w.triggerHandler('ajaxerror',$.toArray(arguments));
-		},
-		beforeSend: function(_, settings){
-			lastUrl = settings.url;
 		},
 		statusCode: statusCodeHandlers,
 	});

@@ -76,9 +76,13 @@ class AuthController extends Controller {
 		die(File::get(INCPATH.'views/loginConfirm.html'));
 	}
 
-	public function signout(){
+	public function signOut(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		if (!Auth::$signed_in)
-			Response::success("You've already signed out");
+			Response::success("You're not signed in");
+
 		CSRFProtection::protect();
 
 		if (isset($_REQUEST['everywhere'])){
@@ -135,6 +139,9 @@ class AuthController extends Controller {
 	}
 
 	public function sessionStatus(){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		CSRFProtection::protect();
 
 		if (Auth::$signed_in && Auth::$session->updating)

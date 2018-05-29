@@ -145,10 +145,10 @@ $router->map(CRUD, "$API/cg/tag/[i:id]/synonym",              'TagController#syn
 $router->map(CRUD, "$API/cg/colorgroup/[i:id]?",              'ColorGroupController#api');
 $router->map(CRUD, "$API/@[un:name]/cg/slot-check",           'PersonalGuideController#checkAvailSlots');
 $router->map(CRUD, "$API/@[un:name]/cg/point-history/recalc", 'PersonalGuideController#pointRecalc');
+$router->map(CRUD, "$API/da-auth/status",                     'AuthController#sessionStatus');
+$router->map(CRUD, "$API/da-auth/sign-out",                   'AuthController#signOut');
 
 // "API" Endpoints
-$router->map('POST', '/da-auth/status',                      'AuthController#sessionStatus');
-$router->map('POST', '/da-auth/signout',                     'AuthController#signout');
 $router->map('POST', '/episode/postlist/[epid:id]',          'EpisodeController#postList');
 $router->map('POST', '/episode/get/[epid:id]',               'EpisodeController#get');
 $router->map('POST', '/episode/delete/[epid:id]',            'EpisodeController#delete');

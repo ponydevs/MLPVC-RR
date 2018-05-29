@@ -416,7 +416,7 @@
 
 			$.Dialog.wait(title,'Signing out');
 
-			$.post('/da-auth/signout',$.mkAjaxHandler(function(){
+			$.post('/api/da-auth/sign-out',$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(title,this.message);
 
 				$.Navigation.reload();
@@ -427,23 +427,23 @@
 
 	let $sessionUpdating = $('#session-update-indicator');
 	if ($sessionUpdating.length){
-		const sessRefTitle = 'Session refresh issue';
-		const pollInterval = 2000;
+		const sessionRefTitle = 'Session refresh issue';
+		const pollInterval = 1000;
 		setTimeout(function poll(){
 			if ($sessionUpdating === null)
 				return;
 
-			$.post('/da-auth/status', $.mkAjaxHandler(function(){
+			$.get('/api/da-auth/status', $.mkAjaxHandler(function(){
 				if ($sessionUpdating === null)
 					return;
 
-				if (!this.status) return $.Dialog.fail(sessRefTitle, this.message);
+				if (!this.status) return $.Dialog.fail(sessionRefTitle, this.message);
 
 				if (this.updating === true)
 					return setTimeout(poll, pollInterval);
 
 				if (this.deleted === true)
-					$.Dialog.fail(sessRefTitle, "We couldn't verify your DeviantArt session automatically so you have been signed out. Due to elements on the page assuming you are signed in some actions will not work as expected until the page is reloaded.");
+					$.Dialog.fail(sessionRefTitle, "We couldn't refresh your DeviantArt session automatically so you have been signed out. Due to elements on the page assuming you are signed in some actions will not work as expected until the page is reloaded.");
 				$('.logged-in').replaceWith(this.loggedIn);
 			}));
 		}, pollInterval);
@@ -457,9 +457,9 @@
 		const
 			offX = Math.abs(offset.x),
 			offY = Math.abs(offset.y),
-			minmove = Math.min($body.width()/2, 200);
+			minMove = Math.min($body.width()/2, 200);
 
-		if (direction.x !== 'left' || offX < minmove || offY > 75)
+		if (direction.x !== 'left' || offX < minMove || offY > 75)
 			return;
 
 		$sbToggle.trigger('click');
