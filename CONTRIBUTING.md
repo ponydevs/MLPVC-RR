@@ -88,7 +88,7 @@ The `fs` and the `vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCach
 
 ### Node.js
 
-Make sure the `build-essential` package is installed, otherwise some required asset compilation tools might fail to build. Run `npm install -g yarn && yarn install` in the project directory to get the dependencies, then run `npm install -g gulp` so you can use the `gulp` command to kick the file watchers into action.
+Make sure the `build-essential` package is installed, otherwise some required asset compilation tools might fail to build. Run `npm i` in the project directory to get the dependencies, then run `npm i -g gulp` so you can use the `gulp watch` command to kick the file watchers into action.
 
 ### Web Server (nginx)
 
@@ -99,10 +99,10 @@ Replace `domain.tld` with the domain of your choice, and change `/path/to/*` pla
 ```
 $ cd /var/www/MLPVC-RR
 $ dir
-composer.json    fs           LICENSE       phinx.php    tests
-composer.lock    graphics     logs          phpunit.xml  vendor
-CONTRIBUTING.md  Gulpfile.js  node_modules  README.md    www
-db               includes     package.json  setup        yarn.lock
+composer.json    fs           LICENSE       package-lock.json  setup
+composer.lock    graphics     logs          phinx.php          tests
+CONTRIBUTING.md  Gulpfile.js  node_modules  phpunit.xml        vendor
+db               includes     package.json  README.md          www
 $ chown -R www-data:www-data vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/
 $ chmod g+rw fs vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/
 $ cp setup/nginx.conf /etc/nginx/sites-available/mlpvector.lc.conf

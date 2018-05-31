@@ -578,8 +578,8 @@ class CoreUtils {
 	}
 
 	public static function minifySvgData(string $svgdata){
-		if (!file_exists(SVGO_BINARY))
-			throw new \RuntimeException('svgo is required for SVG minification, please run `yarn install` to install all NPM dependencies');
+		if (!file_exists(SVGO_BINARY) || !is_executable(SVGO_BINARY))
+			throw new \RuntimeException('svgo is required for SVG processing, please run `npm i` to install Node.js dependencies');
 		$tmp_path = FSPATH.'tmp/sanitize/'.self::sha256($svgdata).'.svg';
 		self::createFoldersFor($tmp_path);
 		File::put($tmp_path, $svgdata);

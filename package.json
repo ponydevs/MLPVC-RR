@@ -25,5 +25,8 @@
   },
   "author": "SeinopSys <seinopsys@gmail.com> (https://github.com/SeinopSys)",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "engines": {
+    "yarn": "YARN NO LONGER USED - use npm instead."
+  }
 }
