@@ -2162,7 +2162,7 @@
 
 					if (AppearancePage){
 						$.Dialog.wait('Navigation', 'Loading page 1');
-						$.Navigation.visit(`${PGRq}/cg/1`);
+						$.Navigation.visit(`${PGRq}/cg`);
 					}
 					else $.Navigation.reload();
 				}

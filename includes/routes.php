@@ -89,7 +89,6 @@ $router->map('GET', '/eqg/[adi:id]', 'EQGController#redirectStr');
 # EventController
 $router->map('GET', '/events/[i]?',                 'EventController#list');
 $router->map('GET', '/event/[i:id][adi]?',          'EventController#index');
-$router->map('GET', '/event/entry/lazyload/[i:id]', 'EventController#lazyloadEntry');
 # MovieController
 $router->map('GET', '/movie/[i:id][adi]?', 'MovieController#view');
 # MuffinRatingController
@@ -158,21 +157,15 @@ $api_endpoint('/episode/[epid:id]/guide-relations',  'EpisodeController#guideRel
 $api_endpoint('/episode/[epid:id]/broken-videos',    'EpisodeController#brokenVideos');
 $api_endpoint('/episode/next',                       'EpisodeController#next');
 $api_endpoint('/episode/prefill',                    'EpisodeController#prefill');
+$api_endpoint('/event/[i:id]?',                      'EventController#api');
+$api_endpoint('/event/[i:id]/finalize',              'EventController#finalize');
+$api_endpoint('/event/[i:id]/check-entries',         'EventController#checkEntries');
+$api_endpoint('/event/[i:id]/entry',                 'EventEntryController#api');
+$api_endpoint('/event/entry/[i:entryid]',            'EventEntryController#api');
+$api_endpoint('/event/entry/[i:entryid]/vote',       'EventEntryController#voteApi');
+$api_endpoint('/event/entry/[i:entryid]/lazyload',   'EventEntryController#lazyload');
 
 // "API" Endpoints
-$router->map('POST', '/event/get/[i:id]',                    'EventController#get');
-$router->map('POST', '/event/del/[i:id]',                    'EventController#delete');
-$router->map('POST', '/event/set/[i:id]',                    'EventController#set');
-$router->map('POST', '/event/add',                           'EventController#add');
-$router->map('POST', '/event/finalize/[i:id]',               'EventController#finalize');
-$router->map('POST', '/event/check-entries/[i:id]',          'EventController#checkEntries');
-$router->map('POST', '/event/entry/add/[i:id]',              'EventController#addEntry');
-$router->map('POST', '/event/entry/get/[i:entryid]',         'EventController#getEntry');
-$router->map('POST', '/event/entry/set/[i:entryid]',         'EventController#setEntry');
-$router->map('POST', '/event/entry/del/[i:entryid]',         'EventController#delEntry');
-$router->map('POST', '/event/entry/vote/[i:entryid]',        'EventController#voteEntry');
-$router->map('POST', '/event/entry/unvote/[i:entryid]',      'EventController#unvoteEntry');
-$router->map('POST', '/event/entry/getvote/[i:entryid]',     'EventController#getvoteEntry');
 $router->map('POST', '/notifications/get',                   'NotificationsController#get');
 $router->map('POST', '/notifications/mark-read/[i:id]',      'NotificationsController#markRead');
 $router->map('POST', '/post/reload/[rrl:thing]/[i:id]',      'PostController#reload');

@@ -153,6 +153,7 @@ class TagController extends ColorGuideController {
 		switch ($this->action){
 			case 'GET':
 				Response::done($this->tag->to_array());
+			break;
 			case 'DELETE':
 				$AppearanceID = CGUtils::validateAppearancePageID();
 

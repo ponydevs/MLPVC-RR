@@ -70,8 +70,8 @@
 		return {top:top, left:left};
 	};
 	$.PopupOpenCenter = (url, title, w, h) => {
-		let calcpos = popupCalcCenter(w,h),
-			newWindow = window.open(url,title,`scrollbars=yes,width=${w},height=${h},top=${calcpos.top},left=${calcpos.left}`);
+		let calcPos = popupCalcCenter(w,h),
+			newWindow = window.open(url,title,`scrollbars=yes,width=${w},height=${h},top=${calcPos.top},left=${calcPos.left}`);
 
 		if (window.focus)
 			newWindow.focus();
@@ -126,13 +126,6 @@
 			if (displayDialog)
 				$.Dialog.wait(false, 'Reloading page', true);
 			window.location.reload();
-		}
-	};
-	window.DocReady = {
-		push: (handler, flusher) => {
-			if (typeof flusher === 'function')
-				handler.flush = flusher;
-			$.Navigation._DocReadyHandlers.push(handler);
 		}
 	};
 
@@ -348,7 +341,7 @@
 
 		let redirect = function(){
 			$.Dialog.wait(false, 'Redirecting you to DeviantArt');
-			location.href = '/da-auth/begin?return='+encodeURIComponent($.hrefToPath(location.href));
+			$.Navigation.visit(`/da-auth/begin?return=${encodeURIComponent($.hrefToPath(location.href))}`);
 		};
 
 		if (navigator.userAgent.indexOf('Trident') !== -1)

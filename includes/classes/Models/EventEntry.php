@@ -26,6 +26,7 @@ use App\Time;
  * @property DateTime $last_edited
  * @property User     $submitter    (Via relations)
  * @property Event    $event        (Via relations)
+ * @method static EventEntry find(...$args)
  */
 class EventEntry extends NSModel {
 	public static $table_name = 'event_entries';

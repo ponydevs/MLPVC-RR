@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use ActiveRecord\DateTime;
 use App\Time;
 
 /**
- * @property int $entryid
- * @property int $value
- * @property string $userid
- * @property string $cast_at
+ * @property int        $entry_id
+ * @property string     $user_id
+ * @property int        $value
+ * @property DateTime   $cast_at
+ * @property User       $user     (Via relations)
+ * @property EventEntry $entry    (Via relations)
  * @method static EventEntryVote find_by_entry_id_and_user_id(int $entr_yid, string $user_id)
  */
 class EventEntryVote extends NSModel {
@@ -30,8 +33,8 @@ class EventEntryVote extends NSModel {
 	 * @return bool
 	 */
 	public function isLockedIn(EventEntry $entry, ?int $now = null):bool {
-		$entryEditTS = strtotime($entry->last_edited);
-		$voteCastTS = strtotime($this->cast_at);
+		$entryEditTS = $entry->last_edited->getTimestamp();
+		$voteCastTS = $this->cast_at->getTimestamp();
 		return ($now??time()) - $voteCastTS >= Time::IN_SECONDS['hour'] && $entryEditTS < $voteCastTS;
 	}
 }

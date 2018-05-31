@@ -45,7 +45,7 @@
 				$.Dialog.wait(false, `Loading page ${page}`);
 				const href = $this.attr('data-baseurl');
 				console.log(href);
-				location.href = href.replace('*',page);
+				$.Navigation.visit(href.replace('*',page));
 			});
 		});
 	});

@@ -148,7 +148,7 @@
 					if (EventPage)
 						data.EVENT_PAGE = true;
 
-					$.post(`/event/${editing?'set/'+eventID:'add'}`,data,$.mkAjaxHandler(function(){
+					$.API[editing?'put':'post'](`/event${editing?`/${eventID}`:''}`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						data = this;
@@ -199,7 +199,7 @@
 
 		$.Dialog.wait(title, 'Retrieving event details from server');
 
-		$.post(`/event/get/${eventID}`,$.mkAjaxHandler(function(){
+		$.API.get(`/event/${eventID}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this;
@@ -228,7 +228,7 @@
 				const data = $form.mkData();
 				$.Dialog.wait(false,'Finalizing event');
 
-				$.post(`/event/finalize/${eventID}`,data,$.mkAjaxHandler(function(){
+				$.API.post(`/event/${eventID}/finalize`,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.success(false, 'Event finalized successfully');
@@ -246,17 +246,18 @@
 				? $li.find('.event-name').html()
 				: $content.children('h1').text();
 
-		$.Dialog.confirm('Delete event #'+eventid,`Are you <strong class="color-red"><em>ABSOLUTELY</em></strong> sure you want to delete &ldquo;${eventname}&rdquo; along with all submissions?`,function(sure){
+		$.Dialog.confirm(`Delete event #${eventid}`,`Are you <strong class="color-red"><em>ABSOLUTELY</em></strong> sure you want to delete &ldquo;${eventname}&rdquo; along with all submissions?`,function(sure){
 			if (!sure) return;
 
 			$.Dialog.wait(false);
 
-			$.post(`/event/del/${eventid}`,$.mkAjaxHandler(function(){
+			$.API.delete(`/event/${eventid}`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				if (EventPage){
-					$.Dialog.wait('Navigation', 'Loading page 1');
-					$.Navigation.visit(`/events/1`);
+					$.Dialog.success(false, 'Event deleted successfully');
+					$.Dialog.wait(false, 'Redirecting to event list');
+					$.Navigation.visit(`/events`);
 					return;
 				}
 

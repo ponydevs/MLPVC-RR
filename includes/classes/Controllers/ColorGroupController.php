@@ -57,6 +57,7 @@ class ColorGroupController extends ColorGuideController {
 					$out['Colors'][] = $append;
 				}
 				Response::done($out);
+			break;
 			case 'POST':
 			case 'PUT':
 				global $HEX_COLOR_REGEX;
@@ -311,6 +312,7 @@ class ColorGroupController extends ColorGuideController {
 				}
 
 				Response::done($response);
+			break;
 			case 'DELETE':
 				$Appearance = $this->colorgroup->appearance;
 
@@ -327,6 +329,7 @@ class ColorGroupController extends ColorGuideController {
 				$Appearance->checkSpriteColors();
 
 				Response::success('Color group deleted successfully');
+			break;
 			default:
 				CoreUtils::notAllowed();
 		}

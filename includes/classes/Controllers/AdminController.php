@@ -219,11 +219,13 @@ class AdminController extends Controller {
 					'title' => $this->usefulLink->title,
 					'minrole' => $this->usefulLink->minrole,
 				]);
+			break;
 			case 'DELETE':
 				if (!DB::$instance->where('id', $this->usefulLink->id)->delete('useful_links'))
 					Response::dbError();
 
 				Response::done();
+			break;
 			case 'POST':
 			case 'PUT':
 				$data = [];
@@ -286,7 +288,8 @@ class AdminController extends Controller {
 
 				Response::done();
 			break;
-			default: CoreUtils::notAllowed();
+			default:
+				CoreUtils::notAllowed();
 		}
 	}
 
@@ -504,7 +507,8 @@ class AdminController extends Controller {
 
 				Response::done();
 			break;
-			default: CoreUtils::notAllowed();
+			default:
+				CoreUtils::notAllowed();
 		}
 	}
 }

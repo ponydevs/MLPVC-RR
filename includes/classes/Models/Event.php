@@ -25,9 +25,10 @@ use App\UserPrefs;
  * @property string       $result_favme
  * @property string       $finalized_by
  * @property DateTime     $finalized_at
- * @property EventEntry[] $entries
- * @property User         $creator
- * @property User         $finalizer
+ * @property EventEntry[] $entries      (Via relations)
+ * @property User         $creator      (Via relations)
+ * @property User         $finalizer    (Via relations)
+ * @method static Event find(...$args)
  */
 class Event extends NSModel implements LinkableInterface {
 	public static $has_many = [
@@ -75,7 +76,7 @@ class Event extends NSModel implements LinkableInterface {
 			case 'user':
 			case 'member':
 			case 'staff':
-				return Permission::sufficient($this->entry_role, $user->role);
+				return $user->perm($this->entry_role);
 			case 'spec_discord':
 				return $user->isDiscordServerMember(true);
 			default:

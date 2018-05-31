@@ -26,7 +26,7 @@
 			<span>Preview (optional)</span>
 			<input type="url" name="prev_src">
 		</label>
-		<div class="notice info">You can link to a preview of your submission from any of the <a href="/about#supported-providers" target="_blank">suppported image providers</a>. This will show a visual preview alongside your submission on the event page.</div>`
+		<div class="notice info">You can link to a preview of your submission from any of the <a href="/about#supported-providers" target="_blank">supported image providers</a>. This will be displayed alongside your submission on the event page. You should only use this if your submission doesn't have a preview of its own.</div>`
 	);
 
 	$.fn.rebindFluidbox = function(){
@@ -43,7 +43,7 @@
 
 		$.Dialog.wait('New entry','Checking whether you can submit any more entries');
 
-		$.post(`/event/check-entries/${eventID}`,$.mkAjaxHandler(function(){
+		$.API.get(`/event/${eventID}/check-entries`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			if (this.message)
@@ -56,7 +56,7 @@
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Submitting your entry');
 
-					$.post(`/event/entry/add/${eventID}`,data,$.mkAjaxHandler(function(){
+					$.API.post(`/event/${eventID}/entry`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$eventEntries.html(this.entrylist).rebindFluidbox();
@@ -75,7 +75,7 @@
 
 		$.Dialog.wait(`Editing entry #${entryID}`,'Retrieving entry details from server');
 
-		$.post(`/event/entry/get/${entryID}`,$.mkAjaxHandler(function(){
+		$.API.get(`/event/entry/${entryID}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this;
@@ -93,7 +93,7 @@
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.post(`/event/entry/set/${entryID}`,data,$.mkAjaxHandler(function(){
+					$.API.put(`/event/entry/${entryID}`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$li.html(this.entryhtml).rebindFluidbox();
@@ -116,7 +116,7 @@
 
 			$.Dialog.wait(false, 'Sending deletion request');
 
-			$.post(`/event/entry/del/${entryID}`,$.mkAjaxHandler(function(){
+			$.API.delete(`/event/entry/${entryID}`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.close();
@@ -137,7 +137,7 @@
 			un = $btn.hasClass('clicked');
 
 		$btn.siblings('button').addBack().disable();
-		$.post(`/event/entry/${un?'un':''}vote/${entryID}`,{value},$.mkAjaxHandler(function(){
+		$.API[un?'delete':'post'](`/event/entry/${entryID}/vote`,{value},$.mkAjaxHandler(function(){
 			let $otherBtn = $btn.siblings('button');
 			if (!this.disable)
 				$otherBtn.addBack().enable();
@@ -168,7 +168,7 @@
 			$entry = this,
 			entryID = $entry.attr('id').split('-')[1];
 
-		$.post(`/event/entry/getvote/${entryID}`,$.mkAjaxHandler(function(){
+		$.API.get(`/event/entry/${entryID}/vote`,$.mkAjaxHandler(function(){
 			if (!this.status)
 				return $.Dialog.fail('Refresh voting buttons of entry #'+entryID, this.message);
 
@@ -188,7 +188,7 @@
 
 			const entryid = $this.attr('data-entryid');
 
-			$.get('/event/entry/lazyload/'+entryid,$.mkAjaxHandler(function(){
+			$.API.get(`/event/entry/${entryid}/lazyload`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Failed to load preview for entry #'+entryid, this.message);
 
 				$.loadImages(this.html).then(function(resp){

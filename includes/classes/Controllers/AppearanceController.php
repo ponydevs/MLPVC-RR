@@ -372,7 +372,8 @@ class AppearanceController extends ColorGuideController {
 
 				Response::success('Appearance removed');
 			break;
-			default: CoreUtils::notAllowed();
+			default:
+				CoreUtils::notAllowed();
 		}
 	}
 
@@ -526,6 +527,7 @@ class AppearanceController extends ColorGuideController {
 						'only' => ['id','label'],
 					]);
 				Response::done(['cgs' => $cgs]);
+			break;
 			case 'PUT':
 				/** @var $order int[] */
 				$order = (new Input('cgs','int[]', [
@@ -558,7 +560,9 @@ class AppearanceController extends ColorGuideController {
 				]);
 
 				Response::done(['cgs' => $this->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
-			default: CoreUtils::notAllowed();
+			break;
+			default:
+				CoreUtils::notAllowed();
 		}
 	}
 
@@ -623,7 +627,8 @@ class AppearanceController extends ColorGuideController {
 
 				Response::done(['sprite' => DEFAULT_SPRITE]);
 			break;
-			default: CoreUtils::notAllowed();
+			default:
+				CoreUtils::notAllowed();
 		}
 	}
 
@@ -657,6 +662,7 @@ class AppearanceController extends ColorGuideController {
 				}
 
 				Response::done($Sorted);
+			break;
 			case 'PUT':
 				if ($this->appearance->owner_id !== null)
 					Response::fail('Relations are unavailable for appearances in personal guides');
@@ -695,7 +701,9 @@ class AppearanceController extends ColorGuideController {
 				if ($this->_appearancePage)
 					$out['section'] = $this->appearance->getRelatedHTML();
 				Response::done($out);
-			default: CoreUtils::notAllowed();
+			break;
+			default:
+				CoreUtils::notAllowed();
 		}
 	}
 
@@ -715,6 +723,7 @@ class AppearanceController extends ColorGuideController {
 				$ProcessedCMs = Cutiemarks::get($this->appearance);
 
 				Response::done(['cms' => $CMs, 'preview' => Cutiemarks::getListForAppearancePage($ProcessedCMs, NOWRAP)]);
+			break;
 			case 'PUT':
 				$GrabCMs = Cutiemarks::get($this->appearance);
 				/** @var $CurrentCMs Cutiemark[] */
@@ -890,7 +899,9 @@ class AppearanceController extends ColorGuideController {
 				if ($this->_appearancePage && !empty($CutieMarks))
 					$data['html'] = Cutiemarks::getListForAppearancePage(Cutiemarks::get($this->appearance));
 				Response::done($data);
-			default: CoreUtils::notAllowed();
+			break;
+			default:
+				CoreUtils::notAllowed();
 		}
 	}
 
@@ -909,6 +920,7 @@ class AppearanceController extends ColorGuideController {
 		switch ($this->action){
 			case 'GET':
 				Response::done([ 'tags' => $this->appearance->getTagsAsText() ]);
+			break;
 			case 'PUT':
 				$tags = (new Input('tags','string',[
 					Input::CUSTOM_ERROR_MESSAGES => [
@@ -920,7 +932,9 @@ class AppearanceController extends ColorGuideController {
 				$this->appearance->updateIndex();
 
 				Response::done();
-			default: CoreUtils::notAllowed();
+			break;
+			default:
+				CoreUtils::notAllowed();
 		}
 	}
 
