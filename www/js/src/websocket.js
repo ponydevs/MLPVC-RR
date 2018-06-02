@@ -69,7 +69,7 @@
 						$notifCnt.empty();
 					});
 				}
-				else $.post('/notifications/get',$.mkAjaxHandler(data => {
+				else $.API.get('/notif',$.mkAjaxHandler(data => {
 					$notifCnt.text(cnt);
 					$notifSbList.html(data.list);
 					Time.Update();
@@ -284,7 +284,8 @@
 			$notifSb = $sidebar.children('.notifications');
 			$notifSbList = $notifSb.children('.notif-list');
 
-			this.bindMarkRead();
+			if (clientLibLoaded)
+				this.bindMarkRead();
 		}
 		bindMarkRead(){
 			$notifSbList.off('click','.mark-read').on('click','.mark-read', e => {
@@ -301,7 +302,7 @@
 					send = () => {
 						$el.siblings('.mark-read').addBack().addClass('disabled');
 
-						$.post(`/notifications/mark-read/${nid}`,data,$.mkAjaxHandler(data => {
+						$.API.post(`/notif/${nid}/mark-read`,data,$.mkAjaxHandler(data => {
 							if (!data.status) return $.Dialog.fail(title, data.message);
 
 							if (data.message)

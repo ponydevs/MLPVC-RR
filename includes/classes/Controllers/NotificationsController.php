@@ -31,6 +31,9 @@ class NotificationsController extends Controller {
 	}
 
 	public function get(){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		try {
 			$Notifications = Notifications::getHTML(Notifications::get(Notifications::UNREAD_ONLY),NOWRAP);
 			Response::done(['list' => $Notifications]);
@@ -42,6 +45,9 @@ class NotificationsController extends Controller {
 	}
 
 	public function markRead($params){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		$nid = \intval($params['id'], 10);
 		/** @var $Notif Notification */
 		$Notif = Notification::find($nid);

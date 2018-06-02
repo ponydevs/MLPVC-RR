@@ -164,10 +164,10 @@ $api_endpoint('/event/[i:id]/entry',                 'EventEntryController#api')
 $api_endpoint('/event/entry/[i:entryid]',            'EventEntryController#api');
 $api_endpoint('/event/entry/[i:entryid]/vote',       'EventEntryController#voteApi');
 $api_endpoint('/event/entry/[i:entryid]/lazyload',   'EventEntryController#lazyload');
+$api_endpoint('/notif',                              'NotificationsController#get');
+$api_endpoint('/notif/[i:id]/mark-read',             'NotificationsController#markRead');
 
 // "API" Endpoints
-$router->map('POST', '/notifications/get',                   'NotificationsController#get');
-$router->map('POST', '/notifications/mark-read/[i:id]',      'NotificationsController#markRead');
 $router->map('POST', '/post/reload/[rrl:thing]/[i:id]',      'PostController#reload');
 $router->map('POST', '/post/transfer/[rrl:thing]/[i:id]',    'PostController#queryTransfer');
 $router->map('POST', '/post/[a:action]/[rrsl:thing]/[i:id]', 'PostController#action');
