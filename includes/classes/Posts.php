@@ -6,8 +6,6 @@ use App\Models\Episode;
 use App\Models\Notification;
 use App\Models\PCGSlotHistory;
 use App\Models\Post;
-use App\Models\Request;
-use App\Models\Reservation;
 use App\Models\User;
 use App\Exceptions\MismatchedProviderException;
 
@@ -33,9 +31,10 @@ class Posts {
 	public static function get(Episode $Episode, int $only = null, bool $showBroken = false){
 		$return = [];
 		if ($only !== ONLY_RESERVATIONS){
-			$return[] = Request::find('all', [
+			// If we don't want reservations only, grab requests
+			$return[] = Post::find('all', [
 				'conditions'=> [
-					'season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
+					'requested_by IS NOT NULL AND season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
 					$Episode->season,
 					$Episode->episode
 				],
@@ -43,11 +42,10 @@ class Posts {
 			]);
 		}
 		if ($only !== ONLY_REQUESTS){
-			if ($showBroken === false)
-				DB::$instance->where('broken != true');
-			$return[] = Reservation::find('all', [
+			// If we don't want requests only, grab reservations
+			$return[] = Post::find('all', [
 				'conditions'=> [
-					'season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
+					'requested_by IS NULL AND season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
 					$Episode->season,
 					$Episode->episode
 				],
@@ -66,28 +64,19 @@ class Posts {
 	 * @return string
 	 */
 	public static function getMostRecentList($wrap = WRAP){
-		$cols = 'id,season,episode,label,preview,lock,deviation_id,reserved_by,finished_at,broken,reserved_at';
-		$RecentPosts = DB::$instance->disableAutoClass()->query(
-			"SELECT * FROM
-			(
-				SELECT $cols, type, requested_by, requested_at AS posted_at FROM requests
-				WHERE requested_at > NOW() - INTERVAL '20 DAYS'
-				UNION ALL
-				SELECT $cols, null AS type, null AS requested_by, reserved_at AS posted_at FROM reservations
-				WHERE reserved_at > NOW() - INTERVAL '20 DAYS'
-			) t
-			ORDER BY posted_at DESC
-			LIMIT 20");
+		/** @var $RecentPosts Post[] */
+		$RecentPosts = DB::$instance->setModel(Post::class)->query(
+			"SELECT * FROM posts
+			WHERE
+				(requested_by IS NOT NULL && requested_at > NOW() - INTERVAL '20 DAYS')
+				OR
+				(requested_by IS NULL && reserved_at > NOW() - INTERVAL '20 DAYS')
+			ORDER BY ".Post::ORDER_BY_POSTED_AT.' DESC
+			LIMIT 20');
 
 		$HTML = '';
 		foreach ($RecentPosts as $Post){
-			$is_request = !empty($Post['requested_by']);
-			$className = '\\App\\Models\\'.($is_request ? 'Request' : 'Reservation');
-			if (!$is_request)
-				unset($Post['requested_by'], $Post['type']);
-			/** @var $post Post */
-			$post = new $className($Post);
-			$HTML .= $post->getLi(true, false, LAZYLOAD);
+			$HTML .= $Post->getLi(true, false, LAZYLOAD);
 		}
 		return $wrap ? "<ul>$HTML</ul>" : $HTML;
 	}
@@ -95,12 +84,12 @@ class Posts {
 	/**
 	 * POST data validator function used when creating/editing posts
 	 *
-	 * @param string                   $thing  "request"/"reservation"
-	 * @param array|object             $target Array or object to output the checked data into
-	 * @param Request|Reservation|null $Post   Optional, exsting post to compare new data against
+	 * @param bool         $request Boolean that's true if post is a request and false otherwise
+	 * @param array|object $target  Array or object to output the checked data into
+	 * @param Post|null    $post    Optional, exsting post to compare new data against
 	 */
-	public static function checkPostDetails($thing, &$target, $Post = null){
-		$editing = !empty($Post);
+	public static function checkPostDetails(bool $request, &$target, $post = null){
+		$editing = !empty($post);
 
 		$label = (new Input('label','string', [
 			Input::IS_OPTIONAL => true,
@@ -110,17 +99,17 @@ class Posts {
 			]
 		]))->out();
 		if ($label !== null){
-			if (!$editing || $label !== $Post->label){
+			if (!$editing || $label !== $post->label){
 				CoreUtils::checkStringValidity($label,'The description',INVERSE_PRINTABLE_ASCII_PATTERN);
 				$label = preg_replace(new RegExp("''"),'"',$label);
 				CoreUtils::set($target, 'label', $label);
 			}
 		}
-		else if (!$editing && $thing !== 'reservation')
+		else if (!$editing && $request)
 			Response::fail('Description cannot be empty');
 		else CoreUtils::set($target, 'label', null);
 
-		if ($thing === 'request'){
+		if ($request){
 			$type = (new Input('type',function($value){
 				if (!isset(self::REQUEST_TYPES[$value]))
 					return Input::ERROR_INVALID;
@@ -133,13 +122,13 @@ class Posts {
 			if ($type === null && !$editing)
 				Response::fail('Missing request type');
 
-			if (!$editing || (isset($type) && $type !== $Post->type))
+			if (!$editing || (isset($type) && $type !== $post->type))
 				CoreUtils::set($target,'type',$type);
 
 			if (Permission::sufficient('developer')){
 				$reserved_at = self::validateReservedAt();
 				if (isset($reserved_at)){
-					if ($reserved_at !== strtotime($Post->reserved_at))
+					if ($reserved_at !== strtotime($post->reserved_at))
 						CoreUtils::set($target,'reserved_at',date('c', $reserved_at));
 				}
 				else CoreUtils::set($target,'reserved_at',null);
@@ -153,12 +142,12 @@ class Posts {
 					Input::ERROR_INVALID => '"Posted" timestamp (@value) is invalid',
 				]
 			]))->out();
-			if (isset($posted) && $posted !== strtotime($Post->posted_at))
+			if (isset($posted) && $posted !== strtotime($post->posted_at))
 				CoreUtils::set($target,'posted_at',date('c', $posted));
 
 			$finished_at = self::validateFinishedAt();
 			if (isset($finished_at)){
-				if ($finished_at !== strtotime($Post->finished_at))
+				if ($finished_at !== strtotime($post->finished_at))
 					CoreUtils::set($target,'finished_at',date('c', $finished_at));
 			}
 			else CoreUtils::set($target,'finished_at',null);
@@ -223,7 +212,7 @@ class Posts {
 				if (empty($Author))
 					Response::fail("Could not fetch local user data for username: $Deviation->author");
 
-				if (!isset($_POST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author->id !== $ReserverID){
+				if (!isset($_REQUEST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author->id !== $ReserverID){
 					$sameUser = Auth::$user->id === $ReserverID;
 					$person = $sameUser ? 'you' : 'the user who reserved this post';
 					Response::fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author->name} the new reserver.".($sameUser
@@ -502,14 +491,16 @@ HTML;
 	public const BROKEN = "<strong class='color-orange broken-note' title=\"The full size preview of this post was deemed unavailable and it is now marked as broken\"><span class='typcn typcn-plug'></span> Deemed broken</strong>";
 
 	/**
-	 * List ltem generator function for reservation suggestions
+	 * List item generator function for reservation suggestions
 	 * This function assumes that the post it's being used for is not reserved or it can be contested.
 	 *
-	 * @param Request $Request
+	 * @param Post $Request
 	 *
 	 * @return string
 	 */
-	public static function getSuggestionLi(Request $Request):string {
+	public static function getSuggestionLi(Post $Request):string {
+		if ($Request->is_reservation)
+			throw new \Exception(__METHOD__." only accepts requests as its first argument, got reservation ($Request->id)");
 		$escapedLabel = CoreUtils::aposEncode($Request->label);
 		$label = $Request->getLabelHTML();
 		$time_ago = Time::tag($Request->posted_at);
@@ -553,10 +544,10 @@ HTML;
 	}
 
 	/**
-	 * @param Request|Reservation $post
-	 * @param bool                $view_only
-	 * @param bool                $cachebust_url
-	 * @param bool                $enablePromises
+	 * @param Post $post
+	 * @param bool $view_only
+	 * @param bool $cachebust_url
+	 * @param bool $enablePromises
 	 *
 	 * @return string
 	 */
@@ -602,7 +593,7 @@ HTML;
 				$approved = $post->lock;
 				if ($enablePromises){
 					$view_only_promise = $view_only ? "data-viewonly='$view_only'" : '';
-					$HTML = "<div class='image deviation'><div class='post-deviation-promise image-promise' data-post='{$post->getID()}' $view_only_promise></div></div>";
+					$HTML = "<div class='image deviation'><div class='post-deviation-promise image-promise' data-post-id='{$post->id}' $view_only_promise></div></div>";
 				}
 				else $HTML = $post->getFinishedImage($view_only, $cachebust);
 				$finished_at = $post->finished_at !== null
@@ -646,7 +637,7 @@ HTML;
 
 		$break = $post->broken ? 'class="admin-break"' : '';
 
-		return "<li id='$ID' $break>$HTML".$post->getActionsHTML($view_only ? $postlink : false, $hide_reserved_status, $enablePromises).'</li>';
+		return "<li id='$ID' data-type='{$post->kind}' $break>$HTML".$post->getActionsHTML($view_only ? $postlink : false, $hide_reserved_status, $enablePromises).'</li>';
 	}
 
 	/**

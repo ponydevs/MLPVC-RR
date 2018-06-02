@@ -103,11 +103,11 @@
 			deviationIO.unobserve(el);
 
 			const
-				postid = el.dataset.post.replace('-','/'),
+				postID = el.dataset.postId,
 				viewonly = el.dataset.viewonly;
 
-			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
+			$.API.get(`/post/${postID}/lazyload`,{viewonly},$.mkAjaxHandler(function(){
+				if (!this.status) return $.Dialog.fail(`Cannot load post ${postID}`, this.message);
 
 				$.loadImages(this.html).then(function(resp){
 					$(el).closest('.image').replaceWith(resp.$el);

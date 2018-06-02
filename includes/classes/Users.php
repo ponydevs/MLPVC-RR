@@ -4,8 +4,6 @@ namespace App;
 
 use App\Models\Logs\DANameChange;
 use App\Models\Post;
-use App\Models\Request;
-use App\Models\Reservation;
 use App\Models\Session;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
@@ -121,7 +119,7 @@ class Users {
 	 *
 	 * @return bool|null
 	 */
-	public static function reservationLimitExceeded(bool $return_as_bool = false){
+	public static function checkReservationLimitReached(bool $return_as_bool = false){
 		$reservations = DB::$instance->querySingle(
 			'SELECT
 			(
@@ -421,7 +419,7 @@ HTML;
 
 				break;
 				case 'requests':
-					/** @var $item Request */
+					/** @var $item Post */
 					$preview = $item->toAnchorWithPreview();
 					$posted = Time::tag($item->requested_at);
 					if ($item->reserved_by !== null){
@@ -441,7 +439,7 @@ HTML;
 HTML;
 				break;
 				case 'reservations':
-					/** @var $item Request */
+					/** @var $item Post */
 					$preview = $item->toAnchorWithPreview();
 					$posted = Time::tag($item->reserved_at);
 					$finished = self::_contribItemFinished($item);
@@ -454,7 +452,7 @@ HTML;
 HTML;
 				break;
 				case 'finished-posts':
-					/** @var $item Request|Reservation */
+					/** @var $item Post */
 					$preview = $item->toAnchorWithPreview();
 					$posted_by = ($item->is_request ? $item->requester : $item->reserver)->toAnchor();
 					$posted_at = Time::tag($item->posted_at);
@@ -478,7 +476,7 @@ $reserved
 HTML;
 				break;
 				case 'fulfilled-requests':
-					/** @var $item Request */
+					/** @var $item Post */
 					$preview = $item->toAnchorWithPreview();
 					$posted_by = $item->requester->toAnchor();
 					$requested_at = Time::tag($item->requested_at);

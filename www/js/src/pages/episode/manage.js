@@ -349,13 +349,13 @@
 					if (typeof deviation !== 'string' || deviation.length === 0)
 						return $.Dialog.fail(false, 'Please enter a deviation URL');
 
-					let request_url = '/post/finish/'+type+'/'+id,
-						sent_data = $form.mkData();
-					$.Dialog.wait(false, 'Marking '+type+' as finished');
+					const sent_data = $form.mkData();
 
-					$.post(request_url,sent_data,$.mkAjaxHandler(function(){
-						let data = this,
-							success = function(){
+					(function attempt(){
+						$.Dialog.wait(false, 'Marking post as finished');
+
+						$.API.put(`/post/${id}/finish`,sent_data,$.mkAjaxHandler(function(data){
+							if (data.status){
 								$.Dialog.success(false, Type+' has been marked as finished');
 
 								$(`#${type}s`).trigger('pls-update', [function(){
@@ -363,23 +363,20 @@
 										$.Dialog.success(false, data.message, true);
 									else $.Dialog.close();
 								}]);
-							};
-						if (data.status) success();
-						else if (data.retry){
-							$.Dialog.confirm(false, data.message, ["Continue","Cancel"], function(sure){
-								if (!sure) return;
-								sent_data.allow_overwrite_reserver = true;
-								$.Dialog.wait(false);
-								$.post(request_url,sent_data,$.mkAjaxHandler(function(){
-									if (!this.status) return $.Dialog.fail(false, this.message);
 
-									data = this;
-									success();
-								}));
-							});
-						}
-						else $.Dialog.fail(false, data.message);
-					}));
+								return;
+							}
+
+							if (data.retry){
+								$.Dialog.confirm(false, data.message, ["Continue","Cancel"], function(sure){
+									if (!sure) return;
+									sent_data.allow_overwrite_reserver = true;
+									attempt();
+								});
+							}
+							else $.Dialog.fail(false, data.message);
+						}));
+					})();
 				});
 			});
 		});
@@ -413,7 +410,7 @@
 
 					$.Dialog.wait(false, 'Removing "finished" flag'+(unbind?' & unbinding from user':''));
 
-					$.post(`/post/unfinish/${type}/${id}${unbind?'?unbind':''}`,$.mkAjaxHandler(function(){
+					$.API.delete(`/post/${id}/finish${unbind?'?unbind':''}`,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, typeof this.message !== 'undefined' ? this.message : '"finished" flag removed successfully');

@@ -297,9 +297,9 @@ class User extends AbstractUser implements LinkableInterface {
 		# Free slot for everyone
 		PCGSlotHistory::record($this->id, 'free_trial', null, null, strtotime('2017-12-16T13:36:59Z'));
 
-		# Grant points for approver requests
+		# Grant points for approved requests
 		DB::$instance->where('requested_by', $this->id, '!=');
-		/** @var $posts Request[] */
+		/** @var $posts Post[] */
 		$posts = $this->getApprovedFinishedRequestContributions(false);
 		if (!empty($posts))
 			foreach ($posts as $post){
@@ -386,83 +386,79 @@ class User extends AbstractUser implements LinkableInterface {
 	}
 
 	/**
-	 * @param string     $table      Specifies which post table to use for fetching
+	 * @param bool       $requests   Boolean indicating whether we want to get requests (true) or reservations (false)
 	 * @param bool       $count      Returns the count if true
 	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
-	 * @return int|array
+	 * @return int|Post[]
 	 */
-	private function _getPostContributions(string $table, bool $count = true, Pagination $pagination = null){
-		if ($table === 'requests')
+	private function _getPostContributions(bool $requests, bool $count = true, Pagination $pagination = null){
+		if ($requests)
 			DB::$instance->where('requested_by', $this->id);
-		else DB::$instance->where('reserved_by', $this->id);
+		else DB::$instance->where('reserved_by', $this->id)->where('requested_by IS NULL');
 
 		if ($count)
-			return DB::$instance->count($table);
+			return DB::$instance->count('posts');
 
 		$limit = isset($pagination) ? $pagination->getLimit() : null;
-		return DB::$instance->orderBy(($table === 'requests' ? 'requested_at' : 'reserved_at'),'DESC')->get($table,$limit);
+		return DB::$instance->orderBy(($requests ? 'requested_at' : 'reserved_at'),'DESC')->get('posts',$limit);
 	}
 
 	/**
 	 * @param bool       $count      Returns the count if true
 	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
-	 * @return int|array
+	 * @return int|Post[]
 	 */
 	public function getRequestContributions(bool $count = true, Pagination $pagination = null){
-		return $this->_getPostContributions('requests', $count, $pagination);
+		return $this->_getPostContributions(true, $count, $pagination);
 	}
 
 	/**
 	 * @param bool       $count      Returns the count if true
 	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
-	 * @return int|array
+	 * @return int|Post[]
 	 */
 	public function getReservationContributions(bool $count = true, Pagination $pagination = null){
-		return $this->_getPostContributions('reservations', $count, $pagination);
+		return $this->_getPostContributions(false, $count, $pagination);
 	}
 
 	/**
 	 * @param bool       $count      Returns the count if true
 	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
-	 * @return int|array
+	 * @return int|Post[]
 	 */
 	public function getFinishedPostContributions(bool $count = true, Pagination $pagination = null){
 		if ($count)
 			return DB::$instance->querySingle(
-				'SELECT
-					(SELECT COUNT(*) FROM requests WHERE reserved_by = :userid && deviation_id IS NOT NULL)
-					+
-					(SELECT COUNT(*) FROM reservations WHERE reserved_by = :userid && deviation_id IS NOT NULL)
-				as cnt', ['userid' => $this->id])['cnt'];
+				'SELECT COUNT(*) as cnt FROM posts WHERE reserved_by = ? && deviation_id IS NOT NULL',
+				[$this->id]
+			)['cnt'];
 
-		$cols = 'id, label, reserved_by, reserved_by, reserved_at, finished_at, preview, lock, season, episode, deviation_id';
 		/** @noinspection SqlInsertValues */
-		$query =
-			"SELECT * FROM (
-				SELECT $cols, requested_by, requested_at, requested_at as posted_at FROM requests WHERE reserved_by = :userid AND deviation_id IS NOT NULL
-				UNION ALL
-				SELECT $cols, null as requested_by, null as requested_at, reserved_at as posted_at FROM reservations WHERE reserved_by = :userid AND deviation_id IS NOT NULL
-			) t";
+		$query = 'SELECT COUNT(*) as cnt FROM posts WHERE reserved_by = ? && deviation_id IS NOT NULL';
 		if ($pagination)
-			$query .= ' ORDER BY posted_at DESC '.$pagination->getLimitString();
-		return DB::$instance->query($query, ['userid' => $this->id]);
+			$query .= ' ORDER BY '.Post::ORDER_BY_POSTED_AT.' DESC '.$pagination->getLimitString();
+		return DB::$instance->query($query, [$this->id]);
 	}
 
 	/**
 	 * @param bool       $count       Returns the count if true
 	 * @param Pagination $pagination  Pagination object used for getting the LIMIT part of the query
 	 *
-	 * @return int|array
+	 * @return int|Post[]
 	 */
 	public function getApprovedFinishedRequestContributions(bool $count = true, Pagination $pagination = null){
 
-		DB::$instance->where('deviation_id IS NOT NULL')->where('reserved_by',$this->id)->where('lock',1);
+		DB::$instance
+			->where('requested_by IS NOT NULL') // Requests only
+			->where('deviation_id IS NOT NULL')
+			->where('reserved_by',$this->id)
+			->where('lock',1);
 
 		if ($count)
 			return DB::$instance->count('requests');
 
 		$limit = isset($pagination) ? $pagination->getLimit() : null;
-		return DB::$instance->orderBy('finished_at','DESC')->get('requests',$limit);
+		return DB::$instance->orderBy('finished_at','DESC')->get('posts',$limit);
 	}
 
 	private function _getContributions():array {
@@ -542,13 +538,14 @@ class User extends AbstractUser implements LinkableInterface {
 	];
 
 	/**
+	 * @param bool $requests
 	 * @return array
 	 */
-	private function _getPendingPostsArgs():array {
+	private function _getPendingPostsArgs(bool $requests):array {
 		return [
 			'all', [
 				'conditions' => [
-					'reserved_by = ? AND deviation_id IS NULL',
+					'requested_by IS '.($requests?' NOT':'').' NULL AND reserved_by = ? AND deviation_id IS NULL',
 					$this->id,
 				],
 			],
@@ -556,17 +553,17 @@ class User extends AbstractUser implements LinkableInterface {
 	}
 
 	/**
-	 * @return Reservation[] All reservations from the databae that the user posted but did not finish yet
+	 * @return Post[] All reservations from the database that the user posted but did not finish yet
 	 */
 	private function _getPendingReservations(){
-		return Reservation::find(...$this->_getPendingPostsArgs());
+		return Post::find(...$this->_getPendingPostsArgs(false));
 	}
 
 	/**
-	 * @return Request[] All requests from the databae that the user reserved but did not finish yet
+	 * @return Post[] All requests from the database that the user reserved but did not finish yet
 	 */
 	private function _getPendingRequestReservations(){
-		return Request::find(...$this->_getPendingPostsArgs());
+		return Post::find(...$this->_getPendingPostsArgs(true));
 	}
 
 	/**
@@ -665,11 +662,11 @@ HTML;
 
 	public const NOT_APPROVED_POST_COLS = 'id, season, episode, deviation_id';
 
-	private function _getNotApprovedPostArgs(){
+	private function _getNotApprovedPostArgs(bool $requests){
 		return [
 			'all', [
 				'conditions' => [
-					'reserved_by = ? AND deviation_id IS NOT NULL AND "lock" IS NOT true',
+					'requested_by IS '.($requests?' NOT':'').' NULL AND reserved_by = ? AND deviation_id IS NOT NULL AND "lock" IS NOT true',
 					$this->id,
 				],
 			],
@@ -677,21 +674,21 @@ HTML;
 	}
 
 	/**
-	 * @return Request[] All requests that have been finished by the user but not yet accepted into the club
+	 * @return Post[] All requests that have been finished by the user but not yet accepted into the club
 	 */
 	private function _getNotApprovedRequests(){
-		return Request::find(...$this->_getNotApprovedPostArgs());
+		return Post::find(...$this->_getNotApprovedPostArgs(true));
 	}
 
 	/**
-	 * @return Reservation[] All reservations that have been finished by the user but not yet accepted into the club
+	 * @return Post[] All reservations that have been finished by the user but not yet accepted into the club
 	 */
 	private function _getNotApprovedReservations(){
-		return Reservation::find(...$this->_getNotApprovedPostArgs());
+		return Post::find(...$this->_getNotApprovedPostArgs(false));
 	}
 
 	public function getAwaitingApprovalHTML(bool $sameUser, bool $wrap = WRAP):string {
-		/** @var $AwaitingApproval \App\Models\Post[] */
+		/** @var $AwaitingApproval Post[] */
 		$AwaitingApproval = array_merge(
 			$this->_getNotApprovedRequests(),
 			$this->_getNotApprovedReservations()

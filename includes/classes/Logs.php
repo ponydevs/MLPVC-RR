@@ -9,8 +9,7 @@ use App\Models\Episode;
 use App\Models\EpisodeVideo;
 use App\Models\Logs\Log;
 use App\Models\PCGSlotGift;
-use App\Models\Request;
-use App\Models\Reservation;
+use App\Models\Post;
 use App\Models\User;
 use cogpowered\FineDiff;
 
@@ -160,7 +159,7 @@ class Logs {
 				$details[] = ['User', User::find($data['userid'])->toAnchor()];
 			break;
 			case 'post_lock':
-				/** @var $Post Request|Reservation */
+				/** @var $Post Post */
 				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 			break;
@@ -191,7 +190,7 @@ class Logs {
 				}
 			break;
 			case 'img_update':
-				/** @var $Post Request|Reservation */
+				/** @var $Post Post */
 				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['thing']}s");
 				$data['type'] = $data['thing'];
 				self::_genericPostInfo($Post, $data, $details);
@@ -199,7 +198,7 @@ class Logs {
 				$details[] = ['New image', "<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['newpreview']}'></div>"];
 			break;
 			case 'res_overtake':
-				/** @var $Post Request|Reservation */
+				/** @var $Post Post */
 				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = ['Previous reserver', User::find($data['reserved_by'])->toAnchor()];
@@ -228,7 +227,7 @@ class Logs {
 					$details[] = ['Added', Time::tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 			break;
 			case 'res_transfer':
-				/** @var $Post Request|Reservation */
+				/** @var $Post Post */
 				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = ['New reserver', User::find($data['to'])->toAnchor()];
@@ -344,7 +343,7 @@ class Logs {
 			break;
 			case 'post_break':
 			case 'post_fix':
-				/** @var $Post Request|Reservation */
+				/** @var $Post Post */
 				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
 				self::_genericPostInfo($Post, $data, $details);
 			break;
@@ -379,9 +378,9 @@ class Logs {
 	}
 
 	/**
-	 * @param Request|Reservation $Post
-	 * @param array               $data
-	 * @param array               $details
+	 * @param Post  $Post
+	 * @param array $data
+	 * @param array $details
 	 *
 	 * @throws \Exception
 	 */

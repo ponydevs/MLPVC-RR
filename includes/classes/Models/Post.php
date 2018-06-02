@@ -14,42 +14,75 @@ use App\RegExp;
 use App\CoreUtils;
 
 /**
+ * This is a blanket class for both requests and reservations.
+ * Requests always have a non-null requested_by value which is to be used for post type detection.
+ *
  * @property int      $id
+ * @property int|null $old_id
+ * @property string   $type
  * @property int      $season
  * @property int      $episode
  * @property string   $preview
  * @property string   $fullsize
  * @property string   $label
+ * @property string   $requested_by
+ * @property DateTime $requested_at
  * @property string   $reserved_by
- * @property string   $deviation_id
  * @property DateTime $reserved_at
+ * @property string   $deviation_id
+ * @property bool     $lock
  * @property DateTime $finished_at
  * @property bool     $broken
- * @property bool     $lock
- * @property DateTime $posted_at      (Via alias)
- * @property string   $posted_by      (Via alias)
- * @property User     $reserver       (Via child relations)
+ * @property User     $reserver       (Via relations)
+ * @property User     $requester      (Via relations)
+ * @property DateTime $posted_at      (Via magic method)
+ * @property string   $posted_by      (Via magic method)
  * @property Episode  $ep             (Via magic method)
  * @property string   $kind           (Via magic method)
  * @property bool     $finished       (Via magic method)
  * @property Log      $approval_entry (Via magic method)
  * @property bool     $is_request     (Via magic method)
  * @property bool     $is_reservation (Via magic method)
+ * @method static Post|Post[] find(...$args)
  */
-abstract class Post extends NSModel implements LinkableInterface {
-	public static $belongs_to;
+class Post extends NSModel implements LinkableInterface {
+	const ORDER_BY_POSTED_AT = 'CASE WHEN requested_by IS NOT NULL THEN requested_at ELSE reserved_at END';
+	public static $belongs_to = [
+		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
+		['requester', 'class' => 'User', 'foreign_key' => 'requested_by'],
+	];
 
-	/**
-	 * Must link $posted to the timestamp associated with the creation of the post
-	 */
-	public static $alias_attribute;
+	public static $before_create = ['add_post_time'];
+
+	public function add_post_time(){
+		$this->posted_at = date('c');
+	}
+
+	public function get_posted_at(){
+		return $this->is_request ? $this->requested_at : $this->reserved_at;
+	}
+
+	public function set_posted_at($value){
+		if ($this->is_request)
+			$this->requested_at = $value;
+		else $this->reserved_at = $value;
+	}
+
+	public function get_posted_by(){
+		return $this->is_request ? $this->requested_by : $this->reserved_by;
+	}
 
 	public function get_finished(){
 		return $this->deviation_id !== null && $this->reserved_by !== null;
 	}
 
-	abstract public function get_is_request():bool;
-	abstract public function get_is_reservation():bool;
+	public function get_is_request(){
+		return $this->requested_by !== null;
+	}
+
+	public function get_is_reservation(){
+		return !$this->is_request;
+	}
 
 	public function get_approval_entry(){
 		return DB::$instance->setModel(Log::class)->querySingle(
@@ -71,7 +104,17 @@ abstract class Post extends NSModel implements LinkableInterface {
 	}
 
 	public function getID():string {
-		return $this->kind.'-'.$this->id;
+		return 'post-'.$this->id;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public function getOldID():?string {
+		if ($this->old_id === null)
+			return null;
+
+		return $this->kind.'-'.$this->old_id;
 	}
 
 	public function toURL(Episode $Episode = null):string {

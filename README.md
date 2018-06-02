@@ -1,4 +1,4 @@
-# MLPVC-RR [![Build status](https://travis-ci.org/ponydevs/MLPVC-RR.svg?branch=master)](https://travis-ci.org/ponydevs/MLPVC-RR) [![Dependency Status](https://beta.gemnasium.com/badges/github.com/ponydevs/MLPVC-RR.svg)](https://beta.gemnasium.com/projects/github.com/ponydevs/MLPVC-RR)
+# MLPVC-RR [![Build status](https://travis-ci.org/ponydevs/MLPVC-RR.svg?branch=master)](https://travis-ci.org/ponydevs/MLPVC-RR)
 
 ## Attributions
 
@@ -34,7 +34,6 @@
    [IPTools](https://github.com/S1lentium/IPTools),
    [svg-sanitizer](https://github.com/darylldoyle/svg-sanitizer),
    [svgo](https://github.com/svg/svgo)
-   [mega-php-client](https://github.com/biocoderh/mega-php-client)
  - Development tools:
    [Gulp](http://gulpjs.com/),
    [Uglify-js](https://www.npmjs.com/package/uglify-js),

@@ -95,7 +95,6 @@ $router->map('GET', '/movie/[i:id][adi]?', 'MovieController#view');
 $router->map('GET', '/muffin-rating', 'MuffinRatingController#image');
 # PostController
 $router->map('GET', '/s/[rr:thing]/[i:id]', 'PostController#share');
-$router->map('GET', '/post/lazyload/[rrl:thing]/[i:id]', 'PostController#lazyload');
 # UserController
 $router->map('GET', '/',                                    'UserController#homepage');
 $router->map('GET', '/users',                               'UserController#list');
@@ -166,6 +165,10 @@ $api_endpoint('/event/entry/[i:entryid]/vote',       'EventEntryController#voteA
 $api_endpoint('/event/entry/[i:entryid]/lazyload',   'EventEntryController#lazyload');
 $api_endpoint('/notif',                              'NotificationsController#get');
 $api_endpoint('/notif/[i:id]/mark-read',             'NotificationsController#markRead');
+$api_endpoint('/post/[i:id]?',                       'PostController#api');
+$api_endpoint('/post/[i:id]/lazyload',               'PostController#lazyload');
+$api_endpoint('/post/[i:id]/finish',                 'PostController#finish');
+$api_endpoint('/post/[i:id]/locate',                 'PostController#locate');
 
 // "API" Endpoints
 $router->map('POST', '/post/reload/[rrl:thing]/[i:id]',      'PostController#reload');

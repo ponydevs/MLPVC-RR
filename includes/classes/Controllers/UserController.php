@@ -10,8 +10,7 @@ use App\GlobalSettings;
 use App\HTTP;
 use App\Input;
 use App\Logs;
-use App\Models\Request;
-use App\Models\Reservation;
+use App\Models\Post;
 use App\Models\Session;
 use App\Models\User;
 use App\Pagination;
@@ -154,8 +153,8 @@ class UserController extends Controller {
 		foreach ($postIDs as $post)
 			$drawArray[] = $post['id'];
 		$chosen = $drawArray[array_rand($drawArray)];
-		/** @var $Request \App\Models\Request */
-		$Request = Request::find($chosen);
+		/** @var $Request Post */
+		$Request = Post::find($chosen);
 		Response::done(['suggestion' => Posts::getSuggestionLi($Request)]);
 	}
 
@@ -267,10 +266,7 @@ class UserController extends Controller {
 				$Pagination->calcMaxPages($cnt);
 				$data = $User->getFinishedPostContributions(false, $Pagination);
 				foreach ($data as &$item){
-					$isRequest = !empty($item['requested_by']);
-					if (!$isRequest)
-						unset($item['requested_by'], $item['requested_at']);
-					$item = $isRequest ? new Request($item) : new Reservation($item);
+					$item = new Post($item);
 				}
 				unset($item);
 			break;

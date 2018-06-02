@@ -154,7 +154,7 @@
 		let ident = $li.attr('id').split('-');
 		return {
 			id: ident[1],
-			type: ident[0]+'s',
+			type: $li.attr('data-type')+'s',
 		};
 	};
 	$.fn.rebindHandlers = function(isLi){
@@ -446,14 +446,14 @@
 			deviationIO.unobserve(el);
 
 			const
-				postid = el.dataset.post.replace('-','/'),
+				postID = el.dataset.postId,
 				viewonly = el.dataset.viewonly;
 
-			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
+			$.API.get(`/post/${postID}/lazyload`,{viewonly},$.mkAjaxHandler(function(){
 				const $el = $(el);
 				if (!this.status){
 					$el.trigger('error');
-					return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
+					return $.Dialog.fail(`Cannot load post ${postID}`, this.message);
 				}
 
 				$.loadImages(this.html).then(function(resp){
@@ -511,7 +511,7 @@
 
 	if (window.linkedPostURL)
 		history.replaceState({}, null, window.linkedPostURL);
-	let postHashRegex = /^#(request|reservation)-\d+$/,
+	let postHashRegex = /^#post-\d+$/,
 		showDialog = location.hash.length > 1 && postHashRegex.test(location.hash);
 
 	directLinkHandler();
@@ -584,7 +584,8 @@
 		if (found === false && showDialog){
 			const title = 'Scroll post into view';
 			// Attempt to find the post as a last resort, it might be on a different episode page
-			$.post('/post/locate/'+location.hash.substring(1).replace('-','/'),{SEASON,EPISODE},$.mkAjaxHandler(function(){
+			const postID = location.hash.replace(/\D/g,'');
+			$.API.post(`/post/${postID}/locate`,{SEASON,EPISODE},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.info(title, this.message);
 
 				if (this.refresh){

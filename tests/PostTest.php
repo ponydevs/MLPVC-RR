@@ -1,64 +1,78 @@
 <?php
 
+use App\Models\Episode;
+use App\Models\Post;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
+
+define('VALID_UUID', Uuid::uuid4());
 
 class PostTest extends TestCase {
-	public function testGetID(){
-		$Request = new \App\Models\Request([
+	public function testGetOldID(){
+		$Request = new Post([
 			'id' => 1,
+			'old_id' => 1,
+			'requested_by' => VALID_UUID,
 		]);
-		$result = $Request->getID();
+		$result = $Request->getOldID();
 		self::assertEquals('request-1', $result);
 
-		$Reservation = new \App\Models\Reservation([
+		$Reservation = new Post([
 			'id' => 1,
+			'old_id' => 1,
+			'reserved_by' => VALID_UUID,
 		]);
-		$result = $Reservation->getID();
+		$result = $Reservation->getOldID();
 		self::assertEquals('reservation-1', $result);
 	}
 
 	public function testToLink(){
-		$Episode = new \App\Models\Episode([
+		$Episode = new Episode([
 			'season' => 1,
 			'episode' => 1,
 		]);
-		$Request = new \App\Models\Request([
+		$Request = new Post([
 			'id' => 1,
+			'requested_by' => VALID_UUID,
 			'season' => $Episode->season,
 			'episode' => $Episode->episode,
 		]);
 		$result = $Request->toURL($Episode);
-		self::assertEquals('/episode/S1E1#request-1', $result);
+		self::assertEquals('/episode/S1E1#post-1', $result);
 
-		$Reservation = new \App\Models\Reservation([
+		$Reservation = new Post([
 			'id' => 1,
+			'reserved_by' => VALID_UUID,
 			'season' => $Episode->season,
 			'episode' => $Episode->episode,
 		]);
 		$result = $Reservation->toURL($Episode);
-		self::assertEquals('/episode/S1E1#reservation-1', $result);
+		self::assertEquals('/episode/S1E1#post-1', $result);
 	}
 
 	public function testToAnchor(){
-		$Episode = new \App\Models\Episode([
+		$Episode = new Episode([
 			'season' => 1,
 			'episode' => 1,
 		]);
-		$Request = new \App\Models\Request([
+		$Request = new Post([
 			'id' => 1,
+			'requested_by' => VALID_UUID,
 			'season' => $Episode->season,
 			'episode' => $Episode->episode,
 		]);
 		$result = $Request->toAnchor(null,$Episode);
-		self::assertEquals("<a href='/episode/S1E1#request-1' >S1E1</a>", $result);
+		self::assertEquals("<a href='/episode/S1E1#post-1' >S1E1</a>", $result);
 		$result = $Request->toAnchor('Custom Text<',$Episode);
-		self::assertEquals("<a href='/episode/S1E1#request-1' >Custom Text&lt;</a>", $result);
+		self::assertEquals("<a href='/episode/S1E1#post-1' >Custom Text&lt;</a>", $result);
 		$result = $Request->toAnchor('Custom Text<',$Episode,true);
-		self::assertEquals("<a href='/episode/S1E1#request-1' target=\"_blank\">Custom Text&lt;</a>", $result);
+		self::assertEquals("<a href='/episode/S1E1#post-1' target=\"_blank\">Custom Text&lt;</a>", $result);
 	}
 
 	public function testIsTransferable(){
-		$Request = new \App\Models\Request([
+		$Request = new Post([
+			'id' => 1,
+			'requested_by' => VALID_UUID,
 			'requested_at' => '2016-01-01T16:00:00Z',
 		]);
 		$result = $Request->isTransferable();
@@ -86,12 +100,17 @@ class PostTest extends TestCase {
 
 	public function testIsOverdue(){
 		$now = strtotime('2016-01-25T01:00:00Z');
-		$Reservation = new \App\Models\Reservation();
+		$Reservation = new Post([
+			'id' => 1,
+			'reserved_by' => VALID_UUID,
+		]);
 		self::assertFalse($Reservation->isOverdue($now), 'Reservations must not become overdue');
 
-		$Request = new \App\Models\Request([
+		$Request = new Post([
+			'id' => 1,
+			'requested_by' => VALID_UUID,
 			'requested_at' => '2015-01-01T00:00:00Z',
-			'reserved_by' => 'c0592f2b-5adc-49c1-be1d-56efc4bdad88',
+			'reserved_by' => VALID_UUID,
 			'reserved_at' => '2016-01-25T00:00:00Z',
 			'deviation_id' => 'dXXXXXX',
 		]);
@@ -118,71 +137,71 @@ class PostTest extends TestCase {
 	}
 
 	public function testProcessLabel(){
-		$Request = new App\Models\Request([
+		$Post = new Post([
 			'label' => 'Fluttershy (entire scene)',
 		]);
-		$result = $Request->processLabel();
+		$result = $Post->processLabel();
 		self::assertEquals('Fluttershy (<strong class="color-darkblue">entire scene</strong>)', $result, 'Must pass regular transformation');
-		$Request->label = 'Fluttershy (ENTIRE SCENE)';
-		$result = $Request->processLabel();
+		$Post->label = 'Fluttershy (ENTIRE SCENE)';
+		$result = $Post->processLabel();
 		self::assertEquals('Fluttershy (<strong class="color-darkblue">Entire Scene</strong>)', $result, 'Only initial caps should be preserved');
-		$Request->label = 'Fluttershy (FULL SCENE)';
-		$result = $Request->processLabel();
+		$Post->label = 'Fluttershy (FULL SCENE)';
+		$result = $Post->processLabel();
 		self::assertEquals('Fluttershy (<strong class="color-darkblue">Full Scene</strong>)', $result, 'Only initial caps should be preserved (ALL CAPS)');
-		$Request->label = 'Fluttershy (full SCENE)';
-		$result = $Request->processLabel();
+		$Post->label = 'Fluttershy (full SCENE)';
+		$result = $Post->processLabel();
 		self::assertEquals('Fluttershy (<strong class="color-darkblue">full Scene</strong>)', $result, 'Only initial caps should be preserved (2nd word ALL CAPS)');
-		$Request->label = 'Fluttershy (full bodied version)';
-		$result = $Request->processLabel();
+		$Post->label = 'Fluttershy (full bodied version)';
+		$result = $Post->processLabel();
 		self::assertEquals('Fluttershy (<strong class="color-darkblue">full body</strong> version)', $result, 'Transformation of "full bodied version" fails');
-		$Request->label = 'Fluttershy (full-body)';
-		$result = $Request->processLabel();
+		$Post->label = 'Fluttershy (full-body)';
+		$result = $Post->processLabel();
 		self::assertEquals('Fluttershy (<strong class="color-darkblue">full body</strong>)', $result, 'Transformation of "full-body" fails');
-		$Request->label = 'Fluttershy (full bodied)';
-		$result = $Request->processLabel();
+		$Post->label = 'Fluttershy (full bodied)';
+		$result = $Post->processLabel();
 		self::assertEquals('Fluttershy (<strong class="color-darkblue">full body</strong>)', $result, 'Transformation of "full bodied" fails');
-		$Request->label = 'Fluttershy (face-only)';
-		$result = $Request->processLabel();
+		$Post->label = 'Fluttershy (face-only)';
+		$result = $Post->processLabel();
 		self::assertEquals('Fluttershy (<strong class="color-darkblue">face only</strong>)', $result, 'Transformation of "face-only" fails');
 
-		$Request = new App\Models\Request([
+		$Post = new Post([
 			'label' => 'Fluttershy\'s cottage',
 		]);
-		$result = $Request->processLabel();
+		$result = $Post->processLabel();
 		self::assertEquals('Fluttershy&rsquo;s cottage', $result, 'Transformation of single apostrophe fails');
 
-		$Request = new App\Models\Request([
+		$Post = new Post([
 			'label' => 'Rainbow Dash: \'\'I want to be a Wonderbolt',
 		]);
-		$result = $Request->processLabel();
+		$result = $Post->processLabel();
 		self::assertEquals('Rainbow Dash: "I want to be a Wonderbolt', $result, 'Transformation of double apostrophe fails');
 
-		$Request = new App\Models\Request([
+		$Post = new Post([
 			'label' => 'Rainbow Dash: "I want to be a Wonderbolt"',
 		]);
-		$result = $Request->processLabel();
+		$result = $Post->processLabel();
 		self::assertEquals('Rainbow Dash: &ldquo;I want to be a Wonderbolt&rdquo;', $result, 'Transformation of pairs of quotation marks fails');
-		$Request = new App\Models\Request([
+		$Post = new Post([
 			'label' => 'Rainbow Dash: "I want to be a Wonderbolt',
 		]);
-		$result = $Request->processLabel();
+		$result = $Post->processLabel();
 		self::assertEquals('Rainbow Dash: "I want to be a Wonderbolt', $result, 'Transformation of a single quotation mark fails');
 
-		$Request = new App\Models\Request([
+		$Post = new Post([
 			'label' => 'So... whaddaya say?',
 		]);
-		$result = $Request->processLabel();
+		$result = $Post->processLabel();
 		self::assertEquals('So&hellip; whaddaya say?', $result, 'Transformation of three periods fails');
 
-		$Request = new App\Models\Request([
+		$Post = new Post([
 			'label' => '[cuteness intensifies]',
 		]);
-		$result = $Request->processLabel();
+		$result = $Post->processLabel();
 		self::assertEquals('<span class="intensify">cuteness intensifies</span>', $result, 'Transformation of [{s} instensifies] fails');
-		$Request = new App\Models\Request([
+		$Post = new Post([
 			'label' => '[two words intensifies]',
 		]);
-		$result = $Request->processLabel();
+		$result = $Post->processLabel();
 		self::assertEquals('<span class="intensify">two words intensifies</span>', $result, 'Transformation of [{s1} {sN} instensifies] fails');
 	}
 }
