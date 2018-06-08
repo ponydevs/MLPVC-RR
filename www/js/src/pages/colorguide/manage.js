@@ -1427,7 +1427,7 @@
 											requestKey: 'file',
 											title: fileAction,
 											accept: '.svg,.svgz,image/svg+xml',
-											target: '/cg/sanitizesvg/'+this.appearance_id,
+											target: `${$.API.API_PATH}/cg/appearance/${this.appearance_id}/sanitize-svg`,
 											helper: true,
 										}).on('uz-uploadfinish',(_, data) => {
 											if (data && data.svgel)
