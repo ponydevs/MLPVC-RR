@@ -292,6 +292,7 @@ class ColorGuideController extends Controller {
 				}
 
 				$search = [];
+				$Pagination->calcMaxPages(0);
 			}
 
 			if (!empty($search)){

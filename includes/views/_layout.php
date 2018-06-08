@@ -100,6 +100,7 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 	<footer><?=CoreUtils::getFooter(isset($view) && $view === 'fatalerr')?></footer>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script nonce="<?=CSP_NONCE?>">window.jQuery || document.write('<script src="<?=CoreUtils::cachedAssetLink('jquery-3.2.1','js/min','js')?>"><\/script>');</script>
 <script nonce="<?=CSP_NONCE?>">$.API = { API_PATH: "<?=API_PATH?>" }</script>
 <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
 <script src="https://ws.<?=$_SERVER['SERVER_NAME']?>:8667/socket.io/socket.io.js" id="wss"></script>

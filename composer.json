@@ -32,7 +32,7 @@
 		"php-activerecord/php-activerecord": "dev-master",
 		"seinopsys/oauth2-deviantart": "^1.0",
 		"s1lentium/iptools": "^1.1",
-		"robmorgan/phinx": "dev-add-timestamps-tz",
+		"robmorgan/phinx": "^0.10.0",
 		"enshrined/svg-sanitize": "^0.8.2",
 		"monolog/monolog": "^1.23",
 		"seinopsys/rgbacolor": "1.*",
@@ -57,10 +57,6 @@
         {
             "type": "vcs",
             "url":  "https://github.com/SeinopSys/php-activerecord"
-        },
-        {
-            "type": "vcs",
-            "url":  "https://github.com/SeinopSys/phinx"
         }
     ]
 }
