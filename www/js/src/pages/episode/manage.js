@@ -220,7 +220,7 @@
 			send = function(data){
 				$.Dialog.wait(title, 'Sending reservation to the server');
 
-				$.post(`/post/reserve/request/${id}`, data, $.mkAjaxHandler(function(){
+				$.API.post(`/post/request/${id}/reservation`, data, $.mkAjaxHandler(function(){
 					if (this.retry)
 						return $.Dialog.confirm(false, this.message, function(sure){
 							if (!sure) return;
@@ -297,21 +297,23 @@
 				$.Dialog.wait(false, 'Cancelling reservation');
 				$li.addClass('deleting');
 
-				$.post(`/post/unreserve/${type}/${id}`,$.mkAjaxHandler(function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
+				if (type === 'request')
+					$.API.delete(`/post/request/${id}/reservation`, $.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
 
-					if (this.remove === true){
+						$li.removeClass('deleting').reloadLi(false);
+						$.Dialog.close();
+					}));
+				else {
+					$.API.delete(`/post/${id}/reservation`, $.mkAjaxHandler(function(){
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
 						$.Dialog.close();
 						return $li[window.withinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
 							$li.remove();
 						});
-					}
-
-					if (this.reload)
-						$li.reloadLi(false);
-					$.Dialog.close();
-					$li.removeClass('deleting');
-				}));
+					}));
+				}
 			});
 		});
 		$actions.filter('.finish').off('click').on('click',function(){
@@ -424,7 +426,7 @@
 
 			$.Dialog.wait('Submission approval status','Checking');
 
-			$.post(`/post/lock/${type}/${id}`, $.mkAjaxHandler(function(){
+			$.API.post(`/post/${id}/approval`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let message = this.message;
@@ -440,10 +442,10 @@
 
 				$.Dialog.wait(false);
 
-				$.post(`/post/unlock/${type}/${id}`, $.mkAjaxHandler(function(){
+				$.API.delete(`/post/${id}/approval`, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$(`#${type}s`).trigger('pls-update');
+					$(`#post-${id}`).closest('.posts').trigger('pls-update');
 				}));
 			});
 		});
@@ -456,7 +458,7 @@
 				$.Dialog.wait(false);
 				$li.addClass('deleting');
 
-				$.post(`/post/delete-request/${id}`,$.mkAjaxHandler(function(){
+				$.API.delete(`/post/request/${id}`,$.mkAjaxHandler(function(){
 					if (!this.status){
 						$li.removeClass('deleting');
 						return $.Dialog.fail(false, this.message);
@@ -470,32 +472,31 @@
 			});
 		});
 		$actions.filter('.edit').off('click').on('click',function(){
-			let $button = $(this),
-				$li = $button.parents('li'),
-				_split = $li.attr('id').split('-'),
-				id = _split[1],
-				type = _split[0];
+			const
+				$button = $(this),
+				$li = $button.closest('li'),
+				{ id, type } = $._getLiTypeId($li),
+				isRequest = type === 'requests';
 
-			$.Dialog.wait(`Editing ${type} #${id}`, `Retrieving ${type} details`);
+			$.Dialog.wait(`Editing post #${id}`, `Retrieving details`);
 
-			$.post(`/post/get/${type}/${id}`,$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
+			$.API.get(`/post/${id}`,$.mkAjaxHandler(function(data){
+				if (!data.status) return $.Dialog.fail(false, data.message);
 
-				let postdata = this,
-					$PostEditForm = $.mk('form').attr('id', 'post-edit-form').append(
-						$.mk('label').append(
-							$.mk('span').text('Description (3-255 chars.'+(type==='reservation'?', optional':'')+')'),
-							$.mk('input').attr({
-								type: 'text',
-								maxlength: 255,
-								pattern: "^.{3,255}$",
-								name: 'label',
-								required: type !== 'reservation',
-							})
-						)
-					);
+				let $PostEditForm = $.mk('form').attr('id', 'post-edit-form').append(
+					$.mk('label').append(
+						$.mk('span').text(`Description (3-255 chars.${!isRequest?', optional':''})`),
+						$.mk('input').attr({
+							type: 'text',
+							maxlength: 255,
+							pattern: "^.{3,255}$",
+							name: 'label',
+							required: isRequest,
+						})
+					)
+				);
 
-				if (type === 'request')
+				if (isRequest)
 					$PostEditForm.append(
 						$.mk('label').append(
 							$.mk('span').text('Request type'),
@@ -505,12 +506,12 @@
 							}).append(
 								$.mk('option').attr('value','chr').text('Character'),
 								$.mk('option').attr('value','obj').text('Object'),
-								$.mk('option').attr('value','bg').text('Backgound')
+								$.mk('option').attr('value','bg').text('Background')
 							)
 						)
 					);
 
-				if (typeof postdata.posted_at === 'string')
+				if (typeof data.posted_at === 'string')
 					$PostEditForm.append(
 						$.mk('label').append(
 							$.mk('span').text('Post timestamp'),
@@ -523,7 +524,7 @@
 							})
 						)
 					);
-				if (typeof postdata.reserved_at === 'string')
+				if (typeof data.reserved_at === 'string')
 					$PostEditForm.append(
 						$.mk('label').append(
 							$.mk('span').text('Reserved at'),
@@ -535,7 +536,7 @@
 							})
 						)
 					);
-				if (typeof postdata.finished_at === 'string')
+				if (typeof data.finished_at === 'string')
 					$PostEditForm.append(
 						$.mk('label').append(
 							$.mk('span').text('Finished at'),
@@ -586,14 +587,14 @@
 												})
 											)
 										);
-									$.Dialog.request('Update image of '+type+' #'+id,$ImgUpdateForm,'Update', function($form){
+									$.Dialog.request(`Update image of post #${id}`,$ImgUpdateForm,'Update', function($form){
 										$form.on('submit', function(e){
 											e.preventDefault();
 
 											let data = $form.mkData();
 											$.Dialog.wait(false, 'Replacing image');
 
-											$.post(`/post/set-image/${type}/${id}`,data,$.mkAjaxHandler(function(){
+											$.API.put(`/post/${id}/image`,data,$.mkAjaxHandler(function(){
 												if (!this.status) return $.Dialog.fail(false, this.message);
 
 												$.Dialog.success(false, 'Image has been updated', true);
@@ -604,7 +605,7 @@
 														$newli.addClass('highlight');
 													$li.replaceWith($newli);
 													Time.Update();
-													$newli.trigger('bind-more-handlers', [id, type]);
+													$newli.trigger('bind-more-handlers');
 												}
 												else $li.reloadLi();
 											}));
@@ -616,14 +617,13 @@
 							(
 								show_stash_fix_btn
 								? $.mk('a').text('Sta.sh fullsize fix').attr({
-									'href':'#fix-stash-fullsize',
 									'class':'btn orange typcn typcn-spanner',
 								}).on('click', function(e){
 									e.preventDefault();
 									$.Dialog.close();
 									$.Dialog.wait('Fix Sta.sh fullsize URL','Fixing Sta.sh full size image URL');
 
-									$.post(`/post/fix-stash/${type}/${id}`,$.mkAjaxHandler(function(){
+									$.API.post(`/post/${id}/fix-stash`,$.mkAjaxHandler(function(){
 										if (!this.status){
 											if (this.rmdirect){
 												if (!finished){
@@ -651,7 +651,7 @@
 									$.Dialog.close();
 									$.Dialog.wait('Clear post broken status','Checking image availability');
 
-									$.post(`/post/unbreak/${type}/${id}`,$.mkAjaxHandler(function(){
+									$.API.get(`/post/${id}/unbreak`,$.mkAjaxHandler(function(){
 										if (!this.status) return $.Dialog.fail(false, this.message);
 
 										if (this.li){
@@ -660,7 +660,7 @@
 												$newli.addClass('highlight');
 											$li.replaceWith($newli);
 											Time.Update();
-											$newli.trigger('bind-more-handlers', [id, type]);
+											$newli.trigger('bind-more-handlers');
 										}
 
 										$.Dialog.close();
@@ -676,31 +676,31 @@
 					let $label = $form.find('[name=label]'),
 						$type = $form.find('[name=type]'),
 						$posted_at, $reserved_at, $finished_at;
-					if (postdata.label)
-						$label.val(postdata.label);
-					if (postdata.type)
+					if (data.label)
+						$label.val(data.label);
+					if (data.type)
 						$type.children('option').filter(function(){
-							return this.value === postdata.type;
+							return this.value === data.type;
 						}).attr('selected', true);
-					if (typeof postdata.posted_at === 'string'){
+					if (typeof data.posted_at === 'string'){
 						$posted_at = $form.find('[name=posted_at]');
 
-						let posted_at = moment(postdata.posted_at);
+						let posted_at = moment(data.posted_at);
 						$posted_at.val(posted_at.format());
 					}
-					if (typeof postdata.reserved_at === 'string'){
+					if (typeof data.reserved_at === 'string'){
 						$reserved_at = $form.find('[name=reserved_at]');
 
-						if (postdata.reserved_at.length){
-							let reserved = moment(postdata.reserved_at);
+						if (data.reserved_at.length){
+							let reserved = moment(data.reserved_at);
 							$reserved_at.val(reserved.format());
 						}
 					}
-					if (typeof postdata.finished_at === 'string'){
+					if (typeof data.finished_at === 'string'){
 						$finished_at = $form.find('[name=finished_at]');
 
-						if (postdata.finished_at.length){
-							let finished = moment(postdata.finished_at);
+						if (data.finished_at.length){
+							let finished = moment(data.finished_at);
 							$finished_at.val(finished.format());
 						}
 					}
@@ -708,15 +708,15 @@
 						e.preventDefault();
 
 						let data = { label: $label.val() };
-						if (type === 'request')
+						if (isRequest)
 							data.type = $type.val();
-						if (typeof postdata.posted_at === 'string'){
+						if (typeof data.posted_at === 'string'){
 							data.posted_at = new Date($posted_at.val());
 							if (isNaN(data.posted_at.getTime()))
 								return $.Dialog.fail(false, 'Post timestamp is invalid');
 							data.posted_at = data.posted_at.toISOString();
 						}
-						if (typeof postdata.reserved_at === 'string'){
+						if (typeof data.reserved_at === 'string'){
 							let reserved_at = $reserved_at.val();
 							if (reserved_at.length){
 								data.reserved_at = new Date(reserved_at);
@@ -725,7 +725,7 @@
 								data.reserved_at = data.reserved_at.toISOString();
 							}
 						}
-						if (typeof postdata.finished_at === 'string'){
+						if (typeof data.finished_at === 'string'){
 							let finished_at = $finished_at.val().trim();
 							if (finished_at.length){
 								data.finished_at = new Date(finished_at);
@@ -737,7 +737,7 @@
 
 						$.Dialog.wait(false, 'Saving changes');
 
-						$.post(`/post/set/${type}/${id}`,data, $.mkAjaxHandler(function(){
+						$.API.put(`/post/${id}`,data, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							$li.reloadLi();
@@ -759,7 +759,7 @@
 
 					$.Dialog.wait(false);
 
-					$.post(`/post/transfer/${type}/${id}`,$.mkAjaxHandler(function(){
+					$.API.post(`/post/${id}/transfer`,$.mkAjaxHandler(function(){
 						if (this.canreserve)
 							return $.Dialog.confirm(false, this.message, function(sure){
 								if (!sure) return;

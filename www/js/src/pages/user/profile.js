@@ -50,7 +50,6 @@
 			let $btn = $(this),
 				$link = $btn.next(),
 				_id = $link.prop('hash').substring(1).split('-'),
-				type = _id[0],
 				id = _id[1],
 				$ImgUpdateForm = $.mk('form').attr('id', 'img-update-form').append(
 					$.mk('label').append(
@@ -66,14 +65,14 @@
 						})
 					)
 				);
-			$.Dialog.request('Update image of '+type+' #'+id,$ImgUpdateForm,'Update', function($form){
+			$.Dialog.request(`Update image of post #${id}`,$ImgUpdateForm,'Update', function($form){
 				$form.on('submit', function(e){
 					e.preventDefault();
 
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Replacing image');
 
-					$.post(`/post/set-image/${type}/${id}`,data,$.mkAjaxHandler(function(){
+					$.API.put(`/post/${id}/image`,data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, 'Image has been updated');

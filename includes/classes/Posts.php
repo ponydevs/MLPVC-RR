@@ -441,7 +441,6 @@ HTML;
 			DB::$instance->where("data->>'user'", $sent_by->id);
 		return DB::$instance
 			->where('type', 'post-passon')
-			->where("data->>'type'", $Post->kind)
 			->where("data->>'id'", $Post->id)
 			->orderBy('sent_at', NEWEST_FIRST)
 			->get('notifications',null,$cols);
@@ -479,7 +478,6 @@ HTML;
 
 				Notification::send($data['user'], "post-pass$reason", [
 					'id' => $data['id'],
-					'type' => $data['type'],
 					'by' => Auth::$user->id,
 				]);
 				$SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"] = true;
@@ -640,37 +638,7 @@ HTML;
 		return "<li id='$ID' data-type='{$post->kind}' $break>$HTML".$post->getActionsHTML($view_only ? $postlink : false, $hide_reserved_status, $enablePromises).'</li>';
 	}
 
-	/**
-	 * Approves a specific post and optionally notifies it's author
-	 *
-	 * @param string $type         request/reservation
-	 * @param int    $id           post id
-	 */
-	public static function approve($type, $id){
-		if (!DB::$instance->where('id', $id)->update("{$type}s", ['lock' => true]))
-			Response::dbError();
-
-		$postdata = [
-			'type' => $type,
-			'id' => $id
-		];
-		Logs::logAction('post_lock',$postdata);
-
-		/** @var $Post Post */
-		$Post = DB::$instance->where('id', $id)->getOne("{$type}s");
-		if (UserPrefs::get('a_pcgearn', $Post->reserver)){
-			PCGSlotHistory::record($Post->reserver->id, 'post_approved', null, [
-				'type' => $Post->kind,
-				'id' => $Post->id,
-			]);
-			$Post->reserver->syncPCGSlotCount();
-		}
-
-		if ($Post->reserved_by !== Auth::$user->id)
-			Notification::send($Post->reserved_by, 'post-approved', $postdata);
-	}
-
-	public static function checkReserveAs(&$update){
+	public static function checkReserveAs(Post $post){
 		if (Permission::sufficient('developer')){
 			$reserve_as = self::validatePostAs();
 			if ($reserve_as !== null){
@@ -680,7 +648,7 @@ HTML;
 				if (!isset($_POST['screwit']) && !Permission::sufficient('member', $User->role))
 					Response::fail('The specified user does not have permission to reserve posts, continue anyway?', ['retry' => true]);
 
-				$update['reserved_by'] = $User->id;
+				$post->reserved_by = $User->id;
 			}
 		}
 	}
@@ -724,5 +692,22 @@ HTML;
 				Input::ERROR_INVALID => '"Finished at" timestamp (@value) is invalid',
 			]
 		]))->out();
+	}
+
+	public static function sendUpdate(Post $post):bool {
+		$socketServerAvailable = true;
+		try {
+			CoreUtils::socketEvent('post-update',[
+				'id' => $post->id,
+			]);
+		}
+		catch (ServerConnectionFailureException $e){
+			$socketServerAvailable = false;
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+		}
+		catch (\Exception $e){
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+		}
+		return $socketServerAvailable;
 	}
 }

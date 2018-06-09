@@ -3,6 +3,21 @@
 use Phinx\Migration\AbstractMigration;
 
 class CreateUnifiedPostsTable extends AbstractMigration {
+	private function _renameIdColumn(\Phinx\Db\Table $t){
+		$t->renameColumn('id','old_id')->save();
+		$t->addColumn('id', 'integer', ['null' => true])
+		  ->changeColumn('old_id', 'integer', ['null' => true])
+		  ->changeColumn('type', 'string', ['length' => 11, 'default' => 'post'])
+		  ->save();
+	}
+	private function _restoreIdColumn(\Phinx\Db\Table $t){
+		$t->removeColumn('id')->save();
+		$t->renameColumn('old_id','id')->save();
+		$t->changeColumn('id', 'integer')
+		  ->changeColumn('type', 'string', ['length' => 11])
+		  ->save();
+	}
+
 	public function up() {
 		$posts_table = $this->table('posts')
 			->addColumn('old_id',       'integer',   ['null' => true])
@@ -84,16 +99,24 @@ class CreateUnifiedPostsTable extends AbstractMigration {
 		#$this->table('requests')->drop();
 		#$this->table('reservations')->drop();
 
-		$req_del_table = $this->table('log__req_delete');
-		$req_del_table->renameColumn('id','old_id')->save();
-		$req_del_table->addColumn('id', 'integer', ['null' => true])->save();
-	}
+		$img_update_table = $this->table('log__img_update');
+		$img_update_table->renameColumn('thing', 'type')->save();
+		$this->_renameIdColumn($img_update_table);
+		$this->_renameIdColumn($this->table('log__post_break'));
+		$this->_renameIdColumn($this->table('log__post_fix'));
+		$this->_renameIdColumn($this->table('log__post_lock'));
+		$this->_renameIdColumn($this->table('log__req_delete'));
+		$this->_renameIdColumn($this->table('log__res_overtake'));
+		$this->_renameIdColumn($this->table('log__res_transfer'));
 
-	function down() {
-		$this->table('posts')->drop();
-
-		$req_del_table = $this->table('log__req_delete');
-		$req_del_table->removeColumn('id')->save();
-		$req_del_table->renameColumn('old_id','id')->save();
+		$post_notifs = $this->fetchAll("SELECT * FROM notifications WHERE type LIKE 'post-%'");
+		foreach ($post_notifs as $notif){
+			$notif_data = \App\JSON::decode($notif['data']);
+			$NOT = $notif_data['type'] === 'request' ? 'NOT' : '';
+			$new_post = $this->fetchRow("SELECT id FROM posts WHERE requested_by IS $NOT NULL AND old_id = {$notif_data['id']}");
+			if (empty($new_post['id']))
+				$this->query("DELETE FROM notifications WHERE id = {$notif['id']}");
+			else $this->query("UPDATE notifications SET data = data - 'type' || jsonb_build_object('id', {$new_post['id']}) WHERE id = {$notif['id']}");
+		}
 	}
 }

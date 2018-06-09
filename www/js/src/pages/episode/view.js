@@ -173,8 +173,10 @@
 		$li.rebindFluidbox();
 
 		$actions.filter('.share').on('click',function(){
-			let $button = $(this),
-				url = `${window.location.href.replace(/([^:/]\/).*$/,'$1')}s/${$button.parents('li').attr('id').replace(/^(re[qs])[^-]+?-(\d+)$/,'$1/$2')}`;
+			let
+				$button = $(this),
+				postID = parseInt($button.parents('li').attr('id').split('-')[1], 10),
+				url = `${window.location.href.replace(/([^:/]\/).*$/,'$1')}s/${postID.toString(36)}`;
 
 			$.Dialog.info(`Sharing ${type.replace(/s$/,'')} #${id}`, $.mk('div').attr('class','align-center').append(
 				'Use the link below to link to this post directly:',
@@ -254,14 +256,19 @@
 
 					$.Dialog.wait(false, 'Adding reservation');
 
-					$.post('/post/add-reservation',{deviation:deviation,epid:EpID},$.mkAjaxHandler(function(){
+
+					const data = {
+						deviation,
+						epid: EpID,
+					};
+					$.API.post('/post/reservation',data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, this.message);
-						const id = this.id;
-						$(`#${type}s`).trigger('pls-update', [function(){
+						const selector = `#${this.id}`;
+						$(selector).closest('.posts').trigger('pls-update', [() => {
 							$.Dialog.close();
-							window.location.hash = '#'+id;
+							window.location.hash = selector;
 						}]);
 					}));
 				});
@@ -287,14 +294,14 @@
 		}
 		let CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style="display:inline-block">Check image</strong>';
 		function checkImage(){
-			let url = $formImgInput.val(),
+			let image_url = $formImgInput.val(),
 				title = Type+' process';
 
 			$formImgCheck.removeClass('red');
 			imgCheckDisabler(true);
 			$.Dialog.wait(title,'Checking image');
 
-			$.post('/post/check-image', { image_url: url }, $.mkAjaxHandler(function(){
+			$.API.post('/post/check-image', { image_url }, $.mkAjaxHandler(function(){
 				let data = this;
 				if (!data.status){
 					$notice.children('p:not(.keep)').remove();
@@ -313,7 +320,7 @@
 					$previewIMG.attr('src',data.preview).show().off('load error').on('load',function(){
 						$notice.children('p:not(.keep)').remove();
 
-						$formImgInput.data('prev-url', url);
+						$formImgInput.data('prev-url', image_url);
 
 						if (!!data.title && !$formLabelInput.val().trim())
 							$.Dialog.confirm(
@@ -390,10 +397,12 @@
 				image_url: $formImgInput.data('prev-url'),
 			});
 
-			(function submit(){
-				$.Dialog.wait(title,'Submitting '+type);
+			console.log(type);
 
-				$.post('/post/add',data,$.mkAjaxHandler(function(){
+			(function submit(){
+				$.Dialog.wait(title,'Submitting post');
+
+				$.API.post('/post',data,$.mkAjaxHandler(function(){
 					if (!this.status){
 						if (!this.canforce)
 							return $.Dialog.fail(false, this.message);
@@ -527,22 +536,23 @@
 		reloading[_idAttr] = true;
 
 		let _idAttrArr = _idAttr.split('-'),
-			type =_idAttrArr[0],
 			id = _idAttrArr[1];
 
 		if (log)
-			console.log(`[POST-FIX] Attempting to reload ${type} #${id}`);
-		$.post(`/post/reload/${type}/${id}`,{cache:log},$.mkAjaxHandler(function(){
+			console.log(`[POST-FIX] Attempting to reload post #${id}`);
+		$.API.get(`/post/${id}/reload`,{cache:log},$.mkAjaxHandler(function(){
 			reloading[_idAttr] = false;
 			if (!this.status) return;
 			if (this.broken === true){
 				$li.remove();
-				console.log(`[POST-FIX] Hid (broken) ${type} #${id}`);
+				console.log(`[POST-FIX] Hid (broken) post #${id}`);
 				return;
 			}
 
 			const $newli = $(this.li);
 			$li = $('#'+$newli.attr('id'));
+			$li.find('.fluidbox--opened').fluidbox('close');
+			$li.find('.fluidbox--initialized').fluidbox('destroy');
 
 			if ($li.hasClass('highlight') || $newli.is(location.hash))
 				$newli.addClass('highlight');
@@ -555,7 +565,7 @@
 			$newli.parent().reorderPosts();
 
 			if (log)
-				console.log(`[POST-FIX] Reloaded ${type} #${id}`);
+				console.log(`[POST-FIX] Reloaded post #${id}`);
 			$.callCallback(callback);
 		}));
 

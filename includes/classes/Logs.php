@@ -159,8 +159,7 @@ class Logs {
 				$details[] = ['User', User::find($data['userid'])->toAnchor()];
 			break;
 			case 'post_lock':
-				/** @var $Post Post */
-				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = self::get_post($data);
 				self::_genericPostInfo($Post, $data, $details);
 			break;
 			case 'major_changes':
@@ -190,16 +189,13 @@ class Logs {
 				}
 			break;
 			case 'img_update':
-				/** @var $Post Post */
-				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['thing']}s");
-				$data['type'] = $data['thing'];
+				$Post = self::get_post($data);
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = ['Old image', "<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['oldpreview']}'></div>"];
 				$details[] = ['New image', "<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['newpreview']}'></div>"];
 			break;
 			case 'res_overtake':
-				/** @var $Post Post */
-				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = self::get_post($data);
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = ['Previous reserver', User::find($data['reserved_by'])->toAnchor()];
 				$details[] = ['Previously reserved at', Time::tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
@@ -227,8 +223,7 @@ class Logs {
 					$details[] = ['Added', Time::tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 			break;
 			case 'res_transfer':
-				/** @var $Post Post */
-				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = self::get_post($data);
 				self::_genericPostInfo($Post, $data, $details);
 				$details[] = ['New reserver', User::find($data['to'])->toAnchor()];
 			break;
@@ -343,8 +338,7 @@ class Logs {
 			break;
 			case 'post_break':
 			case 'post_fix':
-				/** @var $Post Post */
-				$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
+				$Post = self::get_post($data);
 				self::_genericPostInfo($Post, $data, $details);
 			break;
 			case 'staff_limits':
@@ -377,6 +371,17 @@ class Logs {
 		return ['details' => $details];
 	}
 
+	private static function get_post(array $data):?Post {
+		if ($data['type'] === 'post')
+			return Post::find($data['id']);
+		else {
+			if ($data['type'] === 'request')
+				DB::$instance->where('requested_by IS NOT NULL');
+			else DB::$instance->where('requested_by IS NULL');
+			return DB::$instance->where('old_id', $data['old_id'])->getOne('posts');
+		}
+	}
+
 	/**
 	 * @param Post  $Post
 	 * @param array $data
@@ -385,7 +390,8 @@ class Logs {
 	 * @throws \Exception
 	 */
 	private static function _genericPostInfo($Post, array $data, array &$details){
-		$label = CoreUtils::capitalize($data['type'])." #{$data['id']}";
+		$id = $data['old_id'] ?? $data['id'];
+		$label = (empty($Post)?CoreUtils::capitalize($data['type']):'Post')." #$id";
 		if (!empty($Post))
 			$label = $Post->toAnchor($label);
 

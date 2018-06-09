@@ -85,6 +85,8 @@ class PCGSlotHistory extends NSModel {
 			if (!isset(self::DEFAULT_CHANGE[$key]))
 				throw new \RuntimeException("No default change amount specified for type: $change_type");
 			$entry->change_amount = self::DEFAULT_CHANGE[$key];
+			if ($key === 'post' && $change_data !== null)
+				$change_data['type'] = 'post';
 		}
 		if (self::VALID_CHANGE_TYPES[$change_type] === false)
 			$entry->change_amount *= -1;

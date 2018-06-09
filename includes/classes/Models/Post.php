@@ -53,9 +53,23 @@ class Post extends NSModel implements LinkableInterface {
 	];
 
 	public static $before_create = ['add_post_time'];
+	public static $after_destroy = ['post_deletion'];
 
 	public function add_post_time(){
 		$this->posted_at = date('c');
+	}
+
+	public function post_deletion(){
+		try {
+			CoreUtils::socketEvent('post-delete',[
+				'id' => $this->post->id,
+			]);
+		}
+		catch (\Exception $e){
+			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+		}
+
+		Posts::clearTransferAttempts($this->post, 'del');
 	}
 
 	public function get_posted_at(){
@@ -276,5 +290,28 @@ class Post extends NSModel implements LinkableInterface {
 		$HTML .= '</div>';
 
 		return $HTML;
+	}
+
+
+	/**
+	 * Approves this post and optionally notifies it's author
+	 */
+	public function approve(){
+		$this->lock = true;
+		if (!$this->save())
+			Response::dbError();
+
+		$postdata = [ 'id' => $this->id ];
+		Logs::logAction('post_lock',$postdata);
+
+		if (UserPrefs::get('a_pcgearn', $this->reserver)){
+			PCGSlotHistory::record($this->reserver->id, 'post_approved', null, [
+				'id' => $this->id,
+			]);
+			$this->reserver->syncPCGSlotCount();
+		}
+
+		if ($this->reserved_by !== Auth::$user->id)
+			Notification::send($this->reserved_by, 'post-approved', $postdata);
 	}
 }

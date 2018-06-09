@@ -13,6 +13,7 @@ use App\Models\Appearance;
 use App\Models\DiscordMember;
 use App\Models\Logs\Log;
 use App\Models\Notice;
+use App\Models\Post;
 use App\Models\UsefulLink;
 use App\Models\User;
 use App\Models\UserPref;
@@ -322,16 +323,12 @@ class AdminController extends Controller {
 			]
 		]))->out();
 
-		$list = '';
+		$list = [];
 		foreach ($ids as $id)
-			$list .= "'d".base_convert($id, 10, 36)."',";
-		$list = rtrim($list, ',');
+			$list .= 'd'.base_convert($id, 10, 36);
 
-		$Posts = DB::$instance->query(
-			"SELECT 'request' as type, id, deviation_id FROM requests WHERE deviation_id IN ($list) AND lock = false
-			UNION ALL
-			SELECT 'reservation' as type, id, deviation_id FROM reservations WHERE deviation_id IN ($list) AND lock = false"
-		);
+		/** @var $Posts Post[] */
+		$Posts = DB::$instance->where('deviation_id', $list)->where('lock', false)->get('posts');
 
 		if (empty($Posts))
 			Response::success('There were no posts in need of marking as approved');
@@ -339,12 +336,12 @@ class AdminController extends Controller {
 		$approved = 0;
 		$notInCLub = 0;
 		foreach ($Posts as $p){
-			if (CoreUtils::isDeviationInClub($p['deviation_id']) !== true){
+			if (CoreUtils::isDeviationInClub($p->deviation_id) !== true){
 				$notInCLub++;
 				continue;
 			}
 
-			Posts::approve($p['type'], $p['id']);
+			$p->approve();
 			$approved++;
 		}
 
@@ -354,7 +351,7 @@ class AdminController extends Controller {
 			else Response::fail('None of the posts have been added to the gallery yet');
 		}
 
-		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs/1?type=post_lock&by=you">list of posts you\'ve approved</a>.', ['html' => Posts::getMostRecentList(NOWRAP)]);
+		Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs?type=post_lock&by=you">list of posts you\'ve approved</a>.', ['html' => Posts::getMostRecentList(NOWRAP)]);
 	}
 
 	public function wsdiag(){

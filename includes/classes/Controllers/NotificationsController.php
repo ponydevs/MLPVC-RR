@@ -71,10 +71,13 @@ class NotificationsController extends Controller {
 			switch ($Notif->type){
 				case 'post-passon':
 					/** @var $Post Post */
-					$Post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
+					$Post = Post::find($data['id']);
 					if (empty($Post)){
+						$Post = new Post([
+							'id' => $data['id'],
+						]);
 						Posts::clearTransferAttempts($Post, 'del');
-						Response::fail("The {$data['type']} doesn't exist or has been deleted");
+						Response::fail("The post doesn't exist or has been deleted");
 					}
 					if ($read_action === 'true'){
 						if ($Post->reserved_by !== Auth::$user->id){
@@ -85,7 +88,6 @@ class NotificationsController extends Controller {
 						$Notif->safeMarkRead($read_action);
 						Notification::send($data['user'], 'post-passallow', [
 							'id' => $data['id'],
-							'type' => $data['type'],
 							'by' => Auth::$user->id,
 						]);
 						DB::$instance->where('id', $data['id'])->update("{$data['type']}s", [
@@ -97,7 +99,6 @@ class NotificationsController extends Controller {
 
 						Logs::logAction('res_transfer', [
 							'id' => $data['id'],
-							'type' => $data['type'],
 							'to' => $data['user'],
 						]);
 					}
@@ -105,7 +106,6 @@ class NotificationsController extends Controller {
 						$Notif->safeMarkRead($read_action);
 						Notification::send($data['user'], 'post-passdeny', [
 							'id' => $data['id'],
-							'type' => $data['type'],
 							'by' => Auth::$user->id,
 						]);
 					}

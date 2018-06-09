@@ -304,7 +304,6 @@ class User extends AbstractUser implements LinkableInterface {
 		if (!empty($posts))
 			foreach ($posts as $post){
 				PCGSlotHistory::record($this->id, 'post_approved', null, [
-					'type' => $post->kind,
 					'id' => $post->id,
 				], $post->approval_entry->timestamp);
 			}

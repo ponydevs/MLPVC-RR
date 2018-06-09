@@ -46,8 +46,10 @@ class PostController extends Controller {
 	}
 
 	public function reload($params){
-		$thing = $params['thing'];
-		$this->load_post(null, $params);
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
+		$this->load_post($params, 'view');
 
 		if ($this->post->deviation_id === null && (!DeviantArt::isImageAvailable($this->post->fullsize, [404]) || !DeviantArt::isImageAvailable($this->post->preview, [404]))){
 			$update = ['broken' => 1 ];
@@ -57,7 +59,6 @@ class PostController extends Controller {
 			}
 			$this->post->update_attributes($update);
 			$log = [
-				'type' => $this->post->kind,
 				'id' => $this->post->id,
 			];
 			try {
@@ -78,7 +79,7 @@ class PostController extends Controller {
 		}
 		else {
 			$un = $this->post->finished?'':'un';
-			$section = "#{$thing}s .{$un}finished";
+			$section = "#{$this->post->kind}s .{$un}finished";
 		}
 		$section .= ' > ul';
 
@@ -97,91 +98,142 @@ class PostController extends Controller {
 			Response::fail();
 	}
 
-
-
-	public function action($params){
+	public function reservationApi($params){
 		$this->_authorizeMember();
 
-		$thing = $params['thing'];
-		$action = $params['action'];
-		$this->load_post($action, $params);
+		$this->load_post($params, 'reservation');
 
-		switch ($action){
-			case 'unbreak':
-				if (Permission::insufficient('staff'))
-					Response::fail();
+		switch ($this->action){
+			case 'POST':
+				if (!$this->post->is_request)
+					Response::fail('This endpoint only acts on requests');
 
-				foreach (['preview', 'fullsize'] as $key){
-					$link = $this->post->{$key};
-
-					if (!DeviantArt::isImageAvailable($link))
-						Response::fail("The $key image appears to be unavailable. Please make sure <a href='$link'>this link</a> works and try again. If it doesn't, you will need to replace the image.");
-				}
-
-
-				// We fetch the last log entry and restore the reserver from when the post was still up (if applicable)
-				$LogEntry = DB::$instance->where('id', $this->post->id)->where('type', $thing)->orderBy('entryid','DESC')->getOne('log__post_break');
-				$update = ['broken' => 0];
-				if (isset($LogEntry['reserved_by']))
-					$update['reserved_by'] = $LogEntry['reserved_by'];
-				$this->post->update_attributes($update);
-
-				Logs::logAction('post_fix',[
-					'id' => $this->post->id,
-					'type' => $thing,
-					'reserved_by' => $update['reserved_by'] ?? null,
-				]);
-
-				Response::done(['li' => $this->post->getLi()]);
-			break;
-		}
-
-		if ($this->post->reserved_by === null){
-			switch ($action){
-				case 'unreserve':
-					Response::done(['li' => $this->post->getLi()]);
-				case 'finish':
-					Response::fail("This $thing has not been reserved by anypony yet");
-				case 'reserve':
-					if ($thing !== 'request')
-						break;
-
+				$old_reserver = $this->post->reserved_by;
+				$is_new_reserver = $old_reserver === null;
+				if ($is_new_reserver){
 					if (!UserPrefs::get('a_reserve', Auth::$user))
 						Response::fail('You are not allowed to reserve requests');
 
 					if ($this->post->broken)
-						Response::fail('Broken posts cannot be reserved.'.(Permission::sufficient('staff')?' Update the image or clear the broken status through the edit menu to make the post reservable.':''));
+						Response::fail('Broken posts cannot be reserved. The image must be updated'.(Permission::sufficient('staff')?' or the broken status cleared':'').' via the edit menu to make the post reservable.');
 
 					Users::checkReservationLimitReached();
 
-					$update['reserved_by'] = Auth::$user->id;
-					Posts::checkReserveAs($update);
-					$update['reserved_at'] = date('c');
+					$this->post->reserved_by = Auth::$user->id;
+					Posts::checkReserveAs($this->post);
+					$this->post->reserved_at = date('c');
 					if (Permission::sufficient('developer')){
 						$reserved_at = Posts::validateReservedAt();
 						if (isset($reserved_at))
-							$update['reserved_at'] = date('c', $reserved_at);
+							$this->post->reserved_at = date('c', $reserved_at);
 					}
-				break;
-			}
+				}
+				else {
+					if ($this->is_user_reserver)
+						Response::fail("You've already reserved this request", ['li' => $this->post->getLi()]);
+					if (!$this->post->isOverdue())
+						Response::fail('This request has already been reserved by '.$this->post->reserver->toAnchor(), ['li' => $this->post->getLi()]);
+					$overdue = [
+						'reserved_by' => $this->post->reserved_by,
+						'reserved_at' => $this->post->reserved_at,
+						'id' => $this->post->id,
+					];
+					$this->post->reserved_by = Auth::$user->id;
+					Posts::checkReserveAs($this->post);
+					$this->post->reserved_at = date('c');
+				}
+
+
+				if (!$this->post->save())
+					Response::dbError();
+
+				$response = [];
+				$suggested = $_REQUEST['from'] === 'suggestion';
+				$from_profile = $_REQUEST['from'] === 'profile';
+
+				if (!$is_new_reserver){
+					Logs::logAction('res_overtake', $overdue);
+
+					Posts::clearTransferAttempts($this->post, 'snatch');
+				}
+
+				if ($suggested)
+					$response['button'] = Posts::getPostReserveButton($this->post->reserver, false);
+
+				if ($suggested || $from_profile)
+					$response['pendingReservations'] = Users::getPendingReservationsHTML(User::find($suggested ? $this->post->reserved_by : $old_reserver), $suggested ? true : $this->is_user_reserver);
+
+				Posts::sendUpdate($this->post);
+
+				Response::done($response);
+			break;
+			case 'DELETE':
+				$can_delete = $this->is_user_reserver || Permission::sufficient('staff');
+				if ($this->post->is_request){
+					if ($this->post->reserved_by === null)
+						Response::done(['li' => $this->post->getLi()]);
+
+					if (!$can_delete)
+						Response::fail();
+
+					if ($this->post->deviation_id !== null)
+						Response::fail('You must unfinish this request before unreserving it.');
+
+					$this->post->reserved_by = null;
+					$this->post->reserved_at = null;
+
+					if (!$this->post->save())
+						Response::dbError();
+
+					Posts::clearTransferAttempts($this->post, 'free');
+
+					Posts::sendUpdate($this->post);
+
+					Response::done([
+						'li' => $this->post->getLi(),
+					]);
+				}
+				else {
+					if (!$can_delete)
+						Response::fail();
+
+					if ($this->post->deviation_id !== null)
+						Response::fail('You must unfinish this reservation before deleting it.');
+
+					if (!$this->post->delete())
+						Response::dbError();
+
+					Response::done();
+				}
+			break;
+			default:
+				CoreUtils::notAllowed();
 		}
-		else switch ($action){
-			case 'lock':
+	}
+
+	public function approvalApi($params){
+		$this->_authorizeMember();
+
+		$this->load_post($params, 'approval');
+
+		switch ($this->action){
+			case 'POST':
+				if ($this->post->reserved_by === null)
+					Response::fail('This post has not been reserved by anypony yet');
+
 				if (empty($this->post->deviation_id))
-					Response::fail("Only finished {$thing}s can be locked");
+					Response::fail('Only finished posts can be approved');
 
 				CoreUtils::checkDeviationInClub($this->post->deviation_id);
 
-				Posts::approve($thing, $this->post->id);
+				$this->post->approve();
 
-				$this->post->lock = true;
 				$response = [
 					'message' => 'The image appears to be in the group gallery and as such it is now marked as approved.',
 				];
 				try {
 					CoreUtils::socketEvent('post-update',[
 						'id' => $this->post->id,
-						'type' => $thing,
 					]);
 				}
 				catch (ServerConnectionFailureException $e){
@@ -195,11 +247,12 @@ class PostController extends Controller {
 
 				Response::done($response);
 			break;
-			case 'unlock':
+			case 'DELETE':
 				if (Permission::insufficient('staff'))
 					Response::fail();
+
 				if (!$this->post->lock)
-					Response::fail("This $thing has not been approved yet");
+					Response::fail('This post has not been approved yet');
 
 				if (Permission::insufficient('developer') && CoreUtils::isDeviationInClub($this->post->deviation_id) === true)
 					Response::fail("<a href='http://fav.me/{$this->post->deviation_id}' target='_blank' rel='noopener'>This deviation</a> is part of the group gallery, which prevents the post from being unlocked.");
@@ -208,112 +261,21 @@ class PostController extends Controller {
 				$this->post->save();
 
 				PCGSlotHistory::record($this->post->reserved_by, 'post_unapproved', null, [
-					'type' => $this->post->kind,
 					'id' => $this->post->id,
 				]);
 
-				try {
-					CoreUtils::socketEvent('post-update',[
-						'id' => $this->post->id,
-						'type' => $thing,
-					]);
-				}
-				catch (\Exception $e){
-					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
-				}
+				Posts::sendUpdate($this->post);
 
 				Response::done();
 			break;
-			case 'unreserve':
-				if (!$this->is_user_reserver && Permission::insufficient('staff'))
-					Response::fail();
-
-				if (!empty($this->post->deviation_id))
-					Response::fail("You must unfinish this $thing before unreserving it.");
-
-				if ($thing === 'request'){
-					$update = [
-						'reserved_by' => null,
-						'reserved_at' => null,
-					];
-					break;
-				}
-				else $_REQUEST['unbind'] = true;
-			case 'reserve':
-				if ($this->is_user_reserver)
-					Response::fail("You've already reserved this $thing", ['li' => $this->post->getLi()]);
-				if (!$this->post->isOverdue())
-					Response::fail("This $thing has already been reserved by ".$this->post->reserver->toAnchor(), ['li' => $this->post->getLi()]);
-				$overdue = [
-					'reserved_by' => $this->post->reserved_by,
-					'reserved_at' => $this->post->reserved_at,
-				];
-				$update['reserved_by'] = Auth::$user->id;
-				Posts::checkReserveAs($update);
-				$update['reserved_at'] = date('c');
-				$this->post->reserved_by = $update['reserved_by'];
-				$this->post->reserved_at = $update['reserved_at'];
-			break;
+			default:
+				CoreUtils::notAllowed();
 		}
-
-		if (empty($update) || !DB::$instance->where('id', $this->post->id)->update("{$thing}s",$update))
-			Response::fail('Nothing has been changed<br>If you tried to do something, then this is actually an error, which you should <a class="send-feedback">tell us</a> about.');
-
-		if (!empty($overdue))
-			Logs::logAction('res_overtake',array_merge(
-				[
-					'id' => $this->post->id,
-					'type' => $thing
-				],
-				$overdue
-			));
-
-		if (!empty($update['reserved_by']))
-			Posts::clearTransferAttempts($this->post, 'snatch');
-		else if (!empty($this->post->reserved_by))
-			Posts::clearTransferAttempts($this->post, 'free');
-
-		$socketServerAvailable = true;
-		try {
-			CoreUtils::socketEvent('post-update',[
-				'id' => $this->post->id,
-				'type' => $thing,
-			]);
-		}
-		catch (ServerConnectionFailureException $e){
-			$socketServerAvailable = false;
-			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
-		}
-		catch (\Exception $e){
-			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
-		}
-
-		if ($thing === 'request'){
-			$oldReserver = $this->post->reserved_by;
-			if (!empty($update))
-				foreach ($update as $k => $v)
-					$this->post->{$k} = $v;
-			$response = [];
-			$suggested = isset($_POST['SUGGESTED']);
-			$fromProfile = isset($_POST['FROM_PROFILE']);
-			if ($suggested)
-				$response['button'] = Posts::getPostReserveButton($this->post->reserver, false);
-			else if (!$fromProfile && !$socketServerAvailable){
-				if ($action !== 'unreserve')
-					$response['li'] = $this->post->getLi();
-				else $response['reload'] = true;
-			}
-			if ($fromProfile || $suggested)
-				$response['pendingReservations'] = Users::getPendingReservationsHTML(User::find($suggested ? $this->post->reserved_by : $oldReserver), $suggested ? true : $this->is_user_reserver);
-			Response::done($response);
-		}
-		else Response::done();
 	}
 
 	public function api($params){
-
 		if (!$this->creating)
-			$this->load_post('manage', $params);
+			$this->load_post($params, 'manage');
 
 		switch ($this->action){
 			case 'GET':
@@ -335,6 +297,87 @@ class PostController extends Controller {
 				}
 				Response::done($response);
 			break;
+			case 'POST':
+				$this->_authorize();
+
+				$thing = (new Input('what',function($value){
+					if (!\in_array($value,Posts::TYPES,true))
+						return Input::ERROR_INVALID;
+				}, [
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_INVALID => 'Post type (@value) is invalid',
+					]
+				]))->out();
+
+				$pref = 'a_post'.substr($thing, 0, 3);
+				if (!UserPrefs::get($pref, Auth::$user))
+					Response::fail("You are not allowed to post {$thing}s");
+
+				if ($thing === 'reservation'){
+					if (Permission::insufficient('member'))
+						Response::fail();
+					Users::checkReservationLimitReached();
+				}
+
+				$Image = $this->_checkImage();
+				if (!\is_object($Image)){
+					CoreUtils::error_log("Getting post image failed\n".var_export($Image, true));
+					Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
+				}
+
+				/** @var $Post Post */
+				$Post = new Post();
+				$Post->preview = $Image->preview;
+				$Post->fullsize = $Image->fullsize;
+
+				$season = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
+				$episode = Episodes::validateEpisode();
+				$epdata = Episodes::getActual($season, $episode, Episodes::ALLOW_MOVIES);
+				if (empty($epdata))
+					Response::fail("The specified episode (S{$season}E$episode) does not exist");
+				$Post->season = $epdata->season;
+				$Post->episode = $epdata->episode;
+
+				$ByID = Auth::$user->id;
+				if (Permission::sufficient('developer')){
+					$username = Posts::validatePostAs();
+					if ($username !== null){
+						$PostAs = Users::get($username, 'name');
+
+						if (empty($PostAs))
+							Response::fail('The user you wanted to post as does not exist');
+
+						if ($thing === 'reservation' && !Permission::sufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
+							Response::fail('The user you wanted to post as is not a club member, do you want to post as them anyway?', ['canforce' => true]);
+
+						$ByID = $PostAs->id;
+					}
+
+					$posted_at = Posts::validatePostedAt();
+					if ($posted_at !== null)
+						$Post->posted_at = date('c', $posted_at);
+				}
+
+				$Post->{$Post->is_reservation ? 'reserved_by' : 'requested_by'} = $ByID;
+				Posts::checkPostDetails($Post->is_request, $Post);
+
+				if (!$Post->save())
+					Response::dbError();
+
+				try {
+					CoreUtils::socketEvent('post-add',[
+						'id' => $Post->id,
+						'type' => $Post->kind,
+						'season' => (int)$Post->season,
+						'episode' => (int)$Post->episode,
+					]);
+				}
+				catch (\Exception $e){
+					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+				}
+
+				Response::done(['id' => $Post->getID()]);
+			break;
 			case 'PUT':
 				$this->_checkPostEditPermission();
 
@@ -350,7 +393,6 @@ class PostController extends Controller {
 				try {
 					CoreUtils::socketEvent('post-update',[
 						'id' => $this->post->id,
-						'type' => 'post',
 					]);
 				}
 				catch (\Exception $e){
@@ -367,7 +409,7 @@ class PostController extends Controller {
 	public function finish($params){
 		$this->_authorizeMember();
 
-		$this->load_post('finish', $params);
+		$this->load_post($params, 'finish');
 
 		switch ($this->action){
 			case 'PUT':
@@ -386,7 +428,6 @@ class PostController extends Controller {
 					Response::dbError();
 
 				$postdata = [
-					'type' => 'post',
 					'id' => $this->post->id
 				];
 				$message = '';
@@ -408,7 +449,6 @@ class PostController extends Controller {
 				try {
 					CoreUtils::socketEvent('post-update',[
 						'id' => $this->post->id,
-						'type' => 'post',
 					]);
 				}
 				catch (\Exception $e){
@@ -427,16 +467,6 @@ class PostController extends Controller {
 					if ($this->post->is_reservation){
 						if (!$this->post->delete())
 							Response::dbError();
-
-						try {
-							CoreUtils::socketEvent('post-delete',[
-								'id' => $this->post->id,
-								'type' => 'post',
-							]);
-						}
-						catch (\Exception $e){
-							CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
-						}
 
 						Response::success('Reservation deleted',['remove' => true]);
 					}
@@ -460,7 +490,6 @@ class PostController extends Controller {
 				try {
 					CoreUtils::socketEvent('post-update',[
 						'id' => $this->post->id,
-						'type' => 'post',
 					]);
 				}
 				catch (\Exception $e){
@@ -475,7 +504,7 @@ class PostController extends Controller {
 	}
 
 	public function locate($params){
-		$this->load_post('locate', $params);
+		$this->load_post($params, 'locate');
 
 		if (empty($this->post) || $this->post->broken)
 			Response::fail("The post you were linked to has either been deleted or didn't exist in the first place. Sorry.".CoreUtils::responseSmiley(':\\'));
@@ -493,6 +522,38 @@ class PostController extends Controller {
 		]);
 	}
 
+	public function unbreak($params){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		$this->load_post($params, 'finish');
+
+		foreach (['preview', 'fullsize'] as $key){
+			$link = $this->post->{$key};
+
+			if (!DeviantArt::isImageAvailable($link))
+				Response::fail("The $key image appears to be unavailable. Please make sure <a href='$link'>this link</a> works and try again. If it doesn't, you will need to replace the image.");
+		}
+
+		// We fetch the last log entry and restore the reserver from when the post was still up (if applicable)
+		$LogEntry = DB::$instance->where('id', $this->post->id)->orderBy('entryid','DESC')->getOne('log__post_break');
+		$this->post->broken = false;
+		if (isset($LogEntry['reserved_by']))
+			$this->post->reserved_by = $LogEntry['reserved_by'];
+
+		$this->post->save();
+
+		Logs::logAction('post_fix',[
+			'id' => $this->post->id,
+			'reserved_by' => $this->post->reserved_by,
+		]);
+
+		Response::done(['li' => $this->post->getLi()]);
+	}
+
 	/**
 	 * @return ImageProvider
 	 */
@@ -501,6 +562,9 @@ class PostController extends Controller {
 	}
 
 	public function checkImage(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		$this->_authorize();
 
 		$Image = $this->_checkImage();
@@ -511,93 +575,11 @@ class PostController extends Controller {
 		]);
 	}
 
-	public function add(){
-		$this->_authorize();
-
-		$thing = (new Input('what',function($value){
-			if (!\in_array($value,Posts::TYPES,true))
-				return Input::ERROR_INVALID;
-		}, [
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_INVALID => 'Post type (@value) is invalid',
-			]
-		]))->out();
-
-		$pref = 'a_post'.substr($thing, 0, 3);
-		if (!UserPrefs::get($pref, Auth::$user))
-			Response::fail("You are not allowed to post {$thing}s");
-
-		if ($thing === 'reservation'){
-			if (Permission::insufficient('member'))
-				Response::fail();
-			Users::checkReservationLimitReached();
-		}
-
-		$Image = $this->_checkImage();
-		if (!\is_object($Image)){
-			CoreUtils::error_log("Getting post image failed\n".var_export($Image, true));
-			Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
-		}
-
-		/** @var $Post Post */
-		$Post = new Post();
-		$Post->preview = $Image->preview;
-		$Post->fullsize = $Image->fullsize;
-
-		$season = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
-		$episode = Episodes::validateEpisode();
-		$epdata = Episodes::getActual($season, $episode, Episodes::ALLOW_MOVIES);
-		if (empty($epdata))
-			Response::fail("The specified episode (S{$season}E$episode) does not exist");
-		$Post->season = $epdata->season;
-		$Post->episode = $epdata->episode;
-
-		$ByID = Auth::$user->id;
-		if (Permission::sufficient('developer')){
-			$username = Posts::validatePostAs();
-			if ($username !== null){
-				$PostAs = Users::get($username, 'name');
-
-				if (empty($PostAs))
-					Response::fail('The user you wanted to post as does not exist');
-
-				if ($thing === 'reservation' && !Permission::sufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
-					Response::fail('The user you wanted to post as is not a club member, do you want to post as them anyway?', ['canforce' => true]);
-
-				$ByID = $PostAs->id;
-			}
-
-			$posted_at = Posts::validatePostedAt();
-			if ($posted_at !== null)
-				$Post->posted_at = date('c', $posted_at);
-		}
-
-		$Post->{$Post->is_reservation ? 'reserved_by' : 'requested_by'} = $ByID;
-		Posts::checkPostDetails($Post->is_request, $Post);
-
-		if (!$Post->save())
-			Response::dbError();
-
-		try {
-			CoreUtils::socketEvent('post-add',[
-				'id' => $Post->id,
-				'type' => $Post->kind,
-				'season' => (int)$Post->season,
-				'episode' => (int)$Post->episode,
-			]);
-		}
-		catch (\Exception $e){
-			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
-		}
-
-		Response::done(['id' => $Post->getID()]);
-	}
-
 	/** @var Post */
 	private $post;
 	/** @var bool */
 	private $is_user_reserver = false;
-	public function load_post($action, $params){
+	public function load_post($params, $action){
 		$id = \intval($params['id'], 10);
 		$this->post = Post::find($id);
 		if (empty($this->post) && $action !== 'locate')
@@ -610,9 +592,12 @@ class PostController extends Controller {
 	}
 
 	public function deleteRequest($params){
+		if ($this->action !== 'DELETE')
+			CoreUtils::notAllowed();
+
 		$this->_authorize();
 
-		$this->load_post('delete', $params);
+		$this->load_post($params, 'delete');
 
 		if (!$this->post->is_request)
 			Response::fail('Only requests can be deleted using this endpoint');
@@ -627,9 +612,6 @@ class PostController extends Controller {
 
 		if (!$this->post->delete())
 			Response::dbError();
-
-		if (!empty($this->post->reserved_by))
-			Posts::clearTransferAttempts($this->post, 'del');
 
 		Logs::logAction('req_delete', [
 			'season' =>       $this->post->season,
@@ -647,7 +629,6 @@ class PostController extends Controller {
 		try {
 			CoreUtils::socketEvent('post-delete',[
 				'id' => $this->post->id,
-				'type' => 'post',
 			]);
 		}
 		catch (\Exception $e){
@@ -657,12 +638,15 @@ class PostController extends Controller {
 		Response::done();
 	}
 
-	public function queryTransfer($params){
+	public function transfer($params){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		if (Permission::insufficient('member'))
 			Response::fail();
 
 		$this->_authorizeMember();
-		$this->load_post(null, $params);
+		$this->load_post($params, 'view');
 
 		$reserved_by = $this->post->reserver;
 		$checkIfUserCanReserve = function(&$message, &$data){
@@ -704,7 +688,6 @@ class PostController extends Controller {
 			Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]->sent_at).', please wait for them to respond.');
 
 		Notification::send($this->post->reserved_by, 'post-passon', [
-			'type' => $this->post->kind,
 			'id' => $this->post->id,
 			'user' => Auth::$user->id,
 		]);
@@ -713,24 +696,23 @@ class PostController extends Controller {
 	}
 
 	public function setImage($params){
+		if ($this->action !== 'PUT')
+			CoreUtils::notAllowed();
+
 		$this->_authorize();
 
 		$thing = $params['thing'];
-		$this->load_post(null, $params);
+		$this->load_post($params, 'view');
 		if ($this->post->lock)
 			Response::fail('This post is locked, its image cannot be changed.');
 
-		if (Permission::insufficient('staff'))
-			switch ($thing){
-				case 'request':
-					if ($this->post->requested_by !== Auth::$user->id || !empty($this->post->reserved_by))
-						Response::fail();
-				break;
-				case 'reservation':
-					if ($this->post->reserved_by !== Auth::$user->id)
-						Response::fail();
-				break;
-			};
+		if (Permission::insufficient('staff')){
+			if ($this->post->posted_by !== Auth::$user->id)
+				Response::fail();
+
+			if ($this->post->is_request && $this->post->reserved_by !== null)
+				Response::fail('You cannot change the image of a request that has already been reserved.');
+		}
 
 		$image_url = (new Input('image_url','string', [
 			Input::CUSTOM_ERROR_MESSAGES => [
@@ -743,32 +725,33 @@ class PostController extends Controller {
 		if (!DeviantArt::isImageAvailable($Image->preview))
 			Response::fail("<p class='align-center'>The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='{$Image->preview}' target='_blank' rel='noopener'>{$Image->preview}</a></p>");
 
-		$update = [
-			'preview' => $Image->preview,
-			'fullsize' => $Image->fullsize,
-			'broken' => 0,
+		$old = [
+			'preview' => $this->post->preview,
+			'fullsize' => $this->post->fullsize,
+			'broken' => $this->post->broken,
 		];
-		$wasBroken = $this->post->broken;
-		if (!$this->post->update_attributes($update))
+		$this->post->preview = $Image->preview;
+		$this->post->fullsize = $Image->fullsize;
+		$this->post->broken = false;
+		if (!$this->post->save())
 			Response::dbError();
 
 		Logs::logAction('img_update', [
 			'id' => $this->post->id,
-			'thing' => $thing,
-			'oldpreview' => $this->post->preview,
-			'oldfullsize' => $this->post->fullsize,
-			'newpreview' => $Image->preview,
-			'newfullsize' => $Image->fullsize,
+			'oldpreview' => $old['preview'],
+			'oldfullsize' => $old['fullsize'],
+			'newpreview' => $this->post->preview,
+			'newfullsize' => $this->post->fullsize,
 		]);
 
-		Response::done($wasBroken ? ['li' => $this->post->getLi()] : ['preview' => $Image->preview]);
+		Response::done($old['broken'] ? ['li' => $this->post->getLi()] : ['preview' => $Image->preview]);
 	}
 
 	public function lazyload($params){
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
-		$this->load_post('lazyload', $params);
+		$this->load_post($params, 'lazyload');
 
 		if (empty($this->post))
 			HTTP::statusCode(404, AND_DIE);
@@ -777,6 +760,9 @@ class PostController extends Controller {
 	}
 
 	public function fixStash($params){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		global $FULLSIZE_MATCH_REGEX;
 
 		$this->_authorize();
@@ -784,7 +770,7 @@ class PostController extends Controller {
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
-		$this->load_post(null, $params);
+		$this->load_post($params, 'view');
 
 		// Link is already full size, we're done
 		if (preg_match($FULLSIZE_MATCH_REGEX, $this->post->fullsize))
@@ -831,6 +817,9 @@ class PostController extends Controller {
 	}
 
 	public function addReservation(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		$this->_authorize();
 
 		if (!Permission::sufficient('staff'))
@@ -860,7 +849,6 @@ class PostController extends Controller {
 
 		if (!empty($insert['lock']))
 			Logs::logAction('post_lock', [
-				'type' => $Post->kind,
 				'id' => $Post->id,
 			]);
 
@@ -880,18 +868,26 @@ class PostController extends Controller {
 	}
 
 	public const SHARE_TYPE = [
-		'req' => 'request',
-		'res' => 'reservation',
+		'req' => 'requested_by IS NOT NULL',
+		'res' => 'requested_by IS NULL',
 	];
 
 	public function share($params){
-		if (!isset(self::SHARE_TYPE[$params['thing']]))
-			CoreUtils::notFound();
+		if (!empty($params['thing'])){
+			if (!isset(self::SHARE_TYPE[$params['thing']]))
+				CoreUtils::notFound();
 
-		$thing = self::SHARE_TYPE[$params['thing']];
+			DB::$instance->where(self::SHARE_TYPE[$params['thing']]);
+			$attr = 'old_id';
+			$id = \intval($params['id'], 10);
+		}
+		else {
+			$attr = 'id';
+			$id = \intval($params['id'], 36);
+		}
 
 		/** @var $LinkedPost Post */
-		$LinkedPost = DB::$instance->where('id', $params['id'])->getOne("{$thing}s");
+		$LinkedPost = DB::$instance->where($attr, $id)->getOne('posts');
 		if (empty($LinkedPost))
 			CoreUtils::notFound();
 
@@ -900,5 +896,37 @@ class PostController extends Controller {
 			CoreUtils::notFound();
 
 		Episodes::loadPage($Episode, $LinkedPost);
+	}
+
+	public function suggestRequest(){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
+		CSRFProtection::protect();
+
+		if (Permission::insufficient('user'))
+			Response::fail('You must be signed in to use this feature.');
+
+		$already_loaded = (new Input('already_loaded','int[]', [
+			Input::IS_OPTIONAL => true,
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_INVALID => 'List of already loaded image IDs is invalid',
+			],
+		]))->out();
+
+		$query = "SELECT id FROM posts WHERE requested_by IS NOT NULL AND deviation_id IS NULL AND (reserved_by IS NULL OR reserved_at < NOW() - INTERVAL '3 WEEK')";
+		if ($already_loaded !== null)
+			$query .= ' AND id NOT IN ('.implode(',',$already_loaded).')';
+
+		$postIDs = DB::$instance->query($query);
+		if (empty($postIDs))
+			Response::fail(($already_loaded !== null ? "You've gone through all":'There are no').' available requests, check back later.');
+		$drawArray = [];
+		foreach ($postIDs as $post)
+			$drawArray[] = $post['id'];
+		$chosen = $drawArray[array_rand($drawArray)];
+		/** @var $Request Post */
+		$Request = Post::find($chosen);
+		Response::done(['suggestion' => Posts::getSuggestionLi($Request)]);
 	}
 }

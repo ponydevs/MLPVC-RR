@@ -10,11 +10,11 @@ const parseRow = row => {
 glob('*.pg.sql', { cwd, dot: false, absolute: true }, function(err, files) {
 	if (err) throw err;
 
-	for (i = 0; i < files.length; i++)
+	for (let i = 0; i < files.length; i++)
 		(function(fpath) {
 			fs.readFile(fpath, 'utf8', function(err, data) {
 				if (err) throw err;
-				let test = /INSERT INTO "?([a-z_\-]+)"?(?:\s+\([^)]+\))?\s+VALUES\s*\((\d+),[\s\S]+?;(?:\r|\r\n|\n)/g;
+				let test = /INSERT INTO ((?:public\.)?[a-z_\-]+)(?:\s+\([^)]+\))?\s+VALUES\s*\((\d+),[\s\S]+?;(?:\r|\r\n|\n)/g;
 				if (!test.test(data))
 					return;
 				let Tables = {},
@@ -41,13 +41,13 @@ glob('*.pg.sql', { cwd, dot: false, absolute: true }, function(err, files) {
 						b[ix] = parseInt(b[ix], 10);
 
 						return a[ix] > b[ix] ? 1 : (a[ix] < b[ix] ? -1 : 0);
-					})
+					});
 				}
 				data = data.replace(test, function(row, table) {
 					return Tables[table][TableCounters[table]++];
 				});
-				data = data.replace(/;(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?(?:\s+\([^)]+\))?\s+VALUES\s+/g, ',\n');
-				data = data.replace(/((?:\r|\r\n|\n)\s*(?:\r|\r\n|\n)INSERT INTO "?([a-z_\-]+)"?(?:\s+\([^)]+\))?\s+VALUES)\s*\(/g, '$1\n(');
+				data = data.replace(/;(?:\r|\r\n|\n)INSERT INTO ((?:public\.)?[a-z_\-]+)(?:\s+\([^)]+\))?\s+VALUES\s+/g, ',\n');
+				data = data.replace(/((?:\r|\r\n|\n)\s*(?:\r|\r\n|\n)INSERT INTO ((?:public\.)?[a-z_\-]+)(?:\s+\([^)]+\))?\s+VALUES)\s*\(/g, '$1\n(');
 				data = data.replace(/\r\n?/g, '\n');
 
 				fs.writeFile(fpath, data, function(err) {

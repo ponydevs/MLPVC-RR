@@ -78,10 +78,10 @@
 				}));
 			}));
 			this.conn.on('post-delete', wsdecoder(data => {
-				if (!data.type || !data.id)
+				if (!data.id)
 					return;
 
-				let postid = `${data.type}-${data.id}`,
+				let postid = `post-${data.id}`,
 					$post = $(`#${postid}:not(.deleting)`);
 				console.log('[WS] Post deleted (postid=%s)', postid);
 				if ($post.length){
@@ -99,44 +99,39 @@
 				}
 			}));
 			this.conn.on('post-break', wsdecoder(data => {
-				if (!data.type || !data.id)
+				if (!data.id)
 					return;
 
-				let postid = `${data.type}-${data.id}`,
-					$post = $(`#${postid}:not(.admin-break)`);
-				console.log('[WS] Post broken (postid=%s)', postid);
-				if ($post.length){
-					$post.find('.fluidbox--opened').fluidbox('close');
-					$post.find('.fluidbox--initialized').fluidbox('destroy');
+				let $post = $(`#post-${data.id}:not(.admin-break)`);
+				console.log('[WS] Post broken (id=%s)', data.id);
+				if ($post.length)
 					$post.reloadLi();
-				}
 			}));
 			this.conn.on('post-add', wsdecoder(data => {
-				if (!data.type || !data.id || window.EPISODE !== data.episode || window.SEASON !== data.season)
+				if (!data.id || window.EPISODE !== data.episode || window.SEASON !== data.season)
 					return;
 
-				if ($(`.posts #${data.type}-${data.id}`).length > 0)
+				if ($(`.posts #post-${data.id}`).length > 0)
 					return;
-				$.post(`/post/reload/${data.type}/${data.id}`,$.mkAjaxHandler(resp => {
+				$.API.get(`/post/${data.id}/reload`,$.mkAjaxHandler(resp => {
 					if (!resp.status) return;
 
-					if ($(`.posts #${data.type}-${data.id}`).length > 0)
+					if ($(`.posts #post-${data.id}`).length > 0)
 						return;
 					let $newli = $(resp.li);
 					$(resp.section).append($newli);
 					$newli.rebindFluidbox();
 					Time.Update();
 					$newli.rebindHandlers(true).parent().reorderPosts();
-					console.log(`[WS] Post added (postid=${data.type}-#${data.id}) to container ${this.section}`);
+					console.log(`[WS] Post added (id=${data.id}) to container ${this.section}`);
 				}));
 			}));
 			this.conn.on('post-update', wsdecoder(data => {
-				if (!data.type || !data.id)
+				if (!data.id)
 					return;
 
-				let postid = `${data.type}-${data.id}`,
-					$post = $(`#${postid}:not(.deleting)`);
-				console.log('[WS] Post updated (postid=%s)', postid);
+				let $post = $(`#post-${data.id}:not(.deleting)`);
+				console.log('[WS] Post updated (id=%s)', data.id);
 				if ($post.length)
 					$post.reloadLi(false);
 			}));
