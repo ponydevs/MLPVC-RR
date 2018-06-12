@@ -58,7 +58,7 @@ class GlobalSettings {
 	 * @return mixed
 	 */
 	public static function process(string $key){
-		$value = CoreUtils::trim($_POST['value']);
+		$value = CoreUtils::trim($_REQUEST['value']);
 
 		if ($value === '')
 			return null;

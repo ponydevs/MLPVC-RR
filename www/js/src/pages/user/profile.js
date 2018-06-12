@@ -472,7 +472,7 @@
 
 		$.Dialog.wait('Saving setting','Please wait');
 
-		$.post(endpoint,data,$.mkAjaxHandler(function(){
+		$.API.put(endpoint,data,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			if ($input.is('[type=number]'))
@@ -488,7 +488,7 @@
 	});
 	$slbl.children('input[type=number]').each(function(){
 		let $el = $(this);
-		$el.data('orig', $el.val().trim()).on('keydown keyup change',function(){
+		$el.data('orig', parseInt($el.val().trim(), 10)).on('keydown keyup change',function(){
 			let $el = $(this);
 			$el.siblings('.save').attr('disabled', parseInt($el.val().trim(), 10) === $el.data('orig'));
 		});

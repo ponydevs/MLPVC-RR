@@ -14,50 +14,52 @@ class PreferenceController extends Controller {
 	public function __construct(){
 		parent::__construct();
 
-		if (!POST_REQUEST || Permission::insufficient('user'))
+		if (Permission::insufficient('user'))
 			CoreUtils::noPerm();
 		CSRFProtection::protect();
 	}
 
 	/** @var string */
-	private $_setting, $_value;
+	private $preference, $value;
 	/** @var User|null */
-	private $_user;
-	public function _getPreference($params){
-		$this->_setting = $params['key'];
-		if (!empty($params['name'])){
-			$user = Users::get($params['name'], 'name');
-			if (!Auth::$signed_in)
-				Response::fail();
-			if (empty($user))
-				Response::fail('The specified user does not exist');
-			if (Auth::$user->id !== $user->id && Permission::insufficient('staff'))
-				Response::fail();
-			$this->_user = $user;
-		}
-		else $this->_user = null;
-		$this->_value = UserPrefs::get($this->_setting, $this->_user);
+	private $user;
+	public function load_preference($params){
+		$this->preference = $params['key'];
+
+		if (empty($params['id']))
+			CoreUtils::notFound();
+		$user = User::find($params['id']);
+		if (empty($user))
+			Response::fail('The specified user does not exist');
+		if (Auth::$user->id !== $user->id && Permission::insufficient('staff'))
+			Response::fail();
+		$this->user = $user;
+
+		$this->value = UserPrefs::get($this->preference, $this->user);
 	}
 
-	public function get($params){
-		$this->_getPreference($params);
+	public function api($params){
+		$this->load_preference($params);
 
-		Response::done(['value' => $this->_value]);
-	}
+		switch ($this->action){
+			case 'GET':
+				Response::done(['value' => $this->value]);
+			break;
+			case 'PUT':
+				try {
+					$newvalue = UserPrefs::process($this->preference);
+				}
+				catch (\Exception $e){ Response::fail('Preference value error: '.$e->getMessage()); }
 
-	public function set($params){
-		$this->_getPreference($params);
+				if ($newvalue === $this->value)
+					Response::done(['value' => $newvalue]);
+				if (!UserPrefs::set($this->preference, $newvalue, $this->user))
+					Response::dbError();
 
-		try {
-			$newvalue = UserPrefs::process($this->_setting);
+				Response::done(['value' => $newvalue]);
+			break;
+			default:
+				CoreUtils::notAllowed();
 		}
-		catch (\Exception $e){ Response::fail('Preference value error: '.$e->getMessage()); }
-
-		if ($newvalue === $this->_value)
-			Response::done(['value' => $newvalue]);
-		if (!UserPrefs::set($this->_setting, $newvalue, $this->_user))
-			Response::dbError();
-
-		Response::done(['value' => $newvalue]);
 	}
 }

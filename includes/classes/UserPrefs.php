@@ -127,7 +127,7 @@ class UserPrefs extends GlobalSettings {
 	 */
 	public static function process(string $key, $value = null){
 		if ($value === null)
-			$value = isset($_POST['value']) ? CoreUtils::trim($_POST['value']) : null;
+			$value = isset($_REQUEST['value']) ? CoreUtils::trim($_REQUEST['value']) : null;
 
 		switch ($key){
 			case 'cg_itemsperpage':

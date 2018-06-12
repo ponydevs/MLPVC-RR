@@ -16,34 +16,39 @@ class SettingController extends Controller {
 		CSRFProtection::protect();
 	}
 
-	private $_setting, $_value;
-	public function _getSetting($params){
-		$this->_setting = $params['key'];
-		$this->_value = GlobalSettings::get($this->_setting);
+	private $setting, $value;
+	public function load_setting($params){
+		$this->setting = $params['key'];
+		$this->value = GlobalSettings::get($this->setting);
 	}
 
-	public function get($params){
-		$this->_getSetting($params);
+	public function api($params){
+		$this->load_setting($params);
 
-		Response::done(['value' => $this->_value]);
-	}
+		switch ($this->action){
+			case 'GET':
+				Response::done(['value' => $this->value]);
+			break;
+			case 'PUT':
+				$this->load_setting($params);
 
-	public function set($params){
-		$this->_getSetting($params);
+				if (!isset($_REQUEST['value']))
+					Response::fail('Missing setting value');
 
-		if (!isset($_POST['value']))
-			Response::fail('Missing setting value');
+				try {
+					$newvalue = GlobalSettings::process($this->setting);
+				}
+				catch (\Exception $e){ Response::fail('Preference value error: '.$e->getMessage()); }
 
-		try {
-			$newvalue = GlobalSettings::process($this->_setting);
+				if ($newvalue === $this->value)
+					Response::done(['value' => $newvalue]);
+				if (!GlobalSettings::set($this->setting, $newvalue))
+					Response::dbError();
+
+				Response::done(['value' => $newvalue]);
+			break;
+			default:
+				CoreUtils::notAllowed();
 		}
-		catch (\Exception $e){ Response::fail('Preference value error: '.$e->getMessage()); }
-
-		if ($newvalue === $this->_value)
-			Response::done(['value' => $newvalue]);
-		if (!GlobalSettings::set($this->_setting, $newvalue))
-			Response::dbError();
-
-		Response::done(['value' => $newvalue]);
 	}
 }

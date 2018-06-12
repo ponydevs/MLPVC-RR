@@ -144,8 +144,6 @@ $api_endpoint('/cg/tags/recount-uses',               'TagController#recountUses'
 $api_endpoint('/cg/tag/[i:id]?',                     'TagController#api');
 $api_endpoint('/cg/tag/[i:id]/synonym',              'TagController#synonymApi');
 $api_endpoint('/cg/colorgroup/[i:id]?',              'ColorGroupController#api');
-$api_endpoint('/@[un:name]/cg/slot-check',           'PersonalGuideController#checkAvailSlots');
-$api_endpoint('/@[un:name]/cg/point-history/recalc', 'PersonalGuideController#pointRecalc');
 $api_endpoint('/da-auth/status',                     'AuthController#sessionStatus');
 $api_endpoint('/da-auth/sign-out',                   'AuthController#signOut');
 $api_endpoint('/episode/[epid:id]?',                 'EpisodeController#api');
@@ -181,12 +179,13 @@ $api_endpoint('/post/reservation',                   'PostController#addReservat
 $api_endpoint('/post/request/[i:id]',                'PostController#deleteRequest');
 $api_endpoint('/post/request/suggestion',            'PostController#suggestRequest');
 $api_endpoint('/post/[i:id]/fix-stash',              'PostController#fixStash');
+$api_endpoint('/setting/[au:key]',                   'SettingController#api');
+$api_endpoint('/user/[uuid:id]/preference/[au:key]', 'PreferenceController#api');
+// TODO Move under /user/:id/pcg/...
+$api_endpoint('/@[un:name]/cg/slot-check',           'PersonalGuideController#checkAvailSlots');
+$api_endpoint('/@[un:name]/cg/point-history/recalc', 'PersonalGuideController#pointRecalc');
 
 // "API" Endpoints
-$router->map('POST', '/@[un:name]?/preference/set/[au:key]',  'PreferenceController#set');
-$router->map('POST', '/@[un:name]?/preference/get/[au:key]',  'PreferenceController#get');
-$router->map('POST', '/setting/set/[au:key]',                'SettingController#set');
-$router->map('POST', '/setting/get/[au:key]',                'SettingController#get');
 $router->map('POST', '/user/sessiondel/[uuid:id]',           'UserController#sessionDel');
 $router->map('POST', '/user/setrole/[un:name]',              'UserController#setRole');
 $router->map('POST', '/user/setdevrolemask',                 'UserController#setDevRoleMask');

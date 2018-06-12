@@ -199,7 +199,7 @@ class UserSettingForm {
 		}
 	}
 
-	public function __toString(){
+	public function render(){
 		$map = self::INPUT_MAP[$this->_setting_name];
 		$input = $this->_getInput($map['type'], $map['options'] ?? []);
 		if ($input === '')
@@ -209,18 +209,16 @@ class UserSettingForm {
 		if ($map['type'] === 'checkbox')
 			$content = "$input $content";
 		else $content .= " $input";
-		$prefix = Auth::$signed_in && Auth::$user === $this->_current_user->id ? '' : "/@{$this->_current_user->name}";
-		return <<<HTML
-			<form action="$prefix/preference/set/{$this->_setting_name}">
+		if (Auth::$signed_in)
+			$action = "action='/user/{$this->_current_user->id}/preference/{$this->_setting_name}'";
+		else $action = '';
+		echo <<<HTML
+			<form $action>
 				<label>
 					$content
 					$savebtn
 				</label>
 			</form>
 HTML;
-	}
-
-	public function render(){
-		echo (string) $this;
 	}
 }

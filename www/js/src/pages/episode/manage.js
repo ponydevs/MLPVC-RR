@@ -182,7 +182,7 @@
 		let text = $h2c.text().trim();
 
 		$.Dialog.wait(`Editing "${text}"`,"Retrieving setting's value");
-		$.post(`/setting/get/${endpoint}`,$.mkAjaxHandler(function(){
+		$.API.get(`/setting/${endpoint}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let $EditorForm = $.mk('form', `${endpoint}-editor`).html(`<span>${text}</span>`),
@@ -203,7 +203,7 @@
 					let data = { value: session.getValue() };
 					$.Dialog.wait(false, 'Saving');
 
-					$.post(`/setting/set/${endpoint}`, data, $.mkAjaxHandler(function(){
+					$.API.put(`/setting/${endpoint}`, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$h2.siblings().remove();
