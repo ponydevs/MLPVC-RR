@@ -8,5 +8,5 @@ namespace App\Models;
 class FailsafeUser extends User {
 	public static $connection = 'failsafe';
 
-	public $name, $role, $avatar_url;
+	public $id, $name, $role, $avatar_url;
 }
