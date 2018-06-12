@@ -97,9 +97,11 @@ class Notification extends NSModel {
 		switch ($type) {
 			case 'post-finished':
 			case 'post-approved':
+				$type = $data['type'] ?? 'post';
+
 				DB::$instance->query(
 					"UPDATE notifications SET read_at = NOW() WHERE recipient_id = ? && type = ? && data->>'id' = ? && data->>'type' = ?",
-					[$recipient_id, $type, $data['id'], $data['type']]
+					[$recipient_id, $type, $data['id'], $type]
 				);
 			break;
 		}

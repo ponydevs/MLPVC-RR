@@ -342,8 +342,8 @@ HTML;
 			case 'post_approved':
 			case 'post_unapproved':
 				/** @var $post Post|null */
-				$post = DB::$instance->where('id', $data['id'])->getOne("{$data['type']}s");
-				$label = ucwords($data['type'])." #{$data['id']}";
+				$post = Post::find($data['id']);
+				$label = "Post #{$data['id']}";
 				if (!empty($post))
 					return $post->toAnchor($label);
 
@@ -365,11 +365,11 @@ HTML;
 
 				switch (explode('_', $type)[1]){
 					case 'sent':
-						return empty($gift) ? 'Unkown recipient' : 'To '.$gift->receiver->toAnchor();
+						return empty($gift) ? 'Unknown recipient' : 'To '.$gift->receiver->toAnchor();
 					case 'accepted':
-						return empty($gift) ? 'Unkown sender' : 'From '.$gift->sender->toAnchor();
+						return empty($gift) ? 'Unknown sender' : 'From '.$gift->sender->toAnchor();
 					case 'rejected':
-						return empty($gift) ? 'Unkown recipient' : 'By '.$gift->receiver->toAnchor();
+						return empty($gift) ? 'Unknown recipient' : 'By '.$gift->receiver->toAnchor();
 					case 'refunded':
 						return (empty($gift) ? 'The receiver' : $gift->receiver->toAnchor()).' did not claim this gift'.
 							'<br>Refunded by '.(Permission::sufficient('staff') ? $gift->refunder->toAnchor() : 'a staff member');

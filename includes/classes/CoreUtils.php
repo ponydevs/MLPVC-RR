@@ -234,6 +234,9 @@ class CoreUtils {
 			Response::fail("The requested endpoint ($path) does not support JSON responses");
 		}
 
+		// Clear any stray DB parameters before rendering
+		DB::$instance->reset();
+
 		// Resolve view
 		$view = new View($view_name);
 

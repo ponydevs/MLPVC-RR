@@ -300,8 +300,8 @@ class PostController extends Controller {
 			case 'POST':
 				$this->_authorize();
 
-				$thing = (new Input('what',function($value){
-					if (!\in_array($value,Posts::TYPES,true))
+				$kind = (new Input('kind',function($value){
+					if (!\in_array($value,Posts::KINDS,true))
 						return Input::ERROR_INVALID;
 				}, [
 					Input::CUSTOM_ERROR_MESSAGES => [
@@ -309,11 +309,11 @@ class PostController extends Controller {
 					]
 				]))->out();
 
-				$pref = 'a_post'.substr($thing, 0, 3);
+				$pref = 'a_post'.substr($kind, 0, 3);
 				if (!UserPrefs::get($pref, Auth::$user))
-					Response::fail("You are not allowed to post {$thing}s");
+					Response::fail("You are not allowed to post {$kind}s");
 
-				if ($thing === 'reservation'){
+				if ($kind === 'reservation'){
 					if (Permission::insufficient('member'))
 						Response::fail();
 					Users::checkReservationLimitReached();
@@ -347,7 +347,7 @@ class PostController extends Controller {
 						if (empty($PostAs))
 							Response::fail('The user you wanted to post as does not exist');
 
-						if ($thing === 'reservation' && !Permission::sufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
+						if ($kind === 'reservation' && !Permission::sufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
 							Response::fail('The user you wanted to post as is not a club member, do you want to post as them anyway?', ['canforce' => true]);
 
 						$ByID = $PostAs->id;
@@ -376,7 +376,7 @@ class PostController extends Controller {
 					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 
-				Response::done(['id' => $Post->getID()]);
+				Response::done(['id' => $Post->getID(), 'kind' => $kind]);
 			break;
 			case 'PUT':
 				$this->_checkPostEditPermission();
@@ -582,7 +582,10 @@ class PostController extends Controller {
 	public function load_post($params, $action){
 		$id = \intval($params['id'], 10);
 		$this->post = Post::find($id);
-		if (empty($this->post) && $action !== 'locate')
+		if ($action === 'locate')
+			return;
+
+		if (empty($this->post))
 			Response::fail("There's no post with the ID $id");
 
 		if ($this->post->lock === true && Permission::insufficient('developer') && !\in_array($action,['unlock', 'lazyload', 'locate'],true))
@@ -885,6 +888,9 @@ class PostController extends Controller {
 			$attr = 'id';
 			$id = \intval($params['id'], 36);
 		}
+
+		if ($id > 2147483647 || $id < 1)
+			CoreUtils::notFound();
 
 		/** @var $LinkedPost Post */
 		$LinkedPost = DB::$instance->where($attr, $id)->getOne('posts');

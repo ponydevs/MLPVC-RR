@@ -336,11 +336,11 @@
 				return;
 
 			const
-				postid = $this.attr('data-post').replace('-','/'),
+				postid = $this.attr('data-post').split('-').pop(),
 				viewonly = $this.attr('data-viewonly');
 			$this.addClass('loading');
 
-			$.get(`/post/lazyload/${postid}`,{viewonly},$.mkAjaxHandler(function(){
+			$.API.get(`/post/${postid}/lazyload`,{viewonly},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
 
 				$.loadImages(this.html).then(function(resp){
@@ -369,7 +369,7 @@
 
 		$.Dialog.wait('Deviation acceptance status', 'Checking');
 
-		$.post(`/post/lock/${thing}/${id}`, $.mkAjaxHandler(function(){
+		$.API.post(`/post/${id}/approval`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			$li.remove();

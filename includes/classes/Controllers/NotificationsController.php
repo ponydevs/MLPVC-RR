@@ -70,18 +70,18 @@ class NotificationsController extends Controller {
 			/** @noinspection DegradedSwitchInspection */
 			switch ($Notif->type){
 				case 'post-passon':
-					/** @var $Post Post */
-					$Post = Post::find($data['id']);
-					if (empty($Post)){
-						$Post = new Post([
+					/** @var $post Post */
+					$post = Post::find($data['id']);
+					if (empty($post)){
+						$post = new Post([
 							'id' => $data['id'],
 						]);
-						Posts::clearTransferAttempts($Post, 'del');
+						Posts::clearTransferAttempts($post, 'del');
 						Response::fail("The post doesn't exist or has been deleted");
 					}
 					if ($read_action === 'true'){
-						if ($Post->reserved_by !== Auth::$user->id){
-							Posts::clearTransferAttempts($Post, 'perm', Auth::$user);
+						if ($post->reserved_by !== Auth::$user->id){
+							Posts::clearTransferAttempts($post, 'perm', Auth::$user);
 							Response::fail('You are not allowed to transfer this reservation');
 						}
 
@@ -90,12 +90,11 @@ class NotificationsController extends Controller {
 							'id' => $data['id'],
 							'by' => Auth::$user->id,
 						]);
-						DB::$instance->where('id', $data['id'])->update("{$data['type']}s", [
-							'reserved_by' => $data['user'],
-							'reserved_at' => date('c'),
-						]);
+						$post->reserved_by = $data['user'];
+						$post->reserved_at = date('c');
+						$post->save();
 
-						Posts::clearTransferAttempts($Post, 'deny');
+						Posts::clearTransferAttempts($post, 'deny');
 
 						Logs::logAction('res_transfer', [
 							'id' => $data['id'],

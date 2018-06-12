@@ -11,7 +11,7 @@ use App\Exceptions\MismatchedProviderException;
 
 class Posts {
 	public const
-		TYPES = ['request', 'reservation'],
+		KINDS = ['request', 'reservation'],
 		REQUEST_TYPES = [
 			'chr' => 'Characters',
 			'obj' => 'Objects',
@@ -168,15 +168,14 @@ class Posts {
 		}
 		catch (\Exception $e){ Response::fail($e->getMessage()); }
 
-		foreach (self::TYPES as $type){
+		foreach (self::KINDS as $kind){
 			/** @noinspection DisconnectedForeachInstructionInspection */
 			if ($Post !== null)
 				DB::$instance->where('id',$Post->id,'!=');
 			if ($Image->preview !== null){
-				/** @var $UsedUnder Post */
-				$UsedUnder = DB::$instance->where('preview',$Image->preview)->getOne("{$type}s");
-				if (!empty($UsedUnder))
-					Response::fail("This exact image has already been used for a {$UsedUnder->toAnchor($type,null,true)} under {$UsedUnder->ep->toAnchor()}");
+				$already_used = Post::find_by_preview($Image->preview);
+				if (!empty($already_used))
+					Response::fail("This exact image has already been used for a {$already_used->toAnchor($kind,null,true)} under {$already_used->ep->toAnchor()}");
 			}
 		}
 
@@ -199,9 +198,11 @@ class Posts {
 		try {
 			$Image = new ImageProvider($deviation, ImageProvider::PROV_DEVIATION);
 
-			foreach (self::TYPES as $what){
-				if (DB::$instance->where('deviation_id', $Image->id)->has("{$what}s"))
-					Response::fail("This exact deviation has already been marked as the finished version of a different $what");
+			foreach (self::KINDS as $what){
+
+				$already_used = Post::find_by_deviation_id($Image->id);
+				if (!empty($already_used))
+					Response::fail("This exact deviation has already been marked as the finished version of  a {$already_used->toAnchor($already_used->kind,null,true)} under {$already_used->ep->toAnchor()}");
 			}
 
 			$return = ['deviation_id' => $Image->id];
@@ -619,13 +620,16 @@ HTML;
 				}
 				$post_type = $post->is_request ? '<em>Posted in the <strong>'.self::REQUEST_TYPES[$post->type].'</strong> section</em>' : '';
 				$HTML .= $post_label.$posted_at.$post_type.$reserved_at.$finished_at.$locked_at;
-				if (!empty($post->fullsize)){
+
+				if (!empty($post->fullsize))
 					$HTML .= "<span><a href='{$post->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a></span>";
-				}
 			}
 			else $HTML .= $post_label.$posted_at.$reserved_at;
 		}
 		else $HTML .= $post_label.$posted_at;
+
+		if ($post->old_id !== null && Permission::sufficient('developer'))
+			$HTML .= "<em class='old-id'>Old ID: {$post->old_id}</em>";
 
 		if ($displayOverdue && ($isStaff || $isReserver))
 			$HTML .= self::CONTESTABLE;

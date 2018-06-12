@@ -4,14 +4,16 @@ namespace App\Models;
 
 use ActiveRecord\DateTime;
 use App\Auth;
+use App\CoreUtils;
 use App\DB;
 use App\DeviantArt;
+use App\Logs;
 use App\Models\Logs\Log;
 use App\Permission;
 use App\Posts;
-use App\Time;
 use App\RegExp;
-use App\CoreUtils;
+use App\Time;
+use App\UserPrefs;
 
 /**
  * This is a blanket class for both requests and reservations.
@@ -44,6 +46,8 @@ use App\CoreUtils;
  * @property bool     $is_request     (Via magic method)
  * @property bool     $is_reservation (Via magic method)
  * @method static Post|Post[] find(...$args)
+ * @method static Post find_by_deviation_id(string $deviation_id)
+ * @method static Post find_by_preview(string $preview_url)
  */
 class Post extends NSModel implements LinkableInterface {
 	const ORDER_BY_POSTED_AT = 'CASE WHEN requested_by IS NOT NULL THEN requested_at ELSE reserved_at END';
@@ -62,14 +66,14 @@ class Post extends NSModel implements LinkableInterface {
 	public function post_deletion(){
 		try {
 			CoreUtils::socketEvent('post-delete',[
-				'id' => $this->post->id,
+				'id' => $this->id,
 			]);
 		}
 		catch (\Exception $e){
 			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
-		Posts::clearTransferAttempts($this->post, 'del');
+		Posts::clearTransferAttempts($this, 'del');
 	}
 
 	public function get_posted_at(){

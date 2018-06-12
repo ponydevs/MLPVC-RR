@@ -115,9 +115,6 @@ class Session extends NSModel {
 		}
 	}
 
-	/**
-	 * TODO Testing
-	 */
 	public function refreshAccessToken(){
 		if ($this->updating === true)
 			return;

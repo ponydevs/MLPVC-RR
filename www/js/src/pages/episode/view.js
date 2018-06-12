@@ -151,45 +151,38 @@
 			.fluidboxThis();
 	};
 	$._getLiTypeId = function($li){
-		let ident = $li.attr('id').split('-');
 		return {
-			id: ident[1],
-			type: $li.attr('data-type')+'s',
+			id: parseInt($li.attr('id').split('-').pop(), 10),
+			type: $li.attr('data-type'),
 		};
 	};
 	$.fn.rebindHandlers = function(isLi){
 		let $collection = isLi ? this : this.find('li[id]');
-		$collection.trigger('bind-more-handlers');
 		this.closest('section').rebindFluidbox();
 		return this;
 	};
-	let additionalHandlerAttacher = function(){
-		let $li = $(this),
-			ident = $._getLiTypeId($li),
-			type = ident.type,
-			id = ident.id,
-			$actions = $li.find('.actions').children();
+	const $posts = $('.posts');
+	$posts
+		.on('click','li[id] .share',function(e){
+			e.preventDefault();
 
-		$li.rebindFluidbox();
-
-		$actions.filter('.share').on('click',function(){
-			let
+			const
 				$button = $(this),
-				postID = parseInt($button.parents('li').attr('id').split('-')[1], 10),
-				url = `${window.location.href.replace(/([^:/]\/).*$/,'$1')}s/${postID.toString(36)}`;
+				$li = $button.closest('li'),
+				{ id } = $._getLiTypeId($li),
+				url = `${window.location.href.replace(/([^:/]\/).*$/,'$1')}s/${id.toString(36)}`,
+				$div = $.mk('div').attr('class','align-center').append(
+					'Use the link below to link to this post directly:',
+					$.mk('div').attr('class','share-link').text(url),
+					$.mk('button').attr('class','blue typcn typcn-clipboard').text('Copy to clipboard').on('click', function(e){
+						$.copy(url,e);
+					})
+				);
 
-			$.Dialog.info(`Sharing ${type.replace(/s$/,'')} #${id}`, $.mk('div').attr('class','align-center').append(
-				'Use the link below to link to this post directly:',
-				$.mk('div').attr('class','share-link').text(url),
-				$.mk('button').attr('class','blue typcn typcn-clipboard').text('Copy to clipboard').on('click', function(e){
-					$.copy(url,e);
-				})
-			),function(){
-				$('#dialogContent').find('.share-link').select();
+			$.Dialog.info(`Sharing post #${id}`, $div, () => {
+				$div.find('.share-link').select();
 			});
-		});
-	};
-	$('#requests, #reservations')
+		})
 		.on('pls-update',function(_, callback, silent){
 			let $section = $(this),
 				type = $section.attr('id'),
@@ -209,15 +202,18 @@
 				if (typeof callback === 'function') callback();
 				else if (silent !== true) $.Dialog.close();
 			}));
-		})
-		.on('bind-more-handlers','li[id]',additionalHandlerAttacher)
-		.find('li[id]').each(additionalHandlerAttacher);
+		});
+	$posts.find('li[id]').each(function(){
+		$(this).rebindFluidbox();
+	});
 
 	$.fn.formBind = function (){
 		let $form = $(this);
 		if (!$form.length)
 			return;
-		let $formImgCheck = $form.find('.check-img'),
+
+		const
+			$formImgCheck = $form.find('.check-img'),
 			$submitBtn = $form.find('button.submit'),
 			$formImgPreview = $form.find('.img-preview'),
 			$formDescInput = $form.find('input[name=label]'),
@@ -225,16 +221,19 @@
 			$formLabelInput = $form.find('input[name=label]'),
 			$notice = $formImgPreview.children('.notice'),
 			noticeHTML = $notice.html(),
-			$previewIMG = $formImgPreview.children('img'),
-			type = $form.attr('data-type').replace(/s$/,''), Type = $.capitalize(type);
+			type = $form.attr('data-type').replace(/s$/,''),
+			Type = $.capitalize(type);
 
-		if ($previewIMG.length === 0) $previewIMG = $(new Image()).appendTo($formImgPreview);
+		let $previewIMG = $formImgPreview.children('img');
+		if ($previewIMG.length === 0)
+			$previewIMG = $(new Image()).appendTo($formImgPreview);
 		$(`#${type}-btn`).on('click',function(){
-			if ($form.hasClass('hidden')){
+			if ($form.hasClass('hidden'))
 				$form.removeClass('hidden');
+
+			$.scrollTo($form.offset().top - $navbar.outerHeight() - 10, 500, () => {
 				$formDescInput.focus();
-				$.scrollTo($form.offset().top - $navbar.outerHeight() - 10, 500);
-			}
+			});
 		});
 		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
 			let $AddReservationForm = $.mk('form','add-reservation').html(
@@ -277,9 +276,9 @@
 		$formImgInput.on('keyup change paste',imgCheckDisabler);
 		let outgoing =  /^https?:\/\/www\.deviantart\.com\/users\/outgoing\?/;
 		function imgCheckDisabler(disable){
-			let prevurl = $formImgInput.data('prev-url'),
-				samevalue = typeof prevurl === 'string' && prevurl.trim() === $formImgInput.val().trim();
-			const checkDisabled = disable === true || samevalue;
+			let prevUrl = $formImgInput.data('prev-url'),
+				sameValue = typeof prevUrl === 'string' && prevUrl.trim() === $formImgInput.val().trim();
+			const checkDisabled = disable === true || sameValue;
 			$formImgCheck.attr('disabled', checkDisabled);
 			$submitBtn.attr('disabled', !checkDisabled);
 			if (checkDisabled)
@@ -438,13 +437,9 @@
 			$form.addClass('hidden');
 		});
 	};
-
-	$.each(['requests','reservations'], function(_, el){
-		$('#'+el)
-			.trigger('bind-more-handlers')
-			.find('.post-form').attr('data-type',el).formBind();
+	$posts.find('.post-form').each(function(){
+		$(this).formBind();
 	});
-
 
 	const deviationIO = new IntersectionObserver(entries => {
 		entries.forEach(entry => {

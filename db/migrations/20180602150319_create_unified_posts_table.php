@@ -118,5 +118,15 @@ class CreateUnifiedPostsTable extends AbstractMigration {
 				$this->query("DELETE FROM notifications WHERE id = {$notif['id']}");
 			else $this->query("UPDATE notifications SET data = data - 'type' || jsonb_build_object('id', {$new_post['id']}) WHERE id = {$notif['id']}");
 		}
+
+		$pcg_history = $this->fetchAll("SELECT * FROM pcg_slot_history WHERE change_type LIKE 'post_%'");
+		foreach ($pcg_history as $entry){
+			$change_data = \App\JSON::decode($entry['change_data']);
+			$NOT = $change_data['type'] === 'request' ? 'NOT' : '';
+			$new_post = $this->fetchRow("SELECT id FROM posts WHERE requested_by IS $NOT NULL AND old_id = {$change_data['id']}");
+			if (empty($new_post['id']))
+				$this->query("DELETE FROM pcg_slot_history WHERE id = {$entry['id']}");
+			else $this->query("UPDATE pcg_slot_history SET change_data = change_data - 'type' || jsonb_build_object('id', {$new_post['id']}) WHERE id = {$entry['id']}");
+		}
 	}
 }

@@ -140,6 +140,7 @@
 
 		class Time {
 			static Update(){
+				// TODO Rework dyntime
 				$('time[datetime]:not(.nodt)').addClass('dynt').each(function(){
 					let $this = $(this),
 						date = $this.attr('datetime');
@@ -617,16 +618,21 @@
 		return isOverflowing;
 	};
 
-	$.scrollTo = (pos, speed, callback) => {
-		let scrollFunction = () => false;
-		$('html,body')
-			.on('mousewheel scroll',scrollFunction)
-			.animate({scrollTop:pos},speed,callback)
-			.off('mousewheel scroll',scrollFunction);
-		$w.on('beforeunload',function(){
-			$('html,body').stop().off('mousewheel scroll',scrollFunction);
-		});
-	};
+	(function($){
+		const handler = () => false;
+		const disableEvents = 'mousewheel scroll keydown';
+		const elements = 'html,body';
+
+		$.scrollTo = (pos, speed, callback) => {
+			$(elements)
+				.on(disableEvents,handler)
+				.animate({scrollTop:pos},speed,callback)
+				.off(disableEvents,handler);
+			$w.on('beforeunload',function(){
+				$(elements).stop().off(disableEvents,handler);
+			});
+		};
+	})(jQuery);
 
 	$.getAceEditor = (title, mode, cb) => {
 		let fail = () => $.Dialog.fail(false, 'Failed to load Ace Editor'),

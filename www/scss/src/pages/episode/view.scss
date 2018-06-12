@@ -317,7 +317,9 @@
 		}
 		label {
 			span {
+				display: block;
 				margin-bottom: 5px;
+				font-size: 1.1em;
 			}
 			input {
 				width: 100%;
@@ -334,7 +336,6 @@
 		}
 	}
 }
-#content .post-form label > span,
 #requests > .unfinished > .group > h3 {
 	display: block;
 	font-size: 1.2em;
