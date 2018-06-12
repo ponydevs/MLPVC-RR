@@ -54,11 +54,10 @@ class Notifications {
 		foreach ($Notifications as $n){
 			$data = !empty($n->data) ? JSON::decode($n->data) : null;
 			if (preg_match(new RegExp('^post-'),$n->type)){
-				$_postClass = '\App\Models\\'.CoreUtils::capitalize($data['type']);
 				try {
 					/** @var $Post Post */
 					/** @noinspection PhpUndefinedMethodInspection */
-					$Post = $_postClass::find($data['id']);
+					$Post = Post::find($data['id']);
 					$Episode = $Post->ep;
 					$EpID = $Episode->getID();
 					$url = $Post->toURL($Episode);
