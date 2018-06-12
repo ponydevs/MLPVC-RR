@@ -109,18 +109,14 @@
 				}
 			}
 		}
-		.personal-cg {
-			ul.personal-cg-appearances {
-				@extend %appearance-ul;
-			}
-			.personal-cg-appearances {
-				margin: 10px 0;
-				padding: 0;
-				list-style: none;
+		.personal-cg .personal-cg-appearances {
+			@extend %appearance-ul;
+			margin: 10px 0;
+			padding: 0;
+			list-style: none;
 
-				li:not(:last-child) {
-					margin-right: 10px;
-				}
+			li:not(:last-child) {
+				margin-right: 10px;
 			}
 		}
 		.pending-reservations, .awaiting-approval {
