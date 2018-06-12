@@ -1,6 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 
 class UserTest extends TestCase {
 	public function testToAnchor(){
@@ -35,11 +36,13 @@ class UserTest extends TestCase {
 	}
 
 	public function testGetAvatarWrap(){
+		$id = Uuid::v4();
 		$User = new \App\Models\User([
+			'id' => $id,
 			'name' => 'TestUser',
 			'avatar_url' => '/img/guest.svg',
 		]);
 		$result = $User->getAvatarWrap(' app-illustrator');
-		static::assertEquals("<div class='avatar-wrap provider-deviantart app-illustrator' data-for='TestUser'><img src='/img/guest.svg' class='avatar' alt='avatar'></div>", $result);
+		static::assertEquals("<div class='avatar-wrap provider-deviantart app-illustrator' data-for='$id'><img src='/img/guest.svg' class='avatar' alt='avatar'></div>", $result);
 	}
 }
