@@ -362,10 +362,9 @@
 	$('.awaiting-approval').on('click', 'button.check', function(e){
 		e.preventDefault();
 
-		let $li = $(this).parents('li'),
-			IDArray = $li.attr('id').split('-'),
-			thing = IDArray[0],
-			id = IDArray[1];
+		const
+			$li = $(this).parents('li'),
+			id = $li.attr('id').split('-').pop();
 
 		$.Dialog.wait('Deviation acceptance status', 'Checking');
 

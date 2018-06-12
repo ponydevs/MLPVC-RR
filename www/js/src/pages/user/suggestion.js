@@ -6,8 +6,6 @@
 	$pendingReservations.on('click','#suggestion',function(e){
 		e.preventDefault();
 
-		let pluginsLoaded = false;
-
 		$.Dialog.info(
 			'Request Roulette™',
 			`<p>If you feel like making a vector but don't have any screencap in mind, then you are in the right place.</p>

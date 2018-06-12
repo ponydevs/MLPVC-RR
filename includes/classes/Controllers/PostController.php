@@ -704,7 +704,6 @@ class PostController extends Controller {
 
 		$this->_authorize();
 
-		$thing = $params['thing'];
 		$this->load_post($params, 'view');
 		if ($this->post->lock)
 			Response::fail('This post is locked, its image cannot be changed.');

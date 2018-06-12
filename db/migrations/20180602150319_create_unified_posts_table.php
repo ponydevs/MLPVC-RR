@@ -10,13 +10,6 @@ class CreateUnifiedPostsTable extends AbstractMigration {
 		  ->changeColumn('type', 'string', ['length' => 11, 'default' => 'post'])
 		  ->save();
 	}
-	private function _restoreIdColumn(\Phinx\Db\Table $t){
-		$t->removeColumn('id')->save();
-		$t->renameColumn('old_id','id')->save();
-		$t->changeColumn('id', 'integer')
-		  ->changeColumn('type', 'string', ['length' => 11])
-		  ->save();
-	}
 
 	public function up() {
 		$posts_table = $this->table('posts')
