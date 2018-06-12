@@ -358,18 +358,18 @@ HTML;
 	/**
 	 * Get Request / Reservation Submission Form HTML
 	 *
-	 * @param string $type
+	 * @param string $kind
 	 *
 	 * @return string
 	 */
-	private static function _getForm($type){
-		$Type = strtoupper($type[0]).mb_substr($type,1);
-		$optional = $type === 'reservation' ? 'optional, ' : '';
-		$optreq = $type === 'reservation' ? '' : 'required';
+	private static function _getForm($kind){
+		$Type = strtoupper($kind[0]).mb_substr($kind,1);
+		$optional = $kind === 'reservation' ? 'optional, ' : '';
+		$optreq = $kind === 'reservation' ? '' : 'required';
 
 		$HTML = <<<HTML
-	<form class="hidden post-form" data-type="$type">
-		<h2>Make a $type</h2>
+	<form class="hidden post-form" data-kind="$kind">
+		<h2>Make a $kind</h2>
 		<div>
 			<label>
 				<span>$Type description ({$optional}3-255 chars)</span>
@@ -387,7 +387,7 @@ HTML;
 				</div>
 			</div>
 HTML;
-		if ($type === 'request')
+		if ($kind === 'request')
 			$HTML .= <<<HTML
 			<label>
 				<span>$Type type</span>
@@ -420,7 +420,7 @@ HTML;
 		$HTML .= <<<HTML
 		</div>
 		
-		<button class="green submit" disabled>Submit $type</button>
+		<button class="green submit" disabled>Submit $kind</button>
 		<button type="button" class="check-img red typcn typcn-arrow-repeat">Check image</button>
 		<button type="reset">Cancel</button>
 	</form>
@@ -627,9 +627,6 @@ HTML;
 			else $HTML .= $post_label.$posted_at.$reserved_at;
 		}
 		else $HTML .= $post_label.$posted_at;
-
-		if ($post->old_id !== null && Permission::sufficient('developer'))
-			$HTML .= "<em class='old-id'>Old ID: {$post->old_id}</em>";
 
 		if ($displayOverdue && ($isStaff || $isReserver))
 			$HTML .= self::CONTESTABLE;

@@ -236,10 +236,6 @@ class UserController extends Controller {
 				$cnt = $User->getFinishedPostContributions();
 				$Pagination->calcMaxPages($cnt);
 				$data = $User->getFinishedPostContributions(false, $Pagination);
-				foreach ($data as &$item){
-					$item = new Post($item);
-				}
-				unset($item);
 			break;
 			case 'fulfilled-requests':
 				$cnt = $User->getApprovedFinishedRequestContributions();

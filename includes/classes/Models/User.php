@@ -421,22 +421,21 @@ class User extends AbstractUser implements LinkableInterface {
 	}
 
 	/**
-	 * @param bool       $count      Returns the count if true
-	 * @param Pagination $pagination Pagination object used for getting the LIMIT part of the query
+	 * @param bool            $count      Returns the count if true
+	 * @param Pagination|null $pagination Pagination object used for getting the LIMIT part of the query
 	 * @return int|Post[]
 	 */
-	public function getFinishedPostContributions(bool $count = true, Pagination $pagination = null){
+	public function getFinishedPostContributions(bool $count = true, ?Pagination $pagination = null){
+		DB::$instance->where('reserved_by', $this->id)
+		             ->where('deviation_id IS NOT NULL');
 		if ($count)
-			return DB::$instance->querySingle(
-				'SELECT COUNT(*) as cnt FROM posts WHERE reserved_by = ? && deviation_id IS NOT NULL',
-				[$this->id]
-			)['cnt'];
+			return DB::$instance->count('posts');
 
-		/** @noinspection SqlInsertValues */
-		$query = 'SELECT COUNT(*) as cnt FROM posts WHERE reserved_by = ? && deviation_id IS NOT NULL';
 		if ($pagination)
-			$query .= ' ORDER BY '.Post::ORDER_BY_POSTED_AT.' DESC '.$pagination->getLimitString();
-		return DB::$instance->query($query, [$this->id]);
+			DB::$instance->orderByLiteral(Post::ORDER_BY_POSTED_AT, 'DESC');
+
+		$limit = isset($pagination) ? $pagination->getLimit() : null;
+		return DB::$instance->get('posts', $limit);
 	}
 
 	/**

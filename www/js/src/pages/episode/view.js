@@ -185,22 +185,23 @@
 		})
 		.on('pls-update',function(_, callback, silent){
 			let $section = $(this),
-				type = $section.attr('id'),
-				Type = $.capitalize(type),
-				typeWithS = type.replace(/([^s])$/,'$1s');
+				kinds = $section.attr('id'),
+				Kinds = $.capitalize(kinds);
 			if (silent !== true)
-				$.Dialog.wait($.Dialog.isOpen() ? false : Type, 'Updating list of '+typeWithS, true);
-			$.API.get(`/episode/${EpID}/posts?section=${typeWithS}`, $.mkAjaxHandler(function(){
+				$.Dialog.wait($.Dialog.isOpen() ? false : Kinds, `Updating list of ${kinds}`, true);
+			$.API.get(`/episode/${EpID}/posts`, {section:kinds}, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let $newChildren = $(this.render).filter('section').children();
 				$section.empty().append($newChildren).rebindHandlers();
-				$section.find('.post-form').attr('data-type',type).formBind();
+				$section.find('.post-form').formBind();
 				$section.find('h2 > button').enable();
 				Time.Update();
 				window._HighlightHash();
-				if (typeof callback === 'function') callback();
-				else if (silent !== true) $.Dialog.close();
+				if (typeof callback === 'function')
+					callback();
+				else if (silent !== true)
+					$.Dialog.close();
 			}));
 		});
 	$posts.find('li[id]').each(function(){
@@ -221,13 +222,13 @@
 			$formLabelInput = $form.find('input[name=label]'),
 			$notice = $formImgPreview.children('.notice'),
 			noticeHTML = $notice.html(),
-			type = $form.attr('data-type').replace(/s$/,''),
-			Type = $.capitalize(type);
+			kind = $form.attr('data-kind'),
+			Kind = $.capitalize(kind);
 
 		let $previewIMG = $formImgPreview.children('img');
 		if ($previewIMG.length === 0)
 			$previewIMG = $(new Image()).appendTo($formImgPreview);
-		$(`#${type}-btn`).on('click',function(){
+		$(`#${kind}-btn`).on('click',function(){
 			if ($form.hasClass('hidden'))
 				$form.removeClass('hidden');
 
@@ -235,7 +236,7 @@
 				$formDescInput.focus();
 			});
 		});
-		if (type === 'reservation') $('#add-reservation-btn').on('click',function(){
+		if (kind === 'reservation') $('#add-reservation-btn').on('click',function(){
 			let $AddReservationForm = $.mk('form','add-reservation').html(
 				`<div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and you just want to link the finished vector under the newly posted episode OR if this was a request, but the original image (screencap) is no longer available, only the finished vector.</div>
 				<div class="notice warn">If you already posted the reservation, use the <strong class="typcn typcn-attachment">I'm done</strong> button to mark it as finished instead of adding it here.</div>
@@ -244,11 +245,11 @@
 					<input type="text" name="deviation">
 				</label>`
 			);
-			$.Dialog.request('Add a reservation',$AddReservationForm,'Finish', function($form){
-				$form.on('submit', function(e){
+			$.Dialog.request('Add a reservation',$AddReservationForm,'Finish', function(){
+				$AddReservationForm.on('submit', function(e){
 					e.preventDefault();
 
-					let deviation = $form.find('[name=deviation]').val();
+					let deviation = $AddReservationForm.find('[name=deviation]').val();
 
 					if (typeof deviation !== 'string' || deviation.length === 0)
 						return $.Dialog.fail(false, 'Please enter a deviation URL');
@@ -264,10 +265,9 @@
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, this.message);
-						const selector = `#${this.id}`;
-						$(selector).closest('.posts').trigger('pls-update', [() => {
+						$form.closest('.posts').trigger('pls-update', [() => {
 							$.Dialog.close();
-							window.location.hash = selector;
+							window.location.hash = `#${this.id}`;
 						}]);
 					}));
 				});
@@ -294,7 +294,7 @@
 		let CHECK_BTN = '<strong class="typcn typcn-arrow-repeat" style="display:inline-block">Check image</strong>';
 		function checkImage(){
 			let image_url = $formImgInput.val(),
-				title = Type+' process';
+				title = Kind+' process';
 
 			$formImgCheck.removeClass('red');
 			imgCheckDisabler(true);
@@ -323,8 +323,8 @@
 
 						if (!!data.title && !$formLabelInput.val().trim())
 							$.Dialog.confirm(
-								'Confirm '+type+' title',
-								`The image you just checked had the following title:<br><br><p class="align-center"><strong>${data.title}</strong></p><br>Would you like to use this as the ${type}'s description?<br>Keep in mind that it should describe the thing(s) ${type === 'request' ? 'being requested' : 'you plan to vector'}.<p>This dialog will not appear if you give your ${type} a description before clicking the ${CHECK_BTN} button.</p>`,
+								'Confirm '+kind+' title',
+								`The image you just checked had the following title:<br><br><p class="align-center"><strong>${data.title}</strong></p><br>Would you like to use this as the ${kind}'s description?<br>Keep in mind that it should describe the thing(s) ${kind === 'request' ? 'being requested' : 'you plan to vector'}.<p>This dialog will not appear if you give your ${kind} a description before clicking the ${CHECK_BTN} button.</p>`,
 								function(sure){
 									if (!sure) return $form.find('input[name=label]').focus();
 									$formLabelInput.val(data.title);
@@ -359,10 +359,10 @@
 		});
 		$form.on('submit',function(e, screwChanges, sanityCheck){
 			e.preventDefault();
-			let title = Type+' process';
+			let title = Kind+' process';
 
 			if (typeof $formImgInput.data('prev-url') === 'undefined')
-				return $.Dialog.fail(title, 'Please click the '+CHECK_BTN+' button before submitting your '+type+'!');
+				return $.Dialog.fail(title, 'Please click the '+CHECK_BTN+' button before submitting your '+kind+'!');
 
 			if (!screwChanges && $formImgInput.data('prev-url') !== $formImgInput.val())
 				return $.Dialog.confirm(
@@ -375,7 +375,7 @@
 					}
 				);
 
-			if (!sanityCheck && type === 'request'){
+			if (!sanityCheck && kind === 'request'){
 				let label = $formDescInput.val(),
 					$type = $form.find('select');
 
@@ -390,13 +390,11 @@
 			}
 
 			let data = $form.mkData({
-				what: type,
+				kind: kind,
 				episode: EPISODE,
 				season: SEASON,
 				image_url: $formImgInput.data('prev-url'),
 			});
-
-			console.log(type);
 
 			(function submit(){
 				$.Dialog.wait(title,'Submitting post');
@@ -413,17 +411,17 @@
 						});
 					}
 
-					$.Dialog.success(false, Type+' posted');
+					$.Dialog.success(false, Kind+' posted');
 
 					const id = this.id;
-					$(`#${type}s`).trigger('pls-update', [function(){
+					$(`#${kind}s`).trigger('pls-update', [function(){
 						$.Dialog.close();
-						$.Dialog.confirm(Type+' posted','Would you like to view it or make another?',['View','Make another'],function(view){
+						$.Dialog.confirm(Kind+' posted','Would you like to view it or make another?',['View','Make another'],function(view){
 							$.Dialog.close();
 
 							if (view) return;
 
-							$(`#${type}-btn`).trigger('click');
+							$(`#${kind}-btn`).trigger('click');
 						});
 						window.location.hash = '#'+id;
 					}]);
