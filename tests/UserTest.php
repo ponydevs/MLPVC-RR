@@ -36,7 +36,7 @@ class UserTest extends TestCase {
 	}
 
 	public function testGetAvatarWrap(){
-		$id = Uuid::v4();
+		$id = Uuid::uuid4();
 		$User = new \App\Models\User([
 			'id' => $id,
 			'name' => 'TestUser',
