@@ -140,7 +140,8 @@ class User extends AbstractUser implements LinkableInterface {
 	public function getAvatarWrap(string $vectorapp = ''):string {
 		if (empty($vectorapp))
 			$vectorapp = $this->getVectorAppClassName();
-		return "<div class='avatar-wrap provider-{$this->avatar_provider}$vectorapp' data-for='{$this->id}'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
+		$for = $this->id !== null ? "data-for='{$this->id}'" : '';
+		return "<div class='avatar-wrap provider-{$this->avatar_provider}$vectorapp' $for><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
 	}
 
 	public function getVectorAppClassName():string {
