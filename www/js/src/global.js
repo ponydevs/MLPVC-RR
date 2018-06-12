@@ -442,21 +442,22 @@
 		}, pollInterval);
 	}
 
-	$body.swipe($.throttle(10, function(direction, offset){
-		if (window.sidebarForcedVisible() || !$body.hasClass('sidebar-open'))
-			return;
+	if (!window.ServiceUnavailableError)
+		$body.swipe($.throttle(10, function(direction, offset){
+			if (window.sidebarForcedVisible() || !$body.hasClass('sidebar-open'))
+				return;
 
-		// noinspection JSSuspiciousNameCombination
-		const
-			offX = Math.abs(offset.x),
-			offY = Math.abs(offset.y),
-			minMove = Math.min($body.width()/2, 200);
+			// noinspection JSSuspiciousNameCombination
+			const
+				offX = Math.abs(offset.x),
+				offY = Math.abs(offset.y),
+				minMove = Math.min($body.width()/2, 200);
 
-		if (direction.x !== 'left' || offX < minMove || offY > 75)
-			return;
+			if (direction.x !== 'left' || offX < minMove || offY > 75)
+				return;
 
-		$sbToggle.trigger('click');
-	}));
+			$sbToggle.trigger('click');
+		}));
 })();
 
 // Remove loading animation from header on load

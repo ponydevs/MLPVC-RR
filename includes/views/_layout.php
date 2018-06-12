@@ -31,16 +31,22 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 	<meta charset="utf-8">
 	<title><?=ltrim(CoreUtils::escapeHTML($title).' - '.SITE_TITLE, ' -')?></title>
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
-	<meta property="og:type" content="website">
-	<meta property="og:locale" content="en_US">
 <?php
-	foreach ($og as $k => $v)
-		echo "\t<meta property='og:$k' content='". CoreUtils::aposEncode($v) ."'>\n";
+	if (isset($og)){
+		foreach ($og as $k => $v)
+			echo "\t<meta property='og:$k' content='". CoreUtils::aposEncode($v) ."'>\n";
+		$og_apos_desc = CoreUtils::aposEncode($og['description']);
+		$og_apos_image = CoreUtils::aposEncode($og['image']);
+		echo <<<HTML
+\t<meta name="description" content="$og_apos_desc">
+\t<link rel="image_src" href="$og_apos_image">
+\t<meta property="og:type" content="website">
+\t<meta property="og:locale" content="en_US">
+HTML;
+	}
 	if (isset($canonicalURL))
 		echo "\t<link rel='canonical' href='". CoreUtils::aposEncode($canonicalURL) ."' >\n"; ?>
-	<meta name="description" content='<?=CoreUtils::aposEncode($og['description'])?>'>
 	<meta name="format-detection" content="telephone=no">
-	<link rel="image_src" href="<?=CoreUtils::aposEncode($og['image'])?>">
 
 	<meta name="theme-color" content="#2C73B1">
 	<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
