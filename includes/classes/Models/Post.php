@@ -104,13 +104,22 @@ class Post extends NSModel implements LinkableInterface {
 	}
 
 	public function get_approval_entry(){
+		if ($this->old_id !== null){
+			$whereQuery = 'type = ? AND old_id = ?';
+			$whereBind = [$this->kind, $this->old_id];
+		}
+		else {
+			$whereQuery = 'id = ?';
+			$whereBind = [$this->id];
+		}
+
 		return DB::$instance->setModel(Log::class)->querySingle(
 			"SELECT l.*
 			FROM log__post_lock pl
 			LEFT JOIN log l ON l.reftype = 'post_lock' AND l.refid = pl.entryid
-			WHERE type = ? AND id = ?
+			WHERE $whereQuery
 			ORDER BY pl.entryid ASC
-			LIMIT 1", [$this->kind, $this->id]
+			LIMIT 1", $whereBind
 		);
 	}
 
