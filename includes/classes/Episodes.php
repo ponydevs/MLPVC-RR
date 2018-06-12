@@ -294,7 +294,7 @@ HTML;
 
 		$UserVote = $Episode->getUserVote();
 		if (empty($UserVote)){
-			$HTML .= "<br><p>What did <em>you</em> think about the $thing?</p>";
+			$HTML .= "<br><p>How would <em>you</em> rate the $thing?</p>";
 			if (Auth::$signed_in)
 				$HTML .= "<button class='blue rate typcn typcn-star'>Cast your vote</button>";
 			else $HTML .= '<p><em>Sign in above to cast your vote!</em></p>';

@@ -7,7 +7,7 @@
 		name = $briefing.find('.username').text().trim(),
 		$currRole = $briefing.find('.role-label'),
 		currRole = $currRole.text().trim(),
-		$RoleModFormTemplate = $.mk('form').attr('id','rolemod').html('<select name="newrole" required><optgroup label="Possible roles"></optgroup></select>'),
+		$RoleModFormTemplate = $.mk('form').attr('id','rolemod').html('<select name="value" required><optgroup label="Possible roles"></optgroup></select>'),
 		$OptGrp = $RoleModFormTemplate.find('optgroup'),
 		$changeRole = $('#change-role'),
 		$changeRoleMask = $('#change-dev-role-mask');
@@ -17,6 +17,7 @@
 	});
 
 	$changeRole.on('click',function(){
+		const userId = $changeRole.attr('data-for');
 		$.Dialog.request('Change group',$RoleModFormTemplate.clone(),'Change', function($form){
 			let $currRoleOpt = $form.find('option').filter(function(){ return this.innerHTML === currRole }).attr('selected', true);
 			$form.on('submit', function(e){
@@ -28,7 +29,7 @@
 				let data = $form.mkData();
 				$.Dialog.wait(false,'Moving user to the new group');
 
-				$.post(`/user/setgroup/${name}`, data, $.mkAjaxHandler(function(){
+				$.API.put(`/user/${userId}/role`, data, $.mkAjaxHandler(function(){
 					if (this.already_in === true)
 						return $.Dialog.close();
 
@@ -52,7 +53,7 @@
 				let data = $form.mkData();
 				$.Dialog.wait(false,'Changing role mask');
 
-				$.post(`/user/setdevrolemask`, data, $.mkAjaxHandler(function(){
+				$.API.put(`/setting/dev_role_label`, data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Navigation.reload(true);

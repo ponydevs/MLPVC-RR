@@ -68,6 +68,14 @@ class GlobalSettings {
 			case 'about_reservations':
 				$value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules'? ['li', 'ol'] : ['p']);
 			break;
+
+			case 'dev_role_label':
+				if (Permission::insufficient('developer'))
+					Response::fail("You cannot change the $key setting");
+
+				if (empty($value) || !isset(Permission::ROLES_ASSOC[$value]))
+					throw new \RuntimeException('The specified role is invalid');
+			break;
 		}
 
 		return $value;

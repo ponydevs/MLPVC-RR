@@ -25,7 +25,7 @@ $isOwnerOrStaff = $isOwner || $isStaff; ?>
 <?  $export = [
 		'EQG' => false,
 		'AppearancePage' => false,
-		'PersonalGuide' => $User->name,
+		'PersonalGuide' => $User->id,
 	];
 	if ($isOwnerOrStaff){
 		global $HEX_COLOR_REGEX;

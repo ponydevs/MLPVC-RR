@@ -1,6 +1,6 @@
 (function(){
 	'use strict';
-	const name = $content.children('.briefing').find('.username').text().trim();
+	const { username, userId } = window;
 
 	$('.personal-cg-say-what').on('click',function(e){
 		e.preventDefault();
@@ -83,14 +83,14 @@
 		});
 	}
 
-	const $giftPCGSlots = $('.gift-pcg-slots');
+	const $giftPCGSlots = $('#gift-pcg-slots');
 	if ($giftPCGSlots.length){
 		$giftPCGSlots.on('click',function(e){
 			e.preventDefault();
 
-			$.Dialog.wait('Gifting PCG slots to '+name, 'Checking your available slot count');
+			$.Dialog.wait(`Gifting PCG slots to ${username}`, 'Checking your available slot count');
 
-			$.post('/user/verify-giftable-slots', $.mkAjaxHandler(function(){
+			$.API.get('/user/pcg/giftable-slots', $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				const availableSlots = this.avail;
@@ -121,12 +121,12 @@
 						const
 							s = data.amount === 1 ? '' : 's',
 							are = data.amount === 1 ? 'is' : 'are';
-						$.Dialog.confirm(false, `<p>You are about to send <strong>${data.amount} slot${s}</strong> to <strong>${name}</strong>. The slots will be immediately removed from your account and a notification will be sent to ${name} where they can choose to accept or reject your gift.</p><p>If they reject, the slot${s} ${are} returned to you. You will be notified if they decide, and if they don't do so within <strong>2 weeks</strong> you may ask the staff to have your slot${s} refunded.</p><p>Are you sure?</p>`, [`Gift ${data.amount} slot${s} to ${name}`, 'Cancel'], sure => {
+						$.Dialog.confirm(false, `<p>You are about to send <strong>${data.amount} slot${s}</strong> to <strong>${username}</strong>. The slots will be immediately removed from your account and a notification will be sent to ${username} where they can choose to accept or reject your gift.</p><p>If they reject, the slot${s} ${are} returned to you. You will be notified if they decide, and if they don't do so within <strong>2 weeks</strong> you may ask the staff to have your slot${s} refunded.</p><p>Are you sure?</p>`, [`Gift ${data.amount} slot${s} to ${username}`, 'Cancel'], sure => {
 							if (!sure) return;
 
 							$.Dialog.wait(false, 'Sending gift');
 
-							$.post('/user/gift-pcg-slots/'+name, data, $.mkAjaxHandler(function(){
+							$.API.post(`/user/${userId}/pcg/slots`, data, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$.Dialog.success(false, this.message, true);
@@ -138,14 +138,14 @@
 		});
 	}
 
-	const $givePCGPoints = $('.give-pcg-points');
+	const $givePCGPoints = $('#give-pcg-points');
 	if ($givePCGPoints.length){
 		$givePCGPoints.on('click',function(e){
 			e.preventDefault();
 
-			$.Dialog.wait('Giving PCG points to '+name, "Checking user's total points");
+			$.Dialog.wait('Giving PCG points to '+username, "Checking user's total points");
 
-			$.post('/user/get-deductable-points/'+name, $.mkAjaxHandler(function(){
+			$.API.get(`/user/${userId}/pcg/points`, $.mkAjaxHandler(function(){
 				const $GiveForm = $.mk('form','pcg-point-give-form').append(
 					$.mk('label').append(
 						`<p>Choose how many <strong>points</strong> you want to give. Enter a negative number to take points. You cannot take more points than what the user has, and the free slot cannot be taken away.</p><p><strong>Remember, 10 points = 1 slot!</strong></p>`,
@@ -182,12 +182,12 @@
 							giving = data.amount > 0,
 							give = giving ? 'give' : 'take',
 							to = giving ? 'to' : 'from';
-						$.Dialog.confirm(false, `<p>You are about to ${give} <strong>${absAmount} point${s}</strong> ${to} <strong>${name}</strong>. The point${s} will be ${give}n ${to} them immediately, and they will not receive any notification on the site.</p><p>Are you sure?</p>`, [`${$.capitalize(give)} ${absAmount} point${s} ${to} ${name}`, 'Cancel'], sure => {
+						$.Dialog.confirm(false, `<p>You are about to ${give} <strong>${absAmount} point${s}</strong> ${to} <strong>${username}</strong>. The point${s} will be ${give}n ${to} them immediately, and they will not receive any notification on the site.</p><p>Are you sure?</p>`, [`${$.capitalize(give)} ${absAmount} point${s} ${to} ${username}`, 'Cancel'], sure => {
 							if (!sure) return;
 
 							$.Dialog.wait(false, 'Giving points');
 
-							$.post('/user/give-pcg-points/'+name, data, $.mkAjaxHandler(function(){
+							$.API.post(`/user/${userId}/pcg/points`, data, $.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$.Dialog.segway(false, this.message);
@@ -201,7 +201,7 @@
 
 	let $signoutBtn = $('#signout'),
 		$sessionList = $('.session-list'),
-		sameUser = name === $sidebar.children('.welcome').find('.un').text().trim();
+		sameUser = username === $sidebar.children('.welcome').find('.un').text().trim();
 	$sessionList.find('button.remove').off('click').on('click', function(e){
 		e.preventDefault();
 
@@ -221,12 +221,12 @@
 		if (typeof sessionID === 'undefined')
 			return $.Dialog.fail(title,'Could not locate Session ID, please reload the page and try again.');
 
-		$.Dialog.confirm(title,`${sameUser?'You':name} will be signed out of <em>${browser}</em>${platform}.<br>Continue?`, function(sure){
+		$.Dialog.confirm(title,`${sameUser?'You':username} will be signed out of <em>${browser}</em>${platform}.<br>Continue?`, function(sure){
 			if (!sure) return;
 
 			$.Dialog.wait(title,`Signing out of ${browser}${platform}`);
 
-			$.post(`/user/sessiondel/${sessionID}`, $.mkAjaxHandler(function(){
+			$.API.delete(`/user/session/${sessionID}`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(title,this.message);
 
 				if ($li.siblings().length !== 0){
@@ -242,7 +242,7 @@
 		e.preventDefault();
 
 		let $this = $(this);
-		$.Dialog.info(`User Agent string for session #${$this.parents('li').attr('id').substring(8)}`, `<code>${$this.data('agent')}</code>`);
+		$.Dialog.info(`User-Agent for session ${$this.parents('li').attr('id').substring(8)}`, `<code>${$this.data('agent')}</code>`);
 	});
 	$('#sign-out-everywhere').on('click',function(){
 		$.Dialog.confirm('Sign out from ALL sessions',"This will invalidate ALL sessions. Continue?", function(sure){
@@ -250,7 +250,7 @@
 
 			$.Dialog.wait(false, 'Signing out');
 
-			$.post('/da-auth/signout?everywhere',{name},$.mkAjaxHandler(function(){
+			$.post('/da-auth/signout?everywhere',{name: username},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Navigation.reload(true);
@@ -264,7 +264,7 @@
 
 		$.Dialog.wait('Syncing');
 
-		$.post(`/discord-connect/sync/${name}`, $.mkAjaxHandler(function(){
+		$.post(`/discord-connect/sync/${username}`, $.mkAjaxHandler(function(){
 			if (!this.status){
 				if (this.segway)
 					$.Dialog.segway(false, $.mk('div').attr('class','color-red').html(this.message));
@@ -278,7 +278,7 @@
 	$discordConnect.find('.unlink').on('click',function(e){
 		e.preventDefault();
 
-		const sameUser = name === $sidebar.find('.user-data .name').text();
+		const sameUser = username === $sidebar.find('.user-data .name').text();
 		const you = sameUser?'you':'they';
 		const your = sameUser?'your':'their';
 
@@ -291,7 +291,7 @@
 
 				$.Dialog.wait(false);
 
-				$.post(`/discord-connect/unlink/${name}`, $.mkAjaxHandler(function(){
+				$.post(`/discord-connect/unlink/${username}`, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.segway(false, this.message);
@@ -404,19 +404,19 @@
 				$(`.avatar-wrap:not(.provider-${to_what})`).each(function(){
 					const
 						$this = $(this),
-						username = $this.attr('data-for');
-					if (typeof forUser[username] === 'undefined')
-						forUser[username] = [];
-					forUser[username].push($this);
+						forId = $this.attr('data-for');
+					if (typeof forUser[forId] === 'undefined')
+						forUser[forId] = [];
+					forUser[forId].push($this);
 				});
 				if (from)
 					$(`.provider-${from}:not(.avatar-wrap)`).removeClass('provider-'+from).addClass('provider-'+to_what);
 				let error = false;
-				$.each(forUser, (username, elements) => {
-					$.post('/user/avatar-wrap/'+username, $.mkAjaxHandler(function(){
+				$.each(forUser, (forId, elements) => {
+					$.API.get(`/user/${forId}/avatar-wrap`, $.mkAjaxHandler(function(){
 						if (!this.status){
 							error = true;
-							return $.Dialog.fail('Update avatar elements for '+username, false);
+							return $.Dialog.fail(`Update avatar elements for ${forId}`, false);
 						}
 
 						$.each(elements, (_, $el) => {
@@ -448,7 +448,7 @@
 	$knownIps.on('click', 'button', function(){
 		const $btn = $(this);
 		$btn.disable();
-		$.post(`/user/known-ips/${name}`, $.mkAjaxHandler(function(){
+		$.post(`/user/known-ips/${username}`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail('Load full list of known IPs', this.message);
 
 			$knownIps.replaceWith(this.html);

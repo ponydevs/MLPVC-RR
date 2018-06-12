@@ -53,7 +53,7 @@ use App\Tags;
 <?  $export = [
 		'EQG' => $EQG,
 		'AppearancePage' => false,
-		'PersonalGuide' => $Owner->name ?? false,
+		'PersonalGuide' => $Owner->id ?? false,
 ];
 	if (Permission::sufficient('staff')){
 		global $HEX_COLOR_REGEX;

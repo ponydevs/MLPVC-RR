@@ -1,7 +1,7 @@
 (function(){
 	'use strict';
 
-	const username = window.username;
+	const { username, userId } = window;
 
 	const $recalcBtn = $('#recalc-button');
 	$recalcBtn.on('click',function(e){
@@ -16,7 +16,7 @@
 				if (!sure) return;
 
 				$.Dialog.wait(false, 'Recalculating');
-				$.API.post(`/@${username}/cg/point-history/recalc`, $.mkAjaxHandler(function(){
+				$.API.post(`/user/${userId}/pcg/point-history/recalc`, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Navigation.reload(true);
@@ -29,9 +29,9 @@
 	$pendingGiftsBtn.on('click', function(e){
 		e.preventDefault();
 
-		$.Dialog.wait('Pending gifts for '+username, 'Checking for pending gifts');
+		$.Dialog.wait(`Pending gifts for ${username}`, 'Checking for pending gifts');
 
-		$.post('/user/pending-gifts/'+username, $.mkAjaxHandler(function(){
+		$.API.get(`/user/${userId}/pcg/pending-gifts`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			if (!this.pendingGifts)
@@ -96,7 +96,7 @@
 
 					$.Dialog.wait(false, 'Refunding selected gifts');
 
-					$.post('/user/refund-gifts', { giftids: ids.join(',') }, $.mkAjaxHandler(function(){
+					$.API.post('/user/pcg/refund-gifts', { giftids: ids.join(',') }, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, this.message, true);

@@ -25,4 +25,5 @@ use App\Tags;
 
 <?  echo CoreUtils::exportVars([
 		'username' => $User->name,
+		'userId' => $User->id,
 	]);

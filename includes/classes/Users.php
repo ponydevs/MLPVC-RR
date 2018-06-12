@@ -237,8 +237,8 @@ HTML;
 		return $User->getPendingReservationsHTML($sameUser, $isMember);
 	}
 
-	public static function getPersonalColorGuideHTML(User $User, bool $sameUser, bool $wrap = WRAP):string {
-		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $User);
+	public static function getPersonalColorGuideHTML(User $user, bool $sameUser, bool $wrap = WRAP):string {
+		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $user);
 		if ($sectionIsPrivate && (!$sameUser && Permission::insufficient('staff')))
 			return '';
 
@@ -249,7 +249,7 @@ HTML;
 		$showPrivate = $sameUser || Permission::sufficient('staff');
 		if ($showPrivate){
 			$ThisUser = $sameUser?'You':'This user';
-			$availPoints = $User->getPCGAvailablePoints(false);
+			$availPoints = $user->getPCGAvailablePoints(false);
 			$remainPoints = 10-($availPoints % 10);
 			$nSlots = CoreUtils::makePlural('remaining slot',floor($availPoints/10),PREPEND_NUMBER);
 			$nRequests = CoreUtils::makePlural('approved request',$remainPoints,PREPEND_NUMBER);
@@ -258,8 +258,8 @@ HTML;
 			$HTML .= "<div class='personal-cg-progress'><p>$ThisUser $has $nSlots and $is $nRequests away from getting another.</p></div>";
 		}
 
-		$PersonalColorGuides = $User->pcg_appearances;
-		$hasPCG = count($PersonalColorGuides) > 0;
+		$PersonalColorGuides = $user->pcg_appearances;
+		$hasPCG = \count($PersonalColorGuides) > 0;
 		if ($sameUser || $hasPCG){
 			$el = $hasPCG ? 'ul' : 'div';
 			$HTML .= "<$el class='personal-cg-appearances'>";
@@ -270,15 +270,15 @@ HTML;
 			$HTML .= "</$el>";
 		}
 		$Action = $sameUser ? 'Manage' : 'View';
-		$slothistbtn = $User->getPCGPointHistoryButtonHTML($showPrivate);
-		$giftslotbtn = $User->getPCGSlotGiftButtonHTML();
-		$givepointsbtn = $User->getPCGPointGiveButtonHTML();
+		$slot_hist_btn = $user->getPCGPointHistoryButtonHTML($showPrivate);
+		$gift_slot_btn = $user->getPCGSlotGiftButtonHTML();
+		$give_points_btn = $user->getPCGPointGiveButtonHTML();
 		$HTML .= <<<HTML
 <div class="button-block">
-	<a href='/@{$User->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a>
-	$slothistbtn
-	$giftslotbtn
-	$givepointsbtn
+	<a href='/@{$user->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a>
+	$slot_hist_btn
+	$gift_slot_btn
+	$give_points_btn
 </div>
 HTML;
 		$HTML .= '';

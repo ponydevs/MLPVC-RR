@@ -161,7 +161,7 @@ class UserPrefs extends GlobalSettings {
 			case 'a_postres':
 			case 'a_reserve':
 				if (Permission::insufficient('staff'))
-					Response::fail("You cannot change the $key setting");
+					Response::fail("You cannot change the $key preference");
 
 				$value = $value ? 1 : 0;
 			break;

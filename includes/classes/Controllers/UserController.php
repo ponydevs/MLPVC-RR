@@ -21,7 +21,7 @@ use App\UserPrefs;
 use App\Users;
 
 class UserController extends Controller {
-	public $do = 'user';
+	use UserLoaderTrait;
 
 	public function homepage(){
 		if (UserPrefs::get('p_homelastep'))
@@ -129,7 +129,10 @@ class UserController extends Controller {
 		HTTP::permRedirect('/@'.$User->name);
 	}
 
-	public function sessionDel($params){
+	public function sessionApi($params){
+		if ($this->action !== 'DELETE')
+			CoreUtils::notAllowed();
+
 		CSRFProtection::protect();
 
 		if (!isset($params['id']))
@@ -138,28 +141,32 @@ class UserController extends Controller {
 		$Session = Session::find($params['id']);
 		if (empty($Session))
 			Response::fail('This session does not exist');
-		if ($Session->user_id !== Auth::$user->id && !Permission::sufficient('staff'))
+		if ($Session->user_id !== Auth::$user->id && Permission::insufficient('staff'))
 			Response::fail('You are not allowed to delete this session');
 
 		$Session->delete();
+
 		Response::success('Session successfully removed');
 	}
 
-	public function setRole($params){
+	public function roleApi($params){
+		if ($this->action !== 'PUT')
+			CoreUtils::notAllowed();
+
 		CSRFProtection::protect();
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
-		if (!isset($params['name']))
-			Response::fail('Missing username');
+		if (!isset($params['id']))
+			Response::fail('Missing user ID');
 
-		$targetUser = Users::get($params['name'], 'name');
+		$targetUser = User::find($params['id']);
 		if (empty($targetUser))
 			Response::fail('User not found');
 
 		if ($targetUser->id === Auth::$user->id)
 			Response::fail('You cannot modify your own group');
-		if (!Permission::sufficient($targetUser->role))
+		if (Permission::insufficient($targetUser->role))
 			Response::fail('You can only modify the group of users who are in the same or a lower-level group than you');
 
 		$newrole = (new Input('newrole','role', [
@@ -172,23 +179,6 @@ class UserController extends Controller {
 			Response::done(['already_in' => true]);
 
 		$targetUser->updateRole($newrole);
-
-		Response::done();
-	}
-
-	public function setDevRoleMask(){
-		CSRFProtection::protect();
-		if (Permission::insufficient('developer'))
-			Response::fail();
-
-		$newrole = (new Input('newrole','role', [
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'The new group is not specified',
-				Input::ERROR_INVALID => 'The specified group (@value) does not exist',
-			]
-		]))->out();
-
-		GlobalSettings::set('dev_role_label', $newrole);
 
 		Response::done();
 	}
@@ -296,13 +286,11 @@ class UserController extends Controller {
 	}
 
 	public function avatarWrap($params){
-		if (!isset($params['name']))
-			Response::fail('Missing username');
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
 
-		$user = Users::get($params['name'], 'name');
-		if (empty($user))
-			Response::fail('User not found');
+		$this->load_user($params);
 
-		Response::done(['html' => $user->getAvatarWrap()]);
+		Response::done(['html' => $this->user->getAvatarWrap()]);
 	}
 }

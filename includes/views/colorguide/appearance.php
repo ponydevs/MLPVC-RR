@@ -105,7 +105,7 @@ use App\Tags;
 <?  $export = [
 		'EQG' => $EQG,
 		'AppearancePage' => true,
-		'PersonalGuide' => $Owner->name ?? false,
+		'PersonalGuide' => $Owner->id ?? false,
 	];
 	if ($isOwner || Permission::sufficient('staff')){
 		global $HEX_COLOR_REGEX, $TAG_NAME_REGEX;

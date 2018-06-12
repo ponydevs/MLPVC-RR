@@ -31,7 +31,7 @@ echo "<span class='role-label'>{$User->maskedRoleLabel()}</span>";
 if ($devOnDev)
 	echo ' <span id="change-dev-role-mask" class="inline-btn typcn typcn-edit" title="Change developer\'s displayed role"></span>';
 if ($canEdit)
-	echo ' <button id="change-role" class="blue typcn typcn-spanner" title="Change '.CoreUtils::posess($User->name).' role"></button>';
+	echo " <button id='change-role' class='blue typcn typcn-spanner' title='Change ".CoreUtils::posess($User->name)." role' data-for='$User->id'></button>";
 if (Permission::sufficient('developer')){
 	echo " &bullet; <span class='user-id'>{$User->id}</span>";
 	if ($User->boundToDiscordMember())
@@ -186,4 +186,8 @@ if ($canEdit || $devOnDev){
 	echo CoreUtils::exportVars([
 		'ROLES' => $ROLES,
 	]);
-} ?>
+}
+echo CoreUtils::exportVars([
+	'username' => $User->name,
+	'userId' => $User->id,
+]); ?>

@@ -180,23 +180,18 @@ $api_endpoint('/post/request/[i:id]',                'PostController#deleteReque
 $api_endpoint('/post/request/suggestion',            'PostController#suggestRequest');
 $api_endpoint('/post/[i:id]/fix-stash',              'PostController#fixStash');
 $api_endpoint('/setting/[au:key]',                   'SettingController#api');
+$api_endpoint('/user/session/[uuid:id]',             'UserController#sessionApi');
+$api_endpoint('/user/[uuid:id]/avatar-wrap',         'UserController#avatarWrap');
+$api_endpoint('/user/[uuid:id]/role',                'UserController#roleApi');
 $api_endpoint('/user/[uuid:id]/preference/[au:key]', 'PreferenceController#api');
-// TODO Move under /user/:id/pcg/...
-$api_endpoint('/@[un:name]/cg/slot-check',           'PersonalGuideController#checkAvailSlots');
-$api_endpoint('/@[un:name]/cg/point-history/recalc', 'PersonalGuideController#pointRecalc');
+$api_endpoint('/user/pcg/giftable-slots',            'PersonalGuideController#verifyGiftableSlots');
+$api_endpoint('/user/pcg/refund-gifts',              'PersonalGuideController#refundSlotGifts');
+$api_endpoint('/user/[uuid:id]/pcg/point-history/recalc', 'PersonalGuideController#pointRecalc');
+$api_endpoint('/user/[uuid:id]/pcg/points',          'PersonalGuideController#pointsApi');
+$api_endpoint('/user/[uuid:id]/pcg/slots',           'PersonalGuideController#slotsApi');
+$api_endpoint('/user/[uuid:id]/pcg/pending-gifts',   'PersonalGuideController#getPendingSlotGifts');
 
 // "API" Endpoints
-$router->map('POST', '/user/sessiondel/[uuid:id]',           'UserController#sessionDel');
-$router->map('POST', '/user/setrole/[un:name]',              'UserController#setRole');
-$router->map('POST', '/user/setdevrolemask',                 'UserController#setDevRoleMask');
-$router->map('POST', '/user/awaiting-approval/[un:name]',    'UserController#awaitingApproval');
-$router->map('POST', '/user/avatar-wrap/[un:name]',          'UserController#avatarWrap');
-$router->map('POST', '/user/verify-giftable-slots',          'PersonalGuideController#verifyGiftableSlots');
-$router->map('POST', '/user/gift-pcg-slots/[un:name]',       'PersonalGuideController#giftSlots');
-$router->map('POST', '/user/pending-gifts/[un:name]',        'PersonalGuideController#getPendingSlotGifts');
-$router->map('POST', '/user/refund-gifts',                   'PersonalGuideController#refundSlotGifts');
-$router->map('POST', '/user/give-pcg-points/[un:name]',      'PersonalGuideController#givePoints');
-$router->map('POST', '/user/get-deductable-points/[un:name]', 'PersonalGuideController#getDeductablePoints');
 $router->map('POST', '/discord-connect/sync/[un:name]',      'DiscordAuthController#sync');
 $router->map('POST', '/discord-connect/unlink/[un:name]',    'DiscordAuthController#unlink');
 $router->map('POST', '/discord-connect/bot-update/[i:id]',   'DiscordAuthController#botUpdate');

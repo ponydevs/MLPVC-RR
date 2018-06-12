@@ -14,6 +14,7 @@ use App\Models\Notification;
 use App\Models\PCGPointGrant;
 use App\Models\PCGSlotGift;
 use App\Models\PCGSlotHistory;
+use App\Models\User;
 use App\Notifications;
 use App\Pagination;
 use App\Permission;
@@ -23,6 +24,8 @@ use App\UserPrefs;
 use App\Users;
 
 class PersonalGuideController extends ColorGuideController {
+	use UserLoaderTrait;
+
 	public function list($params){
 		$this->_initialize($params);
 
@@ -102,53 +105,89 @@ class PersonalGuideController extends ColorGuideController {
 		if (Permission::insufficient('developer'))
 			CoreUtils::noPerm();
 
-		$this->_initialize($params);
+		$this->load_user($params);
 
-		if (!$this->owner)
-			Response::fail('Target user not found');
-
-		$this->owner->recalculatePCGSlotHistroy();
+		$this->user->recalculatePCGSlotHistroy();
 
 		Response::done();
 	}
 
-	public function checkAvailSlots($params){
-		if ($this->action !== 'POST')
+	public function slotsApi($params){
+		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
 		CSRFProtection::protect();
 
-		if (!isset($params['name']))
-			Response::fail('Missing username');
+		switch ($this->action){
+			case 'GET':
+				$this->load_user($params);
 
-		$targetUser = Users::get($params['name'], 'name');
-		if (empty($targetUser))
-			Response::fail('User not found');
+				if (!UserPrefs::get('a_pcgmake', $this->user))
+					Response::fail(Appearances::PCG_APPEARANCE_MAKE_DISABLED);
 
-		if (!UserPrefs::get('a_pcgmake', $targetUser))
-			Response::fail(Appearances::PCG_APPEARANCE_MAKE_DISABLED);
+				$avail = $this->user->getPCGAvailablePoints(false);
+				if ($avail < 10){
+					$sameUser = $this->user->id === Auth::$user->id;
+					$You = $sameUser ? 'You' : $this->user->name;
+					$nave = $sameUser ? 'have' : 'has';
+					$you = $sameUser ? 'you' : 'they';
+					$cont = Permission::sufficient('member', $this->user->role)
+						? ", but $you can always fulfill some requests"
+						: '. '.(
+							$sameUser
+							? 'Consider joining the group and fulfilling some requests on our site'
+							: 'They should join the group and fulfill some requests on our site'
+						);
+					Response::fail("$You $nave no available slots left$cont to get more, or delete/edit ones $you've added already.");
+				}
+				Response::done();
+			break;
+			case 'POST':
+				if (!Auth::$signed_in)
+					Response::fail();
 
-		$avail = $targetUser->getPCGAvailablePoints(false);
-		if ($avail < 10){
-			$sameUser = $targetUser->id === Auth::$user->id;
-			$You = $sameUser ? 'You' : $targetUser->name;
-			$nave = $sameUser ? 'have' : 'has';
-			$you = $sameUser ? 'you' : 'they';
-			$cont = Permission::sufficient('member', $targetUser->role)
-				? ", but $you can always fulfill some requests"
-				: '. '.(
-					$sameUser
-					? 'Consider joining the group and fulfilling some requests on our site'
-					: 'They should join the group and fulfill some requests on our site'
-				);
-			Response::fail("$You $nave no available slots left$cont to get more, or delete/edit ones $you've added already.");
+				$this->load_user($params);
+
+				if (Auth::$user->id === $this->user->id)
+					Response::fail('You cannot gift slots to yourself');
+				if (Permission::insufficient('member', $this->user->role))
+					Response::fail('The target user must be a Club Member');
+				$existingGift = DB::$instance
+					->querySingle(
+						'SELECT COUNT(*) as cnt FROM pcg_slot_gifts
+						WHERE sender_id = ? AND receiver_id = ? AND NOT (rejected = TRUE OR claimed = TRUE OR refunded_by IS NOT NULL)', [Auth::$user->id, $this->user->id]);
+				if ($existingGift['cnt'] !== 0)
+					Response::fail('You have already sent a gift to this user, please wait for them to accept or reject it before sending another. If they haven\'t accepted your gift after 2 weeks, you can <a class="send-feedback">contact us</a> to have it refunded ot you.');
+
+				$availSlots = Auth::$user->getPCGAvailablePoints(false);
+				if ($availSlots < 20)
+					Response::fail(self::NOT_ENOUGH_SLOTS_TO_GIFT);
+
+				$amount = (new Input('amount','int',[
+					Input::IN_RANGE => [1, floor($availSlots)],
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Amount of slots to gift is missing',
+						Input::ERROR_INVALID => 'Amount of slots to gift (@value) is invalid',
+						Input::ERROR_RANGE => 'Amount of slots to gift must be between @min and @max',
+					],
+				]))->out();
+
+				PCGSlotGift::send(Auth::$user->id, $this->user->id, $amount);
+
+				$nSlots = CoreUtils::makePlural('slot', $amount, PREPEND_NUMBER);
+				Response::success("<p>Your gift of $nSlots is on its way! {$this->user->name} will be notified. Your generosity is commendable.</p>".CoreUtils::responseSmiley(':)'));
+			break;
+			default:
+				CoreUtils::notAllowed();
 		}
-		Response::done();
 	}
 
 	public const NOT_ENOUGH_SLOTS_TO_GIFT = 'You need at least 1 slot you earned from completing requests to gift others. Remember that the free slot cannot be gifted away.';
 
 	public function verifyGiftableSlots(){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		CSRFProtection::protect();
 
 		if (!Auth::$signed_in)
@@ -162,56 +201,18 @@ class PersonalGuideController extends ColorGuideController {
 		Response::done([ 'avail' => $avail ]);
 	}
 
-	public function giftSlots($params){
-		CSRFProtection::protect();
-
-		if (!Auth::$signed_in)
-			Response::fail();
-
-		$target = Users::get($params['name'], 'name');
-		if (empty($target))
-			Response::fail('The specified user does not exist');
-		if (Auth::$user->id === $target->id)
-			Response::fail('You cannot gift slots to yourself');
-		if (Permission::insufficient('member', $target->role))
-			Response::fail('The target user must be a Club Member');
-		$existingGift = DB::$instance
-			->querySingle(
-				'SELECT COUNT(*) as cnt FROM pcg_slot_gifts
-				WHERE sender_id = ? AND receiver_id = ? AND NOT (rejected = TRUE OR claimed = TRUE OR refunded_by IS NOT NULL)', [Auth::$user->id, $target->id]);
-		if ($existingGift['cnt'] !== 0)
-			Response::fail('You have already sent a gift to this user, please wait for them to accept or reject it before sending another. If they haven\'t accepted your gift after 2 weeks, you can <a class="send-feedback">contact us</a> to have it refunded ot you.');
-
-		$availSlots = Auth::$user->getPCGAvailablePoints(false);
-		if ($availSlots < 20)
-			Response::fail(self::NOT_ENOUGH_SLOTS_TO_GIFT);
-
-		$amount = (new Input('amount','int',[
-			Input::IN_RANGE => [1, floor($availSlots)],
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'Amount of slots to gift is missing',
-				Input::ERROR_INVALID => 'Amount of slots to gift (@value) is invalid',
-				Input::ERROR_RANGE => 'Amount of slots to gift must be between @min and @max',
-			],
-		]))->out();
-
-		PCGSlotGift::send(Auth::$user->id, $target->id, $amount);
-
-		$nslots = CoreUtils::makePlural('slot', $amount, PREPEND_NUMBER);
-		Response::success("<p>Your gift of $nslots is on its way! {$target->name} will be notified. Your generosity is commendable.</p>".CoreUtils::responseSmiley(':)'));
-	}
-
 	public function getPendingSlotGifts($params){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		CSRFProtection::protect();
 
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
-		$target = Users::get($params['name'], 'name');
-		if (empty($target))
-			Response::fail('The specified user does not exist');
+		$this->load_user($params);
 
-		$gifts = $target->getPendingPCGSlotGifts();
+		$gifts = $this->user->getPendingPCGSlotGifts();
 		if (empty($gifts))
 			Response::success('No pending gifts found.');
 
@@ -224,12 +225,13 @@ class PersonalGuideController extends ColorGuideController {
 				'sent' => Time::tag($gift->created_at),
 			];
 		}
-		Response::done([
-			'pendingGifts' => $pendingGifts,
-		]);
+		Response::done([ 'pendingGifts' => $pendingGifts ]);
 	}
 
 	public function refundSlotGifts(){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
 		CSRFProtection::protect();
 
 		if (Permission::insufficient('staff'))
@@ -281,58 +283,55 @@ class PersonalGuideController extends ColorGuideController {
 		Response::success('The selected gifts have been successfully refunded to their senders.');
 	}
 
-	public function getDeductablePoints($params){
+	public function pointsApi($params){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		CSRFProtection::protect();
 
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
-		$target = Users::get($params['name'], 'name');
-		if (empty($target))
-			Response::fail('The specified user does not exist');
+		$this->load_user($params);
 
-		Response::done([ 'amount' => $target->getPCGAvailablePoints(false)-10 ]);
-	}
+		switch ($this->action){
+			case 'GET':
+				Response::done([ 'amount' => $this->user->getPCGAvailablePoints(false)-10 ]);
+			break;
+			case 'POST':
+				$amount = (new Input('amount','int',[
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Amount of slots to give is missing',
+						Input::ERROR_INVALID => 'Amount of slots to give (@value) is invalid',
+						Input::ERROR_RANGE => 'Amount of slots to give must be between @min and @max',
+					],
+				]))->out();
+				if ($amount === 0)
+					Response::fail("You have to enter an integer that isn't 0");
 
-	public function givePoints($params){
-		CSRFProtection::protect();
+				$availableSlots = $this->user->getPCGAvailablePoints(false);
+				if ($availableSlots + $amount < 10)
+					Response::fail('This would cause the users points to go below 10');
 
-		if (Permission::insufficient('staff'))
-			Response::fail();
+				$comment = (new Input('comment','string',[
+					Input::IS_OPTIONAL => true,
+					Input::IN_RANGE => [2, 140],
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_INVALID => 'Comment (@value) is invalid',
+						Input::ERROR_RANGE => 'Comment must be between @min and @max chars',
+					],
+				]))->out();
+				CoreUtils::checkStringValidity($comment, 'Comment', INVERSE_PRINTABLE_ASCII_PATTERN);
 
-		$target = Users::get($params['name'], 'name');
-		if (empty($target))
-			Response::fail('The specified user does not exist');
+				PCGPointGrant::record($this->user->id, Auth::$user->id, $amount, $comment);
 
-		$amount = (new Input('amount','int',[
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'Amount of slots to give is missing',
-				Input::ERROR_INVALID => 'Amount of slots to give (@value) is invalid',
-				Input::ERROR_RANGE => 'Amount of slots to give must be between @min and @max',
-			],
-		]))->out();
-		if ($amount === 0)
-			Response::fail("You have to enter an integer that isn't 0");
-
-		$availableSlots = $target->getPCGAvailablePoints(false);
-		if ($availableSlots + $amount < 10)
-			Response::fail('This would cause the users points to go below 10');
-
-		$comment = (new Input('comment','string',[
-			Input::IS_OPTIONAL => true,
-			Input::IN_RANGE => [2, 140],
-			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_INVALID => 'Comment (@value) is invalid',
-				Input::ERROR_RANGE => 'Comment must be between @min and @max chars',
-			],
-		]))->out();
-		CoreUtils::checkStringValidity($comment, 'Comment', INVERSE_PRINTABLE_ASCII_PATTERN);
-
-		PCGPointGrant::record($target->id, Auth::$user->id, $amount, $comment);
-
-		$nPoints = CoreUtils::makePlural('point', abs($amount), PREPEND_NUMBER);
-		$given = $amount > 0 ? 'given' : 'taken';
-		$to = $amount > 0 ? 'to' : 'from';
-		Response::success("You've successfully $given $nPoints $to {$target->name}");
+				$nPoints = CoreUtils::makePlural('point', abs($amount), PREPEND_NUMBER);
+				$given = $amount > 0 ? 'given' : 'taken';
+				$to = $amount > 0 ? 'to' : 'from';
+				Response::success("You've successfully $given $nPoints $to {$this->user->name}");
+			break;
+			default:
+				CoreUtils::notAllowed();
+		}
 	}
 }

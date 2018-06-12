@@ -140,7 +140,7 @@ class User extends AbstractUser implements LinkableInterface {
 	public function getAvatarWrap(string $vectorapp = ''):string {
 		if (empty($vectorapp))
 			$vectorapp = $this->getVectorAppClassName();
-		return "<div class='avatar-wrap provider-{$this->avatar_provider}$vectorapp' data-for='{$this->name}'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
+		return "<div class='avatar-wrap provider-{$this->avatar_provider}$vectorapp' data-for='{$this->id}'><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
 	}
 
 	public function getVectorAppClassName():string {
@@ -775,14 +775,14 @@ HTML;
 		if (!Auth::$signed_in || Auth::$user->id === $this->id)
 			return '';
 
-		return "<button class='btn green typcn typcn-gift gift-pcg-slots'>Gift slots</a>";
+		return "<button class='btn green typcn typcn-gift' id='gift-pcg-slots'>Gift slots</a>";
 	}
 
 	public function getPCGPointGiveButtonHTML():string {
 		if (Permission::insufficient('staff'))
 			return '';
 
-		return "<button class='btn darkblue typcn typcn-plus give-pcg-points'>Give points</a>";
+		return "<button class='btn darkblue typcn typcn-plus' id='give-pcg-points'>Give points</a>";
 	}
 
 	/**
