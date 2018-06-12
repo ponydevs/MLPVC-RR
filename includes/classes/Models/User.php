@@ -453,7 +453,7 @@ class User extends AbstractUser implements LinkableInterface {
 			->where('lock',1);
 
 		if ($count)
-			return DB::$instance->count('requests');
+			return DB::$instance->count('posts');
 
 		$limit = isset($pagination) ? $pagination->getLimit() : null;
 		return DB::$instance->orderBy('finished_at','DESC')->get('posts',$limit);
