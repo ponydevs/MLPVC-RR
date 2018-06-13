@@ -120,27 +120,16 @@ class Users {
 	 * @return bool|null
 	 */
 	public static function checkReservationLimitReached(bool $return_as_bool = false){
-		$reservations = DB::$instance->querySingle(
-			'SELECT
-			(
-				(SELECT
-				 COUNT(*) as "count"
-				 FROM reservations res
-				 WHERE res.reserved_by = u.id AND res.deviation_id IS NULL)
-				+(SELECT
-				  COUNT(*) as "count"
-				  FROM requests req
-				  WHERE req.reserved_by = u.id AND req.deviation_id IS NULL)
-			) as "count"
-			FROM users u WHERE u.id = ?',
-			[Auth::$user->id]
-		);
+		$resserved_count = DB::$instance
+			->where('reserved_by', Auth::$user->id)
+			->where('deviation_id IS NULL')
+			->count('posts');
 
-		$overTheLimit = isset($reservations['count']) && $reservations['count'] >= 4;
+		$overTheLimit = isset($resserved_count) && $resserved_count >= 4;
 		if ($return_as_bool)
 			return $overTheLimit;
 		if ($overTheLimit)
-			Response::fail("You've already reserved {$reservations['count']} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
+			Response::fail("You've already reserved {$resserved_count} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
 	}
 
 	/**
