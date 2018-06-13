@@ -163,6 +163,7 @@ class PostController extends Controller {
 
 				if ($suggested || $from_profile)
 					$response['pendingReservations'] = Users::getPendingReservationsHTML(User::find($suggested ? $this->post->reserved_by : $old_reserver), $suggested ? true : $this->is_user_reserver);
+				else $response['li'] = $this->post->getLi();
 
 				Posts::sendUpdate($this->post);
 
