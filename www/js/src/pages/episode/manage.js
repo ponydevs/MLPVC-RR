@@ -220,7 +220,7 @@
 			send = function(data){
 				$.Dialog.wait(title, 'Sending reservation to the server');
 
-				$.API.post(`/post/request/${id}/reservation`, data, $.mkAjaxHandler(function(){
+				$.API.post(`/post/${id}/reservation`, data, $.mkAjaxHandler(function(){
 					if (this.retry)
 						return $.Dialog.confirm(false, this.message, function(sure){
 							if (!sure) return;
@@ -500,7 +500,7 @@
 				$li.addClass('deleting');
 
 				if (type === 'request')
-					$.API.delete(`/post/request/${id}/reservation`, $.mkAjaxHandler(function(){
+					$.API.delete(`/post/${id}/reservation`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$li.removeClass('deleting').reloadLi(false);

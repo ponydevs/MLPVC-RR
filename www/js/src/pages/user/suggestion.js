@@ -41,7 +41,7 @@
 						});
 						$result.find('.reserve-request').on('click',function(){
 							let $this = $(this);
-							$.API.post(`/post/request/${postID}/reservation`,{from:'suggestion'},$.mkAjaxHandler(function(){
+							$.API.post(`/post/${postID}/reservation`,{from:'suggestion'},$.mkAjaxHandler(function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$this.replaceWith(this.button);
