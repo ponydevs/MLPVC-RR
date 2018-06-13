@@ -148,8 +148,9 @@ class PostController extends Controller {
 					Response::dbError();
 
 				$response = [];
-				$suggested = $_REQUEST['from'] === 'suggestion';
-				$from_profile = $_REQUEST['from'] === 'profile';
+				$from = $_REQUEST['from'] ?? null;
+				$suggested = $from === 'suggestion';
+				$from_profile = $from === 'profile';
 
 				if (!$is_new_reserver){
 					Logs::logAction('res_overtake', $overdue);
