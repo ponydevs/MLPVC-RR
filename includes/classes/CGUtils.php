@@ -848,7 +848,7 @@ XML;
 		$JSON[$label] = [];
 
 		$CGs = $Appearance->color_groups;
-		$Colors = self::getColorsForEach($CGs);
+		$Colors = self::getColorsForEach($CGs, true);
 		foreach ($CGs as $cg){
 			$JSON[$label][$cg->label] = [];
 			foreach ($Colors[$cg->id] as $c)
@@ -874,7 +874,7 @@ Columns: 6
 GPL;
 
 		$CGs = $Appearance->color_groups;
-		$Colors = self::getColorsForEach($CGs);
+		$Colors = self::getColorsForEach($CGs, true);
 		foreach ($CGs as $cg){
 			foreach ($Colors[$cg->id] as $c){
 				if (empty($c->hex))
@@ -1008,10 +1008,11 @@ GPL;
 	 * Get the colors belonging to a set of color groups
 	 *
 	 * @param ColorGroup[] $Groups
+	 * @param bool         $skip_null Whether to include "empty" colors with null HEX value
 	 *
 	 * @return Color[][]
 	 */
-	public static function getColorsForEach($Groups):?array {
+	public static function getColorsForEach($Groups, $skip_null = false):?array {
 		if (empty($Groups)){
 			return null;
 		}
@@ -1023,7 +1024,7 @@ GPL;
 
 		$colors = Color::find('all', [
 			'conditions' => [
-				'group_id IN (?)',
+				'group_id IN (?)'.($skip_null ? ' AND hex IS NOT NULL' : ''),
 				$GroupIDs
 			],
 			'order' => 'group_id asc, "order" asc',

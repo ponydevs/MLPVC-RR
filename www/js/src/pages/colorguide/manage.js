@@ -1976,7 +1976,7 @@
 
 						$.Dialog.wait(title, 'Sending removal request');
 
-						$.delete(`/cg/colorgroup/${groupID}`,$.mkAjaxHandler(function(){
+						$.API.delete(`/cg/colorgroup/${groupID}`,$.mkAjaxHandler(function(){
 							if (this.status){
 								const $parent = $group.parent();
 								if ($parent.children().length === 1)
