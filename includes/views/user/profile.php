@@ -187,7 +187,8 @@ if ($canEdit || $devOnDev){
 		'ROLES' => $ROLES,
 	]);
 }
-echo CoreUtils::exportVars([
-	'username' => $User->name,
-	'userId' => $User->id,
-]); ?>
+if (isset($User))
+	echo CoreUtils::exportVars([
+		'username' => $User->name,
+		'userId' => $User->id,
+	]); ?>

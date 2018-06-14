@@ -46,7 +46,7 @@ class Users {
 	/**
 	 * User Information Fetching
 	 * -------------------------
-	 * Fetch user info from dA upon request to nonexistent user
+	 * Fetch user info from DeviantArt's API
 	 *
 	 * @param string $username
 	 *
@@ -79,37 +79,35 @@ class Users {
 		/** @var $DBUser User */
 		$DBUser = DB::$instance->where('id', $ID)->getOne('users','name');
 		$userExists = !empty($DBUser);
-
-		$insert = [
-			'name' => $userdata['username'],
-			'avatar_url' => URL::makeHttps($userdata['usericon']),
-		];
 		if (!$userExists)
-			$insert['id'] = $ID;
+			$DBUser = new User([ 'id' => $ID ]);
+
+		$DBUser->name = $userdata['username'];
+		$DBUser->avatar_url = URL::makeHttps($userdata['usericon']);
 
 		$clubRole = DeviantArt::getClubRoleByName($userdata['username']);
 		if (!empty($clubRole))
-			$insert['role'] = $clubRole;
+			$DBUser->role = $clubRole;
 
-		if (!($userExists ? DB::$instance->where('id', $ID)->update('users', $insert) : DB::$instance->insert('users',$insert)))
+		if (!$DBUser->save())
 			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.DB::$instance->getLastError():''));
 
 		if (!$userExists)
-			Logs::logAction('userfetch', ['userid' => $insert['id']]);
+			Logs::logAction('userfetch', ['userid' => $DBUser->id]);
 		$names = [$username];
 		if ($userExists && $DBUser->name !== $username)
 			$names[] = $DBUser->name;
 		foreach ($names as $name){
-			if (strcasecmp($name,$insert['name']) !== 0){
+			if (strcasecmp($name, $DBUser->name) !== 0){
 				Logs::logAction('da_namechange', [
 					'old' => $name,
-					'new' => $insert['name'],
+					'new' => $DBUser->name,
 					'user_id' => $ID,
 				], Logs::FORCE_INITIATOR_WEBSERVER);
 			}
 		}
 
-		return self::get($insert['name'], 'name');
+		return $DBUser;
 	}
 
 	/**
