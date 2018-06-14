@@ -83,8 +83,9 @@ class PostController extends Controller {
 		}
 		$section .= ' > ul';
 
+		$from_profile = isset($_REQUEST['from']) ? $_REQUEST['from'] === 'profile' : false;
 		Response::done([
-			'li' => $this->post->getLi(isset($_POST['FROM_PROFILE']), !isset($_POST['cache'])),
+			'li' => $this->post->getLi($from_profile, !isset($_REQUEST['cache'])),
 			'section' => $section,
 		]);
 	}
@@ -102,6 +103,9 @@ class PostController extends Controller {
 		$this->_authorizeMember();
 
 		$this->load_post($params, 'reservation');
+		$from = $_REQUEST['from'] ?? null;
+		$suggested = $from === 'suggestion';
+		$from_profile = $from === 'profile';
 
 		switch ($this->action){
 			case 'POST':
@@ -148,9 +152,6 @@ class PostController extends Controller {
 					Response::dbError();
 
 				$response = [];
-				$from = $_REQUEST['from'] ?? null;
-				$suggested = $from === 'suggestion';
-				$from_profile = $from === 'profile';
 
 				if (!$is_new_reserver){
 					Logs::logAction('res_overtake', $overdue);
@@ -158,11 +159,10 @@ class PostController extends Controller {
 					Posts::clearTransferAttempts($this->post, 'snatch');
 				}
 
-				if ($suggested)
+				if ($suggested){
 					$response['button'] = Posts::getPostReserveButton($this->post->reserver, false);
-
-				if ($suggested || $from_profile)
 					$response['pendingReservations'] = Users::getPendingReservationsHTML(User::find($suggested ? $this->post->reserved_by : $old_reserver), $suggested ? true : $this->is_user_reserver);
+				}
 				else $response['li'] = $this->post->getLi();
 
 				Posts::sendUpdate($this->post);
@@ -181,6 +181,7 @@ class PostController extends Controller {
 					if ($this->post->deviation_id !== null)
 						Response::fail('You must unfinish this request before unreserving it.');
 
+					$old_reserver = $this->post->reserved_by;
 					$this->post->reserved_by = null;
 					$this->post->reserved_at = null;
 
@@ -191,9 +192,11 @@ class PostController extends Controller {
 
 					Posts::sendUpdate($this->post);
 
-					Response::done([
-						'li' => $this->post->getLi(),
-					]);
+					$response = [ 'li' => $this->post->getLi() ];
+					if ($from_profile)
+						$response['pendingReservations'] = Users::getPendingReservationsHTML(User::find($old_reserver), $this->is_user_reserver);
+
+					Response::done($response);
 				}
 				else {
 					if (!$can_delete)

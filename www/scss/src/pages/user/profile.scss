@@ -24,14 +24,22 @@
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
+		justify-content: center;
 		text-align: left;
 		margin-bottom: 10px;
 
 		.avatar-wrap {
 			flex: 0 0 auto;
+			height: auto;
+			margin-bottom: 0;
 		}
 		.title {
 			flex: 1 1 100%;
+			justify-self: stretch;
+			align-self: stretch;
+			display: flex;
+			flex-flow: column nowrap;
+			justify-content: space-around;
 			padding: 0 10px;
 
 			> * {
@@ -63,6 +71,13 @@
 	.briefing {
 		.avatar-wrap {
 			border-width: 3px;
+
+			&.provider-discord {
+				&, .avatar {
+					width: 75px;
+					height: 75px;
+				}
+			}
 		}
 		h1 {
 			.da {
@@ -120,7 +135,14 @@
 			}
 		}
 		.pending-reservations, .awaiting-approval {
-			ul { @extend %post-ul }
+			ul {
+				@extend %post-ul;
+				margin: 10px 0;
+
+				&:empty:before {
+					content: "You should never see this. If you do it's due to a bug. Please contact us and report this issue.";
+				}
+			}
 		}
 		.awaiting-approval:empty:before {
 			content:"";
