@@ -250,7 +250,7 @@
 
 			$.Dialog.wait(false, 'Signing out');
 
-			$.post('/da-auth/signout?everywhere',{name: username},$.mkAjaxHandler(function(){
+			$.API.post('/da-auth/signout?everywhere',{name: username},$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Navigation.reload(true);
@@ -311,23 +311,6 @@
 			}
 		});
 	}
-
-	$('#unlink').on('click',function(e){
-		e.preventDefault();
-
-		let title = 'Unlink account & sign out';
-		$.Dialog.confirm(title,'Are you sure you want to unlink your account?', function(sure){
-			if (!sure) return;
-
-			$.Dialog.wait(title,'Removing account link');
-
-			$.post('/da-auth/signout?unlink', $.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
-
-				$.Navigation.reload(true);
-			}));
-		});
-	});
 
 	const fulfillPromises = function(){
 		$('.post-deviation-promise:not(.loading)').each(function(){
@@ -442,20 +425,6 @@
 				$.Dialog.close();
 		}
 	}
-
-	const $knownIps = $('section.known-ips');
-
-	$knownIps.on('click', 'button', function(){
-		const $btn = $(this);
-		$btn.disable();
-		$.post(`/user/known-ips/${username}`, $.mkAjaxHandler(function(){
-			if (!this.status) return $.Dialog.fail('Load full list of known IPs', this.message);
-
-			$knownIps.replaceWith(this.html);
-		})).fail(function(){
-			$btn.enable();
-		});
-	});
 
 	const
 		$settings = $('#settings'),
