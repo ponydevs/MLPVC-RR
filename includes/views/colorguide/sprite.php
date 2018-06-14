@@ -8,7 +8,10 @@ use App\CoreUtils;
 /** @var $ColorGroups array */ ?>
 <div id="content" class="section-container">
 	<h1>Sprite Color Checker</h1>
-	<p><a href="/cg/v/<?=$Appearance->id?>"><span class="typcn typcn-arrow-back"></span> Back to appearance page</a></p>
+	<div class="button-block align-center">
+		<a href="/cg/v/<?=$Appearance->id?>" class="btn link typcn typcn-arrow-back"> Back to appearance page</a>
+		<button class="darkblue typcn typcn-adjust-contrast" id="server-side-check">Run server-side check</button>
+	</div>
 
 	<section class="checker">
 		<div id="svg-cont"></div>

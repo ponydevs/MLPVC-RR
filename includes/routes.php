@@ -128,6 +128,7 @@ $api_endpoint('/cg/appearances/list',                'AppearanceController#listA
 $api_endpoint('/cg/appearance/[i:id]?',              'AppearanceController#api');
 $api_endpoint('/cg/appearance/[i:id]/colorgroups',   'AppearanceController#colorGroupsApi');
 $api_endpoint('/cg/appearance/[i:id]/sprite',        'AppearanceController#spriteApi');
+$api_endpoint('/cg/appearance/[i:id]/sprite/check-colors', 'AppearanceController#checkColors');
 $api_endpoint('/cg/appearance/[i:id]/relations',     'AppearanceController#relationsApi');
 $api_endpoint('/cg/appearance/[i:id]/cutiemarks',    'AppearanceController#cutiemarkApi');
 $api_endpoint('/cg/appearance/[i:id]/tagged',        'AppearanceController#taggedApi');

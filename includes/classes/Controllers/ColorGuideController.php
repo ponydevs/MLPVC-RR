@@ -523,7 +523,8 @@ class ColorGuideController extends Controller {
 
 		CoreUtils::callScript('sprite_color_checkup');
 
-		$nagUser = Users::get(Appearances::SPRITE_NAG_USERID);
-		Response::success('Checkup started.'.($nagUser !== null ? " {$nagUser->toAnchor()} will be notified if there are any issues.":''));
+		$nagUser = User::find(Appearances::SPRITE_NAG_USERID);
+		$The_authorities = Appearances::SPRITE_NAG_USERID === Auth::$user->id ? 'You' : $nagUser->toAnchor();
+		Response::success('Checkup started.'.($nagUser !== null ? " $The_authorities will be notified if there are any issues.":''));
 	}
 }

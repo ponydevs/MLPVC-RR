@@ -588,7 +588,7 @@ HTML;
 		return false;
 	}
 
-	public function checkSpriteColors(){
+	public function checkSpriteColors():bool {
 		$checkWho = $this->owner_id ?? Appearances::SPRITE_NAG_USERID;
 		$hasColorIssues = $this->spriteHasColorIssues();
 		$oldNotifs = Appearances::getSpriteColorIssueNotifications($this->id, $checkWho);
@@ -596,6 +596,8 @@ HTML;
 			Notification::send($checkWho,'sprite-colors',['appearance_id' => $this->id]);
 		else if (!$hasColorIssues && !empty($oldNotifs))
 			Appearances::clearSpriteColorIssueNotifications($oldNotifs);
+
+		return $hasColorIssues;
 	}
 
 	/**

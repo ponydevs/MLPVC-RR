@@ -1022,4 +1022,19 @@ class AppearanceController extends ColorGuideController {
 
 		Response::done(['svgel' => $svgel, 'svgdata' => $svgdata, 'keep_dialog' => true]);
 	}
+
+	public function checkColors($params){
+		if ($this->action !== 'POST')
+			CoreUtils::notAllowed();
+
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		$this->_getAppearance($params, false);
+
+		if ($this->appearance->checkSpriteColors())
+			Response::success('One or more color issues were found.');
+
+		Response::success("There doesn't seem to be seem to be any color issues.");
+	}
 }
