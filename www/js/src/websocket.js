@@ -158,6 +158,14 @@
 					}
 				}
 			}));
+			this.conn.on('update', wsdecoder(response => {
+				console.log('[WS] %cWebsite updated','color:darkblue');
+				const speed = 100;
+				const $gitInfo = $('#git-info');
+				$gitInfo.fadeOut(speed, function(){
+					$gitInfo.html(response.git_info).fadeIn(speed);
+				});
+			}));
 			this.conn.on('hello', wsdecoder(response => {
 				console.log('[WS] %cHello response (priv=%s)','color:green', response.priv);
 				$w.trigger('ws-hello', [response]);

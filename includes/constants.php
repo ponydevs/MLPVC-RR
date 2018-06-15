@@ -5,6 +5,7 @@ use App\RegExp;
 // Configuration \\
 define('HTTPS', !empty($_SERVER['HTTPS']));
 define('ORIGIN',(HTTPS?'https':'http').'://'.($_SERVER['SERVER_NAME']??'localhost'));
+define('WS_LOCAL_ORIGIN', 'http://localhost');
 define('ABSPATH',ORIGIN.'/');
 /** @noinspection RealpathInSteamContextInspection */
 define('PROJPATH', dirname(__FILE__, 2).DIRECTORY_SEPARATOR);

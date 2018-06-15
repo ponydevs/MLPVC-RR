@@ -786,9 +786,11 @@ class CoreUtils {
 	/**
 	 * Returns the HTML of the GIT informaiiton in the website's footer
 	 *
+	 * @param bool $wrap
+	 *
 	 * @return string
 	 */
-	public static function getFooterGitInfo():string {
+	public static function getFooterGitInfo($wrap = WRAP):string {
 		$commit_info = "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>";
 		$commit_id = RedisHelper::get('commit_id');
 		if ($commit_id === null){
@@ -804,7 +806,7 @@ class CoreUtils {
 			$commit_info .= "@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong> created ".Time::tag(date('c',strtotime($commit_time)));
 		}
 		else $commit_info .= '</strong> (version information unavailable)';
-		return $commit_info;
+		return $wrap ? "<span id='git-info'>$commit_info</span>" : $commit_info;
 	}
 
 	/**
@@ -972,7 +974,7 @@ HTML;
 	}
 
 	private static $_uncountableWords = ['staff'];
-	private static $_endsWithYButStillPlural = ['day'];
+	private static $_endsWithYButStillPlural = ['day','key'];
 
 	/**
 	 * Detect user's web browser based on user agent
@@ -1104,17 +1106,17 @@ HTML;
 		return $strlen > $len ? self::trim(mb_substr($str, 0, $len-1)).'…' : $str;
 	}
 
-	public static function socketEvent(string $event, array $data = []){
+	public static function socketEvent(string $event, array $data = [], string $origin = ORIGIN){
 		$elephant = new \ElephantIO\Client(new SocketIOEngine('https://'.WS_SERVER_HOST, [
 			'context' => [
 				'http' => [
 					'header' => [
 						'Cookie: access='.urlencode(WS_SERVER_KEY),
-						'Origin: '.ORIGIN,
-					]
+						"Origin: $origin",
+					],
 				],
 				'ssl' => \defined('SOCKET_SSL_CTX') ? SOCKET_SSL_CTX : [],
-			]
+			],
 		]));
 
 		$elephant->initialize();
