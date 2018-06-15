@@ -79,6 +79,7 @@
 			margin-bottom: 2px;
 		}
 		> .image {
+			$DeviationBorderWidth: 2px;
 			&.deviation {
 				&.error {
 					color: $NOrange;
@@ -89,7 +90,8 @@
 					font-size: 1.3em;
 				}
 				img {
-					border: 2px solid $DeviationBorder;
+					border: $DeviationBorderWidth solid $DeviationBorder;
+					background-color: rgba($NOrange, .1);
 				}
 
 				.post-deviation-promise {
@@ -128,13 +130,16 @@
 				$imageSize: 40px;
 				.approved-info {
 			    position: absolute;
-			    left: 0;
-			    bottom: 0;
+			    left: $DeviationBorderWidth;
+			    bottom: $DeviationBorderWidth;
 			    cursor: help;
 			    width: $imageSize;
 			    height: $imageSize;
-			    background: url('/img/approved.svg') no-repeat center;
+			    background: url('/img/approved.svg?v=2') no-repeat center;
 			    background-size: $imageSize;
+				}
+				> img {
+					background-color: rgba($DeviationBorder, .1);
 				}
 			}
 		}
