@@ -13,7 +13,7 @@ echo "$prefix ".CoreUtils::makePlural('key',$num,PREPEND_NUMBER)." deleted succe
 
 if (in_array('commit_id', $keys, true)){
 	try {
-		CoreUtils::socketEvent('update', ['git_info' => CoreUtils::getFooterGitInfo(NOWRAP)], WS_LOCAL_ORIGIN);
+		CoreUtils::socketEvent('update', ['git_info' => CoreUtils::getFooterGitInfo(NOWRAP, true)], WS_LOCAL_ORIGIN);
 		echo "$prefix Sent update WS event\n";
 	}
 	catch (Throwable $e){

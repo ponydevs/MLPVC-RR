@@ -783,16 +783,20 @@ class CoreUtils {
 		return implode(' | ',$out);
 	}
 
+	const FOOTER_GIT_RELOAD_WARNING = '<sup style="cursor:help" title="The website has been updated, you should reload to get any new features/fixes">&#x2731;</sup>';
+
 	/**
 	 * Returns the HTML of the GIT informaiiton in the website's footer
 	 *
 	 * @param bool $wrap
+	 * @param bool $reload_warning
 	 *
 	 * @return string
 	 */
-	public static function getFooterGitInfo($wrap = WRAP):string {
+	public static function getFooterGitInfo(bool $wrap = WRAP, bool $reload_warning = false):string {
 		$commit_info = "Running <strong><a href='".GITHUB_URL."' title='Visit the GitHub repository'>MLPVC-RR</a>";
 		$commit_id = RedisHelper::get('commit_id');
+		$warn = $reload_warning ? self::FOOTER_GIT_RELOAD_WARNING : '';
 		if ($commit_id === null){
 			$commit_id = rtrim(shell_exec('git rev-parse --short=4 HEAD'));
 			RedisHelper::set('commit_id', $commit_id);
@@ -803,9 +807,9 @@ class CoreUtils {
 				$commit_time = shell_exec('git log -1 --date=short --pretty=format:%ci');
 				RedisHelper::set('commit_time', $commit_time);
 			}
-			$commit_info .= "@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong> created ".Time::tag(date('c',strtotime($commit_time)));
+			$commit_info .= "@<a href='".GITHUB_URL."/commit/$commit_id' title='See exactly what was changed and why'>$commit_id</a></strong>$warn created ".Time::tag(date('c',strtotime($commit_time)));
 		}
-		else $commit_info .= '</strong> (version information unavailable)';
+		else $commit_info .= "</strong>$warn (version information unavailable)";
 		return $wrap ? "<span id='git-info'>$commit_info</span>" : $commit_info;
 	}
 
