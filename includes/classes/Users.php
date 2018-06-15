@@ -76,8 +76,7 @@ class Users {
 		$userdata = $userdata['results'][0];
 		$ID = strtolower($userdata['userid']);
 
-		/** @var $DBUser User */
-		$DBUser = DB::$instance->where('id', $ID)->getOne('users','name');
+		$DBUser = User::find($ID);
 		$userExists = !empty($DBUser);
 		if (!$userExists)
 			$DBUser = new User([ 'id' => $ID ]);
