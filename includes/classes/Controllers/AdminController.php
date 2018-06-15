@@ -372,19 +372,22 @@ class AdminController extends Controller {
 	}
 
 	public function wshello(){
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
 		if (Permission::insufficient('developer'))
 			CoreUtils::noPerm();
 
 		CoreUtils::detectUnexpectedJSON();
 
-		$clientid = $_POST['clientid'] ?? null;
+		$clientid = $_REQUEST['clientid'] ?? null;
 		if (!preg_match(new RegExp('^[a-zA-Z\d_-]+$'), $clientid))
 			Response::fail('Invalid client ID');
 
 		try {
 			CoreUtils::socketEvent('hello', [
 				'clientid' => $clientid,
-				'priv' => $_POST['priv'],
+				'priv' => $_REQUEST['priv'],
 			]);
 		}
 		catch (\Throwable $e){
