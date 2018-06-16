@@ -574,7 +574,7 @@ class EpisodeController extends Controller {
 
 		$NextEpisode = DB::$instance->where('airs > now()')->orderBy('airs')->getOne('episodes');
 		if (empty($NextEpisode))
-			Response::fail('No upcoming episode found');
+			Response::fail("The show is on hiatus, the next episode's title and air date is unknown.");
 
 		Response::done($NextEpisode->to_array([
 			'only' => ['episode','airs','season','title'],
