@@ -411,8 +411,10 @@ class AppearanceController extends ColorGuideController {
 			Input::IS_OPTIONAL => true,
 		]))->out();
 		if ($wipe_cm_tokenized){
-			foreach ($this->appearance->cutiemarks as $cm)
+			foreach ($this->appearance->cutiemarks as $cm){
 				CoreUtils::deleteFile($cm->getTokenizedFilePath());
+				CoreUtils::deleteFile($cm->getRenderedFilePath());
+			}
 		}
 
 		$wipe_cm_source = (new Input('wipe_cm_source','bool',[
