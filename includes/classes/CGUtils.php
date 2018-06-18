@@ -905,7 +905,7 @@ GPL;
 			/** @var $dbcolor Color[] */
 			$dbcolor = DB::$instance->where('hex', $color->toHex())->where('group_id', $CMColorGroup->id)->get(Color::$table_name);
 
-			if ($dbcolor === null || \count($dbcolor) !== 1)
+			if (empty($dbcolor))
 				return sprintf('<!--#/%s-->', mb_substr($color->toHexa(), 1));
 
 			$id = '@'.$dbcolor[0]->id;
@@ -946,8 +946,8 @@ GPL;
 			$color = RGBAColor::parse("#{$match[1]}");
 			// This would restore the original color
 			//return (string) $color;
-			// Hopefully an inverted color will stand out
-			return (string) $color->setAlpha(.99)->invert();
+			// Hopefully an inverted, transparent color will stand out
+			return (string) $color->setAlpha(.75)->invert();
 		}, $svg);
 
 		return $svg;
