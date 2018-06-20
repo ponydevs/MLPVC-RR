@@ -43,7 +43,7 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 \t<meta name="keywords" content="mlp,my little pony,mlp:fim,friendship is magic,vector,vector club,vector requests,,illustrator,inkscape,mlp episodes,mlp movie$og_tags">
 \t<link rel="image_src" href="$og_apos_image">
 \t<meta property="og:type" content="website">
-\t<meta property="og:locale" content="en_US">
+\t<meta property="og:locale" content="en_US">\n
 HTML;
 	}
 	if (isset($canonicalURL))
