@@ -75,7 +75,7 @@ class AppearanceController extends ColorGuideController {
 				'tags' =>
 					($cm_count > 0 ? 'cutie mark,cm,cm vector,cutie mark vector,' : '').
 					$this->appearance->getTagsAsText(',').
-					'color guide,colors,swatch file,illustrator swatches,gimp palette,inkscape swatches,png download',
+					',color guide,colors,swatch file,illustrator swatches,gimp palette,inkscape swatches,png download',
 			],
 			'import' => [
 				'Appearance' => $this->appearance,
