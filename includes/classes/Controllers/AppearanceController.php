@@ -61,6 +61,9 @@ class AppearanceController extends ColorGuideController {
 		CoreUtils::fixPath("$this->path/v/{$this->appearance->id}-$SafeLabel");
 		$heading = $this->appearance->label;
 
+		$cm_count = \count($this->appearance->cutiemarks);
+		$cmv = $cm_count > 0 ? ' and cutie mark '.CoreUtils::makePlural('vector',$cm_count) : '';
+
 		$settings = [
 			'title' => "$heading - Color Guide",
 			'heading' => $heading,
@@ -68,7 +71,11 @@ class AppearanceController extends ColorGuideController {
 			'js' => ['jquery.ctxmenu', 'pages/colorguide/guide', true],
 			'og' => [
 				'image' => $this->appearance->getSpriteURL(),
-				'description' => "Show accurate colors for \"{$this->appearance->label}\" from the MLP-VectorClub's Official Color Guide",
+				'description' => "Show accurate colors$cmv for \"{$this->appearance->label}\" from the MLP-VectorClub's Official Color Guide",
+				'tags' =>
+					($cm_count > 0 ? 'cutie mark,cm,cm vector,cutie mark vector,' : '').
+					$this->appearance->getTagsAsText(',').
+					'color guide,colors,swatch file,illustrator swatches,gimp palette,inkscape swatches,png download',
 			],
 			'import' => [
 				'Appearance' => $this->appearance,
@@ -79,7 +86,7 @@ class AppearanceController extends ColorGuideController {
 		if (!empty($this->appearance->owner_id)){
 			$settings['import']['Owner'] = $this->owner;
 			$settings['import']['isOwner'] = $this->ownerIsCurrentUser;
-			$settings['og']['description'] = "Colors for \"{$this->appearance->label}\" from ".CoreUtils::posess($this->owner->name)." Personal Color Guide on the the MLP-VectorClub's website";
+			$settings['og']['description'] = "Colors$cmv for \"{$this->appearance->label}\" from ".CoreUtils::posess($this->owner->name)." Personal Color Guide on the the MLP-VectorClub's website";
 		}
 		else $settings['import']['Changes'] = MajorChange::get($this->appearance->id, null);
 		if ($this->ownerIsCurrentUser || Permission::sufficient('staff')){

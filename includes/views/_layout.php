@@ -37,8 +37,10 @@ $fatalErrorPage = defined('FATAL_ERROR'); ?>
 			echo "\t<meta property='og:$k' content='". CoreUtils::aposEncode($v) ."'>\n";
 		$og_apos_desc = CoreUtils::aposEncode($og['description']);
 		$og_apos_image = CoreUtils::aposEncode($og['image']);
+		$og_tags = !empty($og['tags']) ? ','.CoreUtils::aposEncode($og['tags']) : '';
 		echo <<<HTML
 \t<meta name="description" content="$og_apos_desc">
+\t<meta name="keywords" content="mlp,my little pony,mlp:fim,friendship is magic,vector,vector club,vector requests,,illustrator,inkscape,mlp episodes,mlp movie$og_tags">
 \t<link rel="image_src" href="$og_apos_image">
 \t<meta property="og:type" content="website">
 \t<meta property="og:locale" content="en_US">

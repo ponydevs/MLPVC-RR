@@ -787,11 +787,11 @@ HTML;
 		return $this->owner_id !== null && $this->private && $this->isPrivate($ignoreStaff);
 	}
 
-	public function getTagsAsText(){
+	public function getTagsAsText(string $separator = ', '){
 		$tags = [];
 		foreach (Tags::getFor($this->id, null, Permission::sufficient('staff')) as $tag)
 			$tags[] = $tag->name;
-		return implode(', ', $tags);
+		return implode($separator, $tags);
 	}
 
 	public function processTagChanges(string $new_tags, bool $eqg){
