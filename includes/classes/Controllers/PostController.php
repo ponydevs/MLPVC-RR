@@ -318,7 +318,8 @@ class PostController extends Controller {
 				if (!UserPrefs::get($pref, Auth::$user))
 					Response::fail("You are not allowed to post {$kind}s");
 
-				if ($kind === 'reservation'){
+				$is_reservation = $kind === 'reservation';
+				if ($is_reservation){
 					if (Permission::insufficient('member'))
 						Response::fail();
 					Users::checkReservationLimitReached();
@@ -363,7 +364,7 @@ class PostController extends Controller {
 						$Post->posted_at = date('c', $posted_at);
 				}
 
-				$Post->{$Post->is_reservation ? 'reserved_by' : 'requested_by'} = $ByID;
+				$Post->{$is_reservation ? 'reserved_by' : 'requested_by'} = $ByID;
 				Posts::checkPostDetails($Post->is_request, $Post);
 
 				if (!$Post->save())
