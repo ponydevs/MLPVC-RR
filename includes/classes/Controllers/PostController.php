@@ -93,8 +93,8 @@ class PostController extends Controller {
 	public function _checkPostEditPermission(){
 		if (
 			($this->post->is_request && ($this->post->reserved_by !== null || $this->post->requested_by !== Auth::$user->id))
-			|| ($this->post->is_reservation && $this->post->reserved_by !== Auth::$user->id)
-			|| Permission::insufficient('staff')
+			&& ($this->post->is_reservation && $this->post->reserved_by !== Auth::$user->id)
+			&& Permission::insufficient('staff')
 		)
 			Response::fail();
 	}
