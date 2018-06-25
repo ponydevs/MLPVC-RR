@@ -138,7 +138,7 @@ class UserSettingForm {
 			 $current_user = Auth::$user;
 		$this->_current_user = $current_user;
 		$this->_can_save = ($req_perm === null && Auth::$signed_in && $this->_current_user->id === Auth::$user->id)
-		                   || ($req_perm !== null || Permission::sufficient($req_perm, $this->_current_user->role));
+		                   || ($req_perm !== null && Permission::sufficient($req_perm, $this->_current_user->role));
 	}
 
 	private function _permissionCheck(string $check_name){
