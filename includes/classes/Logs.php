@@ -166,7 +166,7 @@ class Logs {
 				$details[] = ['Reason', CoreUtils::escapeHTML($data['reason'])];
 			break;
 			case 'req_delete':
-				$details[] = self::_getReferenceForDeletedPost($data);
+				$details[] = self::_getReferenceForDeletedPost($data, 'Request');
 				$details[] = ['Description', CoreUtils::escapeHTML($data['label'])];
 				$details[] = ['Type', Posts::REQUEST_TYPES[$data['type']]];
 				$ep = Episode::find_by_season_and_episode($data['season'], $data['episode']);
@@ -398,8 +398,8 @@ class Logs {
 		}
 	}
 
-	private static function _getReferenceForDeletedPost(array $data){
-		return [self::REF_KEY, CoreUtils::capitalize($data['type']).' #'.($data['old_id'] ?? $data['id'])];
+	private static function _getReferenceForDeletedPost(array $data, ?string $force_type = null){
+		return [self::REF_KEY, CoreUtils::capitalize($force_type ?? $data['type']).' #'.($data['old_id'] ?? $data['id'])];
 	}
 
 	/**
