@@ -399,7 +399,10 @@ class Logs {
 	}
 
 	private static function _getReferenceForDeletedPost(array $data, ?string $force_type = null){
-		return [self::REF_KEY, CoreUtils::capitalize($force_type ?? $data['type']).' #'.($data['old_id'] ?? $data['id'])];
+		$new_post = isset($data['id']);
+		$type = $new_post ? 'Post' : ($force_type ?? $data['type']);
+		$id = $new_post ? $data['id'] : $data['old_id'];
+		return [self::REF_KEY, CoreUtils::capitalize($type)." #$id"];
 	}
 
 	/**
