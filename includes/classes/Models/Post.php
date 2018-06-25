@@ -52,7 +52,6 @@ use App\UserPrefs;
  * @method static Post find_by_preview(string $preview_url)
  */
 class Post extends NSModel implements LinkableInterface {
-	const ORDER_BY_POSTED_AT = 'CASE WHEN requested_by IS NOT NULL THEN requested_at ELSE reserved_at END';
 	public static $belongs_to = [
 		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
 		['requester', 'class' => 'User', 'foreign_key' => 'requested_by'],
@@ -135,6 +134,23 @@ class Post extends NSModel implements LinkableInterface {
 	public function get_ep(){
 		return Episode::find_by_season_and_episode($this->season, $this->episode);
 	}
+
+	public const ORDER_BY_POSTED_AT = 'CASE WHEN requested_by IS NOT NULL THEN requested_at ELSE reserved_at END';
+	public const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
+	public const REQUEST_TYPES = [
+		'chr' => 'Characters',
+		'obj' => 'Objects',
+		'bg' => 'Backgrounds',
+	];
+	public const KINDS = ['request', 'reservation'];
+	public const BROKEN = "<strong class='color-orange broken-note' title=\"The full size preview of this post was deemed unavailable and it is now marked as broken\"><span class='typcn typcn-plug'></span> Deemed broken</strong>";
+	public const TRANSFER_ATTEMPT_CLEAR_REASONS = [
+		'del' => 'the post was deleted',
+		'snatch' => 'the post was reserved by someone else',
+		'deny' => 'the post was transferred to someone else',
+		'perm' => 'the previous reserver could no longer act on the post',
+		'free' => 'the post became free for anyone to reserve',
+	];
 
 	public function getID():string {
 		return 'post-'.$this->id;
@@ -226,7 +242,7 @@ class Post extends NSModel implements LinkableInterface {
 	}
 
 	/**
-	 * List ltem generator function for request & reservation generators
+	 * List item generator function for request & reservation generators
 	 *
 	 * @param bool $view_only      Only show the "View" button
 	 * @param bool $cachebust_url  Append a random string to the image URL to force a re-fetch
@@ -236,8 +252,94 @@ class Post extends NSModel implements LinkableInterface {
 	 * @throws \Exception
 	 */
 	public function getLi(bool $view_only = false, bool $cachebust_url = false, bool $enablePromises = false):string {
-		/** @noinspection PhpParamsInspection */
-		return Posts::getLi($this, $view_only, $cachebust_url, $enablePromises);
+		$ID = $this->getID();
+		$alt = !empty($this->label) ? CoreUtils::aposEncode($this->label) : '';
+		$postlink = $this->toURL();
+		$ImageLink = $view_only ? $postlink : $this->fullsize;
+		$cachebust = $cachebust_url ? '?t='.time() : '';
+		$HTML = "<div class='image screencap'>".(
+			$enablePromises
+				? "<div class='post-image-promise image-promise' data-href='$ImageLink' data-src='{$this->preview}$cachebust'></div>"
+				: "<a href='$ImageLink'><img src='{$this->preview}$cachebust' alt='$alt'></a>"
+			).'</div>';
+		$post_label = $this->getLabelHTML();
+		$permalink = "<a href='$postlink'>".Time::tag($this->posted_at).'</a>';
+		$isStaff = Permission::sufficient('staff');
+
+		$posted_at = '<em class="info-line post-date">';
+		if ($this->is_request){
+			$isRequester = Auth::$signed_in && $this->requested_by === Auth::$user->id;
+			$isReserver = Auth::$signed_in && $this->reserved_by === Auth::$user->id;
+			$displayOverdue = Permission::sufficient('member') && $this->isOverdue();
+
+			$posted_at .= "Requested $permalink";
+			if (Auth::$signed_in && ($isStaff || $isRequester || $isReserver)){
+				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : $this->requester->toAnchor());
+			}
+		}
+		else {
+			$displayOverdue = false;
+			$posted_at .= "Reserved $permalink";
+		}
+		$posted_at .= '</em>';
+
+		$hide_reserved_status = $this->reserved_by === null || ($displayOverdue && !$isReserver && !$isStaff);
+		if ($this->reserved_by !== null){
+			$reserved_by = $displayOverdue && !$isReserver ? ' by '.$this->reserver->toAnchor() : '';
+			$reserved_at = $this->is_request && $this->reserved_at !== null && !($hide_reserved_status && Permission::insufficient('staff'))
+				? "<em class='info-line reserve-date'>Reserved <strong>".Time::tag($this->reserved_at)."</strong>$reserved_by</em>"
+				: '';
+			if ($this->finished){
+				$approved = $this->lock;
+				if ($enablePromises){
+					$view_only_promise = $view_only ? "data-viewonly='$view_only'" : '';
+					$HTML = "<div class='image deviation'><div class='post-deviation-promise image-promise' data-post-id='{$this->id}' $view_only_promise></div></div>";
+				}
+				else $HTML = $this->getFinishedImage($view_only, $cachebust);
+				$finished_at = $this->finished_at !== null
+					? "<em class='info-line finish-date'>Finished <strong>".Time::tag($this->finished_at).'</strong></em>'
+					: '';
+				$locked_at = '';
+				if ($approved){
+					$LogEntry = $this->approval_entry;
+					if (!empty($LogEntry)){
+						$approverIsNotReserver = $LogEntry->initiator !== null && $LogEntry->initiator !== $this->reserved_by;
+						$approvedby = $isStaff && $LogEntry->initiator !== null
+							? ' by '.(
+								$approverIsNotReserver
+								? (
+									$this->is_request && $LogEntry->initiator === $this->requested_by
+									? 'the requester'
+									: $LogEntry->actor->toAnchor()
+								)
+								: 'the reserver'
+							)
+							: '';
+						$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag($LogEntry->timestamp)."</strong>$approvedby</em>" : '';
+					}
+					else $locked_at = '<em class="info-line approve-date">Approval data unavilable</em>';
+				}
+				$post_type = $this->is_request ? '<em class="info-line">Posted in the <strong>'.self::REQUEST_TYPES[$this->type].'</strong> section</em>' : '';
+				$HTML .= $post_label.$posted_at.$post_type.$reserved_at.$finished_at.$locked_at;
+
+				if (!empty($this->fullsize))
+					$HTML .= "<span class='info-line'><a href='{$this->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a></span>";
+				if (!$approved && Permission::sufficient('staff'))
+					$HTML .= "<span class='info-line'><a href='{$this->reserver->getOpenSubmissionsURL()}' class='color-blue' target='_blank' rel='noopener'><span class='typcn typcn-arrow-forward'></span> View open submissions</a></span>";
+			}
+			else $HTML .= $post_label.$posted_at.$reserved_at;
+		}
+		else $HTML .= $post_label.$posted_at;
+
+		if ($displayOverdue && ($isStaff || $isReserver))
+			$HTML .= self::CONTESTABLE;
+
+		if ($this->broken)
+			$HTML .= self::BROKEN;
+
+		$break = $this->broken ? 'class="admin-break"' : '';
+
+		return "<li id='$ID' data-type='{$this->kind}' $break>$HTML".$this->getActionsHTML($view_only ? $postlink : false, $hide_reserved_status, $enablePromises).'</li>';
 	}
 
 	public function getLabelHTML():string {

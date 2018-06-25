@@ -16,7 +16,6 @@ class PreferenceController extends Controller {
 
 		if (Permission::insufficient('user'))
 			CoreUtils::noPerm();
-		CSRFProtection::protect();
 	}
 
 	/** @var string */

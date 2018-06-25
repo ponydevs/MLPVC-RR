@@ -1,30 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 class Cookie {
 	public const SESSION = 0;
-	public const HTTPONLY = true;
+	public const HTTP_ONLY = true;
 
-	public static function exists($name){
+	public static function exists(string $name):bool {
 		return isset($_COOKIE[$name]);
 	}
 
-	public static function get($name){
-		return $_COOKIE[$name] ?? null;
+	public static function missing(string $name):bool {
+		return !self::exists($name);
 	}
 
-	public static function set($name, $value, $expires, $httponly = false, $path = '/'){
-		$success = setcookie($name, $value, $expires, $path, $_SERVER['HTTP_HOST'], true, $httponly);
+	public static function get(string $name):string {
+		return $_COOKIE[$name];
+	}
+
+	public static function set(string $name, string $value, int $expire = self::SESSION, bool $http_only = false, string $path = '/'):bool {
+		$success = setcookie($name, $value, $expire, $path, $_SERVER['HTTP_HOST'], HTTPS, $http_only);
 		if ($success)
 			$_COOKIE[$name] = $value;
 		return $success;
 	}
 
-	public static function delete($name, $httponly, $path = '/'){
-		$retval = setcookie($name, '', time() - 3600, $path, $_SERVER['HTTP_HOST']);
-
-		unset($_COOKIE[$name]);
-		return $retval;
+	public static function delete(string $name, bool $http_only = false, string $path = '/'):bool {
+		$success = setcookie($name, '', time() - 3600, $path, $_SERVER['HTTP_HOST']);
+		if ($success)
+			unset($_COOKIE[$name]);
+		return $success;
 	}
 }

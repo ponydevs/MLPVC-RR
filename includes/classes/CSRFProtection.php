@@ -1,31 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 class CSRFProtection {
-	protected static $_cookieKey = 'CSRF_TOKEN';
-	public static $isForged;
+	private const COOKIE_NAME = 'CSRF_TOKEN';
+	public static $tripped;
 
 	/**
 	 * Checks POSTed data for CSRF token validity
 	 */
-	public static function detect(){
-		$cookieMissing = !Cookie::exists(self::$_cookieKey);
-		if (self::$isForged !== null || ($_SERVER['REQUEST_METHOD'] === 'GET' && !$cookieMissing))
+	public static function detect():void {
+		$cookie_missing = Cookie::missing(self::COOKIE_NAME);
+		$get_request = $_SERVER['REQUEST_METHOD'] === 'GET';
+		if (self::$tripped !== null || ($get_request && !$cookie_missing))
 			return;
 
-		self::$isForged = !isset($_REQUEST[self::$_cookieKey]) || $cookieMissing || $_REQUEST[self::$_cookieKey] !== Cookie::get(self::$_cookieKey);
-		if (self::$isForged)
-			Cookie::set(self::$_cookieKey, bin2hex(random_bytes(16)), Cookie::SESSION);
+		if ($get_request)
+			self::$tripped = false;
+		else self::$tripped = !isset($_REQUEST[self::COOKIE_NAME]) || $cookie_missing || $_REQUEST[self::COOKIE_NAME] !== Cookie::get(self::COOKIE_NAME);
+		if (self::$tripped || $cookie_missing)
+			Cookie::set(self::COOKIE_NAME, bin2hex(random_bytes(16)));
 	}
 
 	/**
 	 * Blocks CSRF requests
 	 */
-	public static function protect(){
+	public static function protect():void {
 		self::detect();
 
-		if (self::$isForged === true)
+		if (self::$tripped === true)
 			HTTP::statusCode(401, AND_DIE);
 	}
 
@@ -36,7 +41,7 @@ class CSRFProtection {
 	 *
 	 * @return string
 	 */
-	public static function removeParamFromURL($url){
-		return rtrim(preg_replace(new RegExp(preg_quote(self::$_cookieKey, '~').'=[^&]+(&|$)'),'',$url),'?&');
+	public static function removeParamFromURL(string $url):string {
+		return rtrim(preg_replace(new RegExp(preg_quote(self::COOKIE_NAME, '~').'=[^&]+(&|$)'),'',$url),'?&');
 	}
 }

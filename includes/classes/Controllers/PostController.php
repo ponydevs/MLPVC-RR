@@ -35,7 +35,6 @@ class PostController extends Controller {
 	public function _authorize(){
 		if (!Auth::$signed_in)
 			Response::fail();
-		CSRFProtection::protect();
 	}
 
 	public function _authorizeMember(){
@@ -306,7 +305,7 @@ class PostController extends Controller {
 				$this->_authorize();
 
 				$kind = (new Input('kind',function($value){
-					if (!\in_array($value,Posts::KINDS,true))
+					if (!\in_array($value, Post::KINDS,true))
 						return Input::ERROR_INVALID;
 				}, [
 					Input::CUSTOM_ERROR_MESSAGES => [
@@ -353,7 +352,7 @@ class PostController extends Controller {
 						if (empty($PostAs))
 							Response::fail('The user you wanted to post as does not exist');
 
-						if ($kind === 'reservation' && !Permission::sufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
+						if ($kind === 'reservation' && Permission::insufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
 							Response::fail('The user you wanted to post as is not a club member, do you want to post as them anyway?', ['canforce' => true]);
 
 						$ByID = $PostAs->id;
@@ -830,7 +829,7 @@ class PostController extends Controller {
 
 		$this->_authorize();
 
-		if (!Permission::sufficient('staff'))
+		if (Permission::insufficient('staff'))
 			Response::fail();
 		$_POST['allow_overwrite_reserver'] = true;
 		$insert = Posts::checkPostFinishingImage();
@@ -912,8 +911,6 @@ class PostController extends Controller {
 	public function suggestRequest(){
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
-
-		CSRFProtection::protect();
 
 		if (Permission::insufficient('user'))
 			Response::fail('You must be signed in to use this feature.');

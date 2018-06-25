@@ -111,8 +111,6 @@ class DiscordAuthController extends Controller {
 	/** @var bool */
 	private $_sameUser;
 	private function _setTarget($params){
-		CSRFProtection::protect();
-
 		if ($params['name'] === Auth::$user->name)
 			$this->_target = Auth::$user;
 		else {

@@ -20,7 +20,7 @@ define('SVGO_BINARY',PROJPATH.'node_modules/svgo/bin/svgo');
 define('DISCORD_INVITE_LINK', 'https://discord.gg/hrffb8k');
 
 // Set new file & folder permissions
-define('FILE_PERM', 0770);
+define('FILE_PERM', 0660);
 define('FOLDER_PERM', 0770);
 umask(0007);
 

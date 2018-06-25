@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 class Permission {
@@ -35,26 +37,25 @@ class Permission {
 	 *
 	 * @return bool
 	 */
-	public static function sufficient($role, $compareAgainst = null):bool {
-		if (!\is_string($role)) return false;
+	public static function sufficient(string $role, ?string $compareAgainst = null):bool {
+		if (!isset(self::ROLES[$role]))
+			throw new \RuntimeException("Invalid role: $role");
 
-		if (empty($compareAgainst)){
+		$comparison = $compareAgainst !== null;
+
+		if ($comparison)
+			$checkRole = $compareAgainst;
+		else {
 			if (!Auth::$signed_in)
 				return false;
 			$checkRole = Auth::$user->role;
 		}
-		else $checkRole = $compareAgainst;
 
-		$_target = self::ROLES[$role] ?? null;
-		if (!isset($_target))
-			throw new \RuntimeException('Invalid role: '.$role);
-		$targetRole = $role;
-
-		return self::ROLES[$checkRole] >= self::ROLES[$targetRole];
+		return self::ROLES[$checkRole] >= self::ROLES[$role];
 	}
 
 	/**
-	 * Save as above, except the return value is inverted
+	 * Same as above, except the return value is inverted
 	 * Added for better code readability
 	 *
 	 * @param string      $role
@@ -62,7 +63,7 @@ class Permission {
 	 *
 	 * @return bool
 	 */
-	public static function insufficient($role, $compareAgainst = null){
+	public static function insufficient(string $role, ?string $compareAgainst = null){
 		return !self::sufficient($role, $compareAgainst);
 	}
 }

@@ -133,8 +133,6 @@ class UserController extends Controller {
 		if ($this->action !== 'DELETE')
 			CoreUtils::notAllowed();
 
-		CSRFProtection::protect();
-
 		if (!isset($params['id']))
 			Response::fail('Missing session ID');
 
@@ -153,7 +151,6 @@ class UserController extends Controller {
 		if ($this->action !== 'PUT')
 			CoreUtils::notAllowed();
 
-		CSRFProtection::protect();
 		if (Permission::insufficient('staff'))
 			Response::fail();
 

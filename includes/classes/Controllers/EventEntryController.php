@@ -27,7 +27,6 @@ class EventEntryController extends EventController {
 	private function load_event_entry($params, string $action){
 		if (!Auth::$signed_in)
 			Response::fail();
-		CSRFProtection::protect();
 
 		if (!isset($params['entryid']))
 			Response::fail('Entry ID is missing or invalid');
@@ -133,7 +132,6 @@ class EventEntryController extends EventController {
 			case 'POST':
 				if (!Auth::$signed_in)
 					Response::fail();
-				CSRFProtection::protect();
 
 				$this->load_event($params);
 

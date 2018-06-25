@@ -80,8 +80,6 @@ class EpisodeController extends Controller {
 	}
 
 	public function api($params){
-		CSRFProtection::protect();
-
 		if ($this->action !== 'GET' && Permission::insufficient('staff'))
 			Response::fail();
 
@@ -312,7 +310,6 @@ class EpisodeController extends Controller {
 	}
 
 	public function voteApi($params){
-		CSRFProtection::protect();
 		$this->load_episode($params);
 
 		switch ($this->action){
@@ -377,8 +374,6 @@ class EpisodeController extends Controller {
 	}
 
 	public function videoDataApi($params){
-		CSRFProtection::protect();
-
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
@@ -467,8 +462,6 @@ class EpisodeController extends Controller {
 	}
 
 	public function guideRelationsApi($params){
-		CSRFProtection::protect();
-
 		if (Permission::insufficient('staff'))
 			Response::fail();
 

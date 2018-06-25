@@ -27,7 +27,6 @@ class NotificationsController extends Controller {
 
 		if (!Auth::$signed_in)
 			Response::fail();
-		CSRFProtection::protect();
 	}
 
 	public function get(){

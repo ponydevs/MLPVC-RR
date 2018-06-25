@@ -13,7 +13,6 @@ class SettingController extends Controller {
 
 		if (Permission::insufficient('staff'))
 			CoreUtils::noPerm();
-		CSRFProtection::protect();
 	}
 
 	private $setting, $value;

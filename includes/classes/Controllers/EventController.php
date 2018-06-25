@@ -90,7 +90,6 @@ class EventController extends Controller {
 	}
 
 	public function api($params){
-		CSRFProtection::protect();
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
@@ -233,8 +232,6 @@ class EventController extends Controller {
 				}
 			break;
 			case 'DELETE':
-				CSRFProtection::protect();
-
 				$this->load_event($params);
 
 				if ($this->event->isFinalized())
@@ -253,9 +250,8 @@ class EventController extends Controller {
 	}
 
 	public function finalize($params){
-		if (!Permission::sufficient('staff'))
+		if (Permission::insufficient('staff'))
 			Response::fail();
-		CSRFProtection::protect();
 
 		$this->load_event($params);
 
@@ -303,7 +299,6 @@ class EventController extends Controller {
 	public function checkEntries($params){
 		if (!Auth::$signed_in)
 			Response::fail();
-		CSRFProtection::protect();
 
 		$this->load_event($params);
 

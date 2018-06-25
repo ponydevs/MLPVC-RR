@@ -152,8 +152,6 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function api($params){
-		CSRFProtection::protect();
-
 		$this->_initialize($params);
 
 		if (!Auth::$signed_in)
@@ -519,8 +517,6 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function colorGroupsApi($params){
-		CSRFProtection::protect();
-
 		$this->_getAppearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -611,8 +607,6 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function spriteApi($params){
-		CSRFProtection::protect();
-
 		$this->_getAppearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -642,8 +636,6 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function relationsApi($params){
-		CSRFProtection::protect();
-
 		$this->_getAppearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -717,8 +709,6 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function cutiemarkApi($params){
-		CSRFProtection::protect();
-
 		$this->_getAppearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -915,8 +905,6 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function taggedApi($params){
-		CSRFProtection::protect();
-
 		$this->_getAppearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -1011,8 +999,6 @@ class AppearanceController extends ColorGuideController {
 
 		if (!Auth::$signed_in)
 			Response::fail();
-
-		CSRFProtection::protect();
 
 		$this->_getAppearance($params, false);
 		$this->appearance->checkManagePermission(Auth::$user);

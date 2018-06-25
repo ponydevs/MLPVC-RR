@@ -54,9 +54,6 @@ class ColorGuideController extends Controller {
 	public function __construct(){
 		parent::__construct();
 
-		if (POST_REQUEST)
-			CSRFProtection::protect();
-
 		$this->_appearancePage = isset($_REQUEST['APPEARANCE_PAGE']);
 		$this->_personalGuide = isset($_REQUEST['PERSONAL_GUIDE']);
 	}
@@ -185,7 +182,7 @@ class ColorGuideController extends Controller {
 
 		$this->_initialize($params);
 
-		if (!Permission::sufficient('staff'))
+		if (Permission::insufficient('staff'))
 			Response::fail();
 
 		Appearances::reorder((new Input('list','int[]', [

@@ -10,13 +10,6 @@ use App\Models\User;
 use App\Exceptions\MismatchedProviderException;
 
 class Posts {
-	public const
-		KINDS = ['request', 'reservation'],
-		REQUEST_TYPES = [
-			'chr' => 'Characters',
-			'obj' => 'Objects',
-			'bg' => 'Backgrounds',
-		];
 
 	/**
 	 * Retrieves requests & reservations for the episode specified
@@ -111,7 +104,7 @@ class Posts {
 
 		if ($request){
 			$type = (new Input('type',function($value){
-				if (!isset(self::REQUEST_TYPES[$value]))
+				if (!isset(Post::REQUEST_TYPES[$value]))
 					return Input::ERROR_INVALID;
 			}, [
 				Input::IS_OPTIONAL => true,
@@ -168,7 +161,7 @@ class Posts {
 		}
 		catch (\Exception $e){ Response::fail($e->getMessage()); }
 
-		foreach (self::KINDS as $kind){
+		foreach (Post::KINDS as $kind){
 			/** @noinspection DisconnectedForeachInstructionInspection */
 			if ($Post !== null)
 				DB::$instance->where('id',$Post->id,'!=');
@@ -198,7 +191,7 @@ class Posts {
 		try {
 			$Image = new ImageProvider($deviation, ImageProvider::PROV_DEVIATION);
 
-			foreach (self::KINDS as $what){
+			foreach (Post::KINDS as $what){
 
 				$already_used = Post::find_by_deviation_id($Image->id);
 				if (!empty($already_used))
@@ -278,7 +271,7 @@ class Posts {
 
 		$Groups = '';
 		foreach ($Arranged['unfinished'] as $g => $c)
-			$Groups .= "<div class='group' id='group-$g'><h3>".self::REQUEST_TYPES[$g].":</h3><ul>$c</ul></div>";
+			$Groups .= "<div class='group' id='group-$g'><h3>".Post::REQUEST_TYPES[$g].":</h3><ul>$c</ul></div>";
 
 		if (Permission::sufficient('user') && UserPrefs::get('a_postreq', Auth::$user)){
 			$makeRq = '<button id="request-btn" class="green">Make a request</button>';
@@ -447,14 +440,6 @@ HTML;
 			->get('notifications',null,$cols);
 	}
 
-	public const TRANSFER_ATTEMPT_CLEAR_REASONS = [
-		'del' => 'the post was deleted',
-		'snatch' => 'the post was reserved by someone else',
-		'deny' => 'the post was transferred to someone else',
-		'perm' => 'the previous reserver could no longer act on the post',
-		'free' => 'the post became free for anyone to reserve',
-	];
-
 	/**
 	 * @param Post      $Post
 	 * @param string    $reason
@@ -463,7 +448,7 @@ HTML;
 	 * @throws \InvalidArgumentException
 	 */
 	public static function clearTransferAttempts(Post $Post, string $reason, ?User $sent_by = null){
-		if (empty(self::TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
+		if (empty(Post::TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
 			throw new \InvalidArgumentException("Invalid clear reason $reason");
 
 		DB::$instance->where('read_at IS NULL');
@@ -486,9 +471,6 @@ HTML;
 		}
 	}
 
-	public const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
-	public const BROKEN = "<strong class='color-orange broken-note' title=\"The full size preview of this post was deemed unavailable and it is now marked as broken\"><span class='typcn typcn-plug'></span> Deemed broken</strong>";
-
 	/**
 	 * List item generator function for reservation suggestions
 	 * This function assumes that the post it's being used for is not reserved or it can be contested.
@@ -503,7 +485,7 @@ HTML;
 		$escapedLabel = CoreUtils::aposEncode($Request->label);
 		$label = $Request->getLabelHTML();
 		$time_ago = Time::tag($Request->posted_at);
-		$cat = self::REQUEST_TYPES[$Request->type];
+		$cat = Post::REQUEST_TYPES[$Request->type];
 		$reserve = Permission::sufficient('member')
 			? self::getPostReserveButton($Request->reserver, false, true)
 			: "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
@@ -542,103 +524,6 @@ HTML;
 		return "<div class='reserver$vectorapp'>$dAlink</div>";
 	}
 
-	/**
-	 * @param Post $post
-	 * @param bool $view_only
-	 * @param bool $cachebust_url
-	 * @param bool $enablePromises
-	 *
-	 * @return string
-	 */
-	public static function getLi($post, bool $view_only, bool $cachebust_url, bool $enablePromises):string {
-		$ID = $post->getID();
-		$alt = !empty($post->label) ? CoreUtils::aposEncode($post->label) : '';
-		$postlink = $post->toURL();
-		$ImageLink = $view_only ? $postlink : $post->fullsize;
-		$cachebust = $cachebust_url ? '?t='.time() : '';
-		$HTML = "<div class='image screencap'>".(
-			$enablePromises
-				? "<div class='post-image-promise image-promise' data-href='$ImageLink' data-src='{$post->preview}$cachebust'></div>"
-				: "<a href='$ImageLink'><img src='{$post->preview}$cachebust' alt='$alt'></a>"
-			).'</div>';
-		$post_label = $post->getLabelHTML();
-		$permalink = "<a href='$postlink'>".Time::tag($post->posted_at).'</a>';
-		$isStaff = Permission::sufficient('staff');
-
-		$posted_at = '<em class="post-date">';
-		if ($post->is_request){
-			$isRequester = Auth::$signed_in && $post->requested_by === Auth::$user->id;
-			$isReserver = Auth::$signed_in && $post->reserved_by === Auth::$user->id;
-			$displayOverdue = Permission::sufficient('member') && $post->isOverdue();
-
-			$posted_at .= "Requested $permalink";
-			if (Auth::$signed_in && ($isStaff || $isRequester || $isReserver)){
-				$posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : $post->requester->toAnchor());
-			}
-		}
-		else {
-			$displayOverdue = false;
-			$posted_at .= "Reserved $permalink";
-		}
-		$posted_at .= '</em>';
-
-		$hide_reserved_status = $post->reserved_by === null || ($displayOverdue && !$isReserver && !$isStaff);
-		if ($post->reserved_by !== null){
-			$reserved_by = $displayOverdue && !$isReserver ? ' by '.$post->reserver->toAnchor() : '';
-			$reserved_at = $post->is_request && $post->reserved_at !== null && !($hide_reserved_status && Permission::insufficient('staff'))
-				? "<em class='reserve-date'>Reserved <strong>".Time::tag($post->reserved_at)."</strong>$reserved_by</em>"
-				: '';
-			if ($post->finished){
-				$approved = $post->lock;
-				if ($enablePromises){
-					$view_only_promise = $view_only ? "data-viewonly='$view_only'" : '';
-					$HTML = "<div class='image deviation'><div class='post-deviation-promise image-promise' data-post-id='{$post->id}' $view_only_promise></div></div>";
-				}
-				else $HTML = $post->getFinishedImage($view_only, $cachebust);
-				$finished_at = $post->finished_at !== null
-					? "<em class='finish-date'>Finished <strong>".Time::tag($post->finished_at).'</strong></em>'
-					: '';
-				$locked_at = '';
-				if ($approved){
-					$LogEntry = $post->approval_entry;
-					if (!empty($LogEntry)){
-						$approverIsNotReserver = $LogEntry->initiator !== null && $LogEntry->initiator !== $post->reserved_by;
-						$approvedby = $isStaff && $LogEntry->initiator !== null
-							? ' by '.(
-								$approverIsNotReserver
-								? (
-									$post->is_request && $LogEntry->initiator === $post->requested_by
-									? 'the requester'
-									: $LogEntry->actor->toAnchor()
-								)
-								: 'the reserver'
-							)
-							: '';
-						$locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag($LogEntry->timestamp)."</strong>$approvedby</em>" : '';
-					}
-					else $locked_at = '<em class="approve-date">Approval data unavilable</em>';
-				}
-				$post_type = $post->is_request ? '<em>Posted in the <strong>'.self::REQUEST_TYPES[$post->type].'</strong> section</em>' : '';
-				$HTML .= $post_label.$posted_at.$post_type.$reserved_at.$finished_at.$locked_at;
-
-				if (!empty($post->fullsize))
-					$HTML .= "<span><a href='{$post->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a></span>";
-			}
-			else $HTML .= $post_label.$posted_at.$reserved_at;
-		}
-		else $HTML .= $post_label.$posted_at;
-
-		if ($displayOverdue && ($isStaff || $isReserver))
-			$HTML .= self::CONTESTABLE;
-
-		if ($post->broken)
-			$HTML .= self::BROKEN;
-
-		$break = $post->broken ? 'class="admin-break"' : '';
-
-		return "<li id='$ID' data-type='{$post->kind}' $break>$HTML".$post->getActionsHTML($view_only ? $postlink : false, $hide_reserved_status, $enablePromises).'</li>';
-	}
-
 	public static function checkReserveAs(Post $post){
 		if (Permission::sufficient('developer')){
 			$reserve_as = self::validatePostAs();
@@ -646,7 +531,7 @@ HTML;
 				$User = Users::get($reserve_as, 'name');
 				if (empty($User))
 					Response::fail('User to reserve as does not exist');
-				if (!isset($_POST['screwit']) && !Permission::sufficient('member', $User->role))
+				if (!isset($_POST['screwit']) && Permission::insufficient('member', $User->role))
 					Response::fail('The specified user does not have permission to reserve posts, continue anyway?', ['retry' => true]);
 
 				$post->reserved_by = $User->id;

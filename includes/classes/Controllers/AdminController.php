@@ -35,10 +35,8 @@ class AdminController extends Controller {
 	public function __construct(){
 		parent::__construct();
 
-		if (!Permission::sufficient('staff'))
+		if (Permission::insufficient('staff'))
 			CoreUtils::noPerm();
-
-		CSRFProtection::protect();
 	}
 
 	public function index(){
@@ -268,7 +266,7 @@ class AdminController extends Controller {
 				}
 
 				$minrole = (new Input('minrole',function($value){
-					if (empty(Permission::ROLES_ASSOC[$value]) || !Permission::sufficient('user', $value))
+					if (empty(Permission::ROLES_ASSOC[$value]) || Permission::insufficient('user', $value))
 						Response::fail();
 				}, [
 					Input::CUSTOM_ERROR_MESSAGES => [

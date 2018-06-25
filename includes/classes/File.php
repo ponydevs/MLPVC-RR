@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 class File {
 	/**
 	 * @param string $name
-	 * @param mixed $data
+	 * @param string $data
 	 *
 	 * @return int|bool Number of bytes that written or false on failure
 	 */
-	public static function put(string $name, $data){
+	public static function put(string $name, string $data){
 		$bytes = file_put_contents($name, $data);
 		if ($bytes === false)
 			return false;
@@ -33,7 +35,7 @@ class File {
 	 * @return bool True on success, false on failure
 	 */
 	public static function chmod(string $name):bool {
-		$result = @chmod($name, FILE_PERM);
+		$result = chmod($name, FILE_PERM);
 		if ($result !== true){
 			CoreUtils::error_log(__METHOD__.': Fail for file '.$name);
 			$result = false;

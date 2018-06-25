@@ -99,7 +99,7 @@ class Notifications {
 						case 'del':
 						case 'snatch':
 						case 'perm':
-							$message = Posts::TRANSFER_ATTEMPT_CLEAR_REASONS[$passaction];
+							$message = Post::TRANSFER_ATTEMPT_CLEAR_REASONS[$passaction];
 							$message = str_replace('post', "<a href='$url'>post</a>", $message);
 							switch ($passaction){
 								case 'del':

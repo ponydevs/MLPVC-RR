@@ -626,8 +626,8 @@ HTML;
 						$actionCond = $Post->is_request && !empty($Post->reserved_at);
 						$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted_at);
 						$PostedAction = $actionCond ? 'Reserved' : 'Posted';
-						$contestable = $Post->isOverdue() ? Posts::CONTESTABLE : '';
-						$broken = $Post->broken ? Posts::BROKEN : '';
+						$contestable = $Post->isOverdue() ? Post::CONTESTABLE : '';
+						$broken = $Post->broken ? Post::BROKEN : '';
 						$fixbtn = $Post->broken ? "<button class='darkblue typcn typcn-spanner fix'>Fix</button>" : '';
 
 						$LIST .= <<<HTML
@@ -716,6 +716,16 @@ HTML;
 			<p>{$youHaveAwaitCount} $images waiting to be submitted to and/or approved by the group$append</p>
 HTML;
 		if ($AwaitCount){
+			if (Permission::sufficient('staff')){
+				$open_subs = $this->getOpenSubmissionsURL();
+				$HTML .= <<<HTML
+	<div class="button-block">
+		<a class="btn link typcn typcn-arrow-forward" href="$open_subs" target="_blank" rel="noopener">View open submissions</a>
+	</div>
+HTML;
+
+			}
+
 			$HTML .= '<ul id="awaiting-deviations">';
 			foreach ($AwaitingApproval as $Post){
 				$url = "http://fav.me/{$Post->deviation_id}";
@@ -805,5 +815,9 @@ HTML;
 	 */
 	public function perm(string $role):bool {
 		return Permission::sufficient($role, $this->role);
+	}
+
+	public function getOpenSubmissionsURL(){
+		return "https://mlp-vectorclub.deviantart.com/messages/?log_type=1&instigator_module_type=21&instigator_username={$this->name}&bpp_status=3&display_order=desc";
 	}
 }

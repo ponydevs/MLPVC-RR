@@ -83,8 +83,6 @@ class AuthController extends Controller {
 		if (!Auth::$signed_in)
 			Response::success("You're not signed in");
 
-		CSRFProtection::protect();
-
 		if (isset($_REQUEST['everywhere'])){
 			$col = 'user_id';
 			$val = Auth::$user->id;
@@ -110,7 +108,7 @@ class AuthController extends Controller {
 			Response::fail('Could not remove information from database');
 
 		if (empty($TargetUser))
-			Cookie::delete('access', Cookie::HTTPONLY);
+			Cookie::delete('access', Cookie::HTTP_ONLY);
 		Response::done();
 	}
 
@@ -141,8 +139,6 @@ class AuthController extends Controller {
 	public function sessionStatus(){
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
-
-		CSRFProtection::protect();
 
 		if (Auth::$signed_in && Auth::$session->updating)
 			Response::done([ 'updating' => true ]);

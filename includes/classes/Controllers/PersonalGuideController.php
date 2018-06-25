@@ -116,8 +116,6 @@ class PersonalGuideController extends ColorGuideController {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
-		CSRFProtection::protect();
-
 		switch ($this->action){
 			case 'GET':
 				$this->load_user($params);
@@ -188,8 +186,6 @@ class PersonalGuideController extends ColorGuideController {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
-		CSRFProtection::protect();
-
 		if (!Auth::$signed_in)
 			Response::fail();
 
@@ -204,8 +200,6 @@ class PersonalGuideController extends ColorGuideController {
 	public function getPendingSlotGifts($params){
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
-
-		CSRFProtection::protect();
 
 		if (Permission::insufficient('staff'))
 			Response::fail();
@@ -231,8 +225,6 @@ class PersonalGuideController extends ColorGuideController {
 	public function refundSlotGifts(){
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();
-
-		CSRFProtection::protect();
 
 		if (Permission::insufficient('staff'))
 			Response::fail();
@@ -286,8 +278,6 @@ class PersonalGuideController extends ColorGuideController {
 	public function pointsApi($params){
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
-
-		CSRFProtection::protect();
 
 		if (Permission::insufficient('staff'))
 			Response::fail();

@@ -55,7 +55,7 @@ class Session extends NSModel {
 		return bin2hex(random_bytes(64));
 	}
 	public static function setCookie(string $value){
-		Cookie::set('access', $value, time() + Time::IN_SECONDS['year'], Cookie::HTTPONLY);
+		Cookie::set('access', $value, time() + Time::IN_SECONDS['year'], Cookie::HTTP_ONLY);
 	}
 	public static function newGuestSession():self {
 		$session = new self();

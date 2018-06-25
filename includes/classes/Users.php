@@ -173,9 +173,8 @@ HTML;
 			Auth::$session = Session::newGuestSession();
 			return;
 		}
-		$authKey = Cookie::get('access');
-		if (!empty($authKey)){
-			Auth::$session = Session::find_by_token(CoreUtils::sha256($authKey));
+		if (Cookie::exists('access')){
+			Auth::$session = Session::find_by_token(CoreUtils::sha256(Cookie::get('access')));
 			if (Auth::$session !== null)
 				Auth::$user = Auth::$session->user;
 			else Auth::$session = Session::newGuestSession();
@@ -196,7 +195,7 @@ HTML;
 			//}
 		}
 		else if (Auth::$session === null)
-			Cookie::delete('access', Cookie::HTTPONLY);
+			Cookie::delete('access', Cookie::HTTP_ONLY);
 	}
 
 	public const PROFILE_SECTION_PRIVACY_LEVEL = [

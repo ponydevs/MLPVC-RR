@@ -32,7 +32,8 @@ abstract class Controller {
 					}
 			break;
 		}
-		CSRFProtection::detect();
+
+		CSRFProtection::protect();
 		if (static::$auth)
 			Users::authenticate();
 	}

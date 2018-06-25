@@ -168,7 +168,7 @@ class Logs {
 			case 'req_delete':
 				$details[] = self::_getReferenceForDeletedPost($data, 'Request');
 				$details[] = ['Description', CoreUtils::escapeHTML($data['label'])];
-				$details[] = ['Type', Posts::REQUEST_TYPES[$data['type']]];
+				$details[] = ['Type', Post::REQUEST_TYPES[$data['type']]];
 				$ep = Episode::find_by_season_and_episode($data['season'], $data['episode']);
 				$details[] = ['Posted under', !empty($ep) ? $ep->toAnchor() : "S{$data['season']}E{$data['episode']}"];
 				$details[] = ['Requested on', Time::tag($data['requested_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];

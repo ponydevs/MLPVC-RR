@@ -75,7 +75,7 @@
 			margin-right: auto;
 		}
 
-		> em {
+		> .info-line {
 			margin-bottom: 2px;
 		}
 		> .image {
@@ -91,7 +91,7 @@
 				}
 				img {
 					border: $DeviationBorderWidth solid $DeviationBorder;
-					background-color: rgba($NOrange, .1);
+					background-color: rgba($NOrange, .05);
 				}
 
 				.post-deviation-promise {
@@ -139,7 +139,7 @@
 			    background-size: $imageSize;
 				}
 				> img {
-					background-color: rgba($DeviationBorder, .1);
+					background-color: rgba($DeviationBorder, .05);
 				}
 			}
 		}

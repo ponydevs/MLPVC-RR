@@ -47,7 +47,7 @@ class TagController extends ColorGuideController {
 
 		global $TAG_NAME_REGEX;
 
-		if (!Permission::sufficient('staff'))
+		if (Permission::insufficient('staff'))
 			Response::fail();
 
 		$except = (new Input('not','int', [Input::IS_OPTIONAL => true]))->out();

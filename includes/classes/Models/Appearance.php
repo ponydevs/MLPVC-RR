@@ -203,7 +203,7 @@ class Appearance extends NSModel implements LinkableInterface {
 			$notes = "<span>{$this->notes_rend}</span>";
 		}
 		else {
-			if (!Permission::sufficient('staff'))
+			if (Permission::insufficient('staff'))
 				return '';
 			$notes = '';
 		}
@@ -267,7 +267,7 @@ class Appearance extends NSModel implements LinkableInterface {
 			$update = 'Last updated '.Time::tag($update->log->timestamp);
 		}
 		else {
-			if (!Permission::sufficient('staff'))
+			if (Permission::insufficient('staff'))
 				return '';
 			$update = '';
 		}
