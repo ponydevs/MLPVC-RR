@@ -137,8 +137,11 @@ class UserSettingForm {
 		if ($current_user === null && Auth::$signed_in)
 			 $current_user = Auth::$user;
 		$this->_current_user = $current_user;
-		$this->_can_save = ($req_perm === null && Auth::$signed_in && $this->_current_user->id === Auth::$user->id)
-		                   || ($req_perm !== null && Permission::sufficient($req_perm, $this->_current_user->role));
+		// By default only the user themselves can change this setting
+		if ($req_perm === null)
+			$this->_can_save = Auth::$signed_in && $this->_current_user->id === Auth::$user->id;
+		// If a permission is required, make sure the authenticated user has it
+		else $this->_can_save = Permission::sufficient($req_perm);
 	}
 
 	private function _permissionCheck(string $check_name){
@@ -171,11 +174,11 @@ class UserSettingForm {
 		$value = UserPrefs::get($this->_setting_name, $this->_current_user);
 		switch ($type){
 			case 'select':
-				$SELECT = '';
-				$OPTGROUP = '';
+				$select = '';
+				$optgroup = '';
 				if (isset($options['opts'][''])){
 					$selected = $value === '' ? 'selected' : '';
-					$SELECT .= "<option value='' $selected>".CoreUtils::escapeHTML($options['opts']['']).'</option>';
+					$select .= "<option value='' $selected>".CoreUtils::escapeHTML($options['opts']['']).'</option>';
 					unset($options['opts']['']);
 				}
 				/** @noinspection ForeachSourceInspection */
@@ -183,11 +186,11 @@ class UserSettingForm {
 					$selected = $value === $name ? 'selected' : '';
 					$opt_disabled = isset($options['optperm'][$name]) && !$this->_permissionCheck($options['optperm'][$name]) ? 'disabled' : '';
 
-					$OPTGROUP .= "<option value='$name' $selected $opt_disabled>".CoreUtils::escapeHTML($label).'</option>';
+					$optgroup .= "<option value='$name' $selected $opt_disabled>".CoreUtils::escapeHTML($label).'</option>';
 				}
 				$label = CoreUtils::escapeHTML($options['optg'], ENT_QUOTES);
-				$SELECT .= "<optgroup label='$label'>$OPTGROUP</optgroup>";
-				return "<select name='value' $disabled>$SELECT</select>";
+				$select .= "<optgroup label='$label'>$optgroup</optgroup>";
+				return "<select name='value' $disabled>$select</select>";
 			case 'number':
 				$min = isset($options['min']) ? "min='{$options['min']}'" : '';
 				$max = isset($options['max']) ? "max='{$options['max']}'" : '';
@@ -204,7 +207,7 @@ class UserSettingForm {
 		$input = $this->_getInput($map['type'], $map['options'] ?? []);
 		if ($input === '')
 			return '';
-		$savebtn = $this->_can_save ? '<button class="save typcn typcn-tick green" disabled>Save</button>' : '';
+		$save_btn = $this->_can_save ? '<button class="save typcn typcn-tick green" disabled>Save</button>' : '';
 		$content = "<span>{$map['options']['desc']}</span>";
 		if ($map['type'] === 'checkbox')
 			$content = "$input $content";
@@ -216,7 +219,7 @@ class UserSettingForm {
 			<form $action>
 				<label>
 					$content
-					$savebtn
+					$save_btn
 				</label>
 			</form>
 HTML;
