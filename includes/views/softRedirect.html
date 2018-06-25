@@ -20,19 +20,9 @@ body {
 	color: #2C73B1;
 	font-family: sans-serif;
 }
-#content img {
-	max-width: 200px;
-}
-#content a {
-	font-weight: bold;
-	color: green;
-}
-#content > * {
-	margin: 0 0 10px;
-}
-#content > :last-child {
-	margin: 0;
-}
+#content img { max-width: 200px }
+#content > * { margin: 0 0 10px }
+#content > :last-child { margin: 0 }
 </style>
 </head>
 <body>
@@ -40,7 +30,6 @@ body {
 <div id="content">
 	<img src="/img/loading-ring.svg" alt="Loading">
 	<h1>{{MESSAGE}}</h1>
-	<p>Click <a href="{{URL}}">here</a> if you aren't redirected automatically</p>
 </div>
 
 </body>
