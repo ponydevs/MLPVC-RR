@@ -40,6 +40,7 @@ use App\UserPrefs;
  * @property User     $requester      (Via relations)
  * @property DateTime $posted_at      (Via magic method)
  * @property string   $posted_by      (Via magic method)
+ * @property User     $poster         (Via magic method)
  * @property Episode  $ep             (Via magic method)
  * @property string   $kind           (Via magic method)
  * @property bool     $finished       (Via magic method)
@@ -89,6 +90,10 @@ class Post extends NSModel implements LinkableInterface {
 
 	public function get_posted_by(){
 		return $this->is_request ? $this->requested_by : $this->reserved_by;
+	}
+
+	public function get_poster(){
+		return User::find($this->posted_by);
 	}
 
 	public function get_finished(){

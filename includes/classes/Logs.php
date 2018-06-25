@@ -159,8 +159,7 @@ class Logs {
 				$details[] = ['User', User::find($data['userid'])->toAnchor()];
 			break;
 			case 'post_lock':
-				$Post = self::get_post($data);
-				self::_genericPostInfo($Post, $data, $details);
+				self::_genericPostInfo($data, $details);
 			break;
 			case 'major_changes':
 				$details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
@@ -189,14 +188,12 @@ class Logs {
 				}
 			break;
 			case 'img_update':
-				$Post = self::get_post($data);
-				self::_genericPostInfo($Post, $data, $details);
+				self::_genericPostInfo($data, $details);
 				$details[] = ['Old image', "<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['oldpreview']}'></div>"];
 				$details[] = ['New image', "<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['newpreview']}'></div>"];
 			break;
 			case 'res_overtake':
-				$Post = self::get_post($data);
-				self::_genericPostInfo($Post, $data, $details);
+				self::_genericPostInfo($data, $details);
 				$details[] = ['Previous reserver', User::find($data['reserved_by'])->toAnchor()];
 				$details[] = ['Previously reserved at', Time::tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 
@@ -223,8 +220,7 @@ class Logs {
 					$details[] = ['Added', Time::tag($data['added'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 			break;
 			case 'res_transfer':
-				$Post = self::get_post($data);
-				self::_genericPostInfo($Post, $data, $details);
+				self::_genericPostInfo($data, $details);
 				$details[] = ['New reserver', User::find($data['to'])->toAnchor()];
 			break;
 			case 'cg_modify':
@@ -338,8 +334,7 @@ class Logs {
 			break;
 			case 'post_break':
 			case 'post_fix':
-				$Post = self::get_post($data);
-				self::_genericPostInfo($Post, $data, $details);
+				self::_genericPostInfo($data, $details);
 			break;
 			case 'staff_limits':
 				$details[] = ['For', User::find($data['user_id'])->toAnchor()];
@@ -383,36 +378,27 @@ class Logs {
 	}
 
 	/**
-	 * @param Post  $Post
-	 * @param array $data
-	 * @param array $details
+	 * @param array     $data
+	 * @param array     $details
 	 *
 	 * @throws \Exception
 	 */
-	private static function _genericPostInfo($Post, array $data, array &$details){
-		$id = $data['old_id'] ?? $data['id'];
-		$label = (empty($Post)?CoreUtils::capitalize($data['type']):'Post')." #$id";
-		if (!empty($Post))
-			$label = $Post->toAnchor($label);
+	private static function _genericPostInfo(array $data, array &$details){
+		$post = self::get_post($data);
 
-		$details[] = ['Post', $label];
-		if (empty($Post))
+		$ref_key = 'Reference';
+		if (empty($post)){
+			$details[] = [$ref_key, CoreUtils::capitalize($data['type']).' #'.($data['old_id'] ?? $data['id'])];
 			$details[] = ['<span class="typcn typcn-info-large"></span> No longer exists', self::SKIP_VALUE, self::KEYCOLOR_INFO];
+		}
 		else {
-			$details[] = ['Posted under', $Post->ep->toAnchor()];
-			$details[] = [
-				($data['type'] === 'request'?'Requested':'Reserved').' by',
-				User::find(
-					$data['type'] === 'request'
-					? $Post->requested_by
-					: $Post->reserved_by
-				)->toAnchor()
-			];
-			if ($data['type'] === 'request'){
-				if (!empty($Post->reserved_by))
-					$details[] = ['Reserved by', $Post->reserver->toAnchor()];
-				else $details[] = ['Reserved', false];
-			}
+			$details[] = [$ref_key, $post->toAnchor("Post #{$post->id}")];
+			$details[] = ['Kind', CoreUtils::capitalize($post->kind)];
+			$details[] = ['Posted under', $post->ep->toAnchor()];
+			$details[] = ['Posted by', $post->poster->toAnchor()];
+			if ($post->reserved_by !== null)
+				$details[] = ['Reserved by', $post->reserver->toAnchor()];
+			else $details[] = ['Reserved', false];
 		}
 	}
 
