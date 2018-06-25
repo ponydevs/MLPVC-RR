@@ -325,7 +325,7 @@ class AdminController extends Controller {
 
 		$list = [];
 		foreach ($ids as $id)
-			$list .= 'd'.base_convert($id, 10, 36);
+			$list[] = 'd'.base_convert($id, 10, 36);
 
 		/** @var $Posts Post[] */
 		$Posts = DB::$instance->where('deviation_id', $list)->where('lock', false)->get('posts');

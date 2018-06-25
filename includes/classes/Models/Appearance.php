@@ -362,17 +362,6 @@ HTML;
 	}
 
 	/**
-	 * As of right now this simply changes single quotes in the label to their "smart" version
-	 *
-	 * @deprecated Just use the label property
-	 *
-	 * @return string
-	 */
-	public function processLabel():string {
-		return $this->label;
-	}
-
-	/**
 	 * Returns the HTML for the placeholder which is displayed in place of the color group
 	 *  to anyone without edit access while the appearance is private
 	 *
