@@ -166,16 +166,11 @@ class Logs {
 				$details[] = ['Reason', CoreUtils::escapeHTML($data['reason'])];
 			break;
 			case 'req_delete':
-				$details[] = ['Request ID', $data['id']];
-				$typeNames = [
-					'chr' => 'Character',
-					'obj' => 'Object',
-					'bg' => 'Background',
-				];
+				$details[] = self::_getReferenceForDeletedPost($data);
 				$details[] = ['Description', CoreUtils::escapeHTML($data['label'])];
-				$details[] = ['Type', $typeNames[$data['type']]];
-				$IDstr = "S{$data['season']}E{$data['episode']}";
-				$details[] = ['Episode', "<a href='/episode/$IDstr'>$IDstr</a>"];
+				$details[] = ['Type', Posts::REQUEST_TYPES[$data['type']]];
+				$ep = Episode::find_by_season_and_episode($data['season'], $data['episode']);
+				$details[] = ['Posted under', !empty($ep) ? $ep->toAnchor() : "S{$data['season']}E{$data['episode']}"];
 				$details[] = ['Requested on', Time::tag($data['requested_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 				if (!empty($data['requested_by']))
 					$details[] = ['Requested by', User::find($data['requested_by'])->toAnchor()];
@@ -377,6 +372,8 @@ class Logs {
 		}
 	}
 
+	const REF_KEY = 'Reference';
+
 	/**
 	 * @param array     $data
 	 * @param array     $details
@@ -386,13 +383,12 @@ class Logs {
 	private static function _genericPostInfo(array $data, array &$details){
 		$post = self::get_post($data);
 
-		$ref_key = 'Reference';
 		if (empty($post)){
-			$details[] = [$ref_key, CoreUtils::capitalize($data['type']).' #'.($data['old_id'] ?? $data['id'])];
+			$details[] = self::_getReferenceForDeletedPost($data);
 			$details[] = ['<span class="typcn typcn-info-large"></span> No longer exists', self::SKIP_VALUE, self::KEYCOLOR_INFO];
 		}
 		else {
-			$details[] = [$ref_key, $post->toAnchor("Post #{$post->id}")];
+			$details[] = [self::REF_KEY, $post->toAnchor("Post #{$post->id}")];
 			$details[] = ['Kind', CoreUtils::capitalize($post->kind)];
 			$details[] = ['Posted under', $post->ep->toAnchor()];
 			$details[] = ['Posted by', $post->poster->toAnchor()];
@@ -400,6 +396,10 @@ class Logs {
 				$details[] = ['Reserved by', $post->reserver->toAnchor()];
 			else $details[] = ['Reserved', false];
 		}
+	}
+
+	private static function _getReferenceForDeletedPost(array $data){
+		return [self::REF_KEY, CoreUtils::capitalize($data['type']).' #'.($data['old_id'] ?? $data['id'])];
 	}
 
 	/**
