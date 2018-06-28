@@ -60,7 +60,7 @@ class UserController extends Controller {
 				if (!Auth::$signed_in){
 					$exists = 'exists on DeviantArt';
 					if ($un !== null)
-						$exists = "<a href='http://$un.deviantart.com/'>$exists</a>";
+						$exists = "<a href='https://www.deviantart.com/".CoreUtils::aposEncode(strtolower($un))."'>$exists</a>";
 					$SubMSG = "If this user $exists, sign in to import their details.";
 				}
 			}

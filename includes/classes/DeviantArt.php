@@ -412,7 +412,7 @@ class DeviantArt {
 		$off = 0;
 		// Get regular members
 		while (true){
-			$memberlist = HTTP::legitimateRequest("http://mlp-vectorclub.deviantart.com/modals/memberlist/?offset=$off");
+			$memberlist = HTTP::legitimateRequest("https://www.deviantart.com/mlp-vectorclub/modals/memberlist/?offset=$off");
 			if (empty($memberlist['response']))
 				break;
 			$dom = new \DOMDocument('1.0', 'UTF-8');
@@ -433,7 +433,7 @@ class DeviantArt {
 		unset($dom, $xp);
 
 		// Get staff
-		$requri = 'http://mlp-vectorclub.deviantart.com/global/difi/?c%5B%5D=%22GrusersModules%22%2C%22displayModule%22%2C%5B%2217450764%22%2C%22374037863%22%2C%22generic%22%2C%7B%7D%5D&iid=576m8f040364c99a7d9373611b4a9414d434-j2asw8mn-1.1&mp=2&t=json';
+		$requri = 'http://www.deviantart.com/mlp-vectorclub/global/difi/?c%5B%5D=%22GrusersModules%22%2C%22displayModule%22%2C%5B%2217450764%22%2C%22374037863%22%2C%22generic%22%2C%7B%7D%5D&iid=576m8f040364c99a7d9373611b4a9414d434-j2asw8mn-1.1&mp=2&t=json';
 		$stafflist = JSON::decode(HTTP::legitimateRequest($requri)['response'], false);
 		$stafflist = $stafflist->DiFi->response->calls[0]->response->content->html;
 		$stafflist = str_replace('id="gmi-GAboutUsModule_Item"','',$stafflist);

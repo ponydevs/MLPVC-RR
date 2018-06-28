@@ -21,7 +21,7 @@ class UserTest extends TestCase {
 			'avatar_url' => '/img/guest.svg',
 		]);
 		$result = $User->toDALink();
-		static::assertEquals('http://testuser.deviantart.com/', $result, 'Testing URL format return value');
+		static::assertEquals('https://www.deviantart.com/testuser', $result, 'Testing URL format return value');
 	}
 
 	public function testToDAAnchor(){
@@ -30,9 +30,9 @@ class UserTest extends TestCase {
 			'avatar_url' => '/img/guest.svg',
 		]);
 		$result = $User->toDAAnchor();
-		static::assertEquals("<a href='http://testuser.deviantart.com/' class='da-userlink'><span class='name'>TestUser</span></a>", $result, 'Testing default parameter return value format');
+		static::assertEquals("<a href='https://www.deviantart.com/testuser' class='da-userlink'><span class='name'>TestUser</span></a>", $result, 'Testing default parameter return value format');
 		$result = $User->toDAAnchor(\App\Models\User::WITH_AVATAR);
-		static::assertEquals("<a href='http://testuser.deviantart.com/' class='da-userlink with-avatar'><img src='/img/guest.svg' class='avatar' alt='avatar'> <span class='name'>TestUser</span></a>", $result, 'Testing default parameter return value format');
+		static::assertEquals("<a href='https://www.deviantart.com/testuser' class='da-userlink with-avatar'><img src='/img/guest.svg' class='avatar' alt='avatar'> <span class='name'>TestUser</span></a>", $result, 'Testing default parameter return value format');
 	}
 
 	public function testGetAvatarWrap(){

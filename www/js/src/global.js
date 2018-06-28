@@ -252,7 +252,7 @@
 			<p>You can use any of the following methods to reach out to us:</p>
 			<ul>
 				<li><a href='https://discord.gg/0vv70fepSILbdJOD'>Join our Discord server</a> and describe your issue/idea in the <strong>#support</strong> channel</li>
-				<li><a href='http://mlp-vectorclub.deviantart.com/notes/'>Send a note </a>to the group on DeviantArt</li>
+				<li><a href='https://www.deviantart.com/mlp-vectorclub/notes/'>Send a note </a>to the group on DeviantArt</li>
 				<li><a href='mailto:${email}'>Send an e-mail</a> to ${email}</li>
 			</ul>`
 		);

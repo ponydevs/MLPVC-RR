@@ -20,7 +20,7 @@ class CachedDeviation extends NSModel {
 	public static $primary_key = ['provider', 'id'];
 
 	public function toLinkWithPreview(){
-		$stitle = CoreUtils::escapeHTML($this->title);
+		$stitle = CoreUtils::aposEncode($this->title);
 		return "<a class='deviation-link with-preview' href='http://{$this->provider}/{$this->id}'><img src='{$this->preview}' alt='$stitle'><span>$stitle</span></a>";
 	}
 }

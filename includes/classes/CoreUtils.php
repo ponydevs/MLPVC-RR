@@ -851,7 +851,7 @@ class CoreUtils {
 		self::$NavHTML = '';
 		foreach ($NavItems as $item)
 			self::$NavHTML .= "<li><a href='{$item[0]}'>{$item[1]}</a></li>";
-		self::$NavHTML .= '<li><a href="http://mlp-vectorclub.deviantart.com/" target="_blank" rel="noopener">MLP-VectorClub</a></li>';
+		self::$NavHTML .= '<li><a href="https://www.deviantart.com/mlp-vectorclub" target="_blank" rel="noopener">MLP-VectorClub</a></li>';
 		return self::$NavHTML;
 	}
 
@@ -1047,7 +1047,7 @@ HTML;
 			$DeviationID = \intval(mb_substr($DeviationID, 1), 36);
 
 		try {
-			$DiFiRequest = HTTP::legitimateRequest("http://deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
+			$DiFiRequest = HTTP::legitimateRequest("https://www.deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
 		}
 		catch (CURLRequestException $e){
 			return $e->getCode();

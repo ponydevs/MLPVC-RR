@@ -1,6 +1,6 @@
 <div id="content" class="section-container">
 	<img src="/img/logo.svg" alt="MLP Vector Club Website Logo">
-	<h1><a href="http://mlp-vectorclub.deviantart.com/">MLP-VectorClub</a> Website</h1>
+	<h1><a href="https://www.deviantart.com/mlp-vectorclub">MLP-VectorClub</a> Website</h1>
 	<p>Handling requests, reservations & the Color Guide since 2015</p>
 	<section class="what-s-this-site-"><h2 id="what-s-this-site-">What's this site?</h2>
 		<p>This website originally started as a new, automatic way to process and store the requests &amp; reservations users want to make. It was born due to the fact that in the past, the handling of comments under journals was done manually. Because of this, there had to be people who checked those comments every once in a while, evaluated them, then updated the journal accordingly. This was a time consuming task, and since the group's staff consists of busy people expecting them to constantly monitor new incoming comments is unrealistic. The initial goal of this website was to provide an easy-to-use interface where new entries can be submitted and added to a list (just like the journals) automatically, eliminating this monotonous task.</p>
@@ -12,22 +12,22 @@
 		<p>
 			<strong><a href="/blending">Color Blending Calculator</a></strong> originally made by <a href="https://github.com/dasprid">DASPRiD</a><br>
 			<strong>Headings' font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a><br>
-			<strong>DeviantArt logo</strong> © <a href="http://www.deviantart.com/">DeviantArt</a><br>
+			<strong>DeviantArt logo</strong> © <a href="https://www.deviantart.com/">DeviantArt</a><br>
 			<a href="https://commons.wikimedia.org/wiki/File:Adobe_Illustrator_CC_icon.svg"><strong>Adobe Illustrator CC logo</strong></a> © Adobe Systems Inc.<br>
 			<a href="https://commons.wikimedia.org/wiki/File:Inkscape_Logo.svg"><strong>Inkscape logo</strong></a> © Inkscape team<br>
-			<a href="http://flutterguy317.deviantart.com/art/Ponyscape-PNG-354658716"><strong>Ponyscape logo</strong></a> © <a href="http://flutterguy317.deviantart.com/">flutterguy317</a><br>
-			<strong>Application logo</strong> features Penny Curve, the mascot of our group. The image is based on an expression from <a href="http://pirill-poveniy.deviantart.com/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118">Christmas Vector of the MLP-VC Mascot</a> (made by <a href="http://pirill-poveniy.deviantart.com/">Pirill-Poveniy</a>, <a href="http://thediscorded.deviantart.com/">thediscorded</a>, <a href="http://masemj.deviantart.com/">masemj</a> &amp; <a href="http://ambassad0r.deviantart.com/">Ambassad0r</a>) with the mane design and eye colours from <a href="http://ambassad0r.deviantart.com/art/Penny-Curve-MLP-VectorClub-Mascot-2-0-568079382">Penny Curve (MLP-VectorClub Mascot 2.0)</a> (made by <a href="http://ambassad0r.deviantart.com/">Ambassad0r</a>)<br>
+			<a href="https://www.deviantart.com/flutterguy317/art/Ponyscape-PNG-354658716"><strong>Ponyscape logo</strong></a> © <a href="http://flutterguy317.deviantart.com/">flutterguy317</a><br>
+			<strong>Application logo</strong> features Penny Curve, the mascot of our group. The image is based on an expression from <a href="https://www.deviantart.com/pirill-poveniy/art/Collab-Christmas-Vector-of-the-MLP-VC-Mascot-503196118">Christmas Vector of the MLP-VC Mascot</a> (made by <a href="http://pirill-poveniy.deviantart.com/">Pirill-Poveniy</a>, <a href="http://thediscorded.deviantart.com/">thediscorded</a>, <a href="http://masemj.deviantart.com/">masemj</a> &amp; <a href="http://ambassad0r.deviantart.com/">Ambassad0r</a>) with the mane design and eye colours from <a href="https://www.deviantart.com/ambassad0r/art/Penny-Curve-MLP-VectorClub-Mascot-2-0-568079382">Penny Curve (MLP-VectorClub Mascot 2.0)</a> (made by <a href="http://ambassad0r.deviantart.com/">Ambassad0r</a>)<br>
 			<strong>External link icon</strong> (licensed GPL) taken from <a href="https://commons.wikimedia.org/wiki/File:Icon_External_Link.svg">Wikimedia Commons</a><br>
 			<strong>Vector-based loading icons</strong> were generated using <a href="https://loading.io/">Loading.io</a> (some are no longer available)<br>
 			<strong>Browser logos</strong> (used in session list &amp; the <a href="/browser">Browser recognition testing page</a>):
 		</p>
 		<ul>
-			<li><a href="http://fav.me/d9rtlbv">Edge</a> by <a href="http://masemj.deviantart.com/">masemj</a> (<a href="http://fav.me/d8uhefy">designed</a> by <a href="http://furrgroup.deviantart.com/">furrgroup</a>)</li>
-			<li><a href="http://fav.me/d4b6f4v">Firefox</a> by <a href="http://noreasontohope.deviantart.com/">NoReasonToHope</a></li>
-			<li><a href="http://fav.me/d523s3y">Google Chrome</a> by <a href="http://he4rtofcourage.deviantart.com/">he4rtofcourage</a></li>
-			<li><a href="http://fav.me/d52fp08">Internet Explorer</a> by <a href="http://mcsadat.deviantart.com/">McSadat</a></li>
-			<li><a href="http://fav.me/dacngnh">Opera</a> by <a href="http://masemj.deviantart.com/">masemj</a> (<a href="http://fav.me/d52qnaw">designed</a> by <a href="http://parallaxmlp.deviantart.com/">ParallaxMLP</a>)</li>
-			<li><a href="http://fav.me/dadu3l9">Safari</a> by <a href="http://masemj.deviantart.com/">masemj</a> (<a href="http://fav.me/d530knp">designed</a> by <a href="http://parallaxmlp.deviantart.com/">ParallaxMLP</a>)</li>
+			<li><a href="http://fav.me/d9rtlbv">Edge</a> by <a href="https://www.deviantart.com/masemj">masemj</a> (<a href="http://fav.me/d8uhefy">designed</a> by <a href="https://www.deviantart.com/furrgroup">furrgroup</a>)</li>
+			<li><a href="http://fav.me/d4b6f4v">Firefox</a> by <a href="https://www.deviantart.com/noreasontohope">NoReasonToHope</a></li>
+			<li><a href="http://fav.me/d523s3y">Google Chrome</a> by <a href="https://www.deviantart.com/he4rtofcourage">he4rtofcourage</a></li>
+			<li><a href="http://fav.me/d52fp08">Internet Explorer</a> by <a href="https://www.deviantart.com/mcsadat">McSadat</a></li>
+			<li><a href="http://fav.me/dacngnh">Opera</a> by <a href="https://www.deviantart.com/masemj">masemj</a> (<a href="http://fav.me/d52qnaw">designed</a> by <a href="https://www.deviantart.com/parallaxmlp">ParallaxMLP</a>)</li>
+			<li><a href="http://fav.me/dadu3l9">Safari</a> by <a href="https://www.deviantart.com/masemj">masemj</a> (<a href="http://fav.me/d530knp">designed</a> by <a href="https://www.deviantart.com/parallaxmlp">ParallaxMLP</a>)</li>
 			<li>Vivaldi from <a href="https://vivaldi.com/press/">Vivaldi Press Kit</a></li>
 			<li>Other logos not mentioned previously were found on <a href="https://github.com/alrra/browser-logos/">alrra/browser-logos</a></li>
 		</ul>
@@ -41,11 +41,11 @@
 		<div>
 			<p>As you can probably tell we do not host a large majority of images you can see on episode pages, we just <del>steal the bandwidth</del> use the help of already established sites. Here's a full list of all providers we can recognize and that you can use to submit images:</p>
 			<ul>
-				<li><a href="http://sta.sh/">Sta.sh</a>*</li>
-				<li><a href="http://deviantart.com/">DeviantArt</a>*</li>
-				<li><a href="http://imgur.com/">Imgur</a></li>
-				<li><a href="http://derpibooru.org/">Derpibooru</a></li>
-				<li><a href="http://app.prntscr.com/">LightShot</a></li>
+				<li><a href="https://sta.sh/">Sta.sh</a>*</li>
+				<li><a href="https://deviantart.com/">DeviantArt</a>*</li>
+				<li><a href="https://imgur.com/">Imgur</a></li>
+				<li><a href="https://derpibooru.org/">Derpibooru</a></li>
+				<li><a href="https://app.prntscr.com/">LightShot</a></li>
 			</ul>
 			<p>* Using direct links from these providers is not supported due to the ambiguous URL schema shared by both Sta.sh and DeviantArt (both links end with an ID in the same format). Example: the link <q>http://fav.me/<wbr>dzc2af9</q> could have a download link that points to <q>http://orig11.deviantart.net/<wbr>27f5/<wbr>f/<wbr>2017/<wbr>107/<wbr>3/<wbr>b/<wbr>image_by_user-dzc2af9.png</q>. If you use the second link, the site won't accept it. <a id="butwhy" href="#show-boring-details">But why?</a><span class="hidden" id="thisiswhy"><br>To understand why I, as a developer cannot provide support for this, let's look at an example with a normal link and its corresponding direct link from Sta.sh: <q>https://sta.sh/<wbr>0z5gg4as67m</q> &rarr; <q>http://orig00.deviantart.net/<wbr>9935/<wbr>f/<wbr>2016/<wbr>089/<wbr>8/<wbr>e/<wbr>another_image_by_user-dxc2f9v.jpg</q> Notice anything different? It's the lack of distinct difference between the two, there's nothing to tell which site the image came from. Hopefully this gives you an idea of why things are the way they are.</span></p>
 		</div>

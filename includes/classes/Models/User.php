@@ -112,7 +112,7 @@ class User extends AbstractUser implements LinkableInterface {
 	}
 
 	public function toDALink(){
-		return 'http://'.strtolower($this->name).'.deviantart.com/';
+		return 'https://www.deviantart.com/'.strtolower($this->name);
 	}
 
 	/**
@@ -818,6 +818,6 @@ HTML;
 	}
 
 	public function getOpenSubmissionsURL(){
-		return "https://mlp-vectorclub.deviantart.com/messages/?log_type=1&instigator_module_type=21&instigator_username={$this->name}&bpp_status=3&display_order=desc";
+		return "https://www.deviantart.com/mlp-vectorclub/messages/?log_type=1&instigator_module_type=21&instigator_username={$this->name}&bpp_status=3&display_order=desc";
 	}
 }
