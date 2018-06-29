@@ -1,0 +1,53 @@
+{# @var kind string #}
+{% set Type = kind | capitalize %}
+{% set optional = kind == 'reservation' ? 'optional, ' : '' %}
+{% set cond_requried = kind == 'reservation' ? '' : ' required' %}
+<form class="hidden post-form" data-kind="{{ kind }}">
+	<h2>Make a {{ kind }}</h2>
+	<div>
+		<label>
+			<span>{{ Type }} description ({{ optional }}3-255 chars)</span>
+			<input type="text" name="label" pattern="^.{3,255}$" maxlength="255"{{ cond_requried }}>
+		</label>
+		<label>
+			<span>Image URL</span>
+			<input type="text" name="image_url" pattern="^.{2,255}$" required>
+		</label>
+		<div class="img-preview">
+			<div class="notice info">
+				<p>Please click the <strong class="color-red"><span class="typcn typcn-arrow-repeat"></span> Check image</strong> button (at the end of the form) after providing an URL to get a preview & verify that the link is correct.</p>
+				<hr>
+				<p class="keep">You can use a link from any of the <a href="/about#supported-providers" target="_blank">supported image providers</a>.</p>
+			</div>
+		</div>
+HTML;
+		{% if kind == 'request' %}
+		<label>
+			<span>{{ Type }} type</span>
+			<select name="type" required>
+				<option value="" class="hidden" selected>Choose one</option>
+				<optgroup label="{{ Type }} types">
+					<option value="chr">Character</option>
+					<option value="obj">Object</option>
+					<option value="bg">Background</option>
+				</optgroup>
+			</select>
+		</label>
+		{% endif %}
+
+		{% if permission('developer') %}
+		<label>
+			<span>{{ Type }} as user</span>
+			<input type="text" name="post_as" pattern="^\s*{{ constant('USERNAME_PATTERN') }}\s*$" maxlength="20" placeholder="Username" spellcheck="false">
+		</label>
+		<label>
+			<span>{{ Type }} timestamp</span>
+			<input type="text" name="posted_at" placeholder="time()" spellcheck="false" autocomplete="off">
+		</label>
+		{% endif %}
+	</div>
+
+	<button class="green submit" disabled>Submit {{ kind }}</button>
+	<button type="button" class="check-img red typcn typcn-arrow-repeat">Check image</button>
+	<button type="reset">Cancel</button>
+</form>

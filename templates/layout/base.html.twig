@@ -1,0 +1,44 @@
+{# @var view_class string #}
+{# @var signed_in bool #}
+{# @var current_user \App\Models\User #}
+{# @var current_session \App\Models\Session #}
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+<head>
+{% include 'layout/_head.html.twig' %}
+</head>
+<body>
+	<header>
+		{% include 'layout/_header.html.twig' %}
+	</header>
+
+	<aside id="sidebar">
+		{% include 'layout/_sidebar.html.twig' %}
+	</aside>
+
+	<div id="above-content">
+		<ol id="breadcrumbs" itemscope itemtype="http://schema.org/BreadcrumbList">{{ breadcrumbs }}</ol>
+		<div id="notices">
+			{% include 'layout/_notices.html.twig' %}
+		</div>
+	</div>
+
+	<div id="main">
+{% block content %}{% endblock %}
+	</div>
+
+	<footer>
+		{% include 'layout/_footer.html.twig' %}
+	</footer>
+
+{% include 'layout/_jquery.html.twig' %}
+<script nonce="{{ constant('CSP_NONCE') }}">$.API = { API_PATH: "{{ constant('API_PATH') }}" }</script>
+<script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
+<script src="https://ws.{{ server_name }}:8667/socket.io/socket.io.js" id="wss"></script>
+{{  export_vars({
+	'PRINTABLE_ASCII_PATTERN': constant('PRINTABLE_ASCII_PATTERN'),
+	'signedIn': signed_in,
+}) -}}
+{% include 'layout/_scripts.html.twig' %}
+</body>
+</html>

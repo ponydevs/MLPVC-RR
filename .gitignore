@@ -1,15 +1,13 @@
 # Well Known excpetions
-/www/.well-known/*
-!/www/.well-known/security.txt*
-!/www/.well-known/assetlinks.json
-!/www/.well-known/apple-app-site-association
+/public/.well-known/*
+!/public/.well-known/security.txt*
+!/public/.well-known/assetlinks.json
+!/public/.well-known/apple-app-site-association
 
 conf.php
 *.log
-*.opdownload
 /node_modules
-/www/css/*.scss*
-/www/*.html
+/public/*.html
 /fs
 /setup/*.pg.sql
 !/setup/create_extensions.pg.sql

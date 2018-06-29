@@ -1,0 +1,16 @@
+{%- if useful_links is defined and useful_links is not empty -%}
+	{%- if wrap is null or wrap %}
+		<ul class="links">
+{% endif -%}
+	{% for l in useful_links -%}
+		{# @var l \App\Models\UsefulLink #}
+		{%- if current_user.perm(l.minrole) -%}
+			{%- set href = l.url starts with '#' ? "class='action--" ~ (l.url | slice(1)) ~ "'" : "href='" ~ (l.url | apos_encode) ~ "'" -%}
+			{%- set title = l.title is not empty ? "title='" ~ (l.title | apos_encode) ~ "'" : "href='" ~ (l.url | apos_encode) ~ "'" %}
+			<li id='ufl-link-{{ l.id }}'><a {{ href }} {{ title }}>{{ l.label }}</a></li>
+{% endif -%}
+	{%- endfor %}
+	{%- if wrap is null or wrap %}
+		</ul>
+{% endif %}
+{% endif %}

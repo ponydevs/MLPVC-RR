@@ -1,0 +1,33 @@
+{# @var arranged array #}
+{# @var current_user \App\Models\User #}
+{% set loading = arranged is not null ? ' loading' : '' %}
+{% set can_reserve = permission('member') and user_pref('a_postres', current_user) %}
+<section id="reservations" class="posts">
+	<div class="unfinished{{ loading }}">
+		{% set make_reservation = can_reserve ? '<button id="reservation-btn" class="green">Make a reservation</button>' : '' %}
+		<h2>List of Reservations{{ make_reservation }}</h2>
+		<ul>
+		{%- if arranged.unfinished is not empty %}
+			{% for post in arranged.unfinished %}
+				{# @var post \App\Models\Post #}
+				{{ post.getLi(false, false, lazyload ?? false) }}
+			{% endfor -%}
+		{% endif -%}
+		</ul>
+	</div>
+	<div class="finished{{ loading }}">
+		{% set add_reservation = permission('staff') ? '<button id="add-reservation-btn" class="darkblue">Add a reservation</button>' : '' %}
+		<h2>Finished Reservations{{ add_reservation }}</h2>
+		<ul>
+		{%- if arranged.finished is not empty %}
+			{% for post in arranged.finished %}
+				{# @var post \App\Models\Post #}
+				{{ post.getLi(false, false, lazyload ?? false) }}
+			{% endfor -%}
+		{% endif -%}
+		</ul>
+	</div>
+	{% if can_reserve %}
+		{% include 'episode/_post_form.html.twig' with {'kind':'reservation'} %}
+	{% endif %}
+</section>

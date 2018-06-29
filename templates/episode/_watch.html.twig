@@ -1,0 +1,18 @@
+{% if videos is not empty %}
+	{% if wrap is null or wrap %}
+	<section class='episode'>
+	{% endif %}
+
+	<h2>Watch the {{ current_episode.get_is_movie ? 'Movie' : 'Episode' }}</h2>
+	<p class='button-block align-center'>
+		{% for v in videos %}
+			{% set part = current_episode.twoparter ? (v.fullep ? " (Part #{v.part})" : " (Full episode)") : '' %}
+		<a class='btn typcn {{ v.get_button_class }}' href='{{ v.get_url | apos_encode }}' target='_blank' rel='noopener'>{{ v.get_provider_name ~ part }}</a>
+		{% endfor %}
+		<button class='green typcn typcn-eye showplayers'>Show on-site player</button>
+		<button class='orange typcn typcn-flag reportbroken'>Report broken video</button>
+	</p>
+	{% if wrap is null or wrap %}
+	</section>
+	{% endif %}
+{% endif %}

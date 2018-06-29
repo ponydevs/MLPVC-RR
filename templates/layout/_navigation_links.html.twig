@@ -1,0 +1,16 @@
+{% if not fatal_error_page is defined %}
+<li><a href='/episode/latest'>Latest episode</a></li>
+<li><a href='/show'>Show</a></li>
+<li><a href='/cg'>Color Guide</a></li>
+<li><a href='/events'>Events</a></li>
+	{% if signed_in %}
+{# @var current_user \App\Models\User #}
+<li><a href='{{ current_user.toURL() }}'>Account</a></li>
+	{% endif %}
+	{% if permission('staff') %}
+<li><a href='/users'>Users</a></li>
+<li><a href='/admin'>Admin</a></li>
+	{% endif %}
+<li><a href='/about'>About</a></li>
+{% endif %}
+<li><a href="https://www.deviantart.com/mlp-vectorclub" target="_blank" rel="noopener">MLP-VectorClub</a></li>
