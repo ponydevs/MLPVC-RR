@@ -40,10 +40,53 @@ class AdminController extends Controller {
 	}
 
 	public function index(){
+		if (Permission::sufficient('developer')){
+			try {
+				$client = CoreUtils::elasticClient();
+				$client->ping();
+				$indices = $client->cat()->indices(['v' => true]);
+				$nodes = $client->cat()->nodes(['v' => true]);
+
+				$usedIndexes = ['appearances'];
+				$index_list = '';
+				foreach ($indices as $no => $index){
+					if (!\in_array($index['index'], $usedIndexes, true))
+						continue;
+
+					$index_list .= "#$no ";
+					foreach ($index as $key => $value){
+						if (empty($value))
+							continue;
+						$index_list .= "$key:$value ";
+					}
+					$index_list .= "\n";
+				}
+				$node_list = '';
+				foreach ($nodes as $no => $node){
+					$node_list .= "#$no ";
+					foreach ($node as $key => $value){
+						if (empty($value))
+							continue;
+						$node_list .= "$key:$value ";
+					}
+				}
+				$elastic_down = false;
+			}
+			catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
+				$elastic_down = true;
+			}
+		}
+
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Admin Area',
 			'css' => [true],
 			'js' => [true],
+			'import' => [
+				'elastic_down' => $elastic_down ?? true,
+				'index_list' => $index_list ?? null,
+				'node_list' => $node_list ?? null,
+				'recent_posts' => Posts::getRecentPosts(),
+			],
 		]);
 	}
 

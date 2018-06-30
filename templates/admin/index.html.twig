@@ -1,0 +1,46 @@
+{# @var title string #}
+{# @var elastic_down bool #}
+{# @var index_list string #}
+{# @var node_list string #}
+{# @var recent_posts \App\Models\Post[] #}
+{% extends "layout/base.html.twig" %}
+
+{% block content %}
+<div id="content" class="section-container">
+	<h1>{{ title }}</h1>
+	<p>Various tools related to managing the site</p>
+	<div class='align-center button-block'>
+		<a class='btn link typcn typcn-document-text' href="/admin/logs">Logs</a>
+		<a class='btn link typcn typcn-info' href="/admin/notices">Notices</a>
+		{% if permission('developer') %}
+		<a class='btn link typcn typcn-code' href="/admin/wsdiag">WS</a>
+		{% endif %}
+		<a class='btn link typcn typcn-link' href="/admin/usefullinks">Useful Links</a>
+		<a class='btn link typcn typcn-user' href="/admin/pcg-appearances">PCG Appearances</a>
+	</div>
+
+	<section class="mass-approve">
+		<h2><span class="typcn typcn-tick"></span>Bulk approve posts <button id="bulk-how" class="darkblue typcn typcn-info-large">How it works</button></h2>
+		<div class="textarea" contenteditable="true"></div>
+	</section>
+
+	{% if permission('developer') %}
+	<section class="elastic-status">
+		<h2><span class="typcn typcn-zoom"></span>Elastic status</h2>
+		{% if elastic_down %}
+		<strong>Server is down.</strong>
+		{% else %}
+		<pre><code><strong>Indices</strong><br>{{ index_list }}</code></pre>
+		<pre><code><strong>Nodes</strong><br>{{ node_list }}</code></pre>
+		{% endif %}
+	</section>
+	{% endif %}
+
+	<section class="recent-posts">
+		<h2><span class="typcn typcn-bell"></span>Most recent posts</h2>
+		<div>
+			{% include 'admin/_most_recent_posts.html.twig' %}
+		</div>
+	</section>
+</div>
+{% endblock %}

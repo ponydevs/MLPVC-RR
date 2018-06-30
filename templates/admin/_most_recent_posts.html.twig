@@ -1,0 +1,12 @@
+{# @var recent_posts \App\Models\Post[] #}
+{# @var wrap string #}
+{% if wrap is null or wrap %}
+<ul>
+	{% endif %}
+	{% for post in recent_posts %}
+		{# @var post \App\Models\Post #}
+		{{ post.getLi }}
+	{% endfor %}
+	{% if wrap is null or wrap %}
+</ul>
+{% endif %}

@@ -22,7 +22,7 @@ class Logger {
 	error(message){
 		if (typeof message === 'string'){
 			message = message.trim()
-				.replace(/[\/\\]?www/,'');
+				.replace(/[\/\\]?public/,'');
 			console.error(this.prefix+'Error in '+message);
 		}
 		else console.log(JSON.stringify(message,null,'4'));
@@ -30,7 +30,7 @@ class Logger {
 }
 
 let SASSL = new Logger('scss'),
-	SASSWatchArray = ['www/scss/src/*.scss','www/scss/src/**/*.scss'];
+	SASSWatchArray = ['public/scss/src/*.scss','public/scss/src/**/*.scss'];
 gulp.task('scss', function() {
 	return gulp.src(SASSWatchArray)
 		.pipe(plumber(function(err){
@@ -53,11 +53,11 @@ gulp.task('scss', function() {
 			includeContent: false,
 			sourceRoot: '/scss/src',
 		}))
-		.pipe(gulp.dest('www/scss/min'));
+		.pipe(gulp.dest('public/scss/min'));
 });
 
 let JSL = new Logger('js'),
-	JSWatchArray = ['www/js/src/*.js','www/js/src/**/*.js'];
+	JSWatchArray = ['public/js/src/*.js','public/js/src/**/*.js'];
 gulp.task('js', () => {
 	return gulp.src(JSWatchArray)
 		.pipe(cached('js', { optimizeMemory: true }))
@@ -91,7 +91,7 @@ gulp.task('js', () => {
 				return '/js/min/'+(file.relative.replace(/^\/+/,''))+'.map';
 			},
 		}))
-		.pipe(gulp.dest('www/js/min'));
+		.pipe(gulp.dest('public/js/min'));
 });
 
 gulp.task('default', gulp.parallel('js', 'scss'));
