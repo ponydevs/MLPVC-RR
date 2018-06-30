@@ -1,9 +1,6 @@
 {% spaceless %}
-<div class='mobile-nav'>
-	<nav>
-		<ul>{% include 'layout/_navigation_links.html.twig' %}</ul>
-	</nav>
-</div>
+<div class='mobile-nav'><nav><ul>{% include 'layout/_navigation_links.html.twig' %}</ul></nav></div>
+{% endspaceless %}
 
 {% include 'layout/_sidebar_logged_in.html.twig' %}
 
@@ -62,4 +59,3 @@
 	{% endif %}
 
 {% endif %}
-{% endspaceless %}

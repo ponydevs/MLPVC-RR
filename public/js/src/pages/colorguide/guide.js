@@ -58,13 +58,13 @@
 				});
 			}},
 		],
-		function($el){ return 'Color: '+$el.attr('oldtitle') }
+		function($el){ return `Color: ${$el.attr('title')}` }
 	).on('mousedown', function(e){
 	    if (e.shiftKey)
 	        e.preventDefault();
 	});
 
-	$('.getswatch').off('click').on('click',getswatch);
+	$('.get-swatch').off('click').on('click', getSwatch);
 	copyHashToggler();
 
 	$('#search-form').on('reset', function(e){
@@ -75,7 +75,7 @@
 		$this.trigger('submit');
 	});
 
-	function getswatch(e){
+	function getSwatch(e){
 		e.preventDefault();
 
 		let token = window.location.search.match(/token=[a-f\d-]+(&|$)/i);

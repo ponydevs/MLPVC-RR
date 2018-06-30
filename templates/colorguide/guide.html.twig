@@ -9,7 +9,6 @@
 {# @var json_export_time string #}
 {% extends "layout/base.html.twig" %}
 
-{# TODO Continue converting views #}
 {% block content %}
 <div id="content">
 	<h1>{{ heading }}</h1>
@@ -21,10 +20,10 @@
 	</p>
 	<div class='align-center button-block'>
 {% if permission('staff') %}
-		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new <?=$EQG?'Character':'Pony'?></button>
+		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new {{ eqg ? 'Character' : 'Pony' }}</button>
 {% endif %}
-		<a class='btn link typcn typcn-world' href="/cg/<?=$EQG?'pony':'eqg'?>">View <?=$EQG?'Pony':'EQG'?> Guide</a>
-		<a class='btn link typcn typcn-th-menu' href="/cg/<?=$EQG?'eqg':'pony'?>/full">Full List</a>
+		<a class='btn link typcn typcn-world' href="/cg/{{ eqg ? 'pony' : 'eqg' }}">View {{ eqg ? 'Pony' : 'EQG' }} Guide</a>
+		<a class='btn link typcn typcn-th-menu' href="/cg/{{ eqg ? 'rqg' : 'pony' }}/full">Full List</a>
 		<a class='btn link typcn typcn-arrow-forward' href="/cg/blending">Blending Calculator</a>
 		<a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker</a>
 		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
@@ -39,8 +38,7 @@
 	</div>
 {% if universal_appearance is not empty %}
 	<ul id='universal' class='appearance-list'>
-	{# TODO Turn into view #}
-	Appearances::getHTML([$Universal], NOWRAP)
+	{% include 'colorguide/_appearance_list.html.twig' with { 'appearances': [universal_appearance], 'wrap': false } %}
 	</ul>
 {% endif %}
 {% if elastic_avail %}
@@ -56,8 +54,7 @@
 	</div>
 {% endif %}
 {{ pagination }}
-	{# TODO Turn into view #}
-	Appearances::getHTML(ponies, NOWRAP)
+{% include 'colorguide/_appearance_list.html.twig' %}
 {{ pagination }}
 </div>
 

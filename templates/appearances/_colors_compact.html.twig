@@ -1,0 +1,16 @@
+{# @var color_groups \App\Models\ColorGroup[] #}
+{# @var all_colors \App\Models\Color[][] #}
+{# @var compact bool #}
+{% spaceless %}
+{% if wrap %}
+<ul class="colors compact">
+{% endif %}
+{% if color_groups is not empty %}
+	{% for color_group in color_groups %}
+		{% include 'appearances/_color_group_compact.html.twig' %}
+	{% endfor %}
+{% endif %}
+{% if wrap %}
+</ul>
+{% endif %}
+{% endspaceless %}

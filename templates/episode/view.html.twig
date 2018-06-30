@@ -36,7 +36,7 @@
 		</div>
 		<div class="main">
 			<div>
-				<h1><?=CoreUtils::escapeHTML($heading)?></h1>
+				<h1>{{ heading | escape }}</h1>
 				<p>Vector Requests & Reservations</p>
 {% if permission('staff') %}
 				<p class="added-by"><em>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} added by {{ poster.toAnchor }} {{ time_tag(current_episode.posted) }}</em></p>

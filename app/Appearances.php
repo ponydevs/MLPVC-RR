@@ -49,44 +49,36 @@ class Appearances {
 	/**
 	 * TODO Turn into view
 	 *
-	 * @param Appearance[] $Appearances
+	 * @param Appearance[] $appearances
 	 * @param bool         $wrap
-	 * @param bool         $permission
+	 * @param bool         $upload_permission
 	 *
 	 * @return string
 	 */
-	public static function getHTML($Appearances, $wrap = WRAP, $permission = null){
-		global $_MSG;
-
-		if ($permission === null)
-			$permission = Permission::sufficient('staff');
+	public static function getHTML($appearances, $wrap = WRAP, $upload_permission = null){
+		if ($upload_permission === null)
+			$upload_permission = Permission::sufficient('staff');
 
 		$HTML = '';
-		if (!empty($Appearances)) foreach ($Appearances as $Appearance){
-			$Appearance->label = CoreUtils::escapeHTML($Appearance->label);
+		if (!empty($appearances)) foreach ($appearances as $p){
+			$p->label = CoreUtils::escapeHTML($p->label);
 
-			$img = $Appearance->getSpriteHTML($permission);
-			$updates = $Appearance->owner_id === null ? $Appearance->getUpdatesHTML() : '';
-			$notes = $Appearance->getNotesHTML();
-			$tags = $Appearance->owner_id === null ? $Appearance->getTagsHTML() : '';
-			$colors = $Appearance->getColorsHTML();
-			$eqgp = $Appearance->ishuman ? 'eqg/' : '';
-			$personalp = $Appearance->owner_id !== null ? '/@'.$Appearance->owner->name : '';
+			$img = $p->getSpriteHTML($upload_permission);
+			$updates = $p->owner_id === null ? $p->getUpdatesHTML() : '';
+			$notes = $p->getNotesHTML();
+			$tags = $p->owner_id === null ? $p->getTagsHTML() : '';
+			$colors = $p->getColorsHTML();
 
-			$RenderPath = $Appearance->getPalettePath();
-			$FileModTime = '?t='.CoreUtils::filemtime($RenderPath);
-			$Actions = "<a class='btn link typcn typcn-image' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$Appearance->id}p.png$FileModTime' target='_blank'></a>".
+			$Actions = "<a class='btn link typcn typcn-image' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$p->id}p.png$file_mod_time' target='_blank'></a>".
 			           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
-			if ($permission)
+			if ($upload_permission)
 				$Actions .= "<button class='edit-appearance typcn typcn-pencil darkblue' title='Edit'></button>".
-				            ($Appearance->id!==0?"<button class='delete-appearance typcn typcn-trash red' title='Delete'></button>":'');
-			$privlock = $Appearance->private ? "<span class='typcn typcn-lock-closed color-orange'></span> " : '';
-			$HTML .= "<li id='p{$Appearance->id}'>$img<div><strong>$privlock<a href='{$Appearance->toURL()}'>{$Appearance->label}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
+				            ($p->protected?"<button class='delete-appearance typcn typcn-trash red' title='Delete'></button>":'');
+			$privlock = $p->private ? "<span class='typcn typcn-lock-closed color-orange'></span> " : '';
+			$HTML .= "<li id='p{$p->id}'>$img<div><strong>$privlock<a href='{$p->toURL()}'>{$p->label}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
 		}
 		else {
-			if (empty($_MSG))
-				$_MSG = 'No appearances to show';
-			$HTML .= "<div class='notice info align-center'><label>$_MSG</label></div>";
+			$HTML .= "<div class='notice info align-center'><label>No appearances to show</label></div>";
 		}
 
 		return $wrap ? "<ul id='list' class='appearance-list'>$HTML</ul>" : $HTML;

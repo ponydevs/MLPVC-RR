@@ -225,7 +225,7 @@ class ColorGuideController extends Controller {
 		$title = '';
 		/** @var $appearances_per_page int */
 		$appearances_per_page = UserPrefs::get('cg_itemsperpage');
-		$ponies = [];
+		$appearances = [];
 		try {
 			$elastic_avail = CoreUtils::elasticClient()->ping();
 		}
@@ -304,9 +304,9 @@ class ColorGuideController extends Controller {
 					if ($in_order)
 						DB::$instance->orderBy('order');
 					DB::$instance->where('id', array_keys($ids));
-					$ponies = Appearances::get($this->_EQG);
-					if (!empty($ponies) && !$in_order)
-						uasort($ponies, function(Appearance $a, Appearance $b) use ($ids){
+					$appearances = Appearances::get($this->_EQG);
+					if (!empty($appearances) && !$in_order)
+						uasort($appearances, function(Appearance $a, Appearance $b) use ($ids){
 							return $ids[$a->id] <=> $ids[$b->id];
 						});
 				}
@@ -320,18 +320,18 @@ class ColorGuideController extends Controller {
 		    $entry_count = DB::$instance->where('ishuman',$this->_EQG)->where('id != 0')->count('appearances');
 
 		    $pagination = new Pagination($this->path, $appearances_per_page, $entry_count);
-		    $ponies = Appearances::get($this->_EQG, $pagination->getLimit());
+		    $appearances = Appearances::get($this->_EQG, $pagination->getLimit());
 		}
 
 		if (isset($_REQUEST['btnl'])){
-			$found = !empty($ponies[0]->id);
+			$found = !empty($appearances[0]->id);
 			if (CoreUtils::isJSONExpected()){
 				if (!$found)
 					Response::fail('Your search returned no results.');
-				Response::done([ 'goto' => $ponies[0]->toURL() ]);
+				Response::done([ 'goto' => $appearances[0]->toURL() ]);
 			}
 			if ($found)
-				HTTP::tempRedirect($ponies[0]->toURL());
+				HTTP::tempRedirect($appearances[0]->toURL());
 		}
 
 		$path = $pagination->toURI();
@@ -351,7 +351,7 @@ class ColorGuideController extends Controller {
 			'js' => ['jquery.ctxmenu', true, 'paginate'],
 			'import' => [
 				'eqg' => $this->_EQG,
-				'ponies' => $ponies,
+				'appearances' => $appearances,
 				'pagination' => $pagination,
 				'elastic_avail' => $elastic_avail,
 				'json_export_url' => $json_export_url,

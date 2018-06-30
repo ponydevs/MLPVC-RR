@@ -440,7 +440,7 @@ HTML;
 	 * @throws \Exception
 	 */
 	public static function renderAppearancePNG($CGPath, $Appearance){
-		$OutputPath = $Appearance->getPalettePath();
+		$OutputPath = $Appearance->getPaletteFilePath();
 		$FileRelPath = "$CGPath/v/{$Appearance->id}p.png";
 		CoreUtils::fixPath($FileRelPath);
 		if (file_exists($OutputPath))

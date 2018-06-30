@@ -1,0 +1,5 @@
+{# @var tag \App\Models\Tag #}
+{# @var eqg bool #}
+{% spaceless %}
+<a href="{{ tag.getSearchUrl(eqg) | apos_encode }}" class="tag id-{{ tag.id }}{{ tag.type is not empty ? ' typ-' ~ tag.type : '' }}"{% if tag.synonym_of is not null %} data-syn-of="{{ tag.synonym_of }}"{% endif %}{% if tag.title %} title="{{ tag.title | apos_encode }}"{% endif %}>{{ tag.name | escape }}</a>
+{% endspaceless %}

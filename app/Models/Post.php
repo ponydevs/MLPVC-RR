@@ -243,7 +243,7 @@ class Post extends NSModel implements LinkableInterface {
 	/**
 	 * List item generator function for request & reservation generators
 	 *
-	 * @deprecated Turn into a view
+	 * @deprecated Turn into a view (eventually)
 	 *
 	 * @param bool $view_only      Only show the "View" button
 	 * @param bool $cachebust_url  Append a random string to the image URL to force a re-fetch

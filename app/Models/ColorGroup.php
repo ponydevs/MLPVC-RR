@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\CoreUtils;
 use App\Permission;
+use App\Twig;
 use App\UserPrefs;
 use HtmlGenerator\HtmlTag;
 use SeinopSys\RGBAColor;
@@ -60,26 +61,31 @@ class ColorGroup extends OrderedModel {
         ]);
 	}
 
+	/** @return Color[] */
+	public function getColors(){
+		return $this->colors;
+	}
+
 	/**
 	 * Get HTML for a color group
 	 *
 	 * @param Color[][] $AllColors
-	 * @param bool      $wrap
-	 * @param bool      $colon
-	 * @param bool      $colorNames
-	 * @param bool      $force_extra_info
+	 * @param bool      $compact
 	 *
 	 * @return string
 	 */
-	public function getHTML($AllColors = null, bool $wrap = true, bool $colon = true, bool $colorNames = false, bool $force_extra_info = false):string {
-		$label = CoreUtils::escapeHTML($this->label).($colon?': ':'');
+	public function getHTML($AllColors = null, bool $compact = true):string {
+		if ($compact)
+			return Twig::$env->render('appearances/_color_group_compact.html.twig', [ 'color_group' => $this ]);
+
+		$label = CoreUtils::escapeHTML($this->label).($compact?': ':'');
 		$HTML =
 			"\n<span class='cat'>$label".
-				($colorNames && Permission::sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"><span>Edit</span></button><button class="red typcn typcn-trash delete-cg"><span>Delete</span></button></span>':'').
+				(!$compact && Permission::sufficient('staff')?'<span class="admin"><button class="blue typcn typcn-pencil edit-cg"><span>Edit</span></button><button class="red typcn typcn-trash delete-cg"><span>Delete</span></button></span>':'').
 			"</span>\n";
 		$Colors = empty($AllColors) ? $this->colors : ($AllColors[$this->id] ?? null);
 		if (!empty($Colors)){
-			$extraInfo = $force_extra_info || !UserPrefs::get('cg_hideclrinfo');
+			$extraInfo = !UserPrefs::get('cg_hideclrinfo');
 			foreach ($Colors as $i => $c){
 				$span = HtmlTag::createElement('span');
 				$title = CoreUtils::aposEncode($c->label);
@@ -91,7 +97,7 @@ class ColorGroup extends OrderedModel {
 					$span->set('class', 'valid-color');
 				}
 
-				if ($colorNames){
+				if (!$compact){
 					$label = CoreUtils::escapeHTML($c->label);
 					$append = "<div class='color-line".(!$extraInfo || empty($color)?' no-detail':'')."'>$span <span><span class='label'>$label";
 					if ($extraInfo && !empty($color)){
@@ -106,6 +112,6 @@ class ColorGroup extends OrderedModel {
 			}
 		}
 
-		return $wrap ? "<li id='cg-{$this->id}'>$HTML</li>\n" : $HTML;
+		return "<li id='cg-{$this->id}'>$HTML</li>\n";
 	}
 }

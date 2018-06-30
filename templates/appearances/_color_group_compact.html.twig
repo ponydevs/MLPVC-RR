@@ -1,0 +1,16 @@
+{# @var color_group \App\Models\ColorGroup #}
+{# @var all_colors \App\Models\Color[][] #}
+{% spaceless %}
+<li id="cg-{{ color_group.id }}" class="color-group compact">
+	<span class="cat">{{ color_group.label | escape }}:</span>
+	{% set colors = all_colors is defined ? all_colors[color_group.id] : color_group.colors %}
+	{% for c in colors %}
+		{# @var c \App\Models\Color #}
+		{% if c.hex is empty %}
+		<span class="color" title="{{ c.label }}"></span>
+		{% else %}
+		<span style="background-color:{{ c.hex }}" class="color valid-color" title="{{ c.label }}">{{ c.hex }}</span>
+		{% endif %}
+	{% endfor %}
+</li>
+{% endspaceless %}

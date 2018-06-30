@@ -314,7 +314,7 @@ class AppearanceController extends ColorGuideController {
 				Response::done($response);
 			break;
 			case 'DELETE':
-				if ($this->appearance->id === 0)
+				if ($this->appearance->protected)
 					Response::fail('This appearance cannot be deleted');
 
 				$Tagged = Tags::getFor($this->appearance->id, null, true);
@@ -396,7 +396,7 @@ class AppearanceController extends ColorGuideController {
 			Response::fail('Applying the template failed. Reason: '.$e->getMessage());
 		}
 
-		Response::done(['cgs' => $this->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
+		Response::done(['cgs' => $this->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage)]);
 	}
 
 	public function selectiveClear($params){
@@ -564,7 +564,7 @@ class AppearanceController extends ColorGuideController {
 					'newgroups' => $newCGs,
 				]);
 
-				Response::done(['cgs' => $this->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage, $this->_appearancePage)]);
+				Response::done(['cgs' => $this->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage)]);
 			break;
 			default:
 				CoreUtils::notAllowed();
@@ -911,7 +911,7 @@ class AppearanceController extends ColorGuideController {
 		if ($this->appearance->owner_id !== null)
 			Response::fail('Tagging is unavailable for appearances in personal guides');
 
-		if ($this->appearance->id === 0)
+		if ($this->appearance->protected)
 			Response::fail('This appearance cannot be tagged');
 
 		switch ($this->action){

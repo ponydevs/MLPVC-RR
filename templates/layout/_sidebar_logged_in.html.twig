@@ -10,9 +10,9 @@
 <div class='logged-in provider-{{ avatar_provider }}'>
 	{% include 'layout/_avatar_wrap.html.twig' %}
 	<div class="user-data">
-		<span class="user-name">{{ current_user.name }}</span>
+		<span class="user-name">{{ current_user.toAnchor }}</span>
 		<span class="user-role">
-			<span>{{ current_user.role }}</span>
+			<span>{{ current_user.get_role_label }}</span>
 			{% if current_session is defined and current_session.updating %}
 			<span id="session-update-indicator" title="Updating your session"></span>
 			{% endif %}

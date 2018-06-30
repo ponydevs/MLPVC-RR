@@ -15,6 +15,7 @@ use App\RegExp;
 use App\Response;
 use App\Tags;
 use App\Time;
+use App\Twig;
 use App\UserPrefs;
 use App\Users;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
@@ -41,6 +42,7 @@ use SeinopSys\RGBAColor;
  * @property Tag[]               $tags                (Via relations)
  * @property Tagged[]            $tagged              (Via relations)
  * @property MajorChange[]       $major_changes       (Via relations)
+ * @property bool                $protected           (Via magic method)
  * @method static Appearance[] find_by_sql($sql, $values = null)
  * @method static Appearance find_by_owner_id_and_label(string $uuid, string $label)
  * @method static Appearance find_by_ishuman_and_label($ishuman, string $label)
@@ -85,8 +87,24 @@ class Appearance extends NSModel implements LinkableInterface {
 		return $arr;
 	}
 
-	public function getPalettePath(){
+	public function get_protected():bool {
+		return $this->id < 1;
+	}
+
+	public function getPaletteFilePath(){
 		return FSPATH."cg_render/appearance/{$this->id}/palette.png";
+	}
+
+	/**
+	 * Get rendered PNG URL
+	 *
+	 *
+	 * @return string
+	 */
+	public function getPaletteURL():string {
+		$pcg_prefix = $this->owner_id !== null ? '/@'.$this->owner->name : '';
+		$palette_path = $this->getPaletteFilePath();
+		return "$pcg_prefix/cg/v/{$this->id}p.png?t=".CoreUtils::filemtime($palette_path);
 	}
 
 	/**
@@ -118,7 +136,7 @@ class Appearance extends NSModel implements LinkableInterface {
 	];
 
 	/**
-	 * Get sprite URL for an appearance
+	 * Get sprite URL
 	 *
 	 * @param int    $size
 	 * @param string $fallback
@@ -193,8 +211,6 @@ class Appearance extends NSModel implements LinkableInterface {
 	 * @return string
 	 */
 	public function getNotesHTML(bool $wrap = WRAP, bool $cmLink = true):string {
-		global $EPISODE_ID_REGEX;
-
 		if (!empty($this->notes_src)){
 			if ($this->notes_rend === null){
 				$this->notes_rend = self::_processNotes($this->notes_src);
@@ -202,38 +218,39 @@ class Appearance extends NSModel implements LinkableInterface {
 			}
 			$notes = "<span>{$this->notes_rend}</span>";
 		}
-		else {
-			if (Permission::insufficient('staff'))
-				return '';
-			$notes = '';
-		}
-		$cms = Cutiemark::count(['appearance_id' => $this->id]);
-		if ($cms > 0)
-			$notes .= '<span>'.CoreUtils::makePlural('Cutie mark', $cms).' available</span>';
-		return $wrap ? "<div class='notes'>$notes</div>" : $notes;
+		else $notes = '';
+		$cm_count = Cutiemark::count(['appearance_id' => $this->id]);
+
+		return Twig::$env->render('appearances/_notes.html.twig', [
+			'notes' => $notes,
+			'cm_count' => $cm_count,
+			'wrap' => $wrap,
+		]);
 	}
 
 	/**
 	 * Returns the markup of the color list for a specific appearance
 	 *
-	 * @param bool       $wrap
-	 * @param bool       $colon
-	 * @param bool       $colorNames
+	 * @param bool $wrap
+	 * @param bool $compact
 	 *
 	 * @return string
 	 */
-	public function getColorsHTML(bool $wrap = WRAP, $colon = true, $colorNames = false){
+	public function getColorsHTML(bool $wrap = WRAP, bool $compact = true):string {
 		if ($placehold = $this->getPendingPlaceholder())
 			return $placehold;
 
-		$ColorGroups = $this->color_groups;
-		$AllColors = CGUtils::getColorsForEach($ColorGroups);
+		$data = [
+			'color_groups' => $this->color_groups,
+			'all_colors' => CGUtils::getColorsForEach($this->color_groups),
+			'compact' => $compact,
+			'wrap' => $wrap,
+		];
 
-		$HTML = '';
-		if (!empty($ColorGroups)) foreach ($ColorGroups as $cg)
-			$HTML .= $cg->getHTML($AllColors, WRAP, $colon, $colorNames);
+		if ($compact)
+			return Twig::$env->render('appearances/_colors_compact.html.twig', $data);
 
-		return $wrap ? "<ul class='colors'>$HTML</ul>" : $HTML;
+		return Twig::$env->render('appearances/_colors_full.html.twig', $data);
 	}
 
 	/**
@@ -249,7 +266,7 @@ class Appearance extends NSModel implements LinkableInterface {
 
 		$HTML = '';
 		if (!empty($Tags)) foreach ($Tags as $t)
-			$HTML .= $t->to_html($this->ishuman);
+			$HTML .= $t->getHTML($this->ishuman);
 
 		return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;
 	}

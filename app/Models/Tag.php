@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Tags;
+use App\Twig;
 use HtmlGenerator\HtmlTag;
 
 /**
@@ -40,20 +41,15 @@ class Tag extends NSModel {
 		return Tagged::make($this->id, $appearance_id)->save();
 	}
 
-	public function to_html(bool $EQG):string {
-		$class = "tag id-{$this->id}";
-		$tag = HtmlTag::createElement('a');
-		$tag->set('href', '/cg/'.($EQG?'eqg/':'').'?q='.urlencode($this->name));
-		$tag->text($this->name);
-		if (!empty($this->type))
-			$class .= " typ-{$this->type}";
-		if (!empty($this->title))
-			$tag->set('title', $this->title);
-		if ($this->synonym_of !== null){
-			$tag->set('data-syn-of', $this->synonym_of);
-		}
-		$tag->set('class', $class);
-		return (string)$tag;
+	public function getHTML(bool $EQG):string {
+		return Twig::$env->render('appearances/_tag.html.twig', [
+			'tag' => $this,
+			'eqg' => $EQG,
+		]);
+	}
+
+	public function getSearchUrl(bool $eqg):string {
+		return '/cg/'.($eqg?'eqg':'pony').'?q='.urlencode($this->name);
 	}
 
 	public function updateUses(){

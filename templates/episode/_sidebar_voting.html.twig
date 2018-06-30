@@ -6,7 +6,7 @@
 	{% set score = current_episode.get_score %}
 	{% set score_percent = (((score/5)*1000) | round)/10 -%}
 	<p>{% if score is not empty -%}
-			This $thing is rated {{ score }}/5 (<a class='detail'>Details</a>)
+			This {{ thing }} is rated {{ score }}/5 (<a class='detail'>Details</a>)
 		{%- else -%}
 			Nopony voted yet.
 		{%- endif %}</p>

@@ -247,7 +247,7 @@
 		// Screw JS file scraping spam bots
 		const email = ['seinopsys','gmail.com'].join('@');
 
-		$.Dialog.info($.Dialog.isOpen() ? undefined : 'Contact',
+		$.Dialog.info($.Dialog.isOpen() ? undefined : 'Contact Us',
 			`<h3>How to contact us</h3>
 			<p>You can use any of the following methods to reach out to us:</p>
 			<ul>

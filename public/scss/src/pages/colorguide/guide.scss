@@ -232,7 +232,19 @@ ul.colors {
 		}
 	}
 
-	> li {
+	&.compact {
+		.color-group {
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+
+			> :not(:last-child) {
+				margin-right: 4px;
+			}
+		}
+	}
+
+	.color-group {
 		display: inline-block;
 		border: 1px solid rgba(black, .2);
 		background-color: rgba(black, .05);
@@ -241,7 +253,9 @@ ul.colors {
 		font-size: 16px;
 
 		> * { vertical-align: middle }
-		> span:not(.cat) { @include colored-square(16px, 1px) }
+		.color {
+			@include colored-square(16px, 1px)
+		}
 	}
 }
 
