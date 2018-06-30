@@ -160,7 +160,7 @@ class PostController extends Controller {
 
 				if ($suggested){
 					$response['button'] = Posts::getPostReserveButton($this->post->reserver, false);
-					$response['pendingReservations'] = Users::getPendingReservationsHTML(User::find($suggested ? $this->post->reserved_by : $old_reserver), $suggested ? true : $this->is_user_reserver);
+					$response['pendingReservations'] = User::find($suggested ? $this->post->reserved_by : $old_reserver)->getPendingReservationsHTML($suggested ? true : $this->is_user_reserver);
 				}
 				else $response['li'] = $this->post->getLi();
 
@@ -193,7 +193,7 @@ class PostController extends Controller {
 
 					$response = [ 'li' => $this->post->getLi() ];
 					if ($from_profile)
-						$response['pendingReservations'] = Users::getPendingReservationsHTML(User::find($old_reserver), $this->is_user_reserver);
+						$response['pendingReservations'] = User::find($old_reserver)->getPendingReservationsHTML($this->is_user_reserver);
 
 					Response::done($response);
 				}

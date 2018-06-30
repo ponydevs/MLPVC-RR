@@ -1,0 +1,19 @@
+{# @var session \App\Models\Session #}
+{# @var browser_class string #}
+{# @var browser_title string #}
+{# @var is_current bool #}
+<li class="browser-{{ browser_class }}" id="session-{{ session.id }}">
+<span class="browser">{{ session.browser_name is not empty ? session.browser_name ~ ' ' ~ session.browser_ver : 'Unrecognized browser' }}</span>
+{% if session.platform is not empty %}
+<span class='platform'>on <strong>{{ session.platform }}</strong></span>
+{% endif %}
+<div class='button-block'>
+	<button class='typcn remove {{ is_current ? 'typcn-arrow-back' : 'typcn-trash red' }}'>{{ is_current ? 'Sign out' : 'Delete' }}</button>
+	{% if session.user_agent is not empty and permission('developer') %}
+		<button class='darkblue typcn typcn-eye useragent' data-agent='{{ session.user_agent | apos_encode }}'>UA</button>
+		<a class='btn link typcn typcn-chevron-right' href='/about/browser/{{ session.id }}'>Debug</a>
+	{% endif %}
+</div>
+<span class="created">Created: {{ time_tag(session.created) }}</span>
+<span class="used">{{ not is_current ? 'Last used: ' ~ time_tag(session.last_visit) : '<em>Current session</em>' }}</span>
+</li>

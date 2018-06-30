@@ -7,6 +7,7 @@ use App\Cookie;
 use App\CoreUtils;
 use App\JSON;
 use App\Time;
+use App\Twig;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -130,6 +131,16 @@ class Session extends NSModel {
 			return '';
 
 		return ' <span id="session-update-indicator" title="Updating your session"></span>';
+	}
+
+	public function getProfileCard(bool $is_current){
+		$data = [
+			'session' => $this,
+			'browser_class' => CoreUtils::browserNameToClass($this->browser_name),
+			'is_current' => $is_current,
+		];
+
+		return Twig::$env->render('user/_profile_session.html.twig', $data);
 	}
 
 	public function generate_id(){

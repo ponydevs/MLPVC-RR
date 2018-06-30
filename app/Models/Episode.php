@@ -84,9 +84,10 @@ class Episode extends NSModel implements LinkableInterface {
 		return Episodes::shortenTitlePrefix($this->title);
 	}
 
-	private $rel_appearances = false;
+	private $rel_appearances;
+	/** @return Appearance[] */
 	public function get_related_appearances(){
-		if ($this->rel_appearances !== false)
+		if ($this->rel_appearances !== null)
 			return $this->rel_appearances;
 
 		$tag_ids = $this->getTagIDs();

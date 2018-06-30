@@ -207,21 +207,14 @@ class UserSettingForm {
 		$input = $this->_getInput($map['type'], $map['options'] ?? []);
 		if ($input === '')
 			return '';
-		$save_btn = $this->_can_save ? '<button class="save typcn typcn-tick green" disabled>Save</button>' : '';
-		$content = "<span>{$map['options']['desc']}</span>";
-		if ($map['type'] === 'checkbox')
-			$content = "$input $content";
-		else $content .= " $input";
-		if (Auth::$signed_in)
-			$action = "action='/user/{$this->_current_user->id}/preference/{$this->_setting_name}'";
-		else $action = '';
-		echo <<<HTML
-			<form $action>
-				<label>
-					$content
-					$save_btn
-				</label>
-			</form>
-HTML;
+
+		echo Twig::$env->render('user/_setting_form.html.twig', [
+			'map' => $map,
+			'input' => $input,
+			'can_save' => $this->_can_save,
+			'setting_name' => $this->_setting_name,
+			'current_user' => $this->_current_user,
+			'signed_in' => Auth::$signed_in,
+		]);
 	}
 }

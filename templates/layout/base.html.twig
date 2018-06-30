@@ -1,3 +1,4 @@
+{# @var view_name string #}
 {# @var view_class string #}
 {# @var signed_in bool #}
 {# @var current_user \App\Models\User #}
@@ -10,10 +11,12 @@
 <body>
 	<header>
 		{% include 'layout/_header.html.twig' %}
+
 	</header>
 
 	<aside id="sidebar">
 		{% include 'layout/_sidebar.html.twig' %}
+
 	</aside>
 
 	<div id="above-content">

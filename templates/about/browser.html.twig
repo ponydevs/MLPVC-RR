@@ -15,11 +15,15 @@
 		<p>You're debugging session <strong>{{ session.id }}</strong> (belongs to {{ session.user.toAnchor }})</p>
 	</div>
 {% endif %}
-	<?=CoreUtils::notice('info','Browser recognition testing page',"The following page is used to make sure that the site's browser detection script works as it should. If you're seeing a browser and/or operating system that's different from what you're currently using, please <a class='send-feedback'>let us know.</a>")?>
+
+	<div class="notice info">
+		<label>Browser recognition testing page</label>
+		<p>The following page is used to make sure that the site's browser detection script works as it should. If you're seeing a browser and/or operating system that's different from what you're currently using, please <a class='send-feedback'>let us know.</a></p>
+	</div>
 
 	<section>
 		<h2>Your User Agent string</h2>
-		<p><code><?=!empty($browser['user_agent']) ? CoreUtils::escapeHTML($browser['user_agent']) : '&lt;empty&gt;'?></code></p>
+		<p><code>{{ (browser.user_agent is empty ? '<empty>' : browser.user_agent) | escape }}</code></p>
 	</section>
 </div>
 {% endblock %}

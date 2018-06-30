@@ -6,7 +6,6 @@
 		<h2>Related <a href='/cg'>Color Guide</a> {{ pages }}</h2>
 		<ul>
 		{% for p in current_episode.get_related_appearances %}
-			{# @var p \App\Models\Appearance #}
 			<li>{{ hide_previews ? p.toAnchor : p.toAnchorWithPreview }}</li>
 		{% endfor %}
 		</ul>

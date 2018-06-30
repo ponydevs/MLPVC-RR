@@ -21,6 +21,7 @@ use App\Posts;
 use App\RegExp;
 use App\Response;
 use App\Time;
+use App\Twig;
 use App\UserPrefs;
 use App\Users;
 
@@ -566,192 +567,55 @@ class User extends AbstractUser implements LinkableInterface {
 	}
 
 	/**
-	 * @param bool $sameUser
-	 * @param bool $isMember
+	 * @param bool $same_user
+	 * @param bool $user_is_member
 	 *
 	 * @return string
 	 */
-	public function getPendingReservationsHTML($sameUser, $isMember = true):string {
-		$visitorStaff = Permission::sufficient('staff');
-		$staffVisitingMember = $visitorStaff && $isMember;
-		$YouHave = self::YOU_HAVE[(int)$sameUser];
-		$PrivateSection = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['staff']:'';
+	public function getPendingReservationsHTML(bool $same_user, bool $user_is_member = true):string {
+		$visitor_is_staff = Permission::sufficient('staff');
+		$staff_visiting_member = $visitor_is_staff && $user_is_member;
+		$data = [
+			'same_user' => $same_user,
+			'user_is_member' => $user_is_member,
+			'staff_visiting_member' => $staff_visiting_member,
+		];
 
-		if ($staffVisitingMember || ($isMember && $sameUser)){
-			$PendingReservations = $this->_getPendingReservations();
-			$PendingRequestReservations = $this->_getPendingRequestReservations();
-			$TotalPending = \count($PendingReservations)+ \count($PendingRequestReservations);
-			$hasPending = $TotalPending > 0;
+		if ($staff_visiting_member || ($user_is_member && $same_user)){
+			$pending_res = $this->_getPendingReservations();
+			$pending_req_res = $this->_getPendingRequestReservations();
+			$data['total_pending'] = \count($pending_res) + \count($pending_req_res);
+			$data['has_pending'] = $data['total_pending'] > 0;
 		}
 		else {
-			$TotalPending = 0;
-			$hasPending = false;
+			$data['total_pending'] = 0;
+			$data['has_pending'] = false;
 		}
-		$HTML = '';
-		if ($staffVisitingMember || $sameUser){
-			$gamble = $TotalPending < 4 && $sameUser ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb"><span>Suggestion</span></button>' : '';
-			$HTML .= <<<HTML
-<section class='pending-reservations'>
-<h2>{$PrivateSection}Pending reservations$gamble</h2>
-HTML;
-
-			if ($isMember){
-				$pendingCountReadable = ($hasPending>0?"<strong>$TotalPending</strong>":'no');
-				$posts = CoreUtils::makePlural('reservation', $TotalPending);
-				$HTML .= "<span>$YouHave $pendingCountReadable pending $posts";
-				if ($hasPending)
-					$HTML .= ' which ha'.($TotalPending!==1?'ve':'s')."n't been marked as finished yet";
-				$HTML .= '.';
-				if ($sameUser)
-					$HTML .= " Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your pending reservations.";
-				$HTML .= '</span>';
-
-				if ($hasPending){
-					/** @var $Posts Post[] */
-					// TODO Make sure this still works
-					$Posts = array_merge(
-						$PendingReservations, RETURN_ARRANGED,
-						array_filter(array_values($PendingRequestReservations))
-					);
-					usort($Posts, function(Post $a, Post $b){
-						$a = strtotime($a->posted_at);
-						$b = strtotime($b->posted_at);
-
-						return $b <=> $a;
-					});
-					$LIST = '';
-					foreach ($Posts as $Post){
-						$postLink = $Post->toURL();
-						$postAnchor = $Post->toAnchor();
-						$label = !empty($Post->label) ? "<span class='label'>{$Post->label}</span>" : '';
-						$actionCond = $Post->is_request && !empty($Post->reserved_at);
-						$posted = Time::tag($actionCond ? $Post->reserved_at : $Post->posted_at);
-						$PostedAction = $actionCond ? 'Reserved' : 'Posted';
-						$contestable = $Post->isOverdue() ? Post::CONTESTABLE : '';
-						$broken = $Post->broken ? Post::BROKEN : '';
-						$fixbtn = $Post->broken ? "<button class='darkblue typcn typcn-spanner fix'>Fix</button>" : '';
-
-						$LIST .= <<<HTML
-<li>
-	<div class='image screencap'>
-		<a href='$postLink'><img src='{$Post->preview}'></a>
-	</div>
-	$label
-	<em>$PostedAction under $postAnchor $posted</em>
-	$contestable
-	$broken
-	<div>
-		$fixbtn
-		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
-		<button class='red typcn typcn-user-delete cancel'>Cancel</button>
-	</div>
-</li>
-HTML;
-					}
-					$HTML .= "<ul>$LIST</ul>";
-				}
-			}
-			else {
-				$HTML .= '<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>';
-			}
-
-			$HTML .= '</section>';
+		if (($staff_visiting_member || $same_user) && $user_is_member && $data['has_pending']){
+			$data['posts'] = array_merge(
+				$pending_res,
+				array_filter(array_values($pending_req_res))
+			);
+			usort($data['posts'], function(Post $a, Post $b){
+				return $b->posted_at->getTimestamp() <=> $a->posted_at->getTimestamp();
+			});
 		}
-		return $HTML;
-	}
 
-	public const NOT_APPROVED_POST_COLS = 'id, season, episode, deviation_id';
-
-	private function _getNotApprovedPostArgs(bool $requests){
-		return [
-			'all', [
-				'conditions' => [
-					'requested_by IS '.($requests?' NOT':'').' NULL AND reserved_by = ? AND deviation_id IS NOT NULL AND "lock" IS NOT true',
-					$this->id,
-				],
-			],
-		];
+		return Twig::$env->render('user/_profile_pending_reservations.html.twig', $data);
 	}
 
 	/**
-	 * @return Post[] All requests that have been finished by the user but not yet accepted into the club
+	 * @return Post[]
 	 */
-	private function _getNotApprovedRequests(){
-		return Post::find(...$this->_getNotApprovedPostArgs(true));
-	}
-
-	/**
-	 * @return Post[] All reservations that have been finished by the user but not yet accepted into the club
-	 */
-	private function _getNotApprovedReservations(){
-		return Post::find(...$this->_getNotApprovedPostArgs(false));
-	}
-
-	public function getAwaitingApprovalHTML(bool $sameUser, bool $wrap = WRAP):string {
-		/** @var $AwaitingApproval Post[] */
-		$AwaitingApproval = array_merge(
-			$this->_getNotApprovedRequests(),
-			$this->_getNotApprovedReservations()
-		);
-		$AwaitCount = \count($AwaitingApproval);
-		$them = $AwaitCount!==1?'them':'it';
-		$YouHave = self::YOU_HAVE[(int)$sameUser];
-		$privacy = $sameUser? Users::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
-		$HTML = "<h2>{$privacy}Vectors waiting for approval</h2>";
-		if ($sameUser)
-			$HTML .= "<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it can be marked as \"approved\", which gives it a green check mark, indicating that it's most likely free of any errors.</p>";
-		$youHaveAwaitCount = "$YouHave ".(!$AwaitCount?'no':"<strong>$AwaitCount</strong>");
-		$images = CoreUtils::makePlural('image', $AwaitCount);
-		$append = !$AwaitCount
-			? '.'
-			: ', listed below.'.(
-				$sameUser
-				? " Please submit $them to the group gallery as soon as possible to have $them spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making $them easier to find for everyone.".(
-					$AwaitCount>10
-					? " You seem to have a large number of images that have not been approved yet, please submit them to the group soon if you haven't already."
-					: ''
-				)
-				:''
-			).'</p><p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the '.CoreUtils::makePlural('image',$AwaitCount).' in case we forgot to click it ourselves after accepting it.';
-		$HTML .= <<<HTML
-			<p>{$youHaveAwaitCount} $images waiting to be submitted to and/or approved by the group$append</p>
-HTML;
-		if ($AwaitCount){
-			if (Permission::sufficient('staff')){
-				$open_subs = $this->getOpenSubmissionsURL();
-				$HTML .= <<<HTML
-	<div class="button-block">
-		<a class="btn link typcn typcn-arrow-forward" href="$open_subs" target="_blank" rel="noopener">View open submissions</a>
-	</div>
-HTML;
-
-			}
-
-			$HTML .= '<ul id="awaiting-deviations">';
-			foreach ($AwaitingApproval as $Post){
-				$url = "http://fav.me/{$Post->deviation_id}";
-				$postLink = $Post->toURL();
-				$postAnchor = $Post->toAnchor();
-				$checkBtn = Permission::sufficient('member') ? "<button class='green typcn typcn-tick check'>Check</button>" : '';
-
-				$HTML .= <<<HTML
-<li id="{$Post->getID()}">
-	<div class="image deviation">
-		<div class="post-deviation-promise image-promise" data-post="{$Post->getID()}"></div>
-	</div>
-	<span class="label hidden"><a href="$url" target="_blank" rel="noopener"></a></span>
-	<em>Posted under $postAnchor</em>
-	<div>
-		<a href='$postLink' class='btn blue typcn typcn-arrow-forward'>View</a>
-		$checkBtn
-	</div>
-</li>
-HTML;
-			}
-			$HTML .= '</ul>';
-		}
-
-		return $wrap ? "<section class='awaiting-approval'>$HTML</section>" : $HTML;
+	public function getPostsAwaitingApproval():array {
+		/** @var $awaiting_approval Post[] */
+		$awaiting_approval = DB::$instance
+			->where('reserved_by', $this->id)
+			->where('deviation_id IS NOT NULL')
+			->where('lock', false)
+			->orderByLiteral(Post::ORDER_BY_POSTED_AT)
+			->query('posts');
+		return $awaiting_approval;
 	}
 
 	public function getPCGBreadcrumb($active = false){

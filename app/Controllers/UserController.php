@@ -6,6 +6,7 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
 use App\DeviantArt;
+use App\File;
 use App\GlobalSettings;
 use App\HTTP;
 use App\Input;
@@ -31,84 +32,125 @@ class UserController extends Controller {
 	}
 
 	public function profile($params){
-		global $USERNAME_REGEX, $sameUser;
+		global $USERNAME_REGEX;
 
 		$un = $params['name'] ?? null;
 
-		$MSG = null;
-		$SubMSG = null;
+		$error = null;
+		$sub_error = null;
 		if ($un === null){
 			if (Auth::$signed_in)
-				$User = Auth::$user;
-			else $MSG = 'Sign in to view your settings';
+				$user = Auth::$user;
+			else $error = 'Sign in to view your settings';
 		}
-		else $User = Users::get($un, 'name');
+		else $user = Users::get($un, 'name');
 
-		if (empty($User)){
-			if (Auth::$signed_in && isset($User) && $User === false){
+		if (empty($user)){
+			if (Auth::$signed_in && isset($user) && $user === false){
 				if (strpos(Auth::$session->scope, 'browse') !== false){
-					$MSG = 'User does not exist';
-					$SubMSG = 'Check the name for typos and try again';
+					$error = 'user does not exist';
+					$sub_error = 'Check the name for typos and try again';
 				}
 				else {
-					$MSG = 'Could not fetch user information';
-					$SubMSG = 'Your session is missing the "browse" scope';
+					$error = 'Could not fetch user information';
+					$sub_error = 'Your session is missing the "browse" scope';
 				}
 			}
-			else if ($MSG === null){
-				$MSG = 'Local user data missing';
+			else if ($error === null){
+				$error = 'Local user data missing';
 				if (!Auth::$signed_in){
 					$exists = 'exists on DeviantArt';
 					if ($un !== null)
 						$exists = "<a href='https://www.deviantart.com/".CoreUtils::aposEncode(strtolower($un))."'>$exists</a>";
-					$SubMSG = "If this user $exists, sign in to import their details.";
+					$sub_error = "If this user $exists, sign in to import their details.";
 				}
 			}
-			$canEdit = $sameUser = $devOnDev = false;
+			$can_edit = $same_user = $dev_on_dev = false;
 		}
 		else {
-			$pagePath = "/@{$User->name}";
+			$pagePath = "/@{$user->name}";
 			CoreUtils::fixPath($pagePath);
-			$sameUser = Auth::$signed_in && $User->id === Auth::$user->id;
-			$canEdit = !$sameUser && Permission::sufficient('staff') && Permission::sufficient($User->role);
-			$devOnDev = Permission::sufficient('developer') && Permission::sufficient('developer', $User->role);
+			$same_user = Auth::$signed_in && $user->id === Auth::$user->id;
+			$can_edit = !$same_user && Permission::sufficient('staff') && Permission::sufficient($user->role);
+			$dev_on_dev = Permission::sufficient('developer') && Permission::sufficient('developer', $user->role);
 		}
 
 		$CurrentSessionID = null;
-		if ($MSG !== null)
+		if ($error !== null)
 			HTTP::statusCode(404);
 		else {
-			if ($sameUser)
+			if ($same_user)
 				$CurrentSessionID = Auth::$session->id;
-			$Sessions = $User->sessions;
+			$sessions = $user->sessions;
 		}
 
+		$is_staff = Permission::sufficient('staff');
+
+		if ($same_user || $is_staff){
+			if (\count($user->name_changes) > 0){
+				$old_names = [];
+				foreach ($user->name_changes as $entry)
+					$old_names[] = $entry->old;
+
+				$old_names = implode(', ', $old_names);
+			}
+		}
+
+		$contribs = $user->getCachedContributions();
+		$contrib_cache_duration = Users::getContributionsCacheDuration();
+
+		if ($can_edit){
+			$export_roles = [];
+			$roles_copy = Permission::ROLES_ASSOC;
+			unset($roles_copy['guest']);
+			foreach ($roles_copy as $name => $label){
+				if (Permission::insufficient($name, Auth::$user->role))
+					continue;
+				$export_roles[$name] = $label;
+			}
+		}
+		else if ($dev_on_dev)
+			$export_roles = Permission::ROLES_ASSOC;
+
+		$pcg_section_is_private = UserPrefs::get('p_hidepcg', $user);
+		$list_pcgs = !$pcg_section_is_private || $same_user || $is_staff;
+		if ($list_pcgs)
+			$personal_color_guides = $user->pcg_appearances;
+
 		$settings = [
-			'title' => $MSG === null ? ($sameUser?'Your':CoreUtils::posess($User->name)).' '.($sameUser || $canEdit?'account':'profile') : 'Account',
+			'title' => $error === null ? ($same_user?'Your':CoreUtils::posess($user->name)).' '.($same_user || $can_edit?'account':'profile') : 'Account',
 			'noindex' => true,
 			'css' => [true],
 			'js' => ['jquery.fluidbox',true],
 			'og' => [
-				'image' => $User ? $User->avatar_url : null,
-				'description' => $User ? CoreUtils::posess($User->name)." profile on the MLP-VectorClub's website" : null,
+				'image' => $user ? $user->avatar_url : null,
+				'description' => $user ? CoreUtils::posess($user->name)." profile on the MLP-VectorClub's website" : null,
 			],
 			'import' => [
-				'User' => $User ?? null,
-				'canEdit' => $canEdit,
-				'sameUser' => $sameUser,
-				'devOnDev' => $devOnDev,
-				'Sessions' => $Sessions ?? null,
+				'user' => $user ?? null,
+				'discord_membership' => $user->discord_member,
+				'can_edit' => $can_edit,
+				'same_user' => $same_user,
+				'is_staff' => $is_staff,
+				'dev_on_dev' => $dev_on_dev,
+				'sessions' => $sessions ?? null,
+				'da_logo' => str_replace(' fill="#FFF"','', File::get(APPATH.'img/da-logo.svg')),
+				'old_names' => $old_names ?? null,
+				'contribs' => $contribs,
+				'contrib_cache_duration' => $contrib_cache_duration,
+				'export_roles' => $export_roles ?? null,
+				'section_is_private' => $pcg_section_is_private,
+				'list_pcgs' => $list_pcgs,
+				'personal_color_guides' => $personal_color_guides ?? null,
 			],
 		];
-		if ($CurrentSessionID !== null)
-			$settings['import']['CurrentSessionID'] = $CurrentSessionID;
-		if ($MSG !== null)
-			$settings['import']['MSG'] = $MSG;
-		if ($SubMSG !== null)
-			$settings['import']['SubMSG'] = $SubMSG;
-		if ($canEdit || $devOnDev)
+		if ($error !== null)
+			$settings['import']['error'] = $error;
+		if ($sub_error !== null)
+			$settings['import']['sub_error'] = $sub_error;
+		if ($can_edit || $dev_on_dev)
 			$settings['js'][] = 'pages/user/manage';
-		$showSuggestions = $sameUser;
+		$showSuggestions = $same_user;
 		if ($showSuggestions){
 			$settings['js'][] = 'pages/user/suggestion';
 			$settings['css'][] = 'pages/user/suggestion';

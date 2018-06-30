@@ -166,20 +166,20 @@ class View {
 				$bc = (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'));
 				if ($this->method !== 'list'){
 					/** @var $User \App\Models\User */
-					$User = $scope['User'];
-					if ($User instanceof User){
+					$user = $scope['user'];
+					if ($user instanceof User){
 						switch ($this->method){
 							case 'colorguide':
-								return $User->getPCGBreadcrumb(true);
+								return $user->getPCGBreadcrumb(true);
 							case 'pcgslots':
-								$bc = $User->getPCGBreadcrumb();
+								$bc = $user->getPCGBreadcrumb();
 								$bc->end()->setChild(
 									 new NavBreadcrumb('Slot History', null, true)
 								);
 								return $bc;
 						}
 
-						$subbc = new NavBreadcrumb($User->name, $User->toURL());
+						$subbc = new NavBreadcrumb($user->name, $user->toURL());
 					}
 					else $subbc = new NavBreadcrumb('Profile',null);
 					switch ($this->method){

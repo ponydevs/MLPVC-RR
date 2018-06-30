@@ -32,7 +32,7 @@ use App\Pagination;
 use App\Permission;
 use App\RegExp;
 use App\Response;
-use App\TwigHelper;
+use App\Twig;
 use App\UploadedFile;
 use App\UserPrefs;
 use App\Appearances;

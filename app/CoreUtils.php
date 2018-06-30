@@ -340,7 +340,7 @@ class CoreUtils {
 			$scope['notices'] = Notice::list();
 		}
 
-		TwigHelper::display($view, $scope);
+		Twig::display($view, $scope);
 	}
 
 	public static function processOpenGraph(array $options, array $defaults = []):array {
@@ -822,7 +822,7 @@ class CoreUtils {
 			$data['commit_time'] = Time::tag($commit_time);
 		}
 
-		return TwigHelper::$env->render('layout/_footer_git_info.html.twig', $data);
+		return Twig::$env->render('layout/_footer_git_info.html.twig', $data);
 	}
 
 	/**
@@ -1365,7 +1365,7 @@ HTML;
 	}
 
 	public static function getSidebarLoggedIn():string {
-		return TwigHelper::$env->render('layout/_sidebar_logged_in.html.twig', Auth::to_array());
+		return Twig::$env->render('layout/_sidebar_logged_in.html.twig', Auth::to_array());
 	}
 
 	public static function callScript(string $name, array $args = [], &$output = null){

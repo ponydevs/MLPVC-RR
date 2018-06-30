@@ -5,13 +5,13 @@
 	<div class="unfinished">
 		{% set make_request = can_request ? '<button id="request-btn" class="green">Make a request</button>' : '' %}
 		<h2>List of Requests{{ make_request }}</h2>
+		{# @var posts \App\Models\Post[] #}
 		{% for g, posts in arranged.unfinished %}
 			<div class='group' id='group-{{ g }}'>
 				<h3>{{ constant('App\\Models\\Post::REQUEST_TYPES')[g] }}</h3>
 				<ul>
 				{%- if posts is not empty %}
 					{% for post in posts %}
-						{# @var post \App\Models\Post #}
 						{{ post.getLi(false, false, lazyload ?? false) }}
 					{% endfor %}
 				{% endif -%}

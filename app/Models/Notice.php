@@ -24,10 +24,6 @@ class Notice extends NSModel {
 		'caution' => 'Caution (yellow)',
 	];
 
-	public function __toString():string {
-		return "<div class='notice {$this->type}'>{$this->message_html}</div>";
-	}
-
 	/**
 	 * @return Notice[]
 	 */

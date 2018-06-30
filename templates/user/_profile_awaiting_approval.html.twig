@@ -1,0 +1,58 @@
+{# @var awaiting_approval \App\Models\Post[] #}
+{# @var same_user bool #}
+{% if wrap is not defined or wrap %}
+<section class='awaiting-approval'>
+{% endif %}
+	<h2>{{ same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').public : '' }}Vectors waiting for approval</h2>
+	{% if same_user %}
+		<p>After you finish an image and submit it to the group gallery, an admin will check your vector and may ask you to fix some issues on your image, if any. After an image is accepted to the gallery, it will be marked as "approved", which gives it a green check mark, indicating that it's most likely free of any errors.</p>
+	{% endif %}
+	{% set is_member = permission('member') %}
+	{% set You_have = same_user ? 'You have' : 'This use has' %}
+	{% set await_count = awaiting_approval | length %}
+	{% set images = make_plural('image', await_count) %}
+	{% set waiting = 'waiting to be submitted to and/or approved by the group' %}
+	{% if await_count %}
+		<p>
+			{{ You_have }} <strong>#{await_count}</strong> {{ images }} {{ waiting }}, listed below.
+			{% if same_user %}
+				{% set them = await_count != 1 ? 'them' : 'it' %}
+				Please submit {{ them }} to the group gallery as soon as possible to have {{ them }} spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making {{ them }} easier to find for everyone.
+			{% endif %}
+		</p>
+		{% if is_member %}
+		<p>You can click the <strong class="color-green"><span class="typcn typcn-tick"></span> Check</strong> button below the {{ images }} in case we forgot to click it ourselves after accepting it.</p>
+		{% endif %}
+	{% else %}
+		<p>{{ You_have }} no {{ images }} {{ waiting }}.</p>
+	{% endif %}
+
+	{% if await_count %}
+		{% if permission('staff') %}
+		<div class="button-block">
+			<a class="btn link typcn typcn-arrow-forward" href="{{ user.getOpenSubmissionsURL }}" target="_blank" rel="noopener">View open submissions</a>
+		</div>
+		{% endif %}
+
+		<ul id="awaiting-deviations">
+			{% for post in awaiting_approval %}
+			<li id="{{ post.getID }}">
+				<div class="image deviation">
+					<div class="post-deviation-promise image-promise" data-post="{{ post.getID }}"></div>
+				</div>
+				<span class="label hidden"><a href="http://fav.me/{{ post.deviation_id }}" target="_blank" rel="noopener"></a></span>
+				<em>Posted under {{ post.toAnchor }}</em>
+				<div>
+					<a href='{{ post.toURL }}' class='btn blue typcn typcn-arrow-forward'>View</a>
+					{% if is_member %}
+					<button class='green typcn typcn-tick check'>Check</button>
+					{% endif %}
+				</div>
+			</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+
+{% if wrap is not defined or wrap %}
+</section>
+{% endif %}

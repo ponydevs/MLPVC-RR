@@ -23,18 +23,18 @@ class AboutController extends Controller {
 	}
 
 	public function browser($params){
-		$agent_string = null;
+		$user_agent = null;
 		if (isset($params['session'])){
 			if (Permission::insufficient('developer'))
 				CoreUtils::noPerm();
 			$session = Session::find($params['session']);
 			if (!empty($session))
-				$agent_string = $session->user_agent;
+				$user_agent = $session->user_agent;
 		}
 		else $session = null;
-		$browser = CoreUtils::detectBrowser($agent_string);
+		$browser = CoreUtils::detectBrowser($user_agent);
 		if (empty($browser['platform']))
-			CoreUtils::error_log('Could not find platform based on the following UA string: '.preg_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $agent_string));
+			CoreUtils::error_log('Could not find platform based on the following UA string: '.preg_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $user_agent));
 		if (+empty($browser['browser_name']))
 			$browser['browser_class'] = CoreUtils::browserNameToClass($browser['browser_name']);
 
@@ -52,7 +52,6 @@ class AboutController extends Controller {
 			'css' => [true],
 			'noindex' => true,
 			'import' => [
-				'agent_string' => $agent_string,
 				'session' => $session ?? null,
 				'browser' => $browser,
 			],

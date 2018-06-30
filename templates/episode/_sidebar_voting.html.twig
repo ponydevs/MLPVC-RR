@@ -23,6 +23,6 @@
 			<p><em>Sign in above to cast your vote!</em></p>
 		{%- endif %}
 	{%- else -%}
-		<p>Your rating: {{ make_plural('muffin', user_vote.vote, true) }}</p>
+		<p>Your rating: {{ make_plural('muffin', user_vote.vote, constant('PREPEND_NUMBER')) }}</p>
 	{%- endif %}
 {%- endif %}

@@ -18,7 +18,7 @@ use App\PostgresDbWrapper;
 
 // Maintenance mode \\
 if (defined('MAINTENANCE_START'))
-	\App\TwigHelper::display('error/fatal', [ 'errcause' => 'maintenance' ]);
+	\App\Twig::display('error/fatal', ['errcause' => 'maintenance' ]);
 
 // Database connection & Required Functionality Checking \\
 try {
@@ -27,7 +27,7 @@ try {
 		throw new RuntimeException("Short open tags (&lt;?) are disabled\nUncomment/add the line <strong>short_open_tag=On</strong> $inipath to fix");
 }
 catch (Exception $e){
-	\App\TwigHelper::display('error/fatal', [ 'errcause' => 'libmiss' ]);
+	\App\Twig::display('error/fatal', ['errcause' => 'libmiss' ]);
 }
 
 try {
@@ -35,5 +35,5 @@ try {
 	DB::$instance = PostgresDbWrapper::withConnection(DB_NAME, $conn->connection);
 }
 catch (Exception $e){
-	\App\TwigHelper::display('error/fatal', [ 'errcause' => 'db' ]);
+	\App\Twig::display('error/fatal', ['errcause' => 'db' ]);
 }

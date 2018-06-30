@@ -1,0 +1,29 @@
+{# @var user \App\Models\User #}
+{# @var same_user bool #}
+{# @var contribs array #}
+{# @var contrib_cache_duration string #}
+{% macro process_contrib(key, user, amount, what_singular, append = null) %}
+	{% set what = make_plural(what_singular, amount) ~ append %}
+	{% set item %}
+	<span class='amt'>{{ amount }}</span> <span class='expl'>{{ what }}</span>
+	{% endset %}
+	{% set can_see = key != 'requests' or same_user or permission('staff') %}
+	{% if key is not numeric and can_see %}
+		{% set item = "<a href='#{user.toURL}/contrib/#{key}'>#{item}</a>" %}
+	{% endif %}
+	<li>{{ item }}</li>
+{% endmacro %}
+{% set privacy = same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').public : '' %}
+{% spaceless %}
+{% if contribs is not empty %}
+<section class='contributions'>
+	<h2>{{ privacy }}Contributions <span class='typcn typcn-info-large' title='This data is updated every {{ contrib_cache_duration }}'></span></h2>
+	<ul>
+	{% import _self as profile_contributions %}
+	{% for key, contrib in contribs %}
+		{{ profile_contributions.process_contrib(key, user, contrib[0], contrib[1], contrib[2] ?? null) }}
+	{% endfor %}
+	</ul>
+</section>
+{% endif %}
+{% endspaceless %}

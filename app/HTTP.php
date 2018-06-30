@@ -194,7 +194,7 @@ class HTTP {
 	 */
 	public static function softRedirect(string $url = '/', string $message = 'Redirecting'):void {
 		header("Refresh: 0;url=$url");
-		TwigHelper::display('soft_redirect', [ 'message' => $message ]);
+		Twig::display('soft_redirect', ['message' => $message ]);
 	}
 
 }

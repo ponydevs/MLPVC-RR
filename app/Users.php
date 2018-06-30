@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Exceptions\CURLRequestException;
 
 class Users {
+	public const RESERVATION_LIMIT = 4;
+
 	// Global cache for storing user details
 	public static $_USER_CACHE = [];
 	public static $_PREF_CACHE = [];
@@ -122,42 +124,11 @@ class Users {
 			->where('deviation_id IS NULL')
 			->count('posts');
 
-		$overTheLimit = isset($resserved_count) && $resserved_count >= 4;
+		$overTheLimit = !empty($resserved_count) && $resserved_count >= self::RESERVATION_LIMIT;
 		if ($return_as_bool)
 			return $overTheLimit;
 		if ($overTheLimit)
 			Response::fail("You've already reserved {$resserved_count} images, and you can't have more than 4 pending reservations at a time. You can review your reservations on your <a href='/user'>Account page</a>, finish at least one of them before trying to reserve another image.");
-	}
-
-	/**
-	 * Parse session array for user page
-	 *
-	 * @param Session $Session
-	 * @param bool $current
-	 */
-	public static function renderSessionLi(Session $Session, bool $current = false){
-		$browserClass = CoreUtils::browserNameToClass($Session->browser_name);
-		$browserTitle = !empty($Session->browser_name) ? "{$Session->browser_name} {$Session->browser_ver}" : 'Unrecognized browser';
-		$platform = !empty($Session->platform) ? "<span class='platform'>on <strong>{$Session->platform}</strong></span>" : '';
-
-		$signoutText = !$current ? 'Delete' : 'Sign out';
-		$buttons = "<button class='typcn remove ".(!$current?'typcn-trash red':'typcn-arrow-back')."'>$signoutText</button>";
-		if (Permission::sufficient('developer') && !empty($Session->user_agent)){
-			$buttons .= "<button class='darkblue typcn typcn-eye useragent' data-agent='".CoreUtils::aposEncode($Session->user_agent)."'>UA</button>".
-				"<a class='btn link typcn typcn-chevron-right' href='/about/browser/{$Session->id}'>Debug</a>";
-		}
-
-		$firstuse = Time::tag($Session->created);
-		$lastuse = !$current ? 'Last used: '.Time::tag($Session->last_visit) : '<em>Current session</em>';
-		echo <<<HTML
-<li class="browser-$browserClass" id="session-{$Session->id}">
-<span class="browser">$browserTitle</span>
-$platform
-<div class='button-block'>$buttons</div>
-<span class="created">Created: $firstuse</span>
-<span class="used">$lastuse</span>
-</li>
-HTML;
 	}
 
 	/**
@@ -206,71 +177,6 @@ HTML;
 		'private' => "<span class='typcn typcn-lock-closed color-green' title='Visible to: you'></span>",
 	];
 
-	public const YOU_HAVE = [
-		1 => 'You have',
-		0 => 'This user has',
-	];
-
-	/**
-	 * @param User $User
-	 * @param bool $sameUser
-	 * @param bool $isMember
-	 *
-	 * @return string
-	 */
-	public static function getPendingReservationsHTML($User, $sameUser, $isMember = true):string {
-		return $User->getPendingReservationsHTML($sameUser, $isMember);
-	}
-
-	public static function getPersonalColorGuideHTML(User $user, bool $sameUser, bool $wrap = WRAP):string {
-		$sectionIsPrivate = UserPrefs::get('p_hidepcg', $user);
-		if ($sectionIsPrivate && (!$sameUser && Permission::insufficient('staff')))
-			return '';
-
-		$privacy = $sameUser ? self::PROFILE_SECTION_PRIVACY_LEVEL[$sectionIsPrivate ? 'staff' : 'public'] : '';
-		$whatBtn = $sameUser ? ' <button class="personal-cg-say-what typcn typcn-info-large darkblue">What?</button>':'';
-		$HTML = "<h2>{$privacy}Personal Color Guide{$whatBtn}</h2>";
-
-		$showPrivate = $sameUser || Permission::sufficient('staff');
-		if ($showPrivate){
-			$ThisUser = $sameUser?'You':'This user';
-			$availPoints = $user->getPCGAvailablePoints(false);
-			$remainPoints = 10-($availPoints % 10);
-			$nSlots = CoreUtils::makePlural('remaining slot',floor($availPoints/10),PREPEND_NUMBER);
-			$nRequests = CoreUtils::makePlural('approved request',$remainPoints,PREPEND_NUMBER);
-			$has = $sameUser?'have':'has';
-			$is = $sameUser?'are':'is';
-			$HTML .= "<div class='personal-cg-progress'><p>$ThisUser $has $nSlots and $is $nRequests away from getting another.</p></div>";
-		}
-
-		$PersonalColorGuides = $user->pcg_appearances;
-		$hasPCG = \count($PersonalColorGuides) > 0;
-		if ($sameUser || $hasPCG){
-			$el = $hasPCG ? 'ul' : 'div';
-			$HTML .= "<$el class='personal-cg-appearances'>";
-			if ($hasPCG)
-				foreach ($PersonalColorGuides as $p)
-					$HTML .= '<li>'.$p->toAnchorWithPreview().'</li>';
-			else $HTML .= "You haven't added any appearances to your Personal Color Guide yet.";
-			$HTML .= "</$el>";
-		}
-		$Action = $sameUser ? 'Manage' : 'View';
-		$slot_hist_btn = $user->getPCGPointHistoryButtonHTML($showPrivate);
-		$gift_slot_btn = $user->getPCGSlotGiftButtonHTML();
-		$give_points_btn = $user->getPCGPointGiveButtonHTML();
-		$HTML .= <<<HTML
-<div class="button-block">
-	<a href='/@{$user->name}/cg' class='btn link typcn typcn-arrow-forward'>$Action Personal Color Guide</a>
-	$slot_hist_btn
-	$gift_slot_btn
-	$give_points_btn
-</div>
-HTML;
-		$HTML .= '';
-
-		return $wrap ? "<section class='personal-cg'>$HTML</section>" : $HTML;
-	}
-
 	public static function calculatePersonalCGNextSlot(int $postcount):int {
 		return 10-($postcount % 10);
 	}
@@ -288,28 +194,9 @@ HTML;
 		]))->out();
 	}
 
-	public static function getContributionsHTML(User $user, bool $sameUser):string {
-		$contribs = $user->getCachedContributions();
-		if (empty($contribs))
-			return '';
-
-		$privacy = $sameUser? self::PROFILE_SECTION_PRIVACY_LEVEL['public']:'';
-		$cachedur = User::CONTRIB_CACHE_DURATION / Time::IN_SECONDS['hour'];
-		$cachedur = CoreUtils::makePlural('hour', $cachedur, PREPEND_NUMBER);
-		$HTML = "<section class='contributions'><h2>{$privacy}Contributions <span class='typcn typcn-info-large' title='This data is updated every {$cachedur}'></h2>\n<ul>";
-		foreach ($contribs as $key => $contrib)
-			$HTML .= self::_processContrib($key, $user, ...$contrib);
-		return "$HTML</ul></section>";
-	}
-	private static function _processContrib($key, User $user, int $amount, string $what_singular, ?string $append = null):string {
-		$what = CoreUtils::makePlural($what_singular, $amount).(!empty($append)?" $append":'');
-		$item = "<span class='amt'>$amount</span> <span class='expl'>$what</span>";
-		$canSee = $key !== 'requests' || $user->id === (Auth::$user->id ?? null) || Permission::sufficient('staff');
-		if (!is_numeric($key) && $canSee){
-			$userlink = $user->toURL();
-			$item = "<a href='{$userlink}/contrib/$key'>$item</a>";
-		}
-		return "<li>$item</li>";
+	public static function getContributionsCacheDuration(string $unit = 'hour'):string {
+		$cache_dur = User::CONTRIB_CACHE_DURATION / Time::IN_SECONDS[$unit];
+		return CoreUtils::makePlural($unit, $cache_dur, PREPEND_NUMBER);
 	}
 
 	//const NOPE = '<em>Nope</em>';

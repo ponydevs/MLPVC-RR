@@ -24,13 +24,13 @@ use App\Models\EpisodeVideo;
 
 class EpisodeController extends Controller {
 	public function latest(){
-		$CurrentEpisode = Episodes::getLatest();
-		if (empty($CurrentEpisode))
+		$latest_episode = Episodes::getLatest();
+		if (empty($latest_episode))
 			CoreUtils::loadPage(__CLASS__.'::view', [
 				'title' => 'Home',
 			]);
 
-		Episodes::loadPage($CurrentEpisode);
+		HTTP::tempRedirect($latest_episode->toURL());
 	}
 
 	public function view($params){

@@ -73,7 +73,7 @@ class Posts {
 	public static function getMostRecentList($wrap = WRAP):string {
 		$recent_posts = self::getRecentPosts();
 
-		return TwigHelper::$env->render('admin/_most_recent_posts.html.twig', [ 'recent_posts' => $recent_posts, 'wrap' => $wrap ]);
+		return Twig::$env->render('admin/_most_recent_posts.html.twig', ['recent_posts' => $recent_posts, 'wrap' => $wrap ]);
 	}
 
 	/**
@@ -240,7 +240,7 @@ class Posts {
 	 * @throws \Exception
 	 */
 	public static function getRequestsSection(?array $arranged = null, bool $lazyload = false){
-		return TwigHelper::$env->render('episode/_requests.html.twig', [
+		return Twig::$env->render('episode/_requests.html.twig', [
 			'arranged' => $arranged,
 			'current_user' => Auth::$user,
 			'lazyload' => $lazyload,
@@ -257,7 +257,7 @@ class Posts {
 	 * @return string|array
 	 */
 	public static function getReservationsSection(?array $arranged = null, bool $lazyload = false){
-		return TwigHelper::$env->render('episode/_reservations.html.twig', [
+		return Twig::$env->render('episode/_reservations.html.twig', [
 			'arranged' => $arranged,
 			'current_user' => Auth::$user,
 			'lazyload' => $lazyload,

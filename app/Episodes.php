@@ -204,7 +204,7 @@ class Episodes {
 	 * @return string
 	 */
 	public static function getVideosHTML(Episode $Episode, bool $wrap = WRAP):string {
-		return TwigHelper::$env->render('episode/_watch.html.twig', [ 'current_episode' => $Episode, 'wrap' => $wrap ]);
+		return Twig::$env->render('episode/_watch.html.twig', ['current_episode' => $Episode, 'wrap' => $wrap ]);
 	}
 
 	/**
@@ -272,11 +272,11 @@ HTML;
 	 * @return string
 	 */
 	public static function getSidebarVoting(Episode $Episode):string {
-		return TwigHelper::$env->render('episode/_sidebar_voting.html.twig', ['current_episode' => $Episode]);
+		return Twig::$env->render('episode/_sidebar_voting.html.twig', ['current_episode' => $Episode]);
 	}
 
 	public static function getAppearancesSectionHTML(Episode $Episode):string {
-		return TwigHelper::$env->render('episode/_related_appearances.html.twig', [ 'current_episode' => $Episode ]);
+		return Twig::$env->render('episode/_related_appearances.html.twig', ['current_episode' => $Episode ]);
 	}
 
 	public static function validateSeason($allowMovies = false){

@@ -1,8 +1,8 @@
 {% spaceless %}
-{# @var notif \App\Models\Notification #}
-{% if notif.get_appearance is not empty %}
-{{ notif.get_appearance.toAnchor ~ posess(notif.get_appearance.label, true) }} <a href='/cg/sprite/{{ notif.get_appearance.id }}'>sprite</a> is missing some colors
-{% else %}
-An appearance's sprite was missing some colors, but since it's now deleted it doesn't really matter anymore
-{% endif %}
+	{# @var notif \App\Models\Notification #}
+	{% if notif.get_appearance is not empty %}
+		{{ notif.get_appearance.toAnchor ~ posess(notif.get_appearance.label, true) }} <a href='/cg/sprite/{{ notif.get_appearance.id }}'>sprite</a> is missing some colors
+	{% else %}
+		An appearance's sprite was missing some colors, but since it's now deleted it doesn't really matter anymore
+	{% endif %}
 {% endspaceless %}

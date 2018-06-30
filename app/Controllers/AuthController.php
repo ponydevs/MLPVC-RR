@@ -15,7 +15,7 @@ use App\Models\Logs\FailedAuthAttempt;
 use App\Permission;
 use App\RegExp;
 use App\Response;
-use App\TwigHelper;
+use App\Twig;
 use App\Users;
 use App\Models\User;
 use App\Exceptions\CURLRequestException;
@@ -74,7 +74,7 @@ class AuthController extends Controller {
 		if (Auth::$session->hasData('return_url'))
 			$this->_redirectBack();
 
-		TwigHelper::display('login_confirm', [ 'js_path' => CoreUtils::cachedAssetLink('loginConfirm', 'js/min', 'js') ]);
+		Twig::display('login_confirm');
 	}
 
 	public function signOut(){

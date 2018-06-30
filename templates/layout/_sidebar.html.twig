@@ -1,8 +1,11 @@
-	<div class='mobile-nav'>
-		<nav><ul>{% include 'layout/_navigation_links.html.twig' %}</ul></nav>
-	</div>
+{% spaceless %}
+<div class='mobile-nav'>
+	<nav>
+		<ul>{% include 'layout/_navigation_links.html.twig' %}</ul>
+	</nav>
+</div>
 
-	{% include 'layout/_sidebar_logged_in.html.twig' %}
+{% include 'layout/_sidebar_logged_in.html.twig' %}
 
 {% if fatal_error_page is defined %}
 	<section class="login">
@@ -10,24 +13,24 @@
 		<p>Signing in is not possible at the moment. Please check back later.</p>
 	</section>
 {% else %}
-{% if signed_in %}
-	<section class="notifications"{% if notifications is empty %} style="display:none"{% endif %}>
-		<h2>Unread notifications</h2>
-	{% include 'notifications/list.html.twig' %}
-	</section>
-{% endif %}
-	<section class="{{ signed_in ? 'welcome' : 'login'}}">
+	{% if signed_in %}
+		<section class="notifications"{% if notifications is empty %} style="display:none"{% endif %}>
+			<h2>Unread notifications</h2>
+			{% include 'notifications/list.html.twig' %}
+		</section>
+	{% endif %}
+	<section class="{{ signed_in ? 'welcome' : 'login' }}">
 		<h2 class="hidden">Welcome!</h2>
-{% include 'layout/_sidebar_useful_links.html.twig' %}
+		{% include 'layout/_sidebar_useful_links.html.twig' %}
 		<div class="buttons">
-{% if signed_in %}
-			<button id="signout" class="typcn typcn-arrow-back">Sign out</button>
-{% else %}
-			<button class="typcn btn-da da-login" id="signin">Sign in</button>
-{% endif %}
-{% if not user_pref('p_hidediscord') and (not signed_in or not current_user.isDiscordServerMember) %}
-			<a class="btn typcn btn-discord discord-join" href="<?=DISCORD_INVITE_LINK?>">Join Discord</a>
-{% endif %}
+			{% if signed_in %}
+				<button id="signout" class="typcn typcn-arrow-back">Sign out</button>
+			{% else %}
+				<button class="typcn btn-da da-login" id="signin">Sign in</button>
+			{% endif %}
+			{% if not user_pref('p_hidediscord') and (not signed_in or not current_user.isDiscordServerMember) %}
+				<a class="btn typcn btn-discord discord-join" href="<?=DISCORD_INVITE_LINK?>">Join Discord</a>
+			{% endif %}
 		</div>
 	</section>
 	<section id="episode-live-update" class="hidden">
@@ -38,24 +41,25 @@
 		<h2><span class="live-circle"></span> Live updates enabled</h2>
 		<p>Changes to post scores are visible in real time to everyone who sees this message.</p>
 	</section>
-{# @var current_episode \App\Models\Episode #}
-{% if view_class == 'episode' and current_episode is not empty %}
-	<section id="voting">
-		<h2>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} rating</h2>
-	{% include "episode/_sidebar_voting.html.twig" %}
+	{# @var current_episode \App\Models\Episode #}
+	{% if view_class == 'episode' and current_episode is not empty %}
+		<section id="voting">
+			<h2>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} rating</h2>
+			{% include "episode/_sidebar_voting.html.twig" %}
 
-	</section>
-{% endif %}
-{% if view_class == 'colorguide' and (appearance is not empty or ponies is not empty) and map is empty %}
-	<section id="hash-copy">
-		<h2>Color Guide</h2>
-		<p>You can click any colored square on this page to copy its HEX color code to your clipboard. Holding Shift while clicking will display a dialog with the RGB color values instead.</p>
-		<button class='blue typcn typcn-refresh' id='toggle-copy-hash'>Checking&hellip;</button>
-	</section>
-{% endif %}
-{# @var happening_soon string #}
-{% if happening_soon is not empty %}
-{{ happening_soon }}
-{% endif %}
+		</section>
+	{% endif %}
+	{% if view_class == 'colorguide' and (appearance is not empty or ponies is not empty) and map is empty %}
+		<section id="hash-copy">
+			<h2>Color Guide</h2>
+			<p>You can click any colored square on this page to copy its HEX color code to your clipboard. Holding Shift while clicking will display a dialog with the RGB color values instead.</p>
+			<button class='blue typcn typcn-refresh' id='toggle-copy-hash'>Checking&hellip;</button>
+		</section>
+	{% endif %}
+	{# @var happening_soon string #}
+	{% if happening_soon is not empty %}
+		{{ happening_soon }}
+	{% endif %}
 
 {% endif %}
+{% endspaceless %}
