@@ -348,15 +348,6 @@
 	margin: 5px 0 10px 5px;
 }
 
-#requests, #reservations {
-	div.loading ul:empty:before {
-		content: "";
-		display: block;
-		@include loading-indicator(64px, 'gears');
-		margin: 0 auto;
-	}
-}
-
 #voting #muffins {
 	width: 100%;
 	max-width: 250px;

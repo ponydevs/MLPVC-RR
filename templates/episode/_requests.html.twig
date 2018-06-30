@@ -1,28 +1,25 @@
 {# @var arranged array #}
 {# @var current_user \App\Models\User #}
-{% set loading = arranged is not null ? ' loading' : '' %}
 {% set can_request = permission('user') and user_pref('a_postreq', current_user) %}
 <section id="requests" class="posts">
-	<div class="unfinished{{ loading }}">
+	<div class="unfinished">
 		{% set make_request = can_request ? '<button id="request-btn" class="green">Make a request</button>' : '' %}
-		<h2>List of Requests$makeRes</h2>
-		<ul>
-		{%- if arranged.unfinished is not empty %}
-			{% for g, posts in arranged.unfinished %}
+		<h2>List of Requests{{ make_request }}</h2>
+		{% for g, posts in arranged.unfinished %}
 			<div class='group' id='group-{{ g }}'>
-				<h3>{{ constant('App\\Models\\Post::REQUEST_TYPES').g }}</h3>
+				<h3>{{ constant('App\\Models\\Post::REQUEST_TYPES')[g] }}</h3>
 				<ul>
+				{%- if posts is not empty %}
 					{% for post in posts %}
 						{# @var post \App\Models\Post #}
 						{{ post.getLi(false, false, lazyload ?? false) }}
 					{% endfor %}
+				{% endif -%}
 				</ul>
 			</div>
-			{% endfor %}
-		{% endif -%}
-		</ul>
+		{% endfor %}
 	</div>
-	<div class="finished{{ loading }}">
+	<div class="finished">
 		<h2>Finished Requests</h2>
 		<ul>
 		{%- if arranged.finished is not empty %}

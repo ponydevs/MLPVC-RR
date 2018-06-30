@@ -1,9 +1,8 @@
 {# @var arranged array #}
 {# @var current_user \App\Models\User #}
-{% set loading = arranged is not null ? ' loading' : '' %}
 {% set can_reserve = permission('member') and user_pref('a_postres', current_user) %}
 <section id="reservations" class="posts">
-	<div class="unfinished{{ loading }}">
+	<div class="unfinished">
 		{% set make_reservation = can_reserve ? '<button id="reservation-btn" class="green">Make a reservation</button>' : '' %}
 		<h2>List of Reservations{{ make_reservation }}</h2>
 		<ul>
@@ -15,7 +14,7 @@
 		{% endif -%}
 		</ul>
 	</div>
-	<div class="finished{{ loading }}">
+	<div class="finished">
 		{% set add_reservation = permission('staff') ? '<button id="add-reservation-btn" class="darkblue">Add a reservation</button>' : '' %}
 		<h2>Finished Reservations{{ add_reservation }}</h2>
 		<ul>
