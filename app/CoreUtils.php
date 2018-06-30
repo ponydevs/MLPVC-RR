@@ -982,18 +982,18 @@ HTML;
 	 * @return array
 	 */
 	public static function detectBrowser($user_agent = null){
-		$Return = ['user_agent' => !empty($user_agent) ? $user_agent : ($_SERVER['HTTP_USER_AGENT'] ?? '')];
-		$browser = new Browser($Return['user_agent']);
+		$return = ['user_agent' => !empty($user_agent) ? $user_agent : ($_SERVER['HTTP_USER_AGENT'] ?? '')];
+		$browser = new Browser($return['user_agent']);
 		$name = $browser->getBrowser();
 		if ($name !== Browser::BROWSER_UNKNOWN){
-			$Return['browser_name'] = $name;
+			$return['browser_name'] = $name;
 
 			$ver = $browser->getVersion();
 			if ($ver !== Browser::VERSION_UNKNOWN)
-				$Return['browser_ver'] = $ver;
+				$return['browser_ver'] = $ver;
 		}
-		$Return['platform'] = $browser->getPlatform();
-		return $Return;
+		$return['platform'] = $browser->getPlatform();
+		return $return;
 	}
 
 	// Converts a browser name to it's equivalent class name

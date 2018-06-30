@@ -23,35 +23,37 @@ class AboutController extends Controller {
 	}
 
 	public function browser($params){
-		$AgentString = null;
+		$agent_string = null;
 		if (isset($params['session'])){
 			if (Permission::insufficient('developer'))
 				CoreUtils::noPerm();
-			$Session = Session::find($params['session']);
-			if (!empty($Session))
-				$AgentString = $Session->user_agent;
+			$session = Session::find($params['session']);
+			if (!empty($session))
+				$agent_string = $session->user_agent;
 		}
-		else $Session = null;
-		$browser = CoreUtils::detectBrowser($AgentString);
+		else $session = null;
+		$browser = CoreUtils::detectBrowser($agent_string);
 		if (empty($browser['platform']))
-			CoreUtils::error_log('Could not find platform based on the following UA string: '.preg_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $AgentString));
+			CoreUtils::error_log('Could not find platform based on the following UA string: '.preg_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $agent_string));
+		if (+empty($browser['browser_name']))
+			$browser['browser_class'] = CoreUtils::browserNameToClass($browser['browser_name']);
 
-		if ($Session !== null){
-			$Session->platform = $browser['platform'];
-			$Session->browser_name = $browser['browser_name'];
-			$Session->browser_ver = $browser['browser_ver'];
-			$Session->save();
+		if ($session !== null){
+			$session->platform = $browser['platform'];
+			$session->browser_name = $browser['browser_name'];
+			$session->browser_ver = $browser['browser_ver'];
+			$session->save();
 		}
 
-		CoreUtils::fixPath('/about/browser'.(!empty($Session)?"/{$Session->id}":''));
+		CoreUtils::fixPath('/about/browser'.(!empty($session)?"/{$session->id}":''));
 
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Browser recognition test page',
 			'css' => [true],
 			'noindex' => true,
 			'import' => [
-				'AgentString' => $AgentString,
-				'Session' => $Session ?? null,
+				'agent_string' => $agent_string,
+				'session' => $session ?? null,
 				'browser' => $browser,
 			],
 		]);
