@@ -521,7 +521,8 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage(__METHOD__, [
 			'noindex' => true,
 			'title' => 'Color Picker',
-			'css' => ['colorpicker'],
+			'css' => [true],
+			'default-js' => false,
 			'js' => [
 				'jquery.ba-throttle-debounce',
 				'shared-utils',
@@ -531,7 +532,7 @@ class ColorGuideController extends Controller {
 				'canvas.hdr',
 				'nouislider',
 				'paste',
-				'colorpicker',
+				true,
 			],
 		]);
 	}

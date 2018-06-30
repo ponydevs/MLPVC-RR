@@ -288,9 +288,9 @@ class CoreUtils {
 		$scope['robots'] = !isset($options['noindex']) || $options['noindex'] === false;
 
 		// Assets
-		$scope['css'] = self::DEFAULT_CSS;
+		$scope['css'] = isset($options['default-css']) && $options['default-css'] === false ? [] : self::DEFAULT_CSS;
 		self::_checkAssets($options, $scope['css'], 'scss/min', 'css', $view);
-		$scope['js'] = self::DEFAULT_JS;
+		$scope['js'] = isset($options['default-js']) && $options['default-js'] === false ? [] : self::DEFAULT_JS;
 		self::_checkAssets($options, $scope['js'], 'js/min', 'js', $view);
 		$scope['local_jquery'] = self::cachedAssetLink('jquery-3.2.1','js/min','js');
 		$scope['server_name'] = $_SERVER['SERVER_NAME'];

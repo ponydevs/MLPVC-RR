@@ -908,11 +908,13 @@
 		};
 	});
 
-	$.each(['get','post','put','delete'], (i, el) => {
-		((method) => {
-			$.API[method] = function(url, ...args) {
-				return $[method]($.API.API_PATH+url, ...args);
-			};
-		})(el);
-	});
+	if (typeof $.API !== 'undefined'){
+		$.each(['get','post','put','delete'], (i, el) => {
+			((method) => {
+				$.API[method] = function(url, ...args) {
+					return $[method]($.API.API_PATH+url, ...args);
+				};
+			})(el);
+		});
+	}
 })();
