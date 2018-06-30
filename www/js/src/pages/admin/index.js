@@ -28,6 +28,7 @@
 				if (((types instanceof DOMStringList) && types.contains("text/html")) || (types.indexOf && types.indexOf('text/html') !== -1)){
 					pastedData = e.originalEvent.clipboardData.getData('text/html');
 					processPaste(pastedData);
+					e.target.innerHTML = '';
 					e.stopPropagation();
 					e.preventDefault();
 					return false;
@@ -50,7 +51,7 @@
 		});
 
 		const $recentPostsUL = $('.recent-posts ul');
-		let deviationRegex = /(?:[A-Za-z\-\d]+\.)?deviantart\.com\/art\/(?:[A-Za-z\-\d]+-)?(\d+)|fav\.me\/d([a-z\d]{6,})/g,
+		let deviationRegex = /(?:[A-Za-z\-\d]+\.)?deviantart\.com\/(?:[A-Za-z\-\d]+\/)?art\/(?:[A-Za-z\-\d]+-)?(\d+)|fav\.me\/d([a-z\d]{6,})/g,
 			deviationRegexLocal = /\/(?:[A-Za-z\-\d]+-)?(\d+)$/,
 			favmeRegexLocal = /fav\.me\/d([a-z\d]{6,})/;
 		function processPaste(pastedData){
