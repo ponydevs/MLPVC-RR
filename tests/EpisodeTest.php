@@ -141,8 +141,6 @@ class EpisodeTest extends TestCase {
 	}
 
 	public function testFormatTitle(){
-		require_once __DIR__.'/../includes/constants.php';
-
 		$Episode = new \App\Models\Episode([
 			'season' => 1,
 			'episode' => 1,
