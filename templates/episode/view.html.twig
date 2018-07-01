@@ -99,7 +99,16 @@
 {{ export_vars({ 'EP_TITLE_REGEX': ep_title_regex }) -}}
 {% endif %}
 {# @var linked_post \App\Models\Post|null #}
-{% if linked_post is defined %}
-{{ export_vars({ 'linkedPostURL': linked_post.toURL() }) -}}
+{% if linked_post is defined and linked_post is not empty %}
+{{ export_vars({ 'linkedPostURL': linked_post.toURL }) -}}
+{% endif %}
+{% endblock %}
+
+{% block widgets %}
+{% if current_episode is not empty %}
+<section id="voting">
+	<h2>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} rating</h2>
+	{% include "episode/_sidebar_voting.html.twig" %}
+</section>
 {% endif %}
 {% endblock %}

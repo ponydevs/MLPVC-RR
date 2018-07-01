@@ -16,6 +16,13 @@ class RelatedAppearance extends NSModel {
 		['source', 'class' => 'Appearance', 'foreign_key' => 'source_id'],
 		['target', 'class' => 'Appearance', 'foreign_key' => 'target_id'],
 	];
+	/**
+	 * For Twig
+	 * @return Appearance
+	 */
+	public function getTarget():Appearance {
+		return $this->target;
+	}
 
 	private function _mutualArray():array {
 		return ['source_id' => $this->target_id, 'target_id' => $this->source_id];

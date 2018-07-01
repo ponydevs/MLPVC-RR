@@ -10,7 +10,7 @@
 			{% for post in arranged.unfinished %}
 				{# @var post \App\Models\Post #}
 				{{ post.getLi(false, false, lazyload ?? false) }}
-			{% endfor -%}
+			{% endfor %}
 		{% endif -%}
 		</ul>
 	</div>
@@ -22,7 +22,7 @@
 			{% for post in arranged.finished %}
 				{# @var post \App\Models\Post #}
 				{{ post.getLi(false, false, lazyload ?? false) }}
-			{% endfor -%}
+			{% endfor %}
 		{% endif -%}
 		</ul>
 	</div>

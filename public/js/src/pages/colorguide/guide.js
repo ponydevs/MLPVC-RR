@@ -2,28 +2,27 @@
 	'use strict';
 
 	//noinspection JSUnusedLocalSymbols
-	let $list = $('.appearance-list'), EQG = window.EQG, AppearancePage = !!window.AppearancePage;
+	let $list = $('.appearance-list'),
+		EQG = window.EQG,
+		AppearancePage = !!window.AppearancePage;
 
-	let copyHash = !$.LocalStorage.get('leavehash'), $toggler;
-	function copyHashToggler(){
-		$toggler = $('#toggle-copy-hash');
+	let copyHash = !$.LocalStorage.get('leavehash'),
+		$toggler = $('#toggle-copy-hash'),
+		$togglerLabel;
+	window.copyHashToggler = function(){
 		if (!$toggler.length)
 			return;
-		$toggler.off('display-update').on('display-update',function(){
-			copyHash = !$.LocalStorage.get('leavehash');
-			$toggler
-				.attr('class','blue typcn typcn-'+(copyHash ? 'tick' : 'times'))
-				.text(`Copy # with color codes: `+(copyHash ? 'En':'Dis')+'abled');
-		}).trigger('display-update').off('click').on('click', function(e){
-			e.preventDefault();
+		$togglerLabel = $toggler.next();
+		$toggler.on('click', function(){
+			copyHash = $toggler.prop('checked');
 
-			if (copyHash) $.LocalStorage.set('leavehash', 1);
+			if (copyHash)
+				$.LocalStorage.set('leavehash', 1);
 			else $.LocalStorage.remove('leavehash');
-
-			$toggler.triggerHandler('display-update');
 		});
-	}
-	window.copyHashToggler = function(){copyHashToggler()};
+		$toggler.prop('checked', copyHash).triggerHandler('click');
+		$toggler.enable().parent().removeClass('disabled');
+	};
 	window.copyHashEnabled = function(){ return copyHash };
 
 	$('ul.colors').children('li').find('.valid-color').off('mousedown touchstart click').on('click', function(e){
@@ -65,7 +64,7 @@
 	});
 
 	$('.get-swatch').off('click').on('click', getSwatch);
-	copyHashToggler();
+	window.copyHashToggler();
 
 	$('#search-form').on('reset', function(e){
 		e.preventDefault();

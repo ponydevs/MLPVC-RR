@@ -1,6 +1,6 @@
 {# @var videos \App\Models\EpisodeVideo[] #}
 {% if videos is not empty %}
-	{% if wrap is null or wrap %}
+	{% if wrap is not defined or wrap %}
 	<section class='episode'>
 	{% endif %}
 
@@ -13,7 +13,7 @@
 		<button class='green typcn typcn-eye showplayers'>Show on-site player</button>
 		<button class='orange typcn typcn-flag reportbroken'>Report broken video</button>
 	</p>
-	{% if wrap is null or wrap %}
+	{% if wrap is not defined or wrap %}
 	</section>
 	{% endif %}
 {% endif %}

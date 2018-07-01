@@ -262,7 +262,7 @@ class ColorGroupController extends ColorGuideController {
 						$appearance->clearRenderedImages([Appearance::CLEAR_CM]);
 				}
 
-				$response = ['cgs' => $this->colorgroup->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage)];
+				$response = ['cgs' => $this->colorgroup->appearance->getColorsHTML(!$this->_appearancePage, NOWRAP)];
 
 				if ($this->colorgroup->appearance->owner_id === null && $major){
 					Logs::logAction('major_changes', [

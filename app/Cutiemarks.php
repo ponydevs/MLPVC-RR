@@ -21,17 +21,16 @@ class Cutiemarks {
 	public const VALID_FACING_VALUES = ['left', 'right'];
 
 	/**
-	 * @param Cutiemark[] $CutieMarks
+	 * @param Cutiemark[] $cutie_marks
 	 * @param bool        $wrap
 	 *
 	 * @return string
 	 */
-	public static function getListForAppearancePage($CutieMarks, $wrap = WRAP){
-		$HTML = '';
-		foreach ($CutieMarks as $cm)
-			$HTML .= $cm->getListItemForAppearancePage();
-
-		return $wrap ? "<ul id='pony-cm-list'>$HTML</ul>" : $HTML;
+	public static function getListForAppearancePage($cutie_marks, $wrap = WRAP){
+		return Twig::$env->render('appearances/_cutie_marks.html.twig', [
+			'cutie_marks' => $cutie_marks,
+			'wrap' => $wrap,
+		]);
 	}
 
 	/**

@@ -108,13 +108,15 @@
 		}
 	}
 
-	.color-list > div.admin {
-		margin-bottom: 10px;
+	.color-list {
+		> div.admin {
+			margin-bottom: 10px;
 
-		button { margin: 0 }
+			button { margin: 0 }
+		}
+
+		.colors { @extend %colors-ul }
 	}
-
-	#colors { @extend %colors-ul }
 
 	.related ul {
 		@extend %appearance-ul;

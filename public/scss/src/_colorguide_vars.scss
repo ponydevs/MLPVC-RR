@@ -30,11 +30,16 @@ $TFeature:  adjust_hue($_TBase, 20);
 	height: #{$size - $border*2};
 	font-size: 0;
 	transform: scale(1);
+	border-radius: 2px;
+	will-change: transform, box-shadow;
 
 	&:not(:empty) {
 		cursor: pointer;
 
 		&:active { transform: scale(.9) }
+		&:hover {
+			box-shadow: 0 0 0 1px black, inset 0 0 0 1px white;
+		}
 	}
 	&:empty {
 		background: url('/img/transparency.svg');
@@ -278,7 +283,7 @@ $TFeature:  adjust_hue($_TBase, 20);
 		margin: 5px 0;
 	}
 
-	.madeby {
+	.made-by {
 		display: block;
 		margin: 0;
 		font-size: 18px;

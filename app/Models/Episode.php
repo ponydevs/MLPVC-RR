@@ -109,8 +109,6 @@ class Episode extends NSModel implements LinkableInterface {
 	 */
 	public function getRequests(){
 		$requests = Posts::get($this, ONLY_REQUESTS, Permission::sufficient('staff'));
-		if (empty($requests))
-			return null;
 
 		$arranged = [
 			'finished' => [],
@@ -120,11 +118,12 @@ class Episode extends NSModel implements LinkableInterface {
 				'chr' => [],
 			],
 		];
-		foreach ($requests as $req){
-			if ($req->finished)
-				$arranged['finished'][] = $req;
-			else $arranged['unfinished'][$req->type][] = $req;
-		}
+		if (!empty($requests))
+			foreach ($requests as $req){
+				if ($req->finished)
+					$arranged['finished'][] = $req;
+				else $arranged['unfinished'][$req->type][] = $req;
+			}
 
 		return $arranged;
 	}
@@ -134,17 +133,16 @@ class Episode extends NSModel implements LinkableInterface {
 	 */
 	public function getReservations(){
 		$reservations = Posts::get($this, ONLY_RESERVATIONS, Permission::sufficient('staff'));
-		if (empty($reservations))
-			return null;
 
 		$arranged = [
 			'unfinished' => [],
 			'finished' => [],
 		];
-		foreach ($reservations as $res){
-			$k = ($res->finished?'':'un').'finished';
-			$arranged[$k][] = $res;
-		}
+		if (!empty($reservations))
+			foreach ($reservations as $res){
+				$k = ($res->finished?'':'un').'finished';
+				$arranged[$k][] = $res;
+			}
 
 		return $arranged;
 	}
@@ -179,14 +177,7 @@ class Episode extends NSModel implements LinkableInterface {
 	 * @return int
 	 */
 	public function getPostCount():int {
-		return (int) DB::$instance->querySingle(
-			'SELECT SUM(cnt) as postcount FROM (
-				SELECT count(*) as cnt FROM requests WHERE season = :season AND episode = :episode
-				UNION ALL
-				SELECT count(*) as cnt FROM reservations WHERE season = :season AND episode = :episode
-			) t',
-			[':season' => $this->season, ':episode' => $this->episode]
-		)['postcount'];
+		return DB::$instance->where('season', $this->season)->where('episode', $this->episode)->count('posts');
 	}
 
 	/**
@@ -202,13 +193,11 @@ class Episode extends NSModel implements LinkableInterface {
 	 * @return bool
 	 */
 	public function is(Episode $ep):bool {
-		return $this->season === $ep->season
-			&& $this->episode === $ep->episode;
+		return $this->season === $ep->season && $this->episode === $ep->episode;
 	}
 
 	public function isLatest():bool {
-		$latest = Episodes::getLatest();
-		return $this->is($latest);
+		return $this->is(Episodes::getLatest());
 	}
 
 	/**

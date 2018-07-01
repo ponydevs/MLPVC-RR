@@ -14,10 +14,54 @@
 
 	</header>
 
+	{% spaceless %}
 	<aside id="sidebar">
-		{% include 'layout/_sidebar.html.twig' %}
+		<div class='mobile-nav'><nav><ul>{% include 'layout/_navigation_links.html.twig' %}</ul></nav></div>
 
+		{% include 'layout/_sidebar_logged_in.html.twig' %}
+
+		{% if fatal_error_page is defined %}
+			<section class="login">
+				<h2>Welcome!</h2>
+				<p>Signing in is not possible at the moment. Please check back later.</p>
+			</section>
+		{% else %}
+			{% if signed_in %}
+				<section class="notifications"{% if notifications is empty %} style="display:none"{% endif %}>
+					<h2>Unread notifications</h2>
+					{% include 'notifications/list.html.twig' %}
+				</section>
+			{% endif %}
+			<section class="{{ signed_in ? 'welcome' : 'login' }}">
+				<h2 class="hidden">Welcome!</h2>
+				{% include 'layout/_sidebar_useful_links.html.twig' %}
+				<div class="buttons">
+					{% if signed_in %}
+						<button id="signout" class="typcn typcn-arrow-back">Sign out</button>
+					{% else %}
+						<button class="typcn btn-da da-login" id="signin">Sign in</button>
+					{% endif %}
+					{% if not user_pref('p_hidediscord') and (not signed_in or not current_user.isDiscordServerMember) %}
+						<a class="btn typcn btn-discord discord-join" href="<?=DISCORD_INVITE_LINK?>">Join Discord</a>
+					{% endif %}
+				</div>
+			</section>
+			<section id="episode-live-update" class="hidden">
+				<h2><span class="live-circle"></span> Live updates enabled</h2>
+				<p>Changes to the posts on this page are visible to you in real time.</p>
+			</section>
+			<section id="entry-live-update" class="hidden">
+				<h2><span class="live-circle"></span> Live updates enabled</h2>
+				<p>Changes to post scores are visible in real time to everyone who sees this message.</p>
+			</section>
+			{% block widgets %}{% endblock %}
+			{# @var happening_soon string #}
+			{% if happening_soon is not empty %}
+				{{ happening_soon }}
+			{% endif %}
+		{% endif %}
 	</aside>
+	{% endspaceless %}
 
 	<div id="above-content">
 		<ol id="breadcrumbs" itemscope itemtype="http://schema.org/BreadcrumbList">{{ breadcrumbs }}</ol>
@@ -27,7 +71,7 @@
 	</div>
 
 	<div id="main">
-{% block content %}{% endblock %}
+		{% block content %}{% endblock %}
 	</div>
 
 	<footer>

@@ -6,7 +6,6 @@
 {# @var heading string #}
 {% extends 'layout/base.html.twig' %}
 
-{# TODO Continue converting views #}
 {% block content %}
 {% set is_staff = permission('staff') %}
 {% set owner_or_staff = is_owner or is_staff %}
@@ -59,53 +58,42 @@
 		</section>
 	{% endif %}
 
-	$CutieMarks = Cutiemarks::get($Appearance);
-	$hideList = empty($CutieMarks); ?>
-		<section class="approved-cutie-mark<?=$hideList?' hidden':''?>">
+	{% set cutie_marks = appearance.cutiemarks %}
+	{% set hide_cms = cutie_marks is empty %}
+		<section class="approved-cutie-mark{{ hide_cms ? ' hidden' : '' }}">
 			<h2>Cutie Mark</h2>
-			<p class="aside"><?=count($CutieMarks)===1?'This is just an illustration':'These are just illustrations'?>, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
-<?php
-	if (!$hideList)
-		echo Cutiemarks::getListForAppearancePage($CutieMarks); ?>
+			<p class="aside">{{ (cutie_marks | length) == 1 ? 'This is just an illustration' : 'These are just illustrations' }}, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
+	{% if not hide_cms %}
+		{% include 'appearances/_cutie_marks.html.twig' with { 'wrap': true } %}
+	{% endif %}
 		</section>
 		<section class="color-list">
-<?  if (Permission::sufficient('staff') || $isOwner){ ?>
+	{% if owner_or_staff %}
 			<h2 class="admin">Color groups</h2>
 			<div class="admin button-block">
 				<button class="darkblue typcn typcn-arrow-unsorted reorder-cgs">Re-order groups</button>
 				<button class="green typcn typcn-plus create-cg">Create group</button>
 				<button class="darkblue typcn typcn typcn-document-add apply-template">Apply template</button>
 			</div>
-<?  }
-	if ($placehold = $Appearance->getPendingPlaceholder())
-		echo $placehold;
-	else { ?>
-			<ul id="colors" class="colors"><?php
-		$CGs = $Appearance->color_groups;
-		$AllColors = CGUtils::getColorsForEach($CGs);
-		foreach ($CGs as $cg)
-			echo $cg->getHTML($AllColors, false);
-			?></ul>
+	{% endif %}
+	{{ appearance.getColorsHTML(false) }}
 		</section>
-<?  }
-	if ($Appearance->owner_id === null)
-		echo $Appearance->getRelatedHTML(); ?>
+	{% if appearance.owner_id is null %}
+		{{ appearance.getRelatedHTML }}
+	{% endif %}
 	</div>
 </div>
 
-<?  $export = [
-		'EQG' => $EQG,
-		'AppearancePage' => true,
-		'PersonalGuide' => $Owner->id ?? false,
-	];
-	if ($isOwner || Permission::sufficient('staff')){
-		global $HEX_COLOR_REGEX, $TAG_NAME_REGEX;
-		$export = array_merge($export, [
-			'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
-			'TAG_NAME_REGEX' => $TAG_NAME_REGEX,
-			'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
-			'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
-		]);
-	}
-	echo CoreUtils::exportVars($export); ?>
+{{ export_vars({
+	'EQG': eqg,
+	'AppearancePage': true,
+	'PersonalGuide': owner.id ?? false,
+}) }}
+{% if exports is defined %}
+	{{ export_vars(exports) }}
+{% endif %}
+{% endblock %}
+
+{% block widgets %}
+	{% include 'colorguide/_widget_hash_copy.html.twig' %}
 {% endblock %}

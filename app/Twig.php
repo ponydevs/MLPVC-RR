@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Models\LinkableInterface;
+use SeinopSys\RGBAColor;
 
 class Twig {
 	/** @var \Twig_Environment */
@@ -27,6 +28,9 @@ class Twig {
 		}));
 		self::$env->addFunction(new \Twig_SimpleFunction('url', function (LinkableInterface $linkable){
 			return $linkable->toURL();
+		}));
+		self::$env->addFunction(new \Twig_SimpleFunction('hex2rgb', function (string $color){
+			return RGBAColor::parse($color)->toRGB();
 		}));
 
 		self::$env->addFilter(new \Twig_SimpleFilter('apos_encode', '\App\CoreUtils::aposEncode'));

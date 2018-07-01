@@ -7,6 +7,7 @@ use App\CGUtils;
 use App\CoreUtils;
 use App\DeviantArt;
 use App\File;
+use App\NSUriBuilder;
 use App\Permission;
 use App\Users;
 
@@ -30,6 +31,10 @@ class Cutiemark extends NSModel {
 	public static $belongs_to = [
 		['appearance'],
 	];
+	/** For Twig */
+	public function getAppearance():Appearance {
+		return $this->appearance;
+	}
 
 	public static $after_destroy = ['remove_files'];
 
@@ -50,7 +55,11 @@ class Cutiemark extends NSModel {
 	}
 
 	public function get_contributor(){
-		return $this->contributor_id !== null ? Users::get($this->contributor_id) : null;
+		return $this->contributor_id !== null ? User::find($this->contributor_id) : null;
+	}
+	/** For Twig */
+	public function getContributor():?User {
+		return $this->contributor;
 	}
 
 	public function getTokenizedFilePath(){
@@ -104,8 +113,8 @@ class Cutiemark extends NSModel {
 	 * @return string|null
 	 */
 	public function getRenderedURL():?string {
-		return $this->getRenderedRelativeURL().'?t='.CoreUtils::filemtime($this->getRenderedFilePath()).
-			(!empty($_GET['token']) ? "&token={$_GET['token']}" : '');
+		$token = !empty($_GET['token']) ? '&token='.urlencode($_GET['token']) : '';
+		return $this->getRenderedRelativeURL().'?t='.CoreUtils::filemtime($this->getRenderedFilePath()).$token;
 	}
 
 	/**
@@ -117,57 +126,28 @@ class Cutiemark extends NSModel {
 	}
 
 	public function getPreviewForAppearancePageListItem(){
-		$facingSVG = $this->getFacingSVGURL();
+		$facing_svg = $this->getFacingSVGURL();
 		$preview = CoreUtils::aposEncode($this->getRenderedURL());
 		$rotate = $this->rotation !== 0 ? "transform:rotate({$this->rotation}deg)" : '';
 		return <<<HTML
-<div class="preview" style="background-image:url('{$facingSVG}')">
+<div class="preview" style="background-image:url('{$facing_svg}')">
 	<div class="img" style="background-image:url('{$preview}');$rotate"></div>
 </div>
 HTML;
 
 	}
 
+	public function canEdit():bool {
+		return Permission::sufficient('staff') || (Auth::$signed_in && $this->appearance->owner_id === Auth::$user->id);
+	}
 
-	/**
-	 * @param bool $wrap
-	 *
-	 * @return string
-	 * @throws \Exception
-	 */
-	public function getListItemForAppearancePage($wrap = WRAP){
-		$facing = $this->facing !== null ? 'Facing '.CoreUtils::capitalize($this->facing) : 'Symmetrical';
-		$preview = $this->getPreviewForAppearancePageListItem();
-		$token = !empty($_GET['token']) ? "?token={$_GET['token']}" : '';
-
-		$canEdit = Permission::sufficient('staff') || (Auth::$signed_in && $this->appearance->owner_id === Auth::$user->id);
-		$hasLabel = $this->label !== null;
-		$id = $canEdit ? "<span class='cm-id'>{$this->id}</span> " : '';
-		$title = "<span class='title'>$id".($hasLabel ? CoreUtils::escapeHTML($this->label) : $facing).'</span>';
-		$subtitle = $hasLabel ? "\n<span class='subtitle'>$facing</span>" : '';
-
-		$links = "<a href='/cg/cutiemark/download/{$this->id}$token' class='btn link typcn typcn-download'>SVG</a>";
-		if ($canEdit){
-			$who = ($this->appearance->owner_id !== null ? 'Owner and ' : '').'Staff';
-			$source = ($token ? "$token&" : '?').'source';
-			$links .= "<a href='/cg/cutiemark/download/{$this->id}$source' class='btn orange typcn typcn-download' title='Download the original file as uploaded ($who only)'></a>";
-		}
-		if (($this->favme ?? null) !== null)
-			$links .= "<a href='http://fav.me/{$this->favme}' class='btn btn-da typcn'>Source</a>";
-
-		$madeby = '';
-		if ($this->contributor !== null){
-			$userlink = $this->contributor->toAnchor(User::WITH_AVATAR);
-			$madeby = "<span class='madeby'>By $userlink</span>";
-		}
-
-		$content = <<<HTML
-$title$subtitle
-$preview
-<div class="dl-links">$links</div>
-$madeby
-HTML;
-		return $wrap ? "<li class='pony-cm' id='cm{$this->id}'>$content</li>" : $content;
+	public function getDownloadURL($source = false):string {
+		$url = new NSUriBuilder("/cg/cutiemark/download/{$this->id}");
+		if (!empty($_GET['token']))
+			$url->append_query_param('token', $_GET['token']);
+		if ($source)
+			$url->append_query_param('source', null);
+		return $url;
 	}
 
 	public function to_js_response(){

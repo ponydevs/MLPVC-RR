@@ -60,6 +60,13 @@ class Appearance extends NSModel implements LinkableInterface {
 		['related_appearances', 'class' => 'RelatedAppearance', 'foreign_key' => 'source_id', 'order' => 'target_id asc'],
 		['major_changes', 'class' => 'Logs\MajorChange', 'order' => 'entryid desc'],
 	];
+	/**
+	 * For Twig
+	 * @return RelatedAppearance[]
+	 */
+	public function getRelated_appearances(){
+		return $this->related_appearances;
+	}
 	public static $belongs_to = [
 		['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
 	];
@@ -234,26 +241,21 @@ class Appearance extends NSModel implements LinkableInterface {
 	/**
 	 * Returns the markup of the color list for a specific appearance
 	 *
-	 * @param bool $wrap
 	 * @param bool $compact
+	 * @param bool $wrap
 	 *
 	 * @return string
 	 */
-	public function getColorsHTML(bool $wrap = WRAP, bool $compact = true):string {
-		if ($placehold = $this->getPendingPlaceholder())
-			return $placehold;
+	public function getColorsHTML(bool $compact = true, bool $wrap = WRAP):string {
+		if ($placeholder = $this->getPendingPlaceholder())
+			return $placeholder;
 
-		$data = [
+		return Twig::$env->render('appearances/_colors.html.twig', [
 			'color_groups' => $this->color_groups,
 			'all_colors' => CGUtils::getColorsForEach($this->color_groups),
 			'compact' => $compact,
 			'wrap' => $wrap,
-		];
-
-		if ($compact)
-			return Twig::$env->render('appearances/_colors_compact.html.twig', $data);
-
-		return Twig::$env->render('appearances/_colors_full.html.twig', $data);
+		]);
 	}
 
 	/**
@@ -458,16 +460,9 @@ HTML;
 	}
 
 	public function getRelatedHTML():string {
-		$LINKS = '';
-		if (\count($this->related_appearances) === 0)
-			return $LINKS;
-		foreach ($this->related_appearances as $r){
-			if (!$r->target->hidden())
-				$LINKS .= '<li>'.$r->target->toAnchorWithPreview().'</li>';
-		}
-		if (empty($LINKS))
-			return $LINKS;
-		return "<section class='related'><h2>Related appearances</h2><ul>$LINKS</ul></section>";
+		return Twig::$env->render('appearances/_related.html.twig', [
+			'appearance' => $this,
+		]);
 	}
 
 	/**

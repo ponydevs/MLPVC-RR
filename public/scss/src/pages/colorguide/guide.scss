@@ -259,6 +259,27 @@ ul.colors {
 	}
 }
 
+// Sidebar - hash copy checkbox
+#hash-copy {
+	user-select: none;
+
+	label {
+		display: block;
+		margin-top: 10px;
+		cursor: pointer;
+
+		input {
+			border-color: rgba(white, .3);
+			background-color: rgba(white, .1);
+			margin-right: 7px;
+
+			&:before {
+				color: $NGreenBG;
+			}
+		}
+	}
+}
+
 #search-form {
 	display: flex;
 	flex-flow: row;

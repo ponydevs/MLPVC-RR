@@ -83,14 +83,20 @@ class AppearanceController extends ColorGuideController {
 			],
 		];
 		if (!empty($this->appearance->owner_id)){
-			$settings['import']['Owner'] = $this->owner;
-			$settings['import']['isOwner'] = $this->ownerIsCurrentUser;
+			$settings['import']['owner'] = $this->owner;
+			$settings['import']['is_owner'] = $this->ownerIsCurrentUser;
 			$settings['og']['description'] = "Colors$cmv for \"{$this->appearance->label}\" from ".CoreUtils::posess($this->owner->name)." Personal Color Guide on the the MLP-VectorClub's website";
 		}
-		else $settings['import']['Changes'] = MajorChange::get($this->appearance->id, null);
 		if ($this->ownerIsCurrentUser || Permission::sufficient('staff')){
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
+		global $HEX_COLOR_REGEX, $TAG_NAME_REGEX;
+			$settings['import']['exports'] = [
+				'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
+				'TAG_NAME_REGEX' => $TAG_NAME_REGEX,
+				'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
+				'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
+			];
 		}
 		CoreUtils::loadPage('ColorGuideController::appearance', $settings);
 	}
@@ -395,7 +401,7 @@ class AppearanceController extends ColorGuideController {
 			Response::fail('Applying the template failed. Reason: '.$e->getMessage());
 		}
 
-		Response::done(['cgs' => $this->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage)]);
+		Response::done(['cgs' => $this->appearance->getColorsHTML(!$this->_appearancePage, NOWRAP)]);
 	}
 
 	public function selectiveClear($params){
@@ -563,7 +569,7 @@ class AppearanceController extends ColorGuideController {
 					'newgroups' => $newCGs,
 				]);
 
-				Response::done(['cgs' => $this->appearance->getColorsHTML(NOWRAP, !$this->_appearancePage)]);
+				Response::done(['cgs' => $this->appearance->getColorsHTML(!$this->_appearancePage, NOWRAP)]);
 			break;
 			default:
 				CoreUtils::notAllowed();

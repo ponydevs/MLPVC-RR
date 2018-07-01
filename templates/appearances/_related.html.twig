@@ -1,0 +1,15 @@
+{# @controller \App\Models\Appearance::getRelatedHTML #}
+{# @var appearance \App\Models\Appearance #}
+{% spaceless %}
+{% set count = appearance.related_appearances | length %}
+{% if count > 0 %}
+<section class='related'>
+	<h2>Related appearances</h2>
+	<ul>
+	{% for r in appearance.related_appearances %}
+		<li>{{ r.target.toAnchorWithPreview }}</li>
+	{% endfor %}
+	</ul>
+</section>
+{% endif %}
+{% endspaceless %}
