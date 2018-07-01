@@ -1,13 +1,11 @@
 {% if current_user is null %}
 {% set current_user = {
-	'get_avatar_provider': 'deviantart',
 	'avatar_url': constant('GUEST_AVATAR'),
 	'name': 'Curious Pony',
 	'role': 'Guest',
 } %}
 {% endif %}
-{% set avatar_provider = current_user.get_avatar_provider %}
-<div class='logged-in provider-{{ avatar_provider }}'>
+<div class='logged-in provider-{{ current_user.avatar_provider ?? 'deviantart' }}'>
 	{% include 'layout/_avatar_wrap.html.twig' %}
 	<div class="user-data">
 		<span class="user-name">{{ current_user.toAnchor }}</span>

@@ -1,68 +1,63 @@
-{% extends 'layout/base.html.twig' %}
+{# @controller \App\Controllers\AppearanceController::view #}
 {# @var appearance \App\Models\Appearance #}
 {# @var owner \App\Models\User #}
 {# @var eqg bool #}
 {# @var is_owner bool #}
 {# @var heading string #}
+{% extends 'layout/base.html.twig' %}
 
 {# TODO Continue converting views #}
 {% block content %}
+{% set is_staff = permission('staff') %}
+{% set owner_or_staff = is_owner or is_staff %}
 <div id="content">
-	<div class="sprite-wrap">{{ appearance.getSpriteHTML(permission('staff') or is_owner) }}</div>
-	<h1><?=CoreUtils::escapeHTML($heading)?></h1>
-	<p>from <?php
-	if (isset($Owner))
-		echo $Owner->toAnchor().CoreUtils::posess($Owner->name, true)." <a href='/@{$Owner->name}/cg'>Personal Color Guide</a>";
-	else {
-		$eqgpath = $EQG ? '/eqg' : '';
-		$guideprefix = $EQG ? 'EQG ' : '';
-		echo "the MLP-VectorClub's <a href='/cg$eqgpath'>{$guideprefix}Color Guide</a>";
-	} ?></p>
+	<div class="sprite-wrap">{{ appearance.getSpriteHTML(owner_or_staff) }}</div>
+	<h1>{{ heading | escape }}</h1>
+	<p>from {% if owner is defined -%}
+		{{ owner.toAnchor ~ posess(owner.name, true) }} <a href='/@{{ owner.name }}/cg'>Personal Color Guide</a>
+	{%- else -%}
+		the MLP-VectorClub's <a href='/cg{{ eqg ? '/eqg' : '/pony' }}'>{{ eqg ? 'EQG ' : '' }}Color Guide</a>
+	{%- endif %}</p>
 
-<?	if ($isOwner || Permission::sufficient('staff')){ ?>
-	<div class="notice warn align-center appearance-private-notice <?=!empty($Appearance->private)?'':'hidden"'?>"><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to <?=isset($Owner)?(($isOwner?'you':$Owner->name).' and '):''?>staff members)</strong></p></div>
-<?php
-	}
+	{% if owner_or_staff %}
+	<div class="notice warn align-center appearance-private-notice{{ not appearance.private ? ' hidden' : '' }}"><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to {{ owner is defined ? (is_owner ? 'you' : owner.name) ~ 'and ' : '' }}staff members)</strong></p></div>
+	{% endif %}
 
-	$RenderPath = $Appearance->getPaletteFilePath();
-	$FileModTime = '?t='.CoreUtils::filemtime($RenderPath); ?>
-	<div id="p<?=$Appearance->id?>" class="section-container">
+	<div id="p{{ appearance.id }}" class="section-container">
 		<div class='button-block align-center'>
-			<a class='btn link typcn typcn-image' href='/cg/v/<?="{$Appearance->id}p.png$FileModTime".(!empty($_GET['token']) ? "&token={$_GET['token']}" : '')?>' target='_blank'>View as PNG</a>
-			<button class='getswatch typcn typcn-brush teal'>Download swatch file</button>
-<?  if ($isOwner || Permission::sufficient('staff')){ ?>
-			<button class='blue share typcn typcn-export' <?=$Appearance->private?'data-private="true"':''?> data-url="<?=rtrim(ABSPATH,'/').$Appearance->toURL().($Appearance->private ? "?token={$Appearance->token}" : '')?>">Share</button>
+			<a class='btn link typcn typcn-image' href='{{ appearance.getPaletteURL }}' target='_blank'>View as PNG</a>
+			<button class='get-swatch typcn typcn-brush teal'>Download swatch file</button>
+			<button class='blue share typcn typcn-export'{{ appearance.private ? ' data-private="true"' : '' }} data-url="{{ appearance.getShareURL(owner_or_staff) }}">Share</button>
+	{% if owner_or_staff %}
 			<button class='darkblue edit-appearance typcn typcn-pencil'>Edit metadata</button>
-<?php   if ($Appearance->id){ ?>
-			<button class='red delete-appearance typcn typcn-trash'>Delete apperance</button>
-<?php   }
-	} ?>
+		{% if not appearance.protected %}
+			<button class='red delete-appearance typcn typcn-trash'>Delete appearance</button>
+		{% endif %}
+	{% endif %}
 		</div>
 
-<?  if ($Appearance->owner_id === null){
-		echo $Appearance->getChangesHTML();
-		if ($Appearance->id !== 0 && (\App\DB::$instance->where('appearance_id', $Appearance->id)->has('tagged') || Permission::sufficient('staff'))){ ?>
+	{% if appearance.owner_id is null %}
+		{{ appearance.getChangesHTML }}
+		{% if not appearance.protected and (appearance.hasTags or is_staff) %}
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
-			<div class='tags'><?=$Appearance->getTagsHTML(NOWRAP)?></div>
-<?php       if (Permission::sufficient('staff')){ ?>
+			<div class='tags'>{{ appearance.getTagsHTML(constant('NOWRAP')) }}</div>
+			{% if is_staff %}
 			<div class="button-block">
 				<button id="edit-tags-btn" class="darkblue typcn typcn-pencil">Edit tags</button>
-				<!-- <a class="btn link typcn typcn-document" href="/cg/tag-changes/<?=$Appearance->id?>">Tag changes</a> -->
+				<!-- <a class="btn link typcn typcn-document" href="/cg/tag-changes/{{ appearance.id }}">Tag changes</a> -->
 			</div>
-<?php       } ?>
+			{% endif %}
 		</section>
-<?php
-		}
-		echo $Appearance->getRelatedEpisodesHTML($EQG);
-	}
-	if (!empty($Appearance->notes_src)){ ?>
+		{% endif %}
+		{{ appearance.getRelatedEpisodesHTML(eqg) }}
+	{% endif %}
+	{% if appearance.notes_src is not empty %}
 		<section>
 			<h2><span class='typcn typcn-info-large'></span>Additional notes</h2>
-			<div id="notes"><?=$Appearance->getNotesHTML(NOWRAP, NOTE_TEXT_ONLY)?></div>
+			<div id="notes">{{ appearance.getNotesHTML(constant('NOWRAP'), constant('NOTE_TEXT_ONLY')) }}</div>
 		</section>
-<?php
-	}
+	{% endif %}
 
 	$CutieMarks = Cutiemarks::get($Appearance);
 	$hideList = empty($CutieMarks); ?>

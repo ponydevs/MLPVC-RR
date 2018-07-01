@@ -21,6 +21,7 @@ class Twig {
 		self::$env->addFunction(new \Twig_SimpleFunction('make_plural', '\App\CoreUtils::makePlural'));
 		self::$env->addFunction(new \Twig_SimpleFunction('cached_asset_link', '\App\CoreUtils::cachedAssetLink'));
 		self::$env->addFunction(new \Twig_SimpleFunction('cutoff', '\App\CoreUtils::cutoff'));
+		self::$env->addFunction(new \Twig_SimpleFunction('sd', '\sd'));
 		self::$env->addFunction(new \Twig_SimpleFunction('setting_form', function (...$args){
 			return (new UserSettingForm(...$args))->render();
 		}));

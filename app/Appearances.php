@@ -47,44 +47,6 @@ class Appearances {
 	}
 
 	/**
-	 * TODO Turn into view
-	 *
-	 * @param Appearance[] $appearances
-	 * @param bool         $wrap
-	 * @param bool         $upload_permission
-	 *
-	 * @return string
-	 */
-	public static function getHTML($appearances, $wrap = WRAP, $upload_permission = null){
-		if ($upload_permission === null)
-			$upload_permission = Permission::sufficient('staff');
-
-		$HTML = '';
-		if (!empty($appearances)) foreach ($appearances as $p){
-			$p->label = CoreUtils::escapeHTML($p->label);
-
-			$img = $p->getSpriteHTML($upload_permission);
-			$updates = $p->owner_id === null ? $p->getUpdatesHTML() : '';
-			$notes = $p->getNotesHTML();
-			$tags = $p->owner_id === null ? $p->getTagsHTML() : '';
-			$colors = $p->getColorsHTML();
-
-			$Actions = "<a class='btn link typcn typcn-image' title='View as PNG' href='$personalp/cg/{$eqgp}v/{$p->id}p.png$file_mod_time' target='_blank'></a>".
-			           "<button class='getswatch typcn typcn-brush teal' title='Download swatch file'></button>";
-			if ($upload_permission)
-				$Actions .= "<button class='edit-appearance typcn typcn-pencil darkblue' title='Edit'></button>".
-				            ($p->protected?"<button class='delete-appearance typcn typcn-trash red' title='Delete'></button>":'');
-			$privlock = $p->private ? "<span class='typcn typcn-lock-closed color-orange'></span> " : '';
-			$HTML .= "<li id='p{$p->id}'>$img<div><strong>$privlock<a href='{$p->toURL()}'>{$p->label}</a>$Actions</strong>$updates$notes$tags$colors</div></li>";
-		}
-		else {
-			$HTML .= "<div class='notice info align-center'><label>No appearances to show</label></div>";
-		}
-
-		return $wrap ? "<ul id='list' class='appearance-list'>$HTML</ul>" : $HTML;
-	}
-
-	/**
 	 * Sort appearances based on tags
 	 *
 	 * @param Appearance[] $Appearances

@@ -91,7 +91,7 @@ class ColorGuideController extends Controller {
 
 	/** @var Appearance */
 	protected $appearance;
-	public function _getAppearance($params, bool $set_properties = true){
+	public function load_appearance($params, bool $set_properties = true){
 		if (!isset($params['id']))
 			Response::fail('Missing appearance ID');
 		$this->appearance = Appearance::find($params['id']);

@@ -42,6 +42,8 @@ class Notifications {
 	}
 
 	/**
+	 * TODO Replace with views
+	 *
 	 * @param Notification[] $Notifications
 	 * @param bool           $wrap
 	 *

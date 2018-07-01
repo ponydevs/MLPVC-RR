@@ -62,14 +62,14 @@ class View {
 				}
 				return $bc;
 			case 'colorguide':
-				$eqg = $scope['EQG'] ?? false;
+				$eqg = $scope['eqg'] ?? false;
 				$ret = new NavBreadcrumb('Color Guide');
 				$bc = new NavBreadcrumb($eqg ? 'EQG' : 'Pony', '/cg/'.($eqg?'eqg':'pony'));
 				$ret->setChild($bc);
 				switch ($this->method){
 					case 'appearance':
 						/** @var $appearance \App\Models\Appearance */
-						$appearance = $scope['Appearance'];
+						$appearance = $scope['appearance'];
 						if ($appearance->owner_id !== null){
 							$bc = $appearance->owner->getPCGBreadcrumb();
 							$ret = $bc;
@@ -97,7 +97,7 @@ class View {
 					break;
 					case 'sprite':
 						/** @var $appearance \App\Models\Appearance */
-						$appearance = $scope['Appearance'];
+						$appearance = $scope['appearance'];
 						if ($appearance->owner_id !== null)
 							$bc = $appearance->owner->getPCGBreadcrumb();
 						$bc->end()->setChild(

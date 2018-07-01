@@ -18,7 +18,7 @@
 	{% endspaceless %}
 {% endmacro %}
 {# @var notifications \App\Models\Notification[] #}
-{% if wrap is null or wrap %}
+{% if wrap is not defined or wrap %}
 <ul class='notif-list'>
 {% endif %}
 	{% import _self as list %}
@@ -28,6 +28,6 @@
 		{%- endset %}
 		{{- list.notif_elem(html, notif) }}
 	{% endfor %}
-{% if wrap is null or wrap %}
+{% if wrap is not defined or wrap %}
 </ul>
 {% endif %}

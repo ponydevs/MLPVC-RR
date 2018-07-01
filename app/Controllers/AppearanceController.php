@@ -52,13 +52,12 @@ class AppearanceController extends ColorGuideController {
 	public function view($params){
 		if ($this->owner === null)
 			$this->_initialize($params);
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 
 		if ($this->appearance->hidden())
 			CoreUtils::noPerm();
 
-		$SafeLabel = $this->appearance->getURLSafeLabel();
-		CoreUtils::fixPath("$this->path/v/{$this->appearance->id}-$SafeLabel");
+		CoreUtils::fixPath($this->appearance->toURL());
 		$heading = $this->appearance->label;
 
 		$cm_count = \count($this->appearance->cutiemarks);
@@ -78,9 +77,9 @@ class AppearanceController extends ColorGuideController {
 					',color guide,colors,swatch file,illustrator swatches,gimp palette,inkscape swatches,png download',
 			],
 			'import' => [
-				'Appearance' => $this->appearance,
-				'EQG' => $this->_EQG,
-				'isOwner' => false,
+				'appearance' => $this->appearance,
+				'eqg' => $this->_EQG,
+				'is_owner' => false,
 			],
 		];
 		if (!empty($this->appearance->owner_id)){
@@ -112,7 +111,7 @@ class AppearanceController extends ColorGuideController {
 			Response::fail();
 
 		$this->_initialize($params);
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 
 		if ($this->appearance->owner_id !== null)
 			CoreUtils::notFound();
@@ -123,7 +122,7 @@ class AppearanceController extends ColorGuideController {
 
 	public function asFile($params){
 		$this->_initialize($params);
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 
 		if ($this->appearance->hidden())
 			CoreUtils::notFound();
@@ -161,7 +160,7 @@ class AppearanceController extends ColorGuideController {
 			Appearance::checkCreatePermission(Auth::$user, $this->_personalGuide);
 		}
 		else {
-			$this->_getAppearance($params);
+			$this->load_appearance($params);
 			$this->appearance->checkManagePermission(Auth::$user);
 		}
 
@@ -386,7 +385,7 @@ class AppearanceController extends ColorGuideController {
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();
 
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		try {
@@ -403,7 +402,7 @@ class AppearanceController extends ColorGuideController {
 		if ($this->action !== 'DELETE')
 			CoreUtils::notAllowed();
 
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		$wipe_cache = (new Input('wipe_cache','bool',[
@@ -517,7 +516,7 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function colorGroupsApi($params){
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		switch ($this->action){
@@ -575,7 +574,7 @@ class AppearanceController extends ColorGuideController {
 		if (Permission::insufficient('member'))
 			CoreUtils::noPerm();
 
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		if ($this->appearance->owner_id !== null)
@@ -607,7 +606,7 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function spriteApi($params){
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		$final_path = $this->appearance->getSpriteFilePath();
@@ -636,7 +635,7 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function relationsApi($params){
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		switch ($this->action){
@@ -709,7 +708,7 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function cutiemarkApi($params){
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		switch ($this->action){
@@ -905,7 +904,7 @@ class AppearanceController extends ColorGuideController {
 	}
 
 	public function taggedApi($params){
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		if ($this->appearance->owner_id !== null)
@@ -967,7 +966,7 @@ class AppearanceController extends ColorGuideController {
 		if (!$this->action === 'GET')
 			CoreUtils::notAllowed();
 
-		$this->_getAppearance($params);
+		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		$returnedColorFields = [
@@ -1000,7 +999,7 @@ class AppearanceController extends ColorGuideController {
 		if (!Auth::$signed_in)
 			Response::fail();
 
-		$this->_getAppearance($params, false);
+		$this->load_appearance($params, false);
 		$this->appearance->checkManagePermission(Auth::$user);
 
 		$svgdata = (new Input('file','svg_file',[
@@ -1025,7 +1024,7 @@ class AppearanceController extends ColorGuideController {
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
-		$this->_getAppearance($params, false);
+		$this->load_appearance($params, false);
 
 		if ($this->appearance->checkSpriteColors())
 			Response::success('One or more color issues were found.');

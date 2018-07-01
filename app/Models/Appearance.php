@@ -104,7 +104,9 @@ class Appearance extends NSModel implements LinkableInterface {
 	public function getPaletteURL():string {
 		$pcg_prefix = $this->owner_id !== null ? '/@'.$this->owner->name : '';
 		$palette_path = $this->getPaletteFilePath();
-		return "$pcg_prefix/cg/v/{$this->id}p.png?t=".CoreUtils::filemtime($palette_path);
+		$file_mod = CoreUtils::filemtime($palette_path);
+		$token = !empty($_GET['token']) ? '&token='.urlencode($_GET['token']) : '';
+		return "$pcg_prefix/cg/v/{$this->id}p.png?t=$file_mod$token";
 	}
 
 	/**
@@ -206,11 +208,11 @@ class Appearance extends NSModel implements LinkableInterface {
 	 * Get the notes for a specific appearance
 	 *
 	 * @param bool $wrap
-	 * @param bool $cmLink
+	 * @param bool $cm_link
 	 *
 	 * @return string
 	 */
-	public function getNotesHTML(bool $wrap = WRAP, bool $cmLink = true):string {
+	public function getNotesHTML(bool $wrap = WRAP, bool $cm_link = true):string {
 		if (!empty($this->notes_src)){
 			if ($this->notes_rend === null){
 				$this->notes_rend = self::_processNotes($this->notes_src);
@@ -225,6 +227,7 @@ class Appearance extends NSModel implements LinkableInterface {
 			'notes' => $notes,
 			'cm_count' => $cm_count,
 			'wrap' => $wrap,
+			'cm_link' => $cm_link,
 		]);
 	}
 
@@ -910,5 +913,29 @@ HTML;
 		if (CoreUtils::isJSONExpected())
 			Response::fail();
 		else CoreUtils::noPerm();
+	}
+
+	public function getShareURL(bool $can_see_token = false):string {
+		return rtrim(ABSPATH,'/').$this->toURL().($can_see_token && $this->private ? "?token={$this->token}" : '');
+	}
+
+	public function hasTags():bool {
+		return DB::$instance->where('appearance_id', $this->id)->has('tagged');
+	}
+
+	/**
+	 * For Twig
+	 * @return bool
+	 */
+	public function getProtected(){
+		return $this->protected;
+	}
+
+	/**
+	 * For Twig
+	 * @return Cutiemark[]
+	 */
+	public function getCutiemarks(){
+		return $this->cutiemarks;
 	}
 }
