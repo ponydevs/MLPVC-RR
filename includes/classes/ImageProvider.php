@@ -48,7 +48,7 @@ class ImageProvider {
 			self::PROV_FAVME,
 		];
 	private static $_providerRegexes = [
-		'(?:[A-Za-z\-\d]+\.)?deviantart\.com/art/(?:[A-Za-z\-\d]+-)?(\d+)' => self::PROV_DA,
+		'(?:[A-Za-z\-\d]+\.)?deviantart\.com/(?:[A-Za-z\-\d]+/)?art/(?:[A-Za-z\-\d]+-)?(\d+)' => self::PROV_DA,
 		'fav\.me/(d[a-z\d]{6,})' => self::PROV_FAVME,
 		'sta\.sh/([a-z\d]{10,})' => self::PROV_STASH,
 		'(?:i\.)?imgur\.com/([A-Za-z\d]{1,7})' => self::PROV_IMGUR,
