@@ -158,7 +158,7 @@ class View {
 				switch ($this->method){
 					case 'list':
 						return new NavBreadcrumb('Events',null,true);
-					case 'index':
+					case 'view':
 						return (new NavBreadcrumb('Events', '/events'))->setChild($scope['heading']);
 				}
 			break;

@@ -98,18 +98,18 @@ class User extends AbstractUser implements LinkableInterface {
 	 * Local profile link generator
 	 *
 	 * @param bool $with_avatar
-	 * @param bool $enablePromises
+	 * @param bool $enable_promises
+	 * @param bool $with_vector_app_icon
 	 *
 	 * @return string
 	 */
-	public function toAnchor(bool $with_avatar = false, bool $enablePromises = false):string {
-		$avatar = $with_avatar ? (
-			$enablePromises
-			? "<div class='user-avatar-promise avatar image-promise' data-src='{$this->avatar_url}'></div>"
-			: "<img src='{$this->avatar_url}' class='avatar' alt='avatar'> "
-		) : '';
-
-		return "<a href='{$this->toURL()}' class='da-userlink local".($with_avatar ? " with-avatar provider-{$this->avatar_provider}":'')."'>$avatar<span class='name'>{$this->name}</span></a>";
+	public function toAnchor(bool $with_avatar = false, bool $enable_promises = false, bool $with_vector_app_icon = false):string {
+		return Twig::$env->render('user/_anchor.html.twig', [
+			'user' => $this,
+			'with_avatar' => $with_avatar,
+			'enable_promises' => $enable_promises,
+			'with_vector_app_icon' => $with_vector_app_icon,
+		]);
 	}
 
 	public function toDALink(){

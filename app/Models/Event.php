@@ -7,6 +7,7 @@ use App\CoreUtils;
 use App\DB;
 use App\DeviantArt;
 use App\Permission;
+use App\Time;
 use App\UserPrefs;
 
 /**
@@ -38,6 +39,10 @@ class Event extends NSModel implements LinkableInterface {
 		['creator', 'class' => 'User', 'foreign_key' => 'added_by'],
 		['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],
 	];
+	/** For Twig */
+	function getCreator(){
+		return $this->creator;
+	}
 
 	public const EVENT_TYPES = [
 		'collab' => 'Collaboration',
@@ -120,7 +125,7 @@ class Event extends NSModel implements LinkableInterface {
 		$HTML = '';
 
 		if ($this->type === 'collab')
-			$HTML = '<div id="final-image">'.DeviantArt::getCachedDeviation($this->result_favme)->toLinkWithPreview().'</div>';
+			$HTML = '<div id="final-image"><div>'.DeviantArt::getCachedDeviation($this->result_favme)->toLinkWithPreview().'</div></div>';
 		else {
 
 			/** @var $HighestScoringEntries EventEntry[] */
@@ -143,5 +148,10 @@ class Event extends NSModel implements LinkableInterface {
 		}
 
 		return $wrap ? "<div id='results'>$HTML</div>" : $HTML;
+	}
+
+	public function getDurationString():string {
+		$diff = Time::difference($this->starts_at->getTimestamp(), $this->ends_at->getTimestamp());
+		return Time::differenceToString($diff, true);
 	}
 }

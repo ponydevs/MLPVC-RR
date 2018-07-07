@@ -1,0 +1,31 @@
+{# @var events \App\Models\Event[] #}
+{# @var pagination \App\Pagination #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+<div id="content">
+    <h1>Events</h1>
+	<p>Organized by the club staff</p>
+
+{% set is_staff = permission('staff') %}
+{% if is_staff %}
+	<div class="button-block align-center">
+		<button class="green typcn typcn-plus" id="add-event">New event</button>
+	</div>
+{% endif %}
+
+	{{ pagination }}
+	{% spaceless %}
+	<ul id='event-list'>
+		{% for event in events %}
+			{% include 'event/_list_item.html.twig' %}
+		{% endfor %}
+	</ul>
+	{% endspaceless %}
+	{{ pagination }}
+</div>
+{{ export_vars({
+	'EVENT_TYPES': constant('App\\Models\\Event::EVENT_TYPES'),
+	'EventPage': false,
+}) }}
+{% endblock %}

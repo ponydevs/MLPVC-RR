@@ -89,7 +89,7 @@ $router->map('GET', '/eqg/[i:id]',   'EQGController#redirectInt');
 $router->map('GET', '/eqg/[adi:id]', 'EQGController#redirectStr');
 # EventController
 $router->map('GET', '/events/[i]?',        'EventController#list');
-$router->map('GET', '/event/[i:id][adi]?', 'EventController#index');
+$router->map('GET', '/event/[i:id][adi]?', 'EventController#view');
 # MovieController
 $router->map('GET', '/movie/[i:id][adi]?', 'MovieController#view');
 # MuffinRatingController

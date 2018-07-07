@@ -7,3 +7,4 @@ require $autoload;
 unset($autoload);
 require __DIR__.'/../constants.php';
 require __DIR__.'/activerecord.php';
+require __DIR__.'/twig.php';

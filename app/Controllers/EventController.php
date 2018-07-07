@@ -40,11 +40,11 @@ class EventController extends Controller {
 			CoreUtils::notFound();
 	}
 
-	public function index($params){
+	public function view($params){
 		$this->load_event($params);
 
 		$heading = $this->event->name;
-		$EventType = Event::EVENT_TYPES[$this->event->type];
+		$event_type = Event::EVENT_TYPES[$this->event->type];
 
 		CoreUtils::fixPath($this->event->toURL());
 		$js = ['jquery.fluidbox',true];
@@ -53,24 +53,24 @@ class EventController extends Controller {
 
 		CoreUtils::loadPage(__METHOD__, [
 			'heading' => $heading,
-			'title' => "$heading - $EventType Event",
+			'title' => "$heading - $event_type Event",
 			'css' => [true],
 			'js' => $js,
 			'import' => [
-				'Event' => $this->event,
-				'EventType' => $EventType,
+				'event' => $this->event,
+				'event_type' => $event_type,
 			],
 		]);
 	}
 
 	public function list(){
-		$Pagination = new Pagination('/events', 5, Event::count());
+		$pagination = new Pagination('/events', 5, Event::count());
 
-		CoreUtils::fixPath($Pagination->toURI());
+		CoreUtils::fixPath($pagination->toURI());
 		$heading = 'Events';
-		$title = "Page {$Pagination->getPage()} - $heading";
+		$title = "Page {$pagination->getPage()} - $heading";
 
-		$Events = Event::find('all', $Pagination->getAssocLimit());
+		$events = Event::find('all', $pagination->getAssocLimit());
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))
@@ -82,9 +82,8 @@ class EventController extends Controller {
 			'js' => $js,
 			'css' => [true],
 			'import' => [
-				'Events' => $Events,
-				'Pagination' => $Pagination,
-				'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN,
+				'events' => $events,
+				'pagination' => $pagination,
 			],
 		]);
 	}

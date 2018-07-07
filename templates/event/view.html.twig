@@ -1,0 +1,91 @@
+{# @var heading string #}
+{# @var event_type string #}
+{# @var start_ts string #}
+{# @var event \App\Models\Event #}
+{# @var user_entries \App\Models\EventEntry[] #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+<div id="content" class="section-container">
+	<h1>{{ heading }}</h1>
+	<p>{{ event_type }} for {{ event.getEntryRoleName }} &bull; {% if event.hasStarted %}{{ event.hasEnded ? 'Ended' : 'Ends' }}  {{ time_tag(event.ends_at) }}{% else %}Starts {{ time_tag(event.starts_at) }}{% endif %}</p>
+
+{% set is_staff = permission('staff') %}
+{% set is_collab = event.type == 'collab' %}
+{% set is_contest = event.type == 'contest' %}
+{% set could_enter = signed_in and event.checkCanEnter(current_user) %}
+{% set can_enter = could_enter and event.isOngoing %}
+{% set finalized = event.isFinalized %}
+{% if signed_in and not finalized %}
+	<div class="align-center button-block" id="event-{{ event.id }}">
+		<button class="green typcn typcn-user-add"{{ can_enter ? ' disabled' : '' }} id="enter-event">Enter</button>
+		{% if is_staff %}
+		<button class="blue typcn typcn-pencil edit-event">Edit</button>
+		<button class="darkblue typcn typcn-image finalize-event"{{ is_collab ? '' : ' disabled' }}>Finalize</button>
+		<button class="red typcn typcn-trash delete-event">Delete</button>
+		{% endif %}
+	</div>
+{% endif %}
+{% if finalized %}
+	<section>
+		<h2><span class="typcn typcn-image"></span>{{ is_collab ? 'Finished image' : 'Results' }}</h2>
+		{# TODO Make a sub-view or something #}
+		{{ event.getWinnerHTML }}
+	</section>
+{% endif %}
+
+	<section>
+		<h2><span class='typcn typcn-info-large'></span>Description</h2>
+		<div id="description">
+			{{ event.desc_rend }}
+			<p>Entries will be accepted until {{ time_tag(event.ends_at, constant('App\\Time::TAG_EXTENDED'), constant('App\\Time::TAG_STATIC_DYNTIME')) }}. Entrants can submit {{ event.max_entries is not null ?  'a maximum of ' ~ make_plural('entry', event.max_entries, constant('PREPEND_NUMBER')) : 'an unlimited number of entries' }} each.</p>
+			{% if is_contest %}
+			<p>
+				The entry that receives the highest positive overall score will be the winner. <?=\App\CoreUtils::makePlural(Permission::ROLES_ASSOC[$Event->vote_role])?> may vote only once per entry, and entrants cannot vote on their own entries.<br>
+				Votes can only be changed 1 hour after being cast, they are locked in afterwards. Editing the entry removes this lock from cast votes.
+			</p>
+			{% endif %}
+			{% spaceless %}
+			{% if not can_enter %}
+				{% if not finalized %}
+				<p class="color-red">
+					{% if not signed_in %}
+						You must be signed in to see whether you can participate in this event.
+					{% else %}
+						{% if could_enter %}
+							{% if not event.hasStarted %}
+							You can't participate in this event until it has started.
+							{% else %}
+							You can no longer participate in this event.
+							{% endif %}
+						{% else %}
+							{% if event.entry_role == 'spec_discord' %}
+							You must be a member of our Discord server to participate in this event. <a href="{{ constant('DISCORD_INVITE_LINK') }}">Join now</a>
+								{% if not current_user.isDiscordLinked %}
+								<br>Be sure to <a href='".Auth::$user->toURL()."#discord-connect'>link your account</a> on the site once you've joined.
+								{% endif %}
+							{% else %}
+							You cannot participate in this event.
+							{% endif %}
+						{% endif %}
+					{% endif %}
+				</p>
+				{% else %}
+				<p class='color-blue'>This event has concluded. Thank you to everyone who participated!</p>
+				{% endif %}
+			{% endif %}
+			{% endspaceless %}
+		</div>
+	</section>
+
+	<section>
+		<h2><span class='typcn typcn-group'></span>Entries</h2>
+		{{ event.getEntriesHTML(true) }}
+	</section>
+</div>
+{{ export_vars({
+	'EVENT_TYPES': constant('App\\Models\\Event::EVENT_TYPES'),
+	'EventPage': true,
+	'EventType': event.type,
+}) }}
+{% endblock %}
