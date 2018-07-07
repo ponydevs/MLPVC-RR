@@ -208,63 +208,6 @@ class Episodes {
 	}
 
 	/**
-	 * Get the <tbody> contents for the episode list table
-	 *
-	 * @param Episode[]|null $Episodes
-	 * @param bool           $areMovies
-	 *
-	 * @return string
-	 */
-	public static function getTableTbody($Episodes = null, bool $areMovies = false):string {
-		if (empty($Episodes))
-			return "<tr class='empty align-center'><td colspan='3'><em>There are no ".($areMovies?'movies':'episodes').' to display</em></td></tr>';
-
-		$Body = '';
-		$PathStart = '/episode/';
-		foreach ($Episodes as $Episode) {
-			$adminControls = Permission::insufficient('staff') ? '' : <<<HTML
-<span class='admincontrols'>
-<button class='edit-episode typcn typcn-pencil blue' title='Edit episode'></button>
-<button class='delete-episode typcn typcn-times red' title='Delete episode'></button>
-</span>
-HTML;
-
-			$title = $Episode->formatTitle(AS_ARRAY);
-			if (!$Episode->is_movie){
-				$href = $PathStart.$title['id'];
-				if ($Episode->twoparter)
-					$title['episode'] .= '-'.(\intval($title['episode'],10)+1);
-				$SeasonEpisode = <<<HTML
-			<td class='season' rowspan='2'>{$title['season']}</td>
-			<td class='episode' rowspan='2'>{$title['episode']}</td>
-HTML;
-			}
-			else {
-				$href = $Episode->toURL();
-				$SeasonEpisode = "<td class='episode' rowspan='2'>{$title['episode']}</td>";
-			}
-
-			$star = '';
-			if ($Episode->isLatest()){
-				$star = '<span class="typcn typcn-home" title="Curently visible on the homepage"></span> ';
-			}
-			if (!$Episode->aired)
-				$star .= '<span class="typcn typcn-chart-pie" title="'.($Episode->is_movie?'Movie':'Episode')." didn't air yet, voting disabled\"></span>&nbsp;";
-
-			$airs = Time::tag($Episode->airs, Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
-
-			$Body .= <<<HTML
-	<tr data-epid='{$title['id']}'>
-		$SeasonEpisode
-		<td class='title'>$star<a href="$href">{$title['title']}</a>$adminControls</td>
-	</tr>
-	<tr><td class='airs'>$airs</td></tr>
-HTML;
-		}
-		return $Body;
-	}
-
-	/**
 	 * Render episode voting HTML
 	 *
 	 * @param Episode $Episode

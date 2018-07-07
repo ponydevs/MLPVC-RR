@@ -1,0 +1,58 @@
+{# @var export array #}
+{# @var episodes_pagination string #}
+{# @var movies_pagination string #}
+{# @var episodes \App\Models\Episode[] #}
+{# @var movies \App\Models\Episode[] #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+{% set is_staff = permission('staff') %}
+<div id="content">
+	<div class="sidebyside">
+		<h1>Episodes</h1>
+{% if is_staff %}
+		<div class="actions">
+			<button id="add-episode" class="green typcn typcn-plus">Add Episode</button>
+		</div>
+{% endif %}
+{{ episodes_pagination }}
+{% if episodes is not empty or (episodes is empty and is_staff) %}
+		<table id="episodes">
+			<thead>
+				<tr>
+					<th>S<span class="mobile-hide">eason</span></th>
+					<th>E<span class="mobile-hide">pisode</span></th>
+					<th>Title & Air Date</th>
+				</tr>
+			</thead>
+			<tbody>{% include 'show/_table_body.html.twig' with { episodes: episodes, are_movies: false } %}</tbody>
+		</table>
+{% endif %}
+{{ episodes_pagination }}
+	</div>
+	<div class="sidebyside">
+		<h1>Movies &amp; Shorts</h1>
+{% if is_staff %}
+		<div class="actions">
+			<button id="add-movie" class="green typcn typcn-plus">Add Movie</button>
+		</div>
+{% endif %}
+{{ movies_pagination }}
+{% if movies is not empty or (movies is empty and is_staff) %}
+		<table id="movies">
+			<thead>
+				<tr>
+					<th><span class="mobile-hide">Overall </span>#</th>
+					<th>Title &amp; Air Date</th>
+				</tr>
+			</thead>
+			<tbody>{% include 'show/_table_body.html.twig' with { episodes: movies, are_movies: true } %}</tbody>
+		</table>
+{% endif %}
+{{ movies_pagination }}
+	</div>
+</div>
+{% if export is defined %}
+{{ export_vars(export) }}
+{% endif %}
+{% endblock %}
