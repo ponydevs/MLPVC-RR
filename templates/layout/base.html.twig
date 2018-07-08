@@ -35,7 +35,7 @@
 			<section class="{{ signed_in ? 'welcome' : 'login' }}">
 				<h2 class="hidden">Welcome!</h2>
 				{% include 'layout/_sidebar_useful_links.html.twig' %}
-				<div class="buttons">
+				<div class="button-block">
 					{% if signed_in %}
 						<button id="signout" class="typcn typcn-arrow-back">Sign out</button>
 					{% else %}

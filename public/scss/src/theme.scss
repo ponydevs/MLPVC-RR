@@ -539,6 +539,7 @@ header, #sidebar .mobile-nav {
 
 	&::-webkit-scrollbar {
 		width: 10px;
+		height: 10px;
 	}
 	&::-webkit-scrollbar-button {
 		display: none;
@@ -563,15 +564,11 @@ header, #sidebar .mobile-nav {
 		@extend %navbar-li;
 	}
 
-	.btn-da, .btn-discord {
-		margin: 0;
-	}
-
 	> .logged-in {
 		display: flex;
 		flex-flow: row nowrap;
 		padding: 4px;
-		margin-bottom: 10px;
+		margin-bottom: 6px;
 		border-radius: 50px;
 
 		&.provider-deviantart {
@@ -658,12 +655,10 @@ header, #sidebar .mobile-nav {
 			}
 		}
 
-		.buttons > * { margin: 0 }
-
 		&.welcome .links {
 			list-style: none;
 			border-radius: 5px;
-			margin: 0 0 10px;
+			margin: 0 0 6px;
 			padding: 5px;
 			line-height: 1.2em;
 

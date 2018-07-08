@@ -183,7 +183,7 @@
 {% if export_roles is defined %}
 {{ export_vars({ 'ROLES': export_roles }) }}
 {% endif %}
-{% if user is defined %}
+{% if user is not empty %}
 {{ export_vars({
 	'username': user.name,
 	'userId': user.id,

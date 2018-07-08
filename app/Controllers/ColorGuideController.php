@@ -241,7 +241,7 @@ class ColorGuideController extends Controller {
 
 			// Search query exists
 			if ($searching){
-				$search_query = preg_replace(new RegExp('[^\w\s*?]'),'',CoreUtils::trim($_GET['q']));
+				$search_query = preg_replace(new RegExp('[^\w\s*?-]'),'',CoreUtils::trim($_GET['q']));
 				$title .= "$search_query - ";
 				$multi_match = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
 					['label','tags'],

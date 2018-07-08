@@ -45,7 +45,7 @@ class UserController extends Controller {
 		}
 		else $user = Users::get($un, 'name');
 
-		if (empty($user)){
+		if (empty($user) || !($user instanceof User)){
 			if (Auth::$signed_in && isset($user) && $user === false){
 				if (strpos(Auth::$session->scope, 'browse') !== false){
 					$error = 'user does not exist';
@@ -75,14 +75,9 @@ class UserController extends Controller {
 			$dev_on_dev = Permission::sufficient('developer') && Permission::sufficient('developer', $user->role);
 		}
 
-		$CurrentSessionID = null;
 		if ($error !== null)
 			HTTP::statusCode(404);
-		else {
-			if ($same_user)
-				$CurrentSessionID = Auth::$session->id;
-			$sessions = $user->sessions;
-		}
+		else $sessions = $user->sessions;
 
 		$is_staff = Permission::sufficient('staff');
 

@@ -1,11 +1,11 @@
 {# @var recent_posts \App\Models\Post[] #}
 {# @var wrap string #}
-{% if wrap is null or wrap %}
+{% if wrap is not defined or wrap %}
 <ul>
-	{% endif %}
+{% endif %}
 	{% for post in recent_posts %}
 		{{ post.getLi }}
 	{% endfor %}
-	{% if wrap is null or wrap %}
+{% if wrap is not defined or wrap %}
 </ul>
 {% endif %}
