@@ -95,7 +95,7 @@ define('PRINTABLE_ASCII_PATTERN','^[ -~\n]+$');
 define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~\n\t]');
 define('NEWEST_FIRST', 'desc');
 define('OLDEST_FIRST', 'asc');
-$REWRITE_REGEX = new RegExp('^/(?:\s*?)([ -~]+)?/?[^ -~]*(?:\.php)?$');
+$REWRITE_REGEX = new RegExp('^/([^/].*)?$');
 
 // Color Guide regular expression \\
 $EQG_URL_PATTERN = new RegExp('^eqg/?');

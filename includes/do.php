@@ -7,26 +7,17 @@
 	use App\Users;
 	use App\CoreUtils;
 
-	$permRedirectPattern = new RegExp('^\s*(.*?)\.php(\?.*)?$','i');
-	$requri = CoreUtils::trim($_SERVER['REQUEST_URI']);
-	if (preg_match($permRedirectPattern,$requri))
-		HTTP::tempRedirect(preg_replace($permRedirectPattern, '$1$2', $requri));
-	$decoded_uri = CoreUtils::trim(urldecode($requri));
-	if (!CoreUtils::isURLSafe($decoded_uri, $matches)){
-		Users::authenticate();
-		CoreUtils::badReq();
-	}
-
+	// Strip &hellip; and what comes after
+	$decoded_uri = CoreUtils::trim(urldecode($_SERVER['REQUEST_URI']));
+	$request_uri = preg_replace(new RegExp('….*$'),'',$decoded_uri);
+	// Strip non-ascii
+	$safe_uri = preg_replace(new RegExp('[^ -~]'), '', $request_uri);
 	// Enforce URL
-	$decoded_uri = '/'.rtrim(($matches[1]??'').'/'.($matches[2]??''),'/');
-	$qs = strtok('?');
-	if ($qs !== false)
-		$decoded_uri .= "?$qs";
-	CoreUtils::fixPath($decoded_uri);
+	CoreUtils::fixPath($safe_uri);
 
 	require INCPATH.'routes.php';
 	/** @var $match array */
-	$match = $router->match($decoded_uri);
+	$match = $router->match($safe_uri);
 	if (!isset($match['target']))
 		CoreUtils::notFound();
 	(\App\RouteHelper::processHandler($match['target']))($match['params']);
