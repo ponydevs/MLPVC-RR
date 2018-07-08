@@ -111,7 +111,7 @@ HTML;
 <script nonce="<?=CSP_NONCE?>">window.jQuery || document.write('<script src="<?=CoreUtils::cachedAssetLink('jquery-3.2.1','js/min','js')?>"><\/script>');</script>
 <script nonce="<?=CSP_NONCE?>">$.API = { API_PATH: "<?=defined('API_PATH') ? API_PATH : null?>" }</script>
 <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
-<script src="https://ws.<?=$_SERVER['SERVER_NAME']?>:8667/socket.io/socket.io.js" id="wss"></script>
+<script src="https://<?=WS_SERVER_HOST?>/socket.io/socket.io.js" id="wss"></script>
 <?php
 	echo CoreUtils::exportVars([
 		'PRINTABLE_ASCII_PATTERN' => PRINTABLE_ASCII_PATTERN,
