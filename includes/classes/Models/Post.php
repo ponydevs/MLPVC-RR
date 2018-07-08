@@ -111,8 +111,9 @@ class Post extends NSModel implements LinkableInterface {
 		$where_query = "type = 'post' AND id = :id";
 		$where_bind = ['id' => $this->id];
 		if ($this->old_id !== null){
-			$where_query = "($where_query) OR (type = :kind AND old_id = :id)";
+			$where_query = "($where_query) OR (type = :kind AND old_id = :old_id)";
 			$where_bind['kind'] = $this->kind;
+			$where_bind['old_id'] = $this->old_id;
 		}
 
 		return DB::$instance->setModel(Log::class)->querySingle(
