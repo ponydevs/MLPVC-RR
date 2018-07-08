@@ -119,8 +119,6 @@ $ cd /etc/ssl/certs
 $ openssl dhparam -out dhparam.pem 4096
 ```
 
-The top part of the `nginx` cofiguration is responsible for proxying HTTP requests on port 80 to a WebSocket server called [MLPVC-WS](https://github.com/ponydevs/MLPVC-WS), which is required to allow Let's Encrypt to verify it as a web service & issue SSL certificates to it. Since your development environment is most likely not exposed to the Internet, this part of the nginx configuration can safely be removed/commented out. 
-
 ### Importing the database schema
 
 In order to allow changes to the database schema without having to make modifications by hand, the site makes use of [Phinx](https://phinx.org/), a PHP migration manager. All the code necessary to set up the tables and to stay up to date with the latest changes is provided in the form of migrations. Simply run one of the command below, and assuming you've properly set up your `conf.php` file the migrations should run without any issues.
