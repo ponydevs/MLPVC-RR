@@ -4,7 +4,7 @@
 !/www/.well-known/assetlinks.json
 !/www/.well-known/apple-app-site-association
 
-/includes/conf.php
+conf.php
 *.log
 *.opdownload
 /node_modules
