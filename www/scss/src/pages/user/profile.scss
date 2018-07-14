@@ -72,6 +72,10 @@
 		.avatar-wrap {
 			border-width: 3px;
 
+			.avatar {
+				display: block;
+			}
+
 			&.provider-discord {
 				&, .avatar {
 					width: 75px;
