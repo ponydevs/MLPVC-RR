@@ -1,0 +1,38 @@
+{# @var heading string #}
+{# @var user \App\Models\User #}
+{# @var is_owner bool #}
+{# @var pagination \App\Pagination #}
+{# @var appearances array #}
+{# @var hex_color_regex \App\RegExp #}
+{# @var max_upload_size string #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+{% set is_staff = permission('staff') %}
+{% set owner_or_staff = is_owner or is_staff %}
+<div id="content">
+	<h1>{{ heading }}</h1>
+	<p>Unofficial colors maintained by {{ user.toAnchor }}</p>
+	{% if owner_or_staff %}
+	<div class='align-center button-block'>
+		<button class='green typcn typcn-plus' id="new-appearance-btn">Add new appearance</button>
+		{{ user.getPCGPointHistoryButtonHTML }}
+	</div>
+	{% endif %}
+	{{ pagination }}
+	{% include 'colorguide/_appearance_list.html.twig' with { 'upload_permission': owner_or_staff } %}
+	{{ pagination }}
+</div>
+{{ export_vars({
+	'EQG': false,
+	'AppearancePage': false,
+	'PersonalGuide': user.id,
+}) }}
+{% if owner_or_staff %}
+	{{ export_vars({
+		'TAG_TYPES_ASSOC': constant('App\\Tags::TAG_TYPES'),
+		'MAX_SIZE': max_upload_size,
+		'HEX_COLOR_PATTERN': hex_color_regex,
+	}) }}
+{% endif %}
+{% endblock %}

@@ -17,13 +17,13 @@ use App\Tags;
 
 class TagController extends ColorGuideController {
 	public function list(){
-		$Pagination = new Pagination('/cg/tags', 20, DB::$instance->count('tags'));
+		$pagination = new Pagination('/cg/tags', 20, DB::$instance->count('tags'));
 
-		CoreUtils::fixPath($Pagination->toURI());
+		CoreUtils::fixPath($pagination->toURI());
 		$heading = 'Tags';
-		$title = "Page {$Pagination->getPage()} - $heading - Color Guide";
+		$title = "Page {$pagination->getPage()} - $heading - Color Guide";
 
-		$Tags = Tags::getFor(null,$Pagination->getLimit(), true);
+		$tags = Tags::getFor(null,$pagination->getLimit(), true);
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))
@@ -35,8 +35,8 @@ class TagController extends ColorGuideController {
 			'css' => [true],
 			'js' => $js,
 			'import' => [
-				'Tags' => $Tags,
-				'Pagination' => $Pagination,
+				'tags' => $tags,
+				'pagination' => $pagination,
 			],
 		]);
 	}

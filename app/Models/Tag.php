@@ -27,6 +27,10 @@ class Tag extends NSModel {
 	public static $belongs_to = [
 		['synonym', 'class' => 'Tag', 'foreign_key' => 'synonym_of'],
 	];
+	/** For Twig */
+	public function getSynonym():Tag {
+		return $this->synonym;
+	}
 
 	/**
 	 * @param Appearance $appearance

@@ -83,11 +83,10 @@
 	{% endif %}
 	</div>
 </div>
-
 {{ export_vars({
 	'EQG': eqg,
 	'AppearancePage': true,
-	'PersonalGuide': owner.id ?? false,
+	'PersonalGuide': owner.name ?? false,
 }) }}
 {% if exports is defined %}
 	{{ export_vars(exports) }}

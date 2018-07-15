@@ -10,7 +10,7 @@
 
 {% if appearances is not empty %}
 	{% for p in appearances %}
-		<li id='p{$p->id}'>
+		<li id='p{{ p.id }}'>
 			{{ p.getSpriteHTML(upload_permission) }}
 			<div>
 				{% spaceless %}

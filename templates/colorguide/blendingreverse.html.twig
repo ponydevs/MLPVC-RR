@@ -1,5 +1,9 @@
+{# @var hex_color_regex \App\RegExp #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
 <div id="content">
-	<h1><?=$title?></h1>
+	<h1>{{ title }}</h1>
 	<p>Reverse various filters applied to an image</p>
 
 	<div id="controls">
@@ -74,5 +78,7 @@
 		</div>
 	</div>
 </div>
-<?  global $HEX_COLOR_REGEX;
-	echo \App\CoreUtils::exportVars(['HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX]);
+{{ export_vars({
+	'HEX_COLOR_PATTERN': hex_color_regex,
+}) }}
+{% endblock %}

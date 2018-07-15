@@ -601,12 +601,10 @@ class AppearanceController extends ColorGuideController {
 			'css' => [true],
 			'js' => [true],
 			'import' => [
-				'Appearance' => $this->appearance,
-				'ColorGroups' => $ColorGroups,
-				'Colors' => $Colors,
-				'AllColors' => $AllColors,
-				'Map' => $Map,
-				'Owner' => $this->appearance->owner,
+				'appearance' => $this->appearance,
+				'colors' => $Colors,
+				'map' => $Map,
+				'owner' => $this->appearance->owner,
 			],
 		]);
 	}

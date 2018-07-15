@@ -35,12 +35,15 @@ class PersonalGuideController extends ColorGuideController {
 		$AppearancesPerPage = UserPrefs::get('cg_itemsperpage');
 	    $_EntryCount = $this->owner->getPCGAppearanceCount();
 
-	    $Pagination = new Pagination($this->path, $AppearancesPerPage, $_EntryCount);
-	    $Ponies = $this->owner->getPCGAppearances($Pagination);
+	    $pagination = new Pagination($this->path, $AppearancesPerPage, $_EntryCount);
+	    $appearances = $this->owner->getPCGAppearances($pagination);
 
-		CoreUtils::fixPath($Pagination->toURI());
+		CoreUtils::fixPath($pagination->toURI());
 		$heading = CoreUtils::posess($this->owner->name).' Personal Color Guide';
-		$title = "Page {$Pagination->getPage()} - $heading";
+		$title = "Page {$pagination->getPage()} - $heading";
+
+		$is_owner = $this->ownerIsCurrentUser;
+		$owner_or_staff = $is_owner || Permission::sufficient('staff');
 
 		$settings = [
 			'title' => $title,
@@ -48,15 +51,20 @@ class PersonalGuideController extends ColorGuideController {
 			'css' => ['pages/colorguide/guide'],
 			'js' => ['jquery.ctxmenu', 'pages/colorguide/guide', 'paginate'],
 			'import' => [
-				'Ponies' => $Ponies,
-				'Pagination' => $Pagination,
-				'User' => $this->owner,
-				'isOwner' => $this->ownerIsCurrentUser,
+				'appearances' => $appearances,
+				'pagination' => $pagination,
+				'user' => $this->owner,
+				'is_owner' => $is_owner,
+				'owner_or_staff' => $owner_or_staff,
+				'max_upload_size' => CoreUtils::getMaxUploadSize(),
 			],
 		];
-		if ($this->ownerIsCurrentUser || Permission::sufficient('staff')){
+		if ($owner_or_staff){
+			global $HEX_COLOR_REGEX;
+
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
+			$settings['import']['hex_color_regex'] = $HEX_COLOR_REGEX;
 		}
 		CoreUtils::loadPage('UserController::colorGuide', $settings);
 	}

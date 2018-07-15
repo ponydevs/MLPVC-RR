@@ -286,48 +286,26 @@ HTML;
 	/**
 	 * Renders HTML of the list of changes
 	 *
-	 * @param MajorChange[] $Changes
+	 * @param MajorChange[] $changes
 	 * @param bool          $wrap
 	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public static function getMajorChangesHTML(?array $Changes, bool $wrap = WRAP):string {
+	public static function getMajorChangesHTML(?array $changes, bool $wrap = WRAP):string {
 		$seeInitiator = Permission::sufficient('staff');
 		/** @var $PonyCache Appearance[] */
 		$HTML = '';
-		if (\is_array($Changes))
-			foreach ($Changes as $c){
+		if (\is_array($changes))
+			foreach ($changes as $c){
 				$initiator = $seeInitiator ? "<div class='by'><span class='typcn typcn-user'></span> {$c->log->actor->toAnchor()}</div>" : '';
 				$appearance = $c->appearance->toAnchorWithPreview();
 				$when = Time::tag($c->log->timestamp);
-				$HTML .= <<<HTML
-<tr>
-	<td class="pony-link">$appearance</td>
-	<td class="reason">{$c->reason}</td>
-	<td class="by-at">
-		<div class="when"><span class="typcn typcn-time"></span> $when</div>
-		$initiator
-	</tr>
-</tr>
-HTML;
-			};
+			}
 
-		if (!$wrap)
-			return $HTML;
-
-		return <<<HTML
-<table>
-	<thead>
-		<tr>
-			<th>Appearance</th>
-			<th class="reason">Reason</th>
-			<th>When?</th>
-		</tr>
-	</thead>
-	<tbody id='changes'>$HTML</tbody>
-</table>
-HTML;
+		return Twig::$env->render('colorguide/_major_changes.html.twig', [
+			'changes' => $changes,
+		]);
 	}
 
 	public static function processPCGSlotHistoryData(string $type, ?string $data):?string {

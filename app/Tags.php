@@ -113,8 +113,7 @@ class Tags {
 		$canEdit = Permission::sufficient('staff');
 		if ($canEdit){
 			$refresh = " <button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>";
-			$utils = "<td class='utils align-center'><button class='typcn typcn-trash delete' title='Delete'></button> ".
-			         "<button class='typcn typcn-flow-children synon' title='Make synonym'></button></td>";
+			$utils = "<td class='utils align-center'><button class='typcn typcn-trash delete' title='Delete'></button> <button class='typcn typcn-flow-children synon' title='Make synonym'></button></td>";
 		}
 
 		if (!empty($Tags)) foreach ($Tags as $t){

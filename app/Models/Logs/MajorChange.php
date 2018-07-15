@@ -17,6 +17,10 @@ class MajorChange extends AbstractEntryType {
 	public static $belongs_to = [
 		['appearance', 'class' => '\App\Models\Appearance'],
 	];
+	/** For Twig */
+	public function getAppearance():Appearance {
+		return $this->appearance;
+	}
 
 	public static function total(bool $eqg):int {
 		$query = DB::$instance->querySingle(

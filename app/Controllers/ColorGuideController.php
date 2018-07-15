@@ -143,37 +143,49 @@ class ColorGuideController extends Controller {
 	public function fullList($params){
 		$this->_initialize($params);
 
-		$GuideOrder = !isset($_GET['alphabetically']);
-		if (!$GuideOrder)
+		$guide_order = !isset($_GET['alphabetically']);
+		if (!$guide_order)
 			DB::$instance->orderBy('label');
-		$Appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
+		$appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
 
 		$path = new NSUriBuilder("{$this->path}/full");
-		if (!$GuideOrder)
+		if (!$guide_order)
 			$path->append_query_param('alphabetically', null);
 
 		if (CoreUtils::isJSONExpected())
 			Response::done([
-				'html' => CGUtils::getFullListHTML($Appearances, $GuideOrder, $this->_EQG, NOWRAP),
+				'html' => CGUtils::getFullListHTML($appearances, $guide_order, $this->_EQG, NOWRAP),
 				'stateUrl' => (string)$path,
 			]);
 
 		CoreUtils::fixPath($path);
 
+		$is_staff = Permission::sufficient('staff');
+
 		$js = [];
-		if (Permission::sufficient('staff'))
+		if ($is_staff)
 			$js[] = 'Sortable';
 		$js[] = true;
 
+		$eqg = $this->_EQG;
+		$import = [
+			'eqg' => $eqg,
+			'appearances' => $appearances,
+			'guide_order' => $guide_order,
+			'is_staff' => $is_staff,
+			'full_list' => CGUtils::getFullListHTML($appearances, $guide_order, $eqg),
+		];
+		if ($is_staff){
+			global $HEX_COLOR_REGEX;
+
+			$import['max_upload_size'] = CoreUtils::getMaxUploadSize();
+			$import['hex_color_pattern'] = $HEX_COLOR_REGEX;
+		}
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Full List - '.($this->_EQG?'EQG':'Pony').' Color Guide',
 			'css' => [true],
 			'js' => $js,
-			'import' => [
-				'EQG' => $this->_EQG,
-				'Appearances' => $Appearances,
-				'GuideOrder' => $GuideOrder,
-			]
+			'import' => $import,
 		]);
 	}
 
@@ -198,13 +210,13 @@ class ColorGuideController extends Controller {
 
 	public function changeList($params){
 		$this->_initialize($params);
-		$Pagination = new Pagination("{$this->path}/changes", 9, MajorChange::total($this->_EQG));
+		$pagination = new Pagination("{$this->path}/changes", 9, MajorChange::total($this->_EQG));
 
-		CoreUtils::fixPath($Pagination->toURI());
+		CoreUtils::fixPath($pagination->toURI());
 		$heading = 'Major '.CGUtils::GUIDE_MAP[$this->_guide].' Color Changes';
-		$title = "Page {$Pagination->getPage()} - $heading - Color Guide";
+		$title = "Page {$pagination->getPage()} - $heading - Color Guide";
 
-		$Changes = MajorChange::get(null, $this->_EQG, $Pagination->getLimitString());
+		$changes = MajorChange::get(null, $this->_EQG, $pagination->getLimitString());
 
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,
@@ -212,9 +224,9 @@ class ColorGuideController extends Controller {
 			'css' => [true],
 			'js' => ['paginate'],
 			'import' => [
-				'EQG' => $this->_EQG,
-				'Changes' => $Changes,
-				'Pagination' => $Pagination,
+				'eqg' => $this->_EQG,
+				'changes' => $changes,
+				'pagination' => $pagination,
 			],
 		]);
 	}
@@ -476,14 +488,16 @@ class ColorGuideController extends Controller {
 
 		CoreUtils::fixPath('/cg/blending');
 
-		$HexPattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_REGEX->jsExport());
+		$hex_pattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_REGEX->jsExport());
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Color Blending Calculator',
 			'css' => [true],
 			'js' => [true],
 			'import' => [
-				'HexPattern' => $HexPattern,
+				'hex_pattern' => $hex_pattern,
 				'nav_blending' => true,
+				'dasprid_link' => Users::get('dasprid', 'name')->toAnchor(User::WITH_AVATAR),
+				'hex_color_regex' => $HEX_COLOR_REGEX,
 			],
 		]);
 	}
@@ -496,14 +510,13 @@ class ColorGuideController extends Controller {
 
 		CoreUtils::fixPath('/cg/blending-reverse');
 
-		$HexPattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_REGEX->jsExport());
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Blending Reverser',
 			'css' => [true],
 			'js' => ['nouislider', 'Blob', 'canvas-toBlob', 'FileSaver', true],
 			'import' => [
-				'HexPattern' => $HexPattern,
 				'nav_blendingrev' => true,
+				'hex_color_regex' => $HEX_COLOR_REGEX,
 			],
 		]);
 	}

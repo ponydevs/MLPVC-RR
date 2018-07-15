@@ -1,0 +1,38 @@
+{# @var tags \App\Models\Tag[] #}
+{% spaceless %}
+{% if wrap is not defined or wrap %}
+<tbody>
+{% endif %}
+{% set can_edit = permission('staff') %}
+{% for t in tags %}
+<tr{{ t.type ? " class='typ-#{t.type}'" : '' }}>
+	<td class="tid">{{ t.id }}</td>
+	<td class="name">
+		<a href='{{ t.searchUrl(false) | apos_encode }}' title='Search for {{ t.name | apos_encode }}'><span class="typcn typcn-zoom"></span>{{ t.name | escape }}</a>
+	</td>
+	{% if can_edit %}
+	<td class='utils align-center'>
+		<button class='typcn typcn-trash delete' title='Delete'></button>
+		<button class='typcn typcn-flow-children synon' title='Make synonym'></button>
+	</td>
+	{% endif %}
+	<td class="title">
+		{{ t.title }}
+		{% if t.synonym_of is not null %}
+			{% if t.title is not empty %}<br>{% endif %}
+			<em>Synonym of <strong>{{ t.synonym.name }}</strong></em>
+		{% endif %}
+	</td>
+	<td class="type">{{ t.type ? constant('App\\Tags::TAG_TYPES')[t.type] : '' }}</td>
+	<td class="uses">
+		<span>{{ t.uses }}</span>
+		{% if t.synonym_of is null and can_edit %}
+		<button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>
+		{% endif %}
+	</td>
+</tr>
+{% endfor %}
+{% if wrap is not defined or wrap %}
+</tbody>
+{% endif %}
+{% endspaceless %}

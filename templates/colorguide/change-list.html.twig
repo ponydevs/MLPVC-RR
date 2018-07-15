@@ -1,0 +1,25 @@
+{# @var heading string #}
+{# @var eqg bool #}
+{# @var changes array #}
+{# @var pagination \App\Pagination #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+<div id="content">
+	<h1>{{ heading }}</h1>
+	<p>Displaying {{ pagination.itemsPerPage }} items/page</p>
+	<div class='align-center button-block'>
+		<a class='btn link typcn typcn-arrow-back' href="/cg/{{ eqg ? 'eqg' : 'pony' }}">Back to {{ eqg ? 'EQG' : 'Pony' }} Guide</a>
+		<a class='btn link typcn typcn-world' href="/cg/{{ eqg ? 'pony' : 'eqg' }}/changes">View {{ eqg ? 'Pony' : 'EQG' }} Changes</a>
+		<a class='btn link typcn typcn-tags' href="/cg/tags">List of tags</a>
+	</div>
+	<div class="responsive-table">
+	{{ pagination }}
+	{% include 'colorguide/_major_changes.html.twig' %}
+	{{ pagination }}
+	</div>
+</div>
+{{ export_vars({
+	'TAG_TYPES_ASSOC': constant('App\\Tags::TAG_TYPES'),
+}) }}
+{% endblock %}

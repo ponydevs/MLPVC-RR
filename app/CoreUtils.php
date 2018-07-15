@@ -553,7 +553,7 @@ class CoreUtils {
 	 *
 	 * @return string
 	 */
-	public static function getMaxUploadSize($sizes = null){
+	public static function getMaxUploadSize($sizes = null):string {
 		if ($sizes === null)
 			$sizes = [ini_get('post_max_size'), ini_get('upload_max_filesize')];
 

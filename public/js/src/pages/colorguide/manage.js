@@ -5,7 +5,7 @@
 		isWebkit = 'WebkitAppearance' in document.documentElement.style, EQG = window.EQG, EQGRq = EQG?'?eqg':'',
 		PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN,
 		AppearancePage = !!window.AppearancePage, PersonalGuide = window.PersonalGuide,
-		PGRq = PersonalGuide ? `/user/${PersonalGuide}` : '',
+		PGRq = PersonalGuide ? `/@${PersonalGuide}` : '',
 		TAG_NAME_REGEX = window.TAG_NAME_REGEX,
 		ColorTextParseError = function(line, lineNumber, matches){
 			let missing = [];

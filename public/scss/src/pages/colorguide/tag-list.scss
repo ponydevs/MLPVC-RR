@@ -35,7 +35,13 @@
 					.typcn { margin-right: 7px }
 				}
 			}
-			&.utils { white-space: nowrap }
+			&.utils {
+				white-space: nowrap;
+
+				button:not(:last-child) {
+					margin-right: 5px;
+				}
+			}
 			&.type {
 				text-align: center;
 				&:empty:before {
@@ -49,6 +55,10 @@
 			&.uses {
 				width: 12%;
 				text-align: center;
+
+				button {
+					margin-left: 5px;
+				}
 			}
 		}
 		.uses > button {

@@ -25,4 +25,8 @@ class Log extends NSModel {
 	public static $belongs_to = [
 		['actor', 'class' => '\App\Models\User', 'foreign_key' => 'initiator'],
 	];
+	/** For Twig */
+	public function getActor():User {
+		return $this->actor;
+	}
 }
