@@ -32,7 +32,7 @@
 			{% if signed_in %}
 				<section class="notifications"{% if notifications is empty %} style="display:none"{% endif %}>
 					<h2>Unread notifications</h2>
-					{% include 'notifications/list.html.twig' %}
+					{% include 'notifications/_list.html.twig' %}
 				</section>
 			{% endif %}
 			<section class="{{ signed_in ? 'welcome' : 'login' }}">
