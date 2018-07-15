@@ -185,7 +185,7 @@ class View {
 					switch ($this->method){
 						case 'contrib':
 							$subbc->setChild(
-								(new NavBreadcrumb('Contributions'))->setChild($scope['contribName'])
+								(new NavBreadcrumb('Contributions'))->setChild($scope['contrib_name'])
 							);
 						break;
 						case 'profile':

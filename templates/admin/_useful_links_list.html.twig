@@ -1,0 +1,26 @@
+{# @var wrap bool #}
+{# @var useful_links \App\Models\UsefulLink[] #}
+{% spaceless %}
+{% if wrap is not defined or wrap %}
+<ol>
+{% endif %}
+{% for l in useful_links %}
+<li id='ufl-{{ l.id }}'>
+	<div>
+		<a href="{{ l.url | apos_encode }}"{{ (l.url | slice(0,1)) == '#' ? " class='action--" ~ (l.url | slice(1)) ~ "'" }} title='{{ l.title | apos_encode }}'>{{ l.label | escape }}</a>
+	</div>
+	{% set can_see = constant('App\\Permission::ROLES_ASSOC')[l.minrole] %}
+	{% if l.minrole != 'developer' %}
+		{% set can_see = make_plural(can_see) ~ ' and above' %}
+	{% endif %}
+	<div><span class='typcn typcn-eye'></span> {{ can_see }}</div>
+	<div class='buttons'>
+		<button class='blue typcn typcn-pencil edit-link'>Edit</button>
+		<button class='red typcn typcn-trash delete-link'>Delete</button>
+	</div>
+</li>
+{% endfor %}
+{% if wrap is not defined or wrap %}
+</ol>
+{% endif %}
+{% endspaceless %}

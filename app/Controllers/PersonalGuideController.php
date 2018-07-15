@@ -78,16 +78,16 @@ class PersonalGuideController extends ColorGuideController {
 		$EntriesPerPage = 20;
 	    $_EntryCount = $this->owner->getPCGSlotHistoryEntryCount();
 
-	    $Pagination = new Pagination("{$this->path}/point-history", $EntriesPerPage, $_EntryCount);
-	    $Entries = $this->owner->getPCGSlotHistoryEntries($Pagination);
-	    if (\count($Entries) === 0){
+	    $pagination = new Pagination("{$this->path}/point-history", $EntriesPerPage, $_EntryCount);
+	    $entries = $this->owner->getPCGSlotHistoryEntries($pagination);
+	    if (\count($entries) === 0){
 	        $this->owner->recalculatePCGSlotHistroy();
-	        $Entries = $this->owner->getPCGSlotHistoryEntries($Pagination);
+	        $entries = $this->owner->getPCGSlotHistoryEntries($pagination);
 	    }
 
-		CoreUtils::fixPath($Pagination->toURI());
+		CoreUtils::fixPath($pagination->toURI());
 		$heading = ($this->ownerIsCurrentUser ? 'Your' : CoreUtils::posess($this->owner->name)).' Point History';
-		$title = "Page {$Pagination->getPage()} - $heading";
+		$title = "Page {$pagination->getPage()} - $heading";
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))
@@ -98,10 +98,11 @@ class PersonalGuideController extends ColorGuideController {
 			'css' => [true],
 			'js' => $js,
 			'import' => [
-				'Entries' => $Entries,
-				'Pagination' => $Pagination,
-				'User' => $this->owner,
-				'isOwner' => $this->ownerIsCurrentUser,
+				'entries' => $entries,
+				'pagination' => $pagination,
+				'user' => $this->owner,
+				'is_owner' => $this->ownerIsCurrentUser,
+				'pcg_slot_history' => CGUtils::getPCGSlotHistoryHTML($entries),
 			],
 		]);
 	}

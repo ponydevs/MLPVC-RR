@@ -70,6 +70,10 @@ class Appearance extends NSModel implements LinkableInterface {
 	public static $belongs_to = [
 		['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
 	];
+	/** For Twig */
+	public function getOwner(){
+		return $this->owner;
+	}
 	public static $before_save = ['render_notes'];
 
 	/** @return Color[] */

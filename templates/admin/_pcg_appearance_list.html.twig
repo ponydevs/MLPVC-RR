@@ -1,0 +1,48 @@
+{# @var appearances \App\Models\Appearance[] #}
+{% if wrap is not defined or wrap %}
+<table id='pcg-appearances-table'>
+	<thead>
+		<tr>
+			<th>Appearance</th>
+			<th>Owner</th>
+			<th>Added</th>
+			<th>CMs</th>
+			<th>Sprite</th>
+		</tr>
+	</thead>
+	<tbody>
+{% endif %}
+{% if appearances is empty %}
+		<tr><td colspan="4" class="align-center"><em>No appearances to show</em></td></tr>
+{% else %}
+	{% for appearance in appearances %}
+		<tr>
+			<td class="pony-link">{{ appearance.toAnchorWithPreview }}</td>
+			<td>{{ appearance.owner.toAnchor }}</td>
+			<td>{{ time_tag(appearance.added) }}</td>
+			{% set cutiemarks = appearance.cutiemarks %}
+			{% set cm_count = cutiemarks | length %}
+			<td class="cutiemarks">
+				{% if cm_count == 0 %}
+				<span class="typcn typcn-times"></span>
+				{% else %}
+					{% for cm in cutiemarks %}
+					<a href='{{ appearance.toURL }}'>{{ cm.getPreviewForAppearancePageListItem }}</a>
+					{% endfor %}
+				{% endif %}
+			</td>
+			{% set sprite_url = appearance.getSpriteURL(constant('App\\Models\\Appearance::SPRITE_SIZES').SOURCE) %}
+			<td class="sprite">
+				{% if sprite_url is empty %}
+				<span class="typcn typcn-times"></span>
+				{% else %}
+				<a href='{{ appearance.toURL }}'><img src='{{ sprite_url }}' alt='Sprite image'></a>
+				{% endif %}
+			</td>
+		</tr>
+	{% endfor %}
+{% endif %}
+{% if wrap is not defined or wrap %}
+	</tbody>
+</table>
+{% endif %}

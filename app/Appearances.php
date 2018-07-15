@@ -262,7 +262,7 @@ class Appearances {
 			foreach ($Appearances as $appearance){
 				$applink = $appearance->toAnchorWithPreview();
 				$owner = $appearance->owner->toAnchor();
-				$created = Time::tag($appearance->added);
+				$created = Time::tag($appearance->list);
 				if (\count($appearance->cutiemarks) === 0)
 					$cms = '<span class="typcn typcn-times"></span>';
 				else {
@@ -284,19 +284,5 @@ HTML;
 			}
 
 		}
-
-		return $wrap ?
-			"<table id='pcg-appearances-table'>
-				<thead>
-					<tr>
-						<th>Appearance</th>
-						<th>Owner</th>
-						<th>Added</th>
-						<th>CMs</th>
-						<th>Sprite</th>
-					</tr>
-				</thead>
-				<tbody>$HTML</tbody>
-			</table>" : $HTML;
 	}
 }

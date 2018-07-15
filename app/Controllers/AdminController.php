@@ -448,13 +448,13 @@ class AdminController extends Controller {
 	}
 
 	public function pcgAppearances(){
-		$Pagination = new Pagination('/admin/pcg-appearances', 10, $this->_setupPcgAppearances()->count(Appearance::$table_name));
+		$pagination = new Pagination('/admin/pcg-appearances', 10, $this->_setupPcgAppearances()->count(Appearance::$table_name));
 
-		CoreUtils::fixPath($Pagination->toURI());
-		$heading = 'All PCG Appearances';
-		$title = "Page {$Pagination->getPage()} - $heading - Color Guide";
+		CoreUtils::fixPath($pagination->toURI());
+		$heading = 'All PCG appearances';
+		$title = "Page {$pagination->getPage()} - $heading - Color Guide";
 
-		$Appearances = $this->_setupPcgAppearances()->orderBy('added','DESC')->get(Appearance::$table_name, $Pagination->getLimit());
+		$appearances = $this->_setupPcgAppearances()->orderBy('added','DESC')->get(Appearance::$table_name, $pagination->getLimit());
 
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,
@@ -462,8 +462,8 @@ class AdminController extends Controller {
 			'css' => [true],
 			'js' => ['paginate'],
 			'import' => [
-				'Appearances' => $Appearances,
-				'Pagination' => $Pagination,
+				'appearances' => $appearances,
+				'pagination' => $pagination,
 			],
 		]);
 	}

@@ -897,38 +897,6 @@ class CoreUtils {
 	}
 
 	/**
-	 * Renders the "Useful links" section of the sidebar
-	 *
-	 * @param bool $wrap
-	 *
-	 * @return string
-	 */
-	public static function getSidebarUsefulLinksListHTML($wrap = WRAP){
-		$HTML = '';
-		$UsefulLinks = UsefulLink::in_order();
-		foreach ($UsefulLinks as $l){
-			$href = "href='".self::aposEncode($l->url)."'";
-			if ($l->url[0] === '#')
-				$href .= " class='action--".mb_substr($l->url,1)."'";
-			$title = self::aposEncode($l->title);
-			$label = htmlspecialchars_decode($l->label);
-			$cansee = Permission::ROLES_ASSOC[$l->minrole];
-			if ($l->minrole !== 'developer')
-				$cansee = self::makePlural($cansee).' and above';
-			$HTML .= <<<HTML
-<li id='ufl-{$l->id}'>
-	<div><a $href title='$title'>{$label}</a></div>
-	<div><span class='typcn typcn-eye'></span> $cansee</div>
-	<div class='buttons'>
-		<button class='blue typcn typcn-pencil edit-link'>Edit</button><button class='red typcn typcn-trash delete-link'>Delete</button>
-	</div>
-</li>
-HTML;
-		}
-		return $wrap ? "<ol>$HTML</ol>" : $HTML;
-	}
-
-	/**
 	 * Adds possessive 's at the end of a word
 	 *
 	 * @param string $w

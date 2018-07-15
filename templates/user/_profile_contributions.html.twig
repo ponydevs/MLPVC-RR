@@ -3,7 +3,7 @@
 {# @var contribs array #}
 {# @var contrib_cache_duration string #}
 {% macro process_contrib(same_user, key, user, amount, what_singular, append = null) %}
-	{% set what = make_plural(what_singular, amount) ~ append %}
+	{% set what = make_plural(what_singular, amount) ~ ' ' ~ append %}
 	{% set item %}
 	<span class='amt'>{{ amount }}</span> <span class='expl'>{{ what }}</span>
 	{% endset %}

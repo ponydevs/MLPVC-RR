@@ -229,63 +229,61 @@ class UserController extends Controller {
 		if (!isset(self::CONTRIB_NAMES[$params['type']]))
 			CoreUtils::notFound();
 
-		$User = Users::get($params['name'], 'name');
-		if (empty($User))
+		$user = Users::get($params['name'], 'name');
+		if (empty($user))
 			CoreUtils::notFound();
-		if ($User->id !== (Auth::$user->id ?? null) && $params['type'] === 'requests' && Permission::insufficient('staff'))
+		if ($user->id !== (Auth::$user->id ?? null) && $params['type'] === 'requests' && Permission::insufficient('staff'))
 			CoreUtils::notFound();
 
 		$itemsPerPage = 10;
-		$Pagination = new Pagination("/@{$User->name}/contrib/{$params['type']}", $itemsPerPage);
+		$pagination = new Pagination("/@{$user->name}/contrib/{$params['type']}", $itemsPerPage);
 
 		/** @var $cnt int */
 		/** @var $data array */
 		switch ($params['type']){
 			case 'cms-provided':
-				$cnt = $User->getCMContributions();
-				$Pagination->calcMaxPages($cnt);
-				$data = $User->getCMContributions(false, $Pagination);
+				$cnt = $user->getCMContributions();
+				$pagination->calcMaxPages($cnt);
+				$data = $user->getCMContributions(false, $pagination);
 			break;
 			case 'requests':
-				$cnt = $User->getRequestContributions();
-				$Pagination->calcMaxPages($cnt);
-				$data = $User->getRequestContributions(false, $Pagination);
+				$cnt = $user->getRequestContributions();
+				$pagination->calcMaxPages($cnt);
+				$data = $user->getRequestContributions(false, $pagination);
 			break;
 			case 'reservations':
-				$cnt = $User->getReservationContributions();
-				$Pagination->calcMaxPages($cnt);
-				$data = $User->getReservationContributions(false, $Pagination);
+				$cnt = $user->getReservationContributions();
+				$pagination->calcMaxPages($cnt);
+				$data = $user->getReservationContributions(false, $pagination);
 			break;
 			case 'finished-posts':
-				$cnt = $User->getFinishedPostContributions();
-				$Pagination->calcMaxPages($cnt);
-				$data = $User->getFinishedPostContributions(false, $Pagination);
+				$cnt = $user->getFinishedPostContributions();
+				$pagination->calcMaxPages($cnt);
+				$data = $user->getFinishedPostContributions(false, $pagination);
 			break;
 			case 'fulfilled-requests':
-				$cnt = $User->getApprovedFinishedRequestContributions();
-				$Pagination->calcMaxPages($cnt);
-				$data = $User->getApprovedFinishedRequestContributions(false, $Pagination);
+				$cnt = $user->getApprovedFinishedRequestContributions();
+				$pagination->calcMaxPages($cnt);
+				$data = $user->getApprovedFinishedRequestContributions(false, $pagination);
 			break;
 			default:
 				throw new \RuntimeException(__METHOD__.": Missing data retriever for type {$params['type']}");
 		}
 
-		CoreUtils::fixPath($Pagination->toURI());
+		CoreUtils::fixPath($pagination->toURI());
 
-		$title = "Page {$Pagination->getPage()} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($User->name).' Contributions';
-		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$User->toAnchor();
+		$title = "Page {$pagination->getPage()} - ".self::CONTRIB_NAMES[$params['type']].' - '.CoreUtils::posess($user->name).' Contributions';
+		$heading = self::CONTRIB_NAMES[$params['type']].' by '.$user->toAnchor();
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => $title,
 			'heading' => $heading,
 			'css' => [true],
 			'js' => ['paginate',true],
 			'import' => [
-				'data' => $data,
-				'params' => $params,
-				'Pagination' => $Pagination,
-				'itemsPerPage' => $itemsPerPage,
-				'User' => $User,
-				'contribName' => self::CONTRIB_NAMES[$params['type']],
+				'pagination' => $pagination,
+				'user' => $user,
+				'contrib_name' => self::CONTRIB_NAMES[$params['type']],
+				'contribution_list' => Users::getContributionListHTML($params['type'], $data),
 			],
 		]);
 	}

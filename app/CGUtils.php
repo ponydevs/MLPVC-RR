@@ -390,7 +390,7 @@ HTML;
 		<td>$amount</td>
 		<td><span class="typcn typcn-time"></span> $when</td>
 HTML;
-			};
+			}
 		if (!$wrap)
 			return $HTML;
 
