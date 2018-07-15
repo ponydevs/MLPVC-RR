@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__.'/includes/conf.php';
+require __DIR__.'/config/conf.php';
 
 return [
 	'paths' => [
