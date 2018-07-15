@@ -24,6 +24,7 @@ class Auth {
 			'current_user' => self::$user,
 			'current_session' => self::$session,
 			'signed_in' => self::$signed_in,
+			'remote_addr' => $_SERVER['REMOTE_ADDR'],
 		];
 	}
 }

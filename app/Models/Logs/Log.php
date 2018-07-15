@@ -3,6 +3,7 @@
 namespace App\Models\Logs;
 
 use ActiveRecord\DateTime;
+use App\Logs;
 use App\Models\User;
 use App\Models\NSModel;
 
@@ -28,5 +29,8 @@ class Log extends NSModel {
 	/** For Twig */
 	public function getActor():User {
 		return $this->actor;
+	}
+	public function getDisplayIP():string {
+		return \in_array(strtolower($this->ip), Logs::LOCALHOST_IPS, true) ? 'localhost' : $this->ip;
 	}
 }

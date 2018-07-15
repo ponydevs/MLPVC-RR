@@ -3,7 +3,7 @@ $TableHeadingFontSize: 16px;
 
 @media all and (min-width: $Breakpoint){
 	#content > #filter-form {
-		.entrytype, .username {
+		.entry-type, .username {
 			font-size: inherit;
 			border: 0;
 			border-bottom: 2px solid $NDarkBlue;
@@ -19,9 +19,9 @@ $TableHeadingFontSize: 16px;
 			width: 375px;
 		}
 
-		.entrytype { text-transform: lowercase }
+		.entry-type { text-transform: lowercase }
 
-		.entrytype > * {
+		.entry-type > * {
 			font-size: 14px;
 			font-weight: normal;
 			text-transform: initial;
@@ -65,7 +65,7 @@ $TableHeadingFontSize: 16px;
 		}
 	}
 	#content > #filter-form {
-		.entrytype, .username {
+		.entry-type, .username {
 			display: block;
 			margin: 5px auto;
 		}
@@ -115,6 +115,10 @@ $TableHeadingFontSize: 16px;
 		}
 		&.ip {
 			width: 27%;
+
+			a {
+				margin-right: 4px;
+			}
 		}
 		&.reftype {
 			width: 40%;

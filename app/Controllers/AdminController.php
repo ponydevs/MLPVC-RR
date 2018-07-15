@@ -93,7 +93,7 @@ class AdminController extends Controller {
 	public function log(){
 		$type = Logs::validateRefType('type', true, true);
 		/** @noinspection NotOptimalIfConditionsInspection */
-		if (isset($_GET['type']) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::$LOG_DESCRIPTION[$_GET['type']]))
+		if (isset($_GET['type']) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::LOG_DESCRIPTION[$_GET['type']]))
 			$type = $_GET['type'];
 
 		$ip = null;
@@ -130,7 +130,7 @@ class AdminController extends Controller {
 							$ip = IP::parse($_GET['by']);
 						}
 						catch (\Throwable $e){
-							// If we don1t find a vaild IP adress then we just ignore the parameter
+							// If we don't find a valid IP address then we just ignore the parameter
 						}
 						if ($ip !== null)
 							$ip = (string)$ip;
@@ -144,7 +144,7 @@ class AdminController extends Controller {
 		if ($type !== null){
 			$whereArgs[] = ['reftype', $type];
 			$q[] = "type=$type";
-			$title .= Logs::$LOG_DESCRIPTION[$type].' entries ';
+			$title .= Logs::LOG_DESCRIPTION[$type].' entries ';
 		}
 		else if (isset($q))
 			$q[] = 'type='.CoreUtils::FIXPATH_EMPTY;
@@ -165,13 +165,13 @@ class AdminController extends Controller {
 
 		foreach ($whereArgs as $arg)
 			DB::$instance->where($arg[0], $arg[1] ?? \PostgresDb::DBNULL);
-		$Pagination = new Pagination('/admin/logs', 25, DB::$instance->count('log'));
+		$pagination = new Pagination('/admin/logs', 25, DB::$instance->count('log'));
 		$heading = 'Global logs';
 		if (!empty($title))
 			$title .= '- ';
-		$title .= "Page {$Pagination->getPage()} - $heading - Admin Area";
+		$title .= "Page {$pagination->getPage()} - $heading - Admin Area";
 
-		$path = $Pagination->toURI();
+		$path = $pagination->toURI();
 		if (!empty($q))
 			foreach ($q as $item)
 				$path->append_query_raw($item);
@@ -179,23 +179,26 @@ class AdminController extends Controller {
 
 		foreach ($whereArgs as $arg)
 			DB::$instance->where(...$arg);
-		$LogItems = DB::$instance
+		$log_items = DB::$instance
 			->setModel(Log::class)
 			->orderBy('timestamp','DESC')
 			->orderBy('entryid','DESC')
-			->get('log', $Pagination->getLimit());
+			->get('log', $pagination->getLimit());
 
+		$entry_types = Logs::LOG_DESCRIPTION;
+		asort($entry_types);
 		CoreUtils::loadPage(__METHOD__, [
 			'heading' => $heading,
 			'title' => $title,
 			'css' => [true],
 			'js' => [true, 'paginate'],
 			'import' => [
-				'Pagination' => $Pagination,
-				'LogItems' => $LogItems,
+				'pagination' => $pagination,
+				'log_items' => $log_items,
 				'type' => $type,
 				'by' => $by ?? null,
 				'ip' => $ip ?? null,
+				'entry_types' => $entry_types,
 			],
 		]);
 	}

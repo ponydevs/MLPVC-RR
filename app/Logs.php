@@ -14,7 +14,7 @@ use App\Models\User;
 use cogpowered\FineDiff;
 
 class Logs {
-	public static $LOG_DESCRIPTION = [
+	public const LOG_DESCRIPTION = [
 		#--------------------# (max length)
 		'episodes'             => 'Episode management',
 		'episode_modify'       => 'Episode modified',
@@ -481,7 +481,7 @@ class Logs {
 			}
 			else $ip = '<em>IP wiped (GDPR)</em>';
 
-			$event = self::$LOG_DESCRIPTION[$item->reftype] ?? $item->reftype;
+			$event = self::LOG_DESCRIPTION[$item->reftype] ?? $item->reftype;
 			if (isset($item->refid))
 				$event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
 			$ts = Time::tag($item->timestamp, Time::TAG_EXTENDED);
@@ -502,7 +502,7 @@ HTML;
 
 	public static function validateRefType($key, $optional = false, $method_get = false){
 		return (new Input($key,function($value){
-			if (!isset(self::$LOG_DESCRIPTION[$value]))
+			if (!isset(self::LOG_DESCRIPTION[$value]))
 				return Input::ERROR_INVALID;
 		}, [
 			Input::IS_OPTIONAL => $optional,
