@@ -1,3 +1,6 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
 <div id="content" class="section-container">
 	<img src="/img/logo.svg" alt="MLP Vector Club Website Logo">
 	<h1><a href="https://www.deviantart.com/mlp-vectorclub">MLP-VectorClub</a> Website</h1>
@@ -8,7 +11,7 @@
 	</section>
 	<section class="attributions">
 		<h2>Attributions</h2>
-		<p>Please refer to the project's <a href="<?=GITHUB_URL?>#attributions">GitHub page</a> for an up to date list of all used tools & libraries.</p>
+		<p>Please refer to the project's <a href="{{ constant('GITHUB_URL') }}#attributions">GitHub page</a> for an up to date list of all used tools & libraries.</p>
 		<p>
 			<strong><a href="/blending">Color Blending Calculator</a></strong> originally made by <a href="https://github.com/dasprid">DASPRiD</a><br>
 			<strong>Headings' font:</strong> <a href="http://www.mattyhex.net/CMR/">Celestia Medium Redux</a><br>
@@ -53,7 +56,8 @@
 	<section>
 		<h2>What's after the @ sign in the footer?</h2>
 		<div>
-			<p>This website is open source, you can find the code <a href="<?=GITHUB_URL?>">on GitHub</a>. What you're seeing is the commit ID which refers to the most recent version of the code the site is currently operating on. Whenever a new update is deployed, the version number changes automatically. The code on the server mirrors the repository exactly with no hidden alterations.</p>
+			<p>This website is open source, you can find the code <a href="{{ constant('GITHUB_URL') }}">on GitHub</a>. What you're seeing is the commit ID which refers to the most recent version of the code the site is currently operating on. Whenever a new update is deployed, the version number changes automatically. The code on the server mirrors the repository exactly with no hidden alterations.</p>
 		</div>
 	</section>
 </div>
+{% endblock %}
