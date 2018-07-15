@@ -9,7 +9,7 @@
 	{% endif %}
 	{% set is_member = permission('member') %}
 	{% set You_have = same_user ? 'You have' : 'This use has' %}
-	{% set await_count = awaiting_approval | length %}
+	{% set await_count = awaiting_approval is defined ? (awaiting_approval | length) : 0 %}
 	{% set images = make_plural('image', await_count) %}
 	{% set waiting = 'waiting to be submitted to and/or approved by the group' %}
 	{% if await_count %}

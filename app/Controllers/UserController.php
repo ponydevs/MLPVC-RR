@@ -308,13 +308,58 @@ class UserController extends Controller {
 		if (Permission::insufficient('staff'))
 			CoreUtils::noPerm();
 
-		$Users = DB::$instance->orderBy('name')->get(User::$table_name);
+		$users = DB::$instance->orderBy('name')->get(User::$table_name);
+		if (!empty($users)){
+			$arranged = [];
+			foreach ($users as $u){
+				if (!isset($arranged[$u->role])) $arranged[$u->role] = [];
+
+				$arranged[$u->maskedRole()][] = $u;
+			}
+
+			$sections = [];
+			foreach (array_reverse(Permission::ROLES) as $r => $v){
+				if (empty($arranged[$r])) continue;
+				/** @var $users \App\Models\User[] */
+				$users = $arranged[$r];
+				$user_count = \count($users);
+				$group = CoreUtils::makePlural(Permission::ROLES_ASSOC[$r], $user_count, true);
+
+				if ($user_count > 10){
+					$users_out = [];
+					foreach ($users as $u){
+						$firstletter = strtoupper($u->name[0]);
+						if (preg_match(new \App\RegExp('^[^a-z]$','i'), $firstletter))
+							$firstletter = '#';
+						$users_out[$firstletter][] = $u->toAnchor();
+					}
+
+					ksort($users_out);
+
+					$users_str = '';
+					foreach ($users_out as $chr => $users){
+						$users_str .= "<span class='letter-group'><strong>$chr</strong>".implode('',$users).'</span>';
+					}
+				}
+				else {
+					$users_out = [];
+					foreach ($users as $u)
+						$users_out[] = $u->toAnchor();
+					$users_str = implode(', ',$users_out);
+				}
+
+				$sections[] =  [
+					$group,
+					$users_str,
+				];
+			}
+		}
 
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Users',
 			'css' => [true],
 			'import' => [
-				'Users' => $Users,
+				'sections' => $sections ?? null,
 			],
 		]);
 	}

@@ -1,12 +1,28 @@
 @import "../../vars";
 
 #users > section {
-	strong {
-		text-shadow: 0 0 2px #9f9f9f;
-		margin-right: 1em;
+	&:not(:last-child) {
+		margin-bottom: 10px;
+	}
 
-		&:not(:first-child) {
-			margin-left: 1em;
+	.letter-group {
+		display: block;
+
+		&:not(:last-child) {
+			margin-bottom: 10px;
+		}
+
+		strong {
+			margin: 0 1em 0 .75em;
+			font-family: $monospace;
+		}
+
+		.da-userlink {
+			display: inline-block;
+
+			&:not(:last-child) {
+				margin-right: .75em;
+			}
 		}
 	}
 }

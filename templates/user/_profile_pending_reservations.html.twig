@@ -20,7 +20,7 @@
 			{%- endif %}
 		</span>
 
-		{% if posts is not empty %}
+		{% if posts is defined and posts is not empty %}
 			<ul>
 			{% for post in posts %}
 				{% set request_reserved = post.get_is_request and post.reserved_at is not empty %}

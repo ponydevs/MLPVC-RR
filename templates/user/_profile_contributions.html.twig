@@ -2,7 +2,7 @@
 {# @var same_user bool #}
 {# @var contribs array #}
 {# @var contrib_cache_duration string #}
-{% macro process_contrib(key, user, amount, what_singular, append = null) %}
+{% macro process_contrib(same_user, key, user, amount, what_singular, append = null) %}
 	{% set what = make_plural(what_singular, amount) ~ append %}
 	{% set item %}
 	<span class='amt'>{{ amount }}</span> <span class='expl'>{{ what }}</span>
@@ -21,7 +21,7 @@
 	<ul>
 	{% import _self as profile_contributions %}
 	{% for key, contrib in contribs %}
-		{{ profile_contributions.process_contrib(key, user, contrib[0], contrib[1], contrib[2] ?? null) }}
+		{{ profile_contributions.process_contrib(same_user, key, user, contrib[0], contrib[1], contrib[2] ?? null) }}
 	{% endfor %}
 	</ul>
 </section>
