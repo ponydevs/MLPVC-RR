@@ -24,12 +24,15 @@ try {
 		exit(2);
 	}
 
-	dyn_log('Session ID is '.$session_id);
-
 	Auth::$session = \App\Models\Session::find($session_id);
 	if (empty(Auth::$session)){
 		dyn_log("Session not found for ID: $session_id");
 		exit(3);
+	}
+	if (empty(Auth::$session->refresh)){
+		dyn_log("Session $session_id had no refresh token, deleting.");
+		Auth::$session->delete();
+		exit(4);
 	}
 	Auth::$user = Auth::$session->user;
 
@@ -42,7 +45,7 @@ try {
 			dyn_log('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} ($code)");
 			Auth::$session->delete();
 			Auth::$signed_in = false;
-			exit(4);
+			exit(5);
 		}
 	}
 
