@@ -16,7 +16,7 @@
 		$toggler.on('click', function(){
 			copyHash = $toggler.prop('checked');
 
-			if (copyHash)
+			if (!copyHash)
 				$.LocalStorage.set('leavehash', 1);
 			else $.LocalStorage.remove('leavehash');
 		});
