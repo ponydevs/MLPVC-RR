@@ -337,7 +337,7 @@ class CoreUtils {
 			}
 
 			$scope['breadcrumbs'] = self::getBreadcrumbsHTML($fatal_error_page, $scope, $view ?? null);
-			$scope['notices'] = Notice::list();
+			$scope['site_notices'] = Notice::list();
 		}
 
 		Twig::display($view, $scope);
@@ -1384,24 +1384,10 @@ HTML;
 	 * @return string
 	 */
 	public static function getNoticeListHTML(array $notices, bool $wrap = WRAP):string {
-		$HTML = '';
-
-		foreach ($notices as $notice){
-			$time = Time::tag($notice->hide_after);
-			$HTML .= <<<HTML
-<li class="notice-item">
-	<span class="text">{$notice->message_html}</span>
-	&ndash;
-	<span class="time">Hidden $time</span>
-	<span class="actions">
-		<button class="red typcn typcn-trash delete" title="Delete" disabled></button>
-		<button class="blue typcn typcn-pencil edit" title="Edit" disabled></button>
-	</span>
-</li>
-HTML;
-		}
-
-		return $wrap ? "<ul id='notice-list'>$HTML</ul>" : $HTML;
+		return Twig::$env->render('admin/_notice_list.html.twig', [
+			'notices' => $notices,
+			'wrap' => $wrap,
+		]);
 	}
 
 	public static function startsWith(string $haystack, string $needle){

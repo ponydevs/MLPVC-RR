@@ -470,8 +470,8 @@ class AdminController extends Controller {
 
 	public function notices(){
 		$ItemsPerPage = 25;
-		$Pagination = new Pagination('/admin/notices', $ItemsPerPage, Notice::count());
-		[$offset, $limit] = $Pagination->getLimit();
+		$pagination = new Pagination('/admin/notices', $ItemsPerPage, Notice::count());
+		[$offset, $limit] = $pagination->getLimit();
 
 		$notices = Notice::find('all', [
 			'limit' => $limit,
@@ -481,12 +481,12 @@ class AdminController extends Controller {
 		$heading = 'Manage notices';
 		CoreUtils::loadPage(__METHOD__, [
 			'heading' => $heading,
-			'title' => "Page {$Pagination->getPage()} - $heading - Admin Area",
+			'title' => "Page {$pagination->getPage()} - $heading - Admin Area",
 			'view' => [true],
 			#'js' => [true],
 			'css' => [true],
 			'import' => [
-				'Pagination' => $Pagination,
+				'pagination' => $pagination,
 				'notices' => $notices,
 			],
 		]);
