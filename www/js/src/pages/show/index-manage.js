@@ -177,9 +177,6 @@
 			this.ep.airdate = $.momentToYMD(d);
 			this.ep.airtime = $.momentToHM(d);
 
-			let epid = this.epid;
-			delete this.epid;
-
 			const notes = this.ep.notes;
 			delete this.ep.notes;
 

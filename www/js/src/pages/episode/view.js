@@ -101,7 +101,7 @@
 		if (diff.past !== true) return;
 
 		if (!$voting.children('.rate').length){
-			$.API.get(`/episode/${EpID}vote?html`,$.mkAjaxHandler(function(){
+			$.API.get(`/episode/${EpID}/vote?html`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Display voting buttons',this.message);
 
 				$voting.children('h2').nextAll().remove();

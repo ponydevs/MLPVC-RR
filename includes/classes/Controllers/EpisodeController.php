@@ -90,7 +90,6 @@ class EpisodeController extends Controller {
 			case 'GET':
 				Response::done([
 					'ep' => $this->episode->to_array(),
-					'epid' => $this->episode->getID(),
 				]);
 			break;
 			case 'POST':
