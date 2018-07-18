@@ -929,13 +929,13 @@ footer {
 .color-orange   { color: $NOrange !important }
 .color-yellow   { color: $NYellow !important }
 .color-ui       { color: $DefaultUIColor !important }
-.color-lightblue     { color: darken($NBlueBG, 10) !important }
-.color-lightdarkblue { color: darken($NDarkBlueBG, 10) !important }
-.color-lightteal     { color: darken($NTealBG, 10) !important }
-.color-lightgreen    { color: darken($NGreenBG, 10) !important }
-.color-lightred      { color: darken($NRedBG, 10) !important }
-.color-lightorange   { color: darken($NOrangeBG, 10) !important }
-.color-lightyellow   { color: darken($NYellowBG, 10) !important }
+.color-light-blue     { color: darken($NBlueBG, 10) !important }
+.color-light-darkblue { color: darken($NDarkBlueBG, 10) !important }
+.color-light-teal     { color: darken($NTealBG, 10) !important }
+.color-light-green    { color: darken($NGreenBG, 10) !important }
+.color-light-red      { color: darken($NRedBG, 10) !important }
+.color-light-orange   { color: darken($NOrangeBG, 10) !important }
+.color-light-yellow   { color: darken($NYellowBG, 10) !important }
 // Alignment
 .align-center { text-align: center }
 .align-left { text-align: left }

@@ -190,9 +190,6 @@ class Notification extends NSModel {
 			}
 		}
 		switch ($this->type){
-			case 'post-approved':
-				$HTML = $this->getElement("A <a href='$url'>post</a> you reserved under $EpID has been added to the club gallery");
-			break;
 			case 'post-passon':
 				$userlink = Users::get($data['user'])->toAnchor();
 				$HTML = $this->getElement("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?");
@@ -208,10 +205,10 @@ class Notification extends NSModel {
 				$passaction = str_replace('post-pass','',$this->type);
 				switch($passaction){
 					case 'allow':
-						$HTML = $this->getElement("Reservation transfer status: $userlink <strong class='color-lightgreen'>transferred</strong> the reservation of <a href='$url'>this post</a> under $EpID to you!");
+						$HTML = $this->getElement("Reservation transfer status: $userlink <strong class='color-light-green'>transferred</strong> the reservation of <a href='$url'>this post</a> under $EpID to you!");
 					break;
 					case 'deny':
-						$HTML = $this->getElement("Reservation transfer status: $userlink <strong class='color-lightred'>denied</strong> transferring the reservation of <a href='$url'>this post</a> under $EpID to you.");
+						$HTML = $this->getElement("Reservation transfer status: $userlink <strong class='color-light-red'>denied</strong> transferring the reservation of <a href='$url'>this post</a> under $EpID to you.");
 					break;
 					case 'free':
 					case 'del':
