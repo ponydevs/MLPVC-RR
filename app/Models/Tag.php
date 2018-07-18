@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\DB;
 use App\Tags;
 use App\Twig;
 use HtmlGenerator\HtmlTag;
@@ -61,5 +62,16 @@ class Tag extends NSModel {
 			return;
 
 		return Tags::updateUses($this->id);
+	}
+
+	/**
+	 * @param int[] $tag_ids
+	 *
+	 * @return Tag[]
+	 */
+	public static function synonyms_of(array $tag_ids):array {
+		if (empty($tag_ids))
+			return [];
+		return DB::$instance->where('synonym_of', $tag_ids)->get('tags');
 	}
 }

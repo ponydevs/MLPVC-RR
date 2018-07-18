@@ -498,14 +498,21 @@ HTML;
 
 	public function getElasticBody(){
 		$tags = Tags::getFor($this->id, null, true, true);
-		foreach ($tags as $k => $tag)
-			$tags[$k] = $tag->name;
+		$tag_names = [];
+		$tag_ids = [];
+		foreach ($tags as $k => $tag){
+			$tag_names[] = $tag->name;
+			$tag_ids[] = $tag->id;
+		}
+		$synonym_tags = Tag::synonyms_of($tag_ids);
+		foreach ($synonym_tags as $tag)
+			$tag_names[] = $tag->name;
 		return [
 			'label' => $this->label,
 			'order' => $this->order,
 			'private' => $this->private,
 			'ishuman' => $this->ishuman,
-			'tags' =>  $tags,
+			'tags' =>  $tag_names,
 		];
 	}
 
