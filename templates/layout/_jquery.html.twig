@@ -1,2 +1,4 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+{% if local_jquery is defined %}
 <script nonce="{{ constant('CSP_NONCE') }}">window.jQuery || document.write('<script src="{{ local_jquery }}"><\/script>');</script>
+{% endif %}

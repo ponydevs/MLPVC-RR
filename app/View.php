@@ -24,7 +24,7 @@ class View {
 		return $this->name;
 	}
 
-	public function getBreadcrumb(array $scope):?NavBreadcrumb {
+	public function getBreadcrumb(array $scope = []):?NavBreadcrumb {
 		switch ($this->class){
 			case 'about':
 				$bc = new NavBreadcrumb('About','/about');
@@ -137,9 +137,6 @@ class View {
 				switch ($this->method){
 					case 'auth':
 						$bc->setChild('Auth');
-					break;
-					case 'fatal':
-						$bc->setChild('Fatal');
 					break;
 					case 'notfound':
 						$bc->setChild('Not Found');

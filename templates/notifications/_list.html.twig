@@ -1,32 +1,9 @@
-{% macro notif_elem(html, notif) %}
-	{# @var html string #}
-	{# @var notif \App\Models\Notification #}
-	{% spaceless %}
-		{% set notif_actions = notif.get_actions() %}
-		{% if notif_actions is empty %}
-			{% set actions %}<span class='mark-read variant-green typcn typcn-tick' title='Mark read' data-id='{{ notif.id }}'></span>{% endset %}
-		{% else %}
-			{% set actions %}
-				{% for value, opt in notif_actions %}
-					{% set confirm = opt.confirm is defined and not opt.confirm ? ' data-confirm' : '' %}
-					{% set action = opt.action is defined ? ' data-action="' ~ (opt.action | apos_encode) ~ '"' : '' %}
-					<span class='mark-read variant-{{ opt.color }} typcn typcn-{{ opt.icon }}' title='{{ opt.label }}' data-id='{{ notif.id }}' data-value='{{ value }}'{{ confirm ~ action }}></span>
-				{% endfor %}
-			{% endset %}
-		{% endif %}
-		<li>{{ html }} <span class='nobr'>&ndash; {{ notif.time_tag ~ actions }}</span></li>
-	{% endspaceless %}
-{% endmacro %}
 {# @var notifications \App\Models\Notification[] #}
 {% if wrap is not defined or wrap %}
 <ul class='notif-list'>
 {% endif %}
-	{% import _self as list %}
 	{% for notif in notifications %}
-		{% set html -%}
-			{%- include "#{notif.get_view_name}" -%}
-		{%- endset %}
-		{{- list.notif_elem(html, notif) }}
+		{{ notif.html }}
 	{% endfor %}
 {% if wrap is not defined or wrap %}
 </ul>

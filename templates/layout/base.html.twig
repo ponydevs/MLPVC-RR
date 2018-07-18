@@ -23,16 +23,16 @@
 
 		{% include 'layout/_sidebar_logged_in.html.twig' %}
 
-		{% if fatal_error_page is defined %}
+		{% if fatal_error is defined %}
 			<section class="login">
 				<h2>Welcome!</h2>
 				<p>Signing in is not possible at the moment. Please check back later.</p>
 			</section>
 		{% else %}
 			{% if signed_in %}
-				<section class="notifications"{% if notifications is empty %} style="display:none"{% endif %}>
+				<section class="notifications"{% if not have_notifs %} style="display:none"{% endif %}>
 					<h2>Unread notifications</h2>
-					{% include 'notifications/_list.html.twig' %}
+					{{ notifications }}
 				</section>
 			{% endif %}
 			<section class="{{ signed_in ? 'welcome' : 'login' }}">
@@ -59,7 +59,7 @@
 			</section>
 			{% block widgets %}{% endblock %}
 			{# @var happening_soon string #}
-			{% if happening_soon is not empty %}
+			{% if happening_soon is defined and happening_soon is not empty %}
 				{{ happening_soon }}
 			{% endif %}
 		{% endif %}
@@ -84,7 +84,9 @@
 {% include 'layout/_jquery.html.twig' %}
 <script nonce="{{ constant('CSP_NONCE') }}">$.API = { API_PATH: "{{ constant('API_PATH') }}" }</script>
 <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
+{% if server_name is defined %}
 <script src="https://ws.{{ server_name }}:8667/socket.io/socket.io.js" id="wss"></script>
+{% endif %}
 {{  export_vars({
 	'PRINTABLE_ASCII_PATTERN': constant('PRINTABLE_ASCII_PATTERN'),
 	'signedIn': signed_in,

@@ -328,7 +328,9 @@ class CoreUtils {
 			if (!$fatal_error_page){
 				// Notifications & useful links
 				if (Auth::$signed_in){
-					$scope['notifications'] = Notifications::get(Notifications::UNREAD_ONLY);
+					$notifs = Notifications::get(Notifications::UNREAD_ONLY);
+					$scope['have_notifs'] = \count($notifs) > 0;
+					$scope['notifications'] = Notifications::getHTML($notifs);
 					$scope['useful_links'] = UsefulLink::in_order();
 				}
 

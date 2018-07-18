@@ -7,6 +7,7 @@ use App\DB;
 use App\JSON;
 use App\Notifications;
 use App\Time;
+use App\Twig;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 /**
@@ -19,9 +20,6 @@ use ElephantIO\Exception\ServerConnectionFailureException;
  * @property string          $read_action
  * @property User            $recipient
  * @property array           $actions    (Via magic method)
- * @property string          $view_name  (Via magic method)
- * @property Post|null       $post       (Via magic method)
- * @property Appearance|null $appearance (Via magic method)
  * @method static Notification find(int $id)
  */
 class Notification extends NSModel {
@@ -35,13 +33,9 @@ class Notification extends NSModel {
 		return self::ACTIONABLE_NOTIF_OPTIONS[$this->type] ?? null;
 	}
 
-	public function get_view_name(){
-		return 'notifications/_type_'.str_replace('-','_',$this->type).'.html.twig';
-	}
-
 	/** @var Post|null */
 	private $post = false;
-	public function get_post():?Post {
+	public function getPost():?Post {
 		if (!CoreUtils::startsWith($this->type, 'post-'))
 			return null;
 
@@ -55,7 +49,7 @@ class Notification extends NSModel {
 
 	/** @var Appearance|null */
 	private $appearance = false;
-	public function get_appearance():?Appearance {
+	public function getAppearance():?Appearance {
 		if (!CoreUtils::startsWith($this->type, 'sprite-'))
 			return null;
 
@@ -65,10 +59,6 @@ class Notification extends NSModel {
 		$data = JSON::decode($this->data);
 		$this->appearance = Appearance::find($data['appearance_id']);
 		return $this->appearance;
-	}
-
-	public function time_tag():string {
-		return Time::tag($this->sent_at);
 	}
 
 	public const ACTIONABLE_NOTIF_OPTIONS = [
@@ -172,5 +162,117 @@ class Notification extends NSModel {
 
 	public function safeMarkRead(?string $action = null, bool $silent = true){
 		Notifications::safeMarkRead($this->id, $action, $silent);
+	}
+
+	public function getViewName(){
+		return 'notifications/_type_'.str_replace('-','_',$this->type).'.html.twig';
+	}
+
+	public function getHtml():string {
+		$view_name = $this->getViewName();
+		if (Twig::$env->getLoader()->exists($view_name))
+			return $this->getElement(Twig::$env->render($view_name, ['notif' => $this ]));
+
+		$data = !empty($this->data) ? JSON::decode($this->data) : null;
+		if (preg_match(new RegExp('^post-'),$this->type)){
+			try {
+				/** @var $Post Post */
+				/** @noinspection PhpUndefinedMethodInspection */
+				$Post = Post::find($data['id']);
+				$Episode = $Post->ep;
+				$EpID = $Episode->getID();
+				$url = $Post->toURL($Episode);
+			}
+			catch (RecordNotFound $e){
+				$Episode = null;
+				$EpID = null;
+				$url = null;
+			}
+		}
+		switch ($this->type){
+			case 'post-approved':
+				$HTML = $this->getElement("A <a href='$url'>post</a> you reserved under $EpID has been added to the club gallery");
+			break;
+			case 'post-passon':
+				$userlink = Users::get($data['user'])->toAnchor();
+				$HTML = $this->getElement("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?");
+			break;
+			case 'post-passdeny':
+			case 'post-passallow':
+			case 'post-passfree':
+			case 'post-passdel':
+			case 'post-passsnatch':
+			case 'post-passperm':
+				$userlink = Users::get($data['by'])->toAnchor();
+
+				$passaction = str_replace('post-pass','',$this->type);
+				switch($passaction){
+					case 'allow':
+						$HTML = $this->getElement("Reservation transfer status: $userlink <strong class='color-lightgreen'>transferred</strong> the reservation of <a href='$url'>this post</a> under $EpID to you!");
+					break;
+					case 'deny':
+						$HTML = $this->getElement("Reservation transfer status: $userlink <strong class='color-lightred'>denied</strong> transferring the reservation of <a href='$url'>this post</a> under $EpID to you.");
+					break;
+					case 'free':
+					case 'del':
+					case 'snatch':
+					case 'perm':
+						$message = Post::TRANSFER_ATTEMPT_CLEAR_REASONS[$passaction];
+						$message = str_replace('post', "<a href='$url'>post</a>", $message);
+						switch ($passaction){
+							case 'del':
+								$message .= " by $userlink";
+							break;
+							case 'perm':
+								$message = str_replace('the previous reserver', $userlink, $message);
+							break;
+						}
+						$HTML = $this->getElement("Reservation transfer status: $message");
+					break;
+				}
+			break;
+			case 'pcg-slot-gift':
+			case 'pcg-slot-accept':
+			case 'pcg-slot-reject':
+			case 'pcg-slot-refund':
+				$gift = PCGSlotGift::find($data['gift_id']);
+				if (empty($gift))
+					$HTML = $this->getElement('The gift referenced by this notification no longer exists.');
+				else {
+					$nslots = CoreUtils::makePlural('Personal Color Guide slot', $gift->amount, PREPEND_NUMBER);
+					switch (explode('-', $this->type)[2]){
+						case 'gift':
+							$HTML =  $this->getElement("You've received a gift of $nslots from {$gift->sender->toAnchor()}");
+						break;
+						case 'accept':
+							$HTML =  $this->getElement("Your gift of $nslots has been accepted by {$gift->receiver->toAnchor()}");
+						break;
+						case 'reject':
+							$HTML =  $this->getElement("Your gift of $nslots has been rejected by {$gift->receiver->toAnchor()}, you were refunded");
+						break;
+						case 'refund':
+							$refunder = Permission::sufficient('staff') ? $gift->refunder->toAnchor() : 'a staff member';
+							$HTML =  $this->getElement("Your gift of $nslots to {$gift->receiver->toAnchor()} has been refunded by $refunder");
+						break;
+					}
+				}
+			break;
+			default:
+				$HTML = "<li><code>Notification({$this->type})#{$this->id}</code> <span class='nobr'>&ndash; Missing handler</span></li>";
+		}
+
+		return $HTML;
+	}
+
+	/**
+	 * @param string $html
+	 *
+	 * @return string
+	 */
+	private function getElement(string $html):string {
+		return Twig::$env->render('notifications/_element.html.twig', [
+			'html' => $html,
+			'notif' => $this,
+		]);
 	}
 }

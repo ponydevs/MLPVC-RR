@@ -6,7 +6,7 @@
 {% endif %}
 <meta name="format-detection" content="telephone=no">
 {% include 'layout/_favicons.html.twig' %}
-{% if not robots %}
+{% if robots is defined and not robots %}
 <meta name='robots' content='noindex'>
 {% endif %}
 {% include 'layout/_styles.html.twig' %}

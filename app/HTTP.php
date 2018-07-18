@@ -147,11 +147,7 @@ class HTTP {
 	 * @throws \Exception
 	 */
 	public static function statusCode($code, $die = false):void {
-		if (!isset(self::STATUS_CODES[$code])){
-			throw new \Exception("Unknown status code: $code");
-		}
-
-		header($_SERVER['SERVER_PROTOCOL']." $code ".self::STATUS_CODES[$code]);
+		http_response_code($code);
 		if ($die === AND_DIE)
 			die();
 	}
