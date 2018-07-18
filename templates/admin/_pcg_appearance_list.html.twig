@@ -27,11 +27,11 @@
 				<span class="typcn typcn-times"></span>
 				{% else %}
 					{% for cm in cutiemarks %}
-					<a href='{{ appearance.toURL }}'>{{ cm.getPreviewForAppearancePageListItem }}</a>
+					<a href='{{ appearance.toURL }}'>{{ cm.previewForAppearancePageListItem }}</a>
 					{% endfor %}
 				{% endif %}
 			</td>
-			{% set sprite_url = appearance.getSpriteURL(constant('App\\Models\\Appearance::SPRITE_SIZES').SOURCE) %}
+			{% set sprite_url = appearance.spriteURL(constant('App\\Models\\Appearance::SPRITE_SIZES').SOURCE) %}
 			<td class="sprite">
 				{% if sprite_url is empty %}
 				<span class="typcn typcn-times"></span>

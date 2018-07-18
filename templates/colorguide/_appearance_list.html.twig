@@ -11,7 +11,7 @@
 {% if appearances is not empty %}
 	{% for p in appearances %}
 		<li id='p{{ p.id }}'>
-			{{ p.getSpriteHTML(upload_permission) }}
+			{{ p.spriteHTML(upload_permission) }}
 			<div>
 				{% spaceless %}
 				<strong>
@@ -19,7 +19,7 @@
 					<span class='typcn typcn-lock-closed color-orange'></span>
 					{% endif %}
 					<a href='{{ p.toURL }}'>{{ p.label | escape }}</a>
-					<a class='btn link typcn typcn-image' title='View as PNG' href='{{ p.getPaletteURL }}' target='_blank'></a>
+					<a class='btn link typcn typcn-image' title='View as PNG' href='{{ p.paletteURL }}' target='_blank'></a>
 					<button class='teal typcn typcn-brush get-swatch' title='Download swatch file'></button>
 					{% if upload_permission %}
 						<button class='edit-appearance typcn typcn-pencil darkblue' title='Edit'></button>
@@ -29,12 +29,12 @@
 					{% endif %}
 				</strong>
 				{% endspaceless %}
-				{{ p.getUpdatesHTML }}
-				{{ p.getNotesHTML }}
+				{{ p.updatesHTML }}
+				{{ p.notesHTML }}
 				{% if p.owner_id is null and not p.get_protected %}
-					{{ p.getTagsHTML }}
+					{{ p.tagsHTML }}
 				{% endif %}
-				{{ p.getColorsHTML }}
+				{{ p.colorsHTML }}
 			</div>
 		</li>
 	{% endfor %}

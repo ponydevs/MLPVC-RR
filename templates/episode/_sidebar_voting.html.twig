@@ -14,7 +14,7 @@
 	<img src='/muffin-rating?w={{ score_percent }}' id='muffins' alt='muffin rating svg'>
 	{% endif %}
 	{# @var user_vote \App\Models\EpisodeVote #}
-	{%- set user_vote = current_episode.getUserVote -%}
+	{%- set user_vote = current_episode.userVote -%}
 	{%- if user_vote is empty %}
 		<br><p>How would <em>you</em> rate the {{ thing }}?</p>
 		{% if signed_in -%}

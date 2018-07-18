@@ -151,14 +151,14 @@ class Post extends NSModel implements LinkableInterface {
 		'free' => 'the post became free for anyone to reserve',
 	];
 
-	public function getID():string {
-		return 'post-'.$this->id;
+	public function getIdString():string {
+		return "post-{$this->id}";
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public function getOldID():?string {
+	public function getOldIdString():?string {
 		if ($this->old_id === null)
 			return null;
 
@@ -168,7 +168,7 @@ class Post extends NSModel implements LinkableInterface {
 	public function toURL(Episode $Episode = null):string {
 		if (empty($Episode))
 			$Episode = $this->ep;
-		return $Episode->toURL().'#'.$this->getID();
+		return $Episode->toURL().'#'.$this->getIdString();
 	}
 
 	public function toAnchorWithPreview(){
@@ -253,7 +253,7 @@ class Post extends NSModel implements LinkableInterface {
 	 * @throws \Exception
 	 */
 	public function getLi(bool $view_only = false, bool $cachebust_url = false, bool $enablePromises = false):string {
-		$ID = $this->getID();
+		$ID = $this->getIdString();
 		$alt = !empty($this->label) ? CoreUtils::aposEncode($this->label) : '';
 		$postlink = $this->toURL();
 		$ImageLink = $view_only ? $postlink : $this->fullsize;

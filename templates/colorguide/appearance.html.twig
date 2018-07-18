@@ -10,7 +10,7 @@
 {% set is_staff = permission('staff') %}
 {% set owner_or_staff = is_owner or is_staff %}
 <div id="content">
-	<div class="sprite-wrap">{{ appearance.getSpriteHTML(owner_or_staff) }}</div>
+	<div class="sprite-wrap">{{ appearance.spriteHTML(owner_or_staff) }}</div>
 	<h1>{{ heading | escape }}</h1>
 	<p>from {% if owner is defined -%}
 		{{ owner.toAnchor ~ posess(owner.name, true) }} <a href='/@{{ owner.name }}/cg'>Personal Color Guide</a>
@@ -24,9 +24,9 @@
 
 	<div id="p{{ appearance.id }}" class="section-container">
 		<div class='button-block align-center'>
-			<a class='btn link typcn typcn-image' href='{{ appearance.getPaletteURL }}' target='_blank'>View as PNG</a>
+			<a class='btn link typcn typcn-image' href='{{ appearance.paletteURL }}' target='_blank'>View as PNG</a>
 			<button class='get-swatch typcn typcn-brush teal'>Download swatch file</button>
-			<button class='blue share typcn typcn-export'{{ appearance.private ? ' data-private="true"' : '' }} data-url="{{ appearance.getShareURL(owner_or_staff) }}">Share</button>
+			<button class='blue share typcn typcn-export'{{ appearance.private ? ' data-private="true"' : '' }} data-url="{{ appearance.shareURL(owner_or_staff) }}">Share</button>
 	{% if owner_or_staff %}
 			<button class='darkblue edit-appearance typcn typcn-pencil'>Edit metadata</button>
 		{% if not appearance.protected %}
@@ -36,11 +36,11 @@
 		</div>
 
 	{% if appearance.owner_id is null %}
-		{{ appearance.getChangesHTML }}
+		{{ appearance.changesHTML }}
 		{% if not appearance.protected and (appearance.hasTags or is_staff) %}
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
-			<div class='tags'>{{ appearance.getTagsHTML(constant('NOWRAP')) }}</div>
+			<div class='tags'>{{ appearance.tagsHTML(constant('NOWRAP')) }}</div>
 			{% if is_staff %}
 			<div class="button-block">
 				<button id="edit-tags-btn" class="darkblue typcn typcn-pencil">Edit tags</button>
@@ -49,12 +49,12 @@
 			{% endif %}
 		</section>
 		{% endif %}
-		{{ appearance.getRelatedEpisodesHTML(eqg) }}
+		{{ appearance.relatedEpisodesHTML(eqg) }}
 	{% endif %}
 	{% if appearance.notes_src is not empty %}
 		<section>
 			<h2><span class='typcn typcn-info-large'></span>Additional notes</h2>
-			<div id="notes">{{ appearance.getNotesHTML(constant('NOWRAP'), constant('NOTE_TEXT_ONLY')) }}</div>
+			<div id="notes">{{ appearance.notesHTML(constant('NOWRAP'), constant('NOTE_TEXT_ONLY')) }}</div>
 		</section>
 	{% endif %}
 
@@ -76,10 +76,10 @@
 				<button class="darkblue typcn typcn typcn-document-add apply-template">Apply template</button>
 			</div>
 	{% endif %}
-	{{ appearance.getColorsHTML(false) }}
+	{{ appearance.colorsHTML(false) }}
 		</section>
 	{% if appearance.owner_id is null %}
-		{{ appearance.getRelatedHTML }}
+		{{ appearance.relatedHTML }}
 	{% endif %}
 	</div>
 </div>

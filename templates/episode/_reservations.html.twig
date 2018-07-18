@@ -9,7 +9,7 @@
 		{%- if arranged.unfinished is not empty %}
 			{% for post in arranged.unfinished %}
 				{# @var post \App\Models\Post #}
-				{{ post.getLi(false, false, lazyload ?? false) }}
+				{{ post.li(false, false, lazyload ?? false) }}
 			{% endfor %}
 		{% endif -%}
 		</ul>
@@ -21,7 +21,7 @@
 		{%- if arranged.finished is not empty %}
 			{% for post in arranged.finished %}
 				{# @var post \App\Models\Post #}
-				{{ post.getLi(false, false, lazyload ?? false) }}
+				{{ post.li(false, false, lazyload ?? false) }}
 			{% endfor %}
 		{% endif -%}
 		</ul>

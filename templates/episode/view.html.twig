@@ -79,8 +79,8 @@
 		</p>
 	</section>
 	{% endif %}
-	{% include 'episode/_reservations.html.twig' with { 'arranged': current_episode.getReservations } %}
-	{% include 'episode/_requests.html.twig' with { 'arranged': current_episode.getRequests } %}
+	{% include 'episode/_reservations.html.twig' with { 'arranged': current_episode.reservations } %}
+	{% include 'episode/_requests.html.twig' with { 'arranged': current_episode.requests } %}
 	{{ export_vars({
 		'SEASON': current_episode.season,
 		'EPISODE': current_episode.episode,

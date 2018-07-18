@@ -9,7 +9,7 @@
 {% block content %}
 <div id="content" class="section-container">
 	<h1>{{ heading }}</h1>
-	<p>{{ event_type }} for {{ event.getEntryRoleName }} &bull; {% if event.hasStarted %}{{ event.hasEnded ? 'Ended' : 'Ends' }}  {{ time_tag(event.ends_at) }}{% else %}Starts {{ time_tag(event.starts_at) }}{% endif %}</p>
+	<p>{{ event_type }} for {{ event.entryRoleName }} &bull; {% if event.hasStarted %}{{ event.hasEnded ? 'Ended' : 'Ends' }}  {{ time_tag(event.ends_at) }}{% else %}Starts {{ time_tag(event.starts_at) }}{% endif %}</p>
 
 {% set is_staff = permission('staff') %}
 {% set is_collab = event.type == 'collab' %}
@@ -31,7 +31,7 @@
 	<section>
 		<h2><span class="typcn typcn-image"></span>{{ is_collab ? 'Finished image' : 'Results' }}</h2>
 		{# TODO Make a sub-view or something #}
-		{{ event.getWinnerHTML }}
+		{{ event.winnerHTML }}
 	</section>
 {% endif %}
 
@@ -81,7 +81,7 @@
 
 	<section>
 		<h2><span class='typcn typcn-group'></span>Entries</h2>
-		{{ event.getEntriesHTML(true) }}
+		{{ event.entriesHTML(true) }}
 	</section>
 </div>
 {{ export_vars({

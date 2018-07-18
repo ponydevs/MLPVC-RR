@@ -381,7 +381,7 @@ class PostController extends Controller {
 					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 
-				Response::done(['id' => $Post->getID(), 'kind' => $kind]);
+				Response::done(['id' => $Post->getIdString(), 'kind' => $kind]);
 			break;
 			case 'PUT':
 				$this->_checkPostEditPermission();
@@ -871,7 +871,7 @@ class PostController extends Controller {
 			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
-		Response::success('Reservation added', ['id' => $Post->getID()]);
+		Response::success('Reservation added', ['id' => $Post->getIdString()]);
 	}
 
 	public const SHARE_TYPE = [

@@ -30,15 +30,15 @@
 	{% if await_count %}
 		{% if permission('staff') %}
 		<div class="button-block">
-			<a class="btn link typcn typcn-arrow-forward" href="{{ user.getOpenSubmissionsURL }}" target="_blank" rel="noopener">View open submissions</a>
+			<a class="btn link typcn typcn-arrow-forward" href="{{ user.openSubmissionsURL }}" target="_blank" rel="noopener">View open submissions</a>
 		</div>
 		{% endif %}
 
 		<ul id="awaiting-deviations">
 			{% for post in awaiting_approval %}
-			<li id="{{ post.getID }}">
+			<li id="{{ post.idString }}">
 				<div class="image deviation">
-					<div class="post-deviation-promise image-promise" data-post="{{ post.getID }}"></div>
+					<div class="post-deviation-promise image-promise" data-post="{{ post.idString }}"></div>
 				</div>
 				<span class="label hidden"><a href="http://fav.me/{{ post.deviation_id }}" target="_blank" rel="noopener"></a></span>
 				<em>Posted under {{ post.toAnchor }}</em>

@@ -15,7 +15,7 @@
 		<li><strong>Type:</strong> {{ constant('App\\Models\\Event::EVENT_TYPES')[event.type] }}</li>
 		<li><strong>Start:</strong>&nbsp;{{ time_tag(event.starts_at, constant('App\\Time::TAG_EXTENDED')) }} (<span class="dynt-el"></Span>)</li>
 		<li><strong>End:</strong>&nbsp;{{ time_tag(event.ends_at, constant('App\\Time::TAG_EXTENDED')) }} (<span class="dynt-el"></Span>)</li>
-		<li><strong>Duration:</strong> {{ event.getDurationString }}</li>
+		<li><strong>Duration:</strong> {{ event.durationString }}</li>
 	</ul>
 </li>
 {% endspaceless %}

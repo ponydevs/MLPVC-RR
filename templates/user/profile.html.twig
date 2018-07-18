@@ -27,7 +27,7 @@
 			<h1>
 				<span class="username">{{ user.name }}</span>
 				<a class="da" title="Visit DeviantArt profile" href="{{ user.toDALink }}">{{ da_logo }}</a>
-				{{ user.getVectorAppIcon }}
+				{{ user.vectorAppIcon }}
 				{% if user.isDiscordServerMember %}
 				<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server{{ discord_membership.get_name != user.name ? ('as ' ~ user.discord_member.get_name) | escape : ''}}'>
 				{% endif %}
@@ -62,7 +62,7 @@
 
 	{% set is_user_member = user.perm('member') %}
 	{% if signed_in %}
-		{{ user.getPendingReservationsHTML(same_user, is_user_member) }}
+		{{ user.pendingReservationsHTML(same_user, is_user_member) }}
 	{% endif %}
 	{% if is_user_member %}
 		{% include 'user/_profile_awaiting_approval.html.twig' %}
@@ -106,7 +106,7 @@
 				<p>Below is a list of all the browsers {{ same_user ? "you're" : 'this user is' }} currently signed into.</p>
 				<ul class="session-list">
 				{% for s in sessions %}
-					{{ s.getProfileCard(current_session.id == s.id) }}
+					{{ s.profileCard(current_session.id == s.id) }}
 				{% endfor %}
 				</ul>
 				<p><button class="typcn typcn-arrow-back yellow" id="sign-out-everywhere">Sign out everywhere</button></p>
