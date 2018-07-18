@@ -53,7 +53,7 @@
 				);
 				$VidLinksForm.find('input[type="checkbox"]').on('change',function(){
 					let provider = $(this).attr('name').replace(/^([a-z]+)_.*$/,'$1');
-					$VidLinksForm.find('input').filter(`[name=${provider}_2]`).attr('disabled', this.checked);
+					$VidLinksForm.find('input').filter(`[name=${provider}_2]`).prop('disabled', this.checked);
 				});
 				if (data.fullep.length > 0)
 					$.each(data.fullep,function(_,prov){

@@ -129,8 +129,8 @@
 
 			$form.on('submit', function(e){
 				e.preventDefault();
-				let airdate = $form.find('input[name=airdate]').attr('disabled',true).val(),
-					airtime = $form.find('input[name=airtime]').attr('disabled',true).val(),
+				let airdate = $form.find('input[name=airdate]').disable().val(),
+					airtime = $form.find('input[name=airtime]').disable().val(),
 					airs = $.mkMoment(airdate, airtime).toISOString(),
 					data = $(this).mkData({airs:airs});
 				data.notes = session.getValue();

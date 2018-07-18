@@ -591,12 +591,12 @@
 	$.fn.enable = function(removeClass){
 		if (typeof removeClass !== 'undefined')
 			this.removeClass(removeClass);
-		return this.attr('disabled', false);
+		return this.prop('disabled', false);
 	};
 	$.fn.disable = function(addClass){
 		if (typeof addClass !== 'undefined')
 			this.removeClass(addClass);
-		return this.attr('disabled', true);
+		return this.prop('disabled', true);
 	};
 
 	$.fn.hasAttr = function(attr){

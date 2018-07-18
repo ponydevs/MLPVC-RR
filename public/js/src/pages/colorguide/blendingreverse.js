@@ -392,7 +392,7 @@
 
 			const noFilterColor = this.selectedFilterColor === null;
 
-			this.$resultSaveButton.attr('disabled', noFilterColor);
+			this.$resultSaveButton.prop('disabled', noFilterColor);
 
 			if (noFilterColor)
 				return;

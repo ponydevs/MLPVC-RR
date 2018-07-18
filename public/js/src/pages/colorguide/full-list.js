@@ -18,7 +18,7 @@
 
 			$fullList.html(this.html);
 			reobserve();
-			$ReorderBtn.attr('disabled', Boolean(val.length));
+			$ReorderBtn.prop('disabled', val.length > 0);
 			history.replaceState(history.state,'',this.stateUrl);
 			$.Dialog.close();
 		}));

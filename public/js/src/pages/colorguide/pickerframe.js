@@ -1499,8 +1499,8 @@
 			if (!isNaN(size))
 				this._pickingAreaSize = $.clamp(size,1,400);
 			this._$pickingSize.text(this._pickingAreaSize+'px');
-			this._$decreasePickingSize.attr('disabled', this._pickingAreaSize === 1);
-			this._$increasePickingSize.attr('disabled', this._pickingAreaSize === 400);
+			this._$decreasePickingSize.prop('disabled', this._pickingAreaSize === 1);
+			this._$increasePickingSize.prop('disabled', this._pickingAreaSize === 400);
 
 			if (store)
 				PersistentSettings.getInstance().set('pickingAreaSize',this._pickingAreaSize);
@@ -1701,8 +1701,8 @@
 			this._$zoomperc.text($.roundTo(this._zoomlevel*100,2)+'%');
 			document.activeElement.blur();
 
-			this._$zoomout.attr('disabled', this._zoomlevel <= Zoom.min);
-			this._$zoomin.attr('disabled', this._zoomlevel >= Zoom.max);
+			this._$zoomout.prop('disabled', this._zoomlevel <= Zoom.min);
+			this._$zoomin.prop('disabled', this._zoomlevel >= Zoom.max);
 		}
 		updateMousePosition(e){
 			const imgPos = this.getImagePosition();

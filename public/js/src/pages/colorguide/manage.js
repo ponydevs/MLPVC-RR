@@ -738,7 +738,7 @@
 						type: 'checkbox',
 						name: 'major',
 					}).on('click change',function(){
-						$(this).parent().next()[this.checked?'removeClass':'addClass']('hidden').children('input').attr('disabled', !this.checked);
+						$(this).parent().next()[this.checked?'removeClass':'addClass']('hidden').children('input').prop('disabled', !this.checked);
 					}),
 					'<span>This is a major change</span>'
 				),
@@ -1568,7 +1568,7 @@
 					type: 'checkbox',
 					name: 'accept_terms',
 				}).on('change mouseup',function(){
-					$downloadButton.attr('disabled',!this.checked);
+					$downloadButton.prop('disabled',!this.checked);
 				}),
 				templateImageNames = [
 					"cm_square",
@@ -1622,7 +1622,7 @@
 						if ($maleHide.is(':checked'))
 							$maleHide.parent().prev().children('input').prop('checked', true);
 					}
-					$maleHide.attr('disabled',maleBody);
+					$maleHide.prop('disabled',maleBody);
 
 					// Horn / Wings
 					const $magicAuraColor = $form.find('#color-replace-ma');

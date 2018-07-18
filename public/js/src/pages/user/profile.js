@@ -459,14 +459,14 @@
 		let $el = $(this);
 		$el.data('orig', parseInt($el.val().trim(), 10)).on('keydown keyup change',function(){
 			let $el = $(this);
-			$el.siblings('.save').attr('disabled', parseInt($el.val().trim(), 10) === $el.data('orig'));
+			$el.siblings('.save').prop('disabled', parseInt($el.val().trim(), 10) === $el.data('orig'));
 		});
 	});
 	$slbl.children('input[type=checkbox]').each(function(){
 		let $el = $(this);
 		$el.data('orig', $el.prop('checked')).on('keydown keyup change',function(){
 			let $el = $(this);
-			$el.siblings('.save').attr('disabled', $el.prop('checked') === $el.data('orig'));
+			$el.siblings('.save').prop('disabled', $el.prop('checked') === $el.data('orig'));
 		});
 	});
 	$slbl.children('select').each(function(){
@@ -474,7 +474,7 @@
 		$el.data('orig', $el.find('option:selected').val()).on('keydown keyup change',function(){
 			let $el = $(this),
 				$val = $el.find('option:selected');
-			$el.siblings('.save').attr('disabled', $val.val() === $el.data('orig'));
+			$el.siblings('.save').prop('disabled', $val.val() === $el.data('orig'));
 		});
 	});
 })();

@@ -279,8 +279,8 @@
 			let prevUrl = $formImgInput.data('prev-url'),
 				sameValue = typeof prevUrl === 'string' && prevUrl.trim() === $formImgInput.val().trim();
 			const checkDisabled = disable === true || sameValue;
-			$formImgCheck.attr('disabled', checkDisabled);
-			$submitBtn.attr('disabled', !checkDisabled);
+			$formImgCheck.prop('disabled', checkDisabled);
+			$submitBtn.prop('disabled', !checkDisabled);
 			if (checkDisabled)
 				$formImgCheck.attr('title', 'You need to change the URL before checking again.');
 			else $formImgCheck.removeAttr('title');
@@ -428,7 +428,7 @@
 				}));
 			})();
 		}).on('reset',function(){
-			$formImgCheck.attr('disabled', false).addClass('red');
+			$formImgCheck.prop('disabled', false).addClass('red');
 			$notice.html(noticeHTML).show();
 			$previewIMG.hide();
 			$formImgInput.removeData('prev-url');
@@ -666,7 +666,7 @@
 					let show = $showPlayers.hasClass('typcn-eye');
 					$embedWrap[show?'show':'hide']();
 					if ($partSwitch instanceof jQuery)
-						$partSwitch.attr('disabled', !show);
+						$partSwitch.prop('disabled', !show);
 					$showPlayers.toggleClass('typcn-eye typcn-eye-outline').toggleHtml(['Show on-site player','Hide on-site player']);
 
 					if (show)
