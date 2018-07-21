@@ -35,7 +35,7 @@ class AboutController extends Controller {
 		$browser = CoreUtils::detectBrowser($user_agent);
 		if (empty($browser['platform']))
 			CoreUtils::error_log('Could not find platform based on the following UA string: '.preg_replace(new RegExp(INVERSE_PRINTABLE_ASCII_PATTERN), '', $user_agent));
-		if (+empty($browser['browser_name']))
+		if (!empty($browser['browser_name']))
 			$browser['browser_class'] = CoreUtils::browserNameToClass($browser['browser_name']);
 
 		if ($session !== null){

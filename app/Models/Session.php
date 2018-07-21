@@ -37,6 +37,10 @@ class Session extends NSModel {
 	public static $belongs_to = [
 		['user'],
 	];
+	/** For Twig */
+	public function getUser():User {
+		return $this->user;
+	}
 
 	public static $attr_protected = ['data'];
 

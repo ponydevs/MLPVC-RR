@@ -1,12 +1,12 @@
 {# @controller \App\Controllers\AboutController::browser #}
-{# @var session App\Models\Session #}
+{# @var session \App\Models\Session #}
 {# @var browser array #}
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
 <div id="content" class="section-container">
-{% if browser.browser_class is not empty %}
-	<div class="browser-{{ browser_class }}"></div>
+{% if browser.browser_class is defined and browser.browser_class is not empty %}
+	<div class="browser-{{ browser.browser_class }}"></div>
 {% endif %}
 	<h1>{{ ((browser.browser_name ?? 'Unknown browser') ~ ' ' ~ (browser.browser_ver ?? '')) | trim }}</h1>
 	<p>{{ browser.platform is not empty ? "on #{browser.platform}" : 'Unknown platform' }}</p>

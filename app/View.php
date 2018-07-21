@@ -30,9 +30,9 @@ class View {
 				$bc = new NavBreadcrumb('About','/about');
 				switch ($this->method){
 					case 'browser':
-						if (isset($scope['Session'])){
+						if (isset($scope['session'])){
 							/** @var $session \App\Models\Session */
-							$session = $scope['Session'];
+							$session = $scope['session'];
 							$bc = (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'))->setChild(
 								(new NavBreadcrumb($session->user->name, $session->user->toURL()))->setChild('Session #'.$session->id)
 							);
