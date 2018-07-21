@@ -65,7 +65,7 @@
 	{% if current_episode.notes is not empty %}
 	<section class="notes">
 		<h2>Notes from the staff</h2>
-		<pre><?=$CurrentEpisode->notes?></pre>
+		<pre>{{ current_episode.notes }}</pre>
 	</section>
 	{% endif %}
 	{% include 'episode/_related_appearances.html.twig' %}
