@@ -19,10 +19,11 @@
 				Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your pending reservations.
 			{%- endif %}
 		</span>
+		{% endspaceless %}
 
 		{% if posts is defined and posts is not empty %}
 			<ul>
-			{% for post in posts %}
+			{% for post in posts %}{% spaceless %}
 				{% set request_reserved = post.get_is_request and post.reserved_at is not empty %}
 				<li>
 					<div class='image screencap'>
@@ -31,7 +32,9 @@
 					{% if post.label is not empty %}
 						<span class='label'>{{ post.processLabel }}</span>
 					{% endif %}
+					{% endspaceless %}
 					<em>{{ request_reserved ? 'Reserved' : 'Posted' }} under {{ post.toAnchor }} {{ time_tag(request_reserved ? post.reserved_at : post.get_posted_at) }}</em>
+					{% spaceless %}
 					{% if post.isOverdue %}
 					{{ constant('App\\Models\\Post::CONTESTABLE') }}
 					{% endif %}
@@ -46,10 +49,9 @@
 						<button class='red typcn typcn-user-delete cancel'>Cancel</button>
 					</div>
 				</li>
-			{% endfor %}
+			{% endspaceless %}{% endfor %}
 			</ul>
 		{% endif %}
-		{% endspaceless %}
 	{% else %}
 	<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>
 	{% endif %}
