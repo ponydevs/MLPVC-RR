@@ -122,10 +122,10 @@ class View {
 					case 'index':
 						return $showbc->setActive();
 					case 'view':
-						if (!isset($scope['CurrentEpisode']))
+						if (!isset($scope['current_episode']))
 							return new NavBreadcrumb('Home',null,true);
 						/** @var $ep \App\Models\Episode */
-						$ep = $scope['CurrentEpisode'];
+						$ep = $scope['current_episode'];
 						$cat = new NavBreadcrumb($ep->is_movie ? 'Movies & Shorts' : 'Episodes');
 						$cat->setChild(new NavBreadcrumb($scope['heading'], $ep->toURL(), true));
 						$showbc->setChild($cat);
