@@ -1,7 +1,7 @@
 {# @var current_episode \App\Models\Episode #}
 {% set thing = current_episode.get_is_movie ? 'movie' : 'episode' %}
 {% if not current_episode.hasAired -%}
-	<p>Voting will start {{ time_tag(current_episode.willair) }}, after the {{ thing }} aired.</p>
+	<p>Voting will start {{ time_tag(current_episode.get_willair) }}, after the {{ thing }} aired.</p>
 {%- else -%}
 	{% set score = current_episode.get_score %}
 	{% set score_percent = (((score/5)*1000) | round)/10 -%}
