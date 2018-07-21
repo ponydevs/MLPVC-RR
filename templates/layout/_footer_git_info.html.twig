@@ -1,6 +1,6 @@
-{% set reload_warning_text %}
+{% set reload_warning_text -%}
 	<sup style="cursor:help" title="The website has been updated, you should reload to get any new features/fixes">&#x2731;</sup>
-{% endset %}
+{%- endset %}
 {% if wrap %}<span id='git-info'>{% endif %}
 Running <strong><a href='{{ constant('GITHUB_URL') }}' title='Visit the GitHub repository'>MLPVC-RR</a>
 	{%- if commit_id is defined -%}
