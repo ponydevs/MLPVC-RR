@@ -1,0 +1,47 @@
+{# @var appearances \App\Models\Appearance[] #}
+{# @var wrap bool #}
+{# @var upload_permission bool #}
+{% if upload_permission is not defined %}
+	{% set upload_permission = permission('staff') %}
+{% endif %}
+{% if wrap is not defined or wrap %}
+<ul id='list' class='appearance-list'>
+{% endif %}
+
+{% if appearances is not empty %}
+	{% for p in appearances %}
+		<li id='p{{ p.id }}'>
+			{{ p.spriteHTML(upload_permission) }}
+			<div>
+				{% spaceless %}
+				<strong>
+					{% if p.private %}
+					<span class='typcn typcn-lock-closed color-orange'></span>
+					{% endif %}
+					<a href='{{ p.toURL }}'>{{ p.label | escape }}</a>
+					<a class='btn link typcn typcn-image' title='View as PNG' href='{{ p.paletteURL }}' target='_blank'></a>
+					<button class='teal typcn typcn-brush get-swatch' title='Download swatch file'></button>
+					{% if upload_permission %}
+						<button class='edit-appearance typcn typcn-pencil darkblue' title='Edit'></button>
+						{% if not p.get_protected %}
+							<button class='delete-appearance typcn typcn-trash red' title='Delete'></button>
+						{% endif %}
+					{% endif %}
+				</strong>
+				{% endspaceless %}
+				{{ p.updatesHTML }}
+				{{ p.notesHTML }}
+				{% if p.owner_id is null and not p.get_protected %}
+					{{ p.tagsHTML }}
+				{% endif %}
+				{{ p.colorsHTML }}
+			</div>
+		</li>
+	{% endfor %}
+{% else %}
+<div class='notice info align-center'><label>No appearances to show</label></div>
+{% endif %}
+
+{% if wrap is not defined or wrap %}
+</ul>
+{% endif %}

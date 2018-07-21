@@ -1,0 +1,21 @@
+{# @var event \App\Models\Event #}
+{# @var is_staff bool #}
+{% spaceless %}
+<li id="event-{{ event.id }}">
+	<strong class="title">
+		<a href='{{ event.toURL }}' class="event-name">{{ event.name | escape }}</a>
+		{% if is_staff and not event.isFinalized %}
+			<button class="blue typcn typcn-pencil edit-event" title="Edit"></button>
+			<button class="darkblue typcn typcn-image finalize-event"{{ event.type == 'collab' ? '' : ' disabled' }} title="Finalize"></button>
+			<button class="red typcn typcn-trash delete-event" title="Delete"></button>
+		{% endif %}
+	</strong>
+	<span class="added">Added {{ time_tag(event.added_at) }}{% if is_staff %} by {{ event.creator.toAnchor }}{% endif %}</span>
+	<ul>
+		<li><strong>Type:</strong> {{ constant('App\\Models\\Event::EVENT_TYPES')[event.type] }}</li>
+		<li><strong>Start:</strong>&nbsp;{{ time_tag(event.starts_at, constant('App\\Time::TAG_EXTENDED')) }} (<span class="dynt-el"></Span>)</li>
+		<li><strong>End:</strong>&nbsp;{{ time_tag(event.ends_at, constant('App\\Time::TAG_EXTENDED')) }} (<span class="dynt-el"></Span>)</li>
+		<li><strong>Duration:</strong> {{ event.durationString }}</li>
+	</ul>
+</li>
+{% endspaceless %}

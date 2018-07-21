@@ -1,0 +1,17 @@
+{# @controller \App\Models\Appearance::getNotesHTML #}
+{# @var notes string #}
+{# @var cm_count int #}
+{# @var wrap bool #}
+{# @var cm_link bool #}
+{% spaceless %}
+{% if wrap %}
+<div class='notes'>
+{% endif %}
+{{ notes }}
+{% if cm_link and cm_count > 0 %}
+<span>{{ make_plural('Cutie mark', cm_count) }} available</span>
+{% endif %}
+{% if wrap %}
+</div>
+{% endif %}
+{% endspaceless %}

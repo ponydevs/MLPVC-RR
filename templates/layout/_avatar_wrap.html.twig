@@ -1,0 +1,3 @@
+<div class='avatar-wrap provider-{{ signed_in ? current_user.get_avatar_provider ~ current_user.vectorAppClassName : 'deviantart' }}'{{ signed_in ? " data-for='#{current_user.id}'" : '' }}>
+	<img src='{{ signed_in ? current_user.avatar_url : constant('GUEST_AVATAR') }}' class='avatar' alt='avatar'>
+</div>

@@ -1,0 +1,101 @@
+{# @controller App\Controllers\AdminController::log #}
+{# @var current_user App\Models\User #}
+{# @var pagination App\Pagination #}
+{# @var log_items \App\Models\Logs\Log[] #}
+{# @var type string #}
+{# @var by string #}
+{# @var ip string #}
+{# @var entry_types array #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+<div id="content">
+	<h1>{{ heading }}</h1>
+	<p>Displaying {{ pagination.itemsPerPage }} items/page</p>
+	<div class='align-center button-block'>
+		<a class='btn link typcn typcn-arrow-back' href="/admin">Back to Admin Area</a>
+	</div>
+	<form id="filter-form">
+		<strong>Show</strong>
+		<select name="type" class="entry-type">
+			<option value=''{{ type is not null ? ' selected' : '' }}>all</option>
+			<optgroup label="Specific entry type">
+				{% for value, label in entry_types %}
+					<option value='{{ value }}'{{ type is not null and type == value ? ' selected' : '' }}>{{ label }}</option>
+				{% endfor %}
+			</optgroup>
+		</select>
+		<strong>entries from</strong>
+		<input type="text" name="by" class="username" size="22" placeholder="any user / IP"{{ by is not null or ip is not null ? " value='" ~ (by ?? ip) ~ "'" : '' }} pattern="^({{ constant('USERNAME_PATTERN') }}|Web server|[\da-fA-F.:]+)$" maxlength="20" list="from_values">
+		<button type="submit" class="blue typcn typcn-zoom" title="Apply filter"></button>
+		<button type="reset" class="orange typcn typcn-times" title="Clear filters"{{ by is not null or ip is not null or type is not null ? '' : ' disabled' }}></button>
+		<datalist id="from_values">
+			<option>Web server</option>
+			<option>you</option>
+			<option>your IP</option>
+		</datalist>
+	</form>
+	{{ pagination }}
+	<table id="logs">
+		<thead>
+			<tr>
+				<th class="entryid">#</th>
+				<th class="timestamp">Timestamp</th>
+				<th class="ip">Initiator</th>
+				<th class="reftype">Event</th>
+			</tr>
+		</thead>
+		{% spaceless %}
+		<tbody>
+			{% if log_items is empty %}
+				<tr><td colspan="4"><div class="notice info align-center"><label>No log items found</label></div></td></tr>
+			{% else %}
+				{% for item in log_items %}
+					{% if item.initiator is not empty %}
+						{% if item.actor is empty %}
+							{% set init_user = 'Deleted user' %}
+						{% else %}
+							{% set init_user = item.actor %}
+							{% set same_user = init_user.id == current_user.id %}
+							{% set me_class = same_user ? ' your-name' : '' %}
+							{% set me_by = same_user ? 'you' : 'this user' %}
+							{% set strong_name = same_user ? "<strong title='You'>#{init_user.name}</strong>" : init_user.name %}
+							{% set init_user %}
+							<a class='search-user typcn typcn-zoom{{ me_class }}' title='Search for all entries by {{ me_by }}'></a> <a class='typcn typcn-user' href='{{ init_user.toURL }}' title='Visit profile'></a> <span class='name'>{{ strong_name }}</span>
+							{% endset %}
+						{% endif %}
+					{% else %}
+						{% set init_user %}
+						<a class="search-user typcn typcn-zoom" title="Search for all entries by the server"></a> <span class="name">Web server</span>
+						{% endset %}
+					{% endif %}
+					{% if item.ip != constant('GDPR_IP_PLACEHOLDER') %}
+						{% set ip = item.displayIP %}
+						{% set is_own_ip = item.ip == remote_addr %}
+						{% set strong_ip = is_own_ip ? "<strong title='Your current IP'>#{ip}</strong>" : ip %}
+						{% set ip %}
+						<a class='typcn typcn-zoom search-ip{{ is_own_ip ? ' your-ip' : '' }}' title='Search for all entries from this IP'></a> <span class='address'>{{ strong_ip }}</span>
+						{% endset %}
+					{% else %}
+						{% set ip = '<em>IP wiped (GDPR)</em>' %}
+					{% endif %}
+					{% set event = constant('App\\Logs::LOG_DESCRIPTION')[item.reftype] ?? item.reftype %}
+					{% if item.refid is not null %}
+						{% set event %}
+						<span class="expand-section typcn typcn-plus">{{ event }}</span>
+						{% endset %}
+					{% endif %}
+					<tr>
+						<td class='entryid'>{{ item.entryid }}</td>
+						<td class='timestamp'>{{ time_tag(item.timestamp, constant('App\\Time::TAG_EXTENDED')) }}<span class="dynt-el"></span></td>
+						<td class='ip'>{{ init_user }}<br>{{ ip }}</td>
+						<td class='reftype'>{{ event }}</td>
+					</tr>
+				{% endfor %}
+			{% endif %}
+		</tbody>
+		{% endspaceless %}
+	</table>
+	{{ pagination }}
+</div>
+{% endblock %}

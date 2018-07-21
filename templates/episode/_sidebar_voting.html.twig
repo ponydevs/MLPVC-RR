@@ -1,0 +1,28 @@
+{# @var current_episode \App\Models\Episode #}
+{% set thing = current_episode.get_is_movie ? 'movie' : 'episode' %}
+{% if not current_episode.hasAired -%}
+	<p>Voting will start {{ time_tag(current_episode.willair) }}, after the {{ thing }} aired.</p>
+{%- else -%}
+	{% set score = current_episode.get_score %}
+	{% set score_percent = (((score/5)*1000) | round)/10 -%}
+	<p>{% if score is not empty -%}
+			This {{ thing }} is rated {{ score }}/5 (<a class='detail'>Details</a>)
+		{%- else -%}
+			Nopony voted yet.
+		{%- endif %}</p>
+	{% if score > 0 %}
+	<img src='/muffin-rating?w={{ score_percent }}' id='muffins' alt='muffin rating svg'>
+	{% endif %}
+	{# @var user_vote \App\Models\EpisodeVote #}
+	{%- set user_vote = current_episode.userVote -%}
+	{%- if user_vote is empty %}
+		<br><p>How would <em>you</em> rate the {{ thing }}?</p>
+		{% if signed_in -%}
+			<button class='blue rate typcn typcn-star'>Cast your vote</button>
+		{%- else -%}
+			<p><em>Sign in above to cast your vote!</em></p>
+		{%- endif %}
+	{%- else -%}
+		<p>Your rating: {{ make_plural('muffin', user_vote.vote, constant('PREPEND_NUMBER')) }}</p>
+	{%- endif %}
+{%- endif %}

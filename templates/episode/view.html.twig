@@ -1,0 +1,114 @@
+{# @controller \App\Controllers\EpisodeController::view #}
+{# @controller \App\Controllers\MovieController::view #}
+{# @controller \App\Controllers\PostController::share #}
+{# @var poster \App\Models\User #}
+{# @var current_episode \App\Models\Episode #}
+{# @var prev_episode \App\Models\Episode #}
+{# @var next_episode \App\Models\Episode #}
+{% extends "layout/base.html.twig" %}
+
+{% block content %}
+<div id="content">
+{% if current_episode is empty %}
+	<h1>There's nothing here yet&hellip;</h1>
+	<p>&hellip;but there could be!</p>
+
+	<div class="notice info">
+		<label>No episodes found</label>
+		<p>To create requests and reservations, an episode must be added to the database first. Head on over to the <a href='/episodes'>Episodes</a> page and add one now!</p>
+	</div>
+{% else %}
+{% set reverse_btns = user_pref('ep_revstepbtn') %}
+{% if reverse_btns %}
+{% set tmp = prev_episode %}
+{% set prev_episode = next_episode %}
+{% set next_episode = tmp %}
+{% endif %}
+	<div class="heading-wrap">
+		<div class="prev-ep">
+		{%- if prev_episode is not empty -%}
+			<div>
+				<a href="{{ prev_episode.toURL }}" class="btn link ep-button typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span>{{ cutoff(prev_episode.get_short_title, constant('App\\Episodes::TITLE_CUTOFF')) }}</a>
+			</div>
+		{%- else -%}
+		&nbsp;
+		{%- endif -%}
+		</div>
+		<div class="main">
+			<div>
+				<h1>{{ heading | escape }}</h1>
+				<p>Vector Requests & Reservations</p>
+{% if permission('staff') %}
+				<p class="added-by"><em>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} added by {{ poster.toAnchor }} {{ time_tag(current_episode.posted) }}</em></p>
+{% endif %}
+			</div>
+		</div>
+		<div class="next-ep">
+		{%- if next_episode is not empty -%}
+			<div>
+				<a href="{{ next_episode.toURL }}" class="btn link ep-button typcn typcn-media-fast-forward">{{ cutoff(next_episode.get_short_title, constant('App\\Episodes::TITLE_CUTOFF')) }}<span class="typcn typcn-media-fast-forward"></span></a>
+			</div>
+		{%- else -%}
+		&nbsp;
+		{%- endif -%}
+		</div>
+	</div>
+	{% include 'episode/_watch.html.twig' %}
+	<section class="about-res">
+		<h2>What Vector Reservations Are{% if permission('staff') %}<button class="blue typcn typcn-pencil" id="edit-about_reservations">Edit</button>{% endif %}</h2>
+		{{ global_setting('about_reservations') }}
+	</section>
+	<section class="rules">
+		<h2>Reservation Rules{% if permission('staff') %}<button class="orange typcn typcn-pencil" id="edit-reservation_rules">Edit</button>{% endif %}</h2>
+		{{ global_setting('reservation_rules') }}
+	</section>
+	{% if current_episode.notes is not empty %}
+	<section class="notes">
+		<h2>Notes from the staff</h2>
+		<pre><?=$CurrentEpisode->notes?></pre>
+	</section>
+	{% endif %}
+	{% include 'episode/_related_appearances.html.twig' %}
+	{% if permission('staff') %}
+	<section class="admin">
+		<h2>Administration area</h2>
+		<p class="align-center">
+			<button id="edit-ep" class="typcn typcn-pencil large darkblue">Metadata</button>
+			<button id="video" class="typcn typcn-pencil large darkblue">Video links</button>
+			<button id="cg-relations" class="typcn typcn-pencil large darkblue">Guide relations</button>
+		</p>
+	</section>
+	{% endif %}
+	{% include 'episode/_reservations.html.twig' with { 'arranged': current_episode.reservations } %}
+	{% include 'episode/_requests.html.twig' with { 'arranged': current_episode.requests } %}
+	{{ export_vars({
+		'SEASON': current_episode.season,
+		'EPISODE': current_episode.episode,
+	}) -}}
+	{% if username_regex is not empty %}
+		{{ export_vars({ 'USERNAME_REGEX': username_regex }) }}
+	{% endif %}
+	{% if fullsize_match_regex is not empty %}
+		{{ export_vars({ 'FULLSIZE_MATCH_REGEX': fullsize_match_regex }) }}
+	{% endif %}
+{% endif %}
+</div>
+
+{{ export_vars({ 'EpisodePage': true }) -}}
+{% if ep_title_regex is defined %}
+{{ export_vars({ 'EP_TITLE_REGEX': ep_title_regex }) -}}
+{% endif %}
+{# @var linked_post \App\Models\Post|null #}
+{% if linked_post is defined and linked_post is not empty %}
+{{ export_vars({ 'linkedPostURL': linked_post.toURL }) -}}
+{% endif %}
+{% endblock %}
+
+{% block widgets %}
+{% if current_episode is not empty %}
+<section id="voting">
+	<h2>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} rating</h2>
+	{% include "episode/_sidebar_voting.html.twig" %}
+</section>
+{% endif %}
+{% endblock %}

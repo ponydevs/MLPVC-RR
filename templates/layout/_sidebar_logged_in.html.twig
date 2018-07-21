@@ -1,0 +1,12 @@
+<div class='logged-in provider-{{ current_user.get_avatar_provider ?? 'deviantart' }}'>
+	{% include 'layout/_avatar_wrap.html.twig' %}
+	<div class="user-data">
+		<span class="user-name">{{ signed_in ? current_user.toAnchor : 'Curious Pony' }}</span>
+		<span class="user-role">
+			<span>{{ signed_in ? current_user.get_role_label : 'Guest' }}</span>
+			{% if current_session is not empty and current_session.updating %}
+			<span id="session-update-indicator" title="Updating your session"></span>
+			{% endif %}
+		</span>
+	</div>
+</div>

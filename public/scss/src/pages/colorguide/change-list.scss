@@ -1,0 +1,60 @@
+#content > p.links { margin: 0 0 10px }
+#changes:empty {
+	padding: 0;
+
+	&:before {
+		content: "The are no changes to display";
+		font-size: 1.2em;
+		text-align: center;
+		display: block;
+		font-style: italic;
+	}
+}
+@import "../../vars";
+
+#content table {
+	list-style: none;
+	padding: 0;
+	margin: 0 auto 10px;
+	min-width: 50%;
+	max-width: 100%;
+
+	td, th {
+		padding: 10px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		vertical-align: middle;
+
+		&.reason {
+			text-align: left;
+		}
+	}
+
+	td {
+		text-align: center;
+
+		&.by-at .typcn {
+			position: relative;
+			top: -2px;
+			margin-right: 4px;
+		}
+	}
+
+	td > em {
+		display: block;
+		opacity: .7;
+	}
+}
+
+.pony-link > a {
+	display: inline-flex;
+	align-items: center;
+	flex-flow: row wrap;
+
+	> img {
+		height: 1em;
+		border: 1px solid currentColor;
+		margin-right: .5em;
+	}
+}

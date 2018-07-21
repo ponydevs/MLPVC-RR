@@ -1,0 +1,20 @@
+{# @var notices \App\Models\Notice[] #}
+{% spaceless %}
+{% if wrap is not defined or wrap %}
+<ul id='notice-list'>
+{% endif %}
+{% for notice in notices %}
+<li class="notice-item">
+	<span class="text">{{ notice.message_html }}</span>
+	&ndash;
+	<span class="time">Hidden {{ time_tag(notice.hide_after) }}</span>
+	<span class="actions">
+		<button class="red typcn typcn-trash delete" title="Delete" disabled></button>
+		<button class="blue typcn typcn-pencil edit" title="Edit" disabled></button>
+	</span>
+</li>
+{% endfor %}
+{% if wrap is not defined or wrap %}
+</ul>
+{% endif %}
+{% endspaceless %}

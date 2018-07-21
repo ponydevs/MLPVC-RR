@@ -1,0 +1,947 @@
+@import url('https://fonts.googleapis.com/css?family=PT+Sans');
+@import "../../vendor/fontawesome";
+@import "../../vars";
+@import "../../shared-utils";
+@import "../../components/vital/buttons";
+@import "../../components/vital/notices";
+@import "../../components/vital/dialog";
+@import "../../components/vital/forms";
+@import "../../vendor/nouislider";
+
+html,body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+$UIColor: silver;
+$UIBorders: rgba(gray, .5);
+$UIBackground: #333;
+$EditorBG: #191919;
+$MenubarHeight: 28px + 1px;
+$TabbarHeight: 28px + 1px;
+$TabTopMargin: 2px;
+$TabBorder: 1px;
+$TabInactiveTopOffset: 2px;
+$StatusbarHeight: 24px + 1px;
+body {
+	font-family: 'PT Sans', sans-serif;
+	overflow: hidden;
+
+	&.area-list-resizing {
+		&, * {
+			cursor: w-resize !important;
+		}
+	}
+}
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+	background-color: $UIBackground;
+}
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+	background-color: $UIBackground;
+}
+::-webkit-scrollbar-thumb:vertical,
+::-webkit-scrollbar-thumb:horizontal {
+	background-color: $UIColor;
+	border: 2px solid $UIBackground;
+	border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:vertical { width: 6px }
+::-webkit-scrollbar-thumb:horizontal { height: 6px }
+#dialogOverlay {
+	background: rgba(black, .3);
+	backdrop-filter: blur(3px);
+}
+#dialogBox {
+	box-shadow: 0 0 10px rgba(black, .5), 0 0 70px black;
+}
+:focus{outline:0}
+.fileinput {
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+.hidden{display:none!important}
+%colorat {
+	text-align: center;
+	font-family: $monospace;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	justify-content: center;
+	font-size: .9em;
+	line-height: 1em;
+	white-space: nowrap;
+
+	.color {
+		text-transform: uppercase;
+		border-radius: 2px;
+		padding: 1px 2px;
+	}
+}
+#menubar {
+	position: absolute;
+	z-index: 4;
+	top: 0;
+	height: $MenubarHeight;
+	background: $UIBackground;
+	color: $UIColor;
+	padding: 0 5px;
+	margin: 0;
+	display: flex;
+	flex-flow: row nowrap;
+	font-size: 0;
+	width: 100%;
+	user-select: none;
+	cursor: default;
+	box-sizing: border-box;
+	border-bottom: 1px solid $UIBorders;
+
+	> li {
+		position: relative;
+		font-size: 16px;
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+
+		&:not(:last-child){
+			margin-right: 5px;
+		}
+
+		> a {
+			flex: 0 0 auto;
+			padding: 1px 10px;
+			cursor: default;
+			border-radius: 3px;
+			border: 1px solid transparent;
+
+			&.disabled {
+				opacity: .7;
+				pointer-events: none;
+			}
+
+			&:not(.disabled):not(.active):hover {
+				border-color: $UIBorders;
+				background: rgba(black, .2);
+			}
+
+			&.active {
+				background: rgba(black, .5);
+				box-shadow: inset 0 0 2px black;
+			}
+
+			.kbd {
+				float: right;
+			}
+		}
+		> ul {
+			position: absolute;
+			top: $MenubarHeight;
+			background: #f2f2f2;
+			border: 1px solid #ccc;
+			padding: 2px;
+			margin: 0;
+			white-space: nowrap;
+
+			li {
+				&.toggle {
+					&.checked > a:before {
+						content: "Disable ";
+					}
+					&:not(.checked) > a:before {
+						content: "Enable ";
+					}
+				}
+
+				> a {
+					display: block;
+					color: #000;
+					padding: 2px 8px;
+
+					&:not(.disabled):hover {
+						background-color: rgba(deepskyblue,.3);
+					}
+					&.disabled {
+						opacity: .4;
+						pointer-events: none;
+					}
+				}
+			}
+		}
+	}
+}
+#tabbar {
+	position: absolute;
+	z-index: 3;
+	top: $MenubarHeight;
+	height: $TabbarHeight;
+	background: darken($UIBackground,3);
+	color: $UIColor;
+	padding: 0 1px;
+	margin: 0;
+	display: flex;
+	flex-flow: row nowrap;
+	overflow: hidden;
+	font-size: 0;
+	width: 100%;
+	user-select: none;
+	cursor: default;
+	box-sizing: border-box;
+	border-bottom: 1px solid $UIBorders;
+
+	> .tab {
+		display: flex;
+		flex-flow: row nowrap;
+		flex: 0 1 auto;
+		color: $UIColor;
+		background: $UIBackground;
+		border: $TabBorder solid $UIBorders;
+		border-bottom: 0;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+		justify-content: space-between;
+		align-items: center;
+		height: $TabbarHeight - $TabTopMargin - ($TabBorder*2);
+		margin-top: $TabTopMargin;
+		max-width: 20%;
+		font-size: 16px;
+		padding: 0 4px;
+		min-width: 90px;
+
+		&:not(:last-child){
+			margin-right: 1px;
+		}
+		&:not(.active){
+			opacity: .6;
+			background: darken($UIBackground,10);
+			height: $TabbarHeight - $TabTopMargin - ($TabBorder*2) - $TabInactiveTopOffset;
+			margin-top: $TabTopMargin + $TabInactiveTopOffset;
+		}
+
+		> * {
+			display: inline-block;
+			white-space: nowrap;
+		}
+
+		//noinspection CssOptimizeSimilarProperties
+		.pickcolor {
+			$size: 12px;
+			flex: 0 0 $size;
+			width: $size;
+			height: $size;
+			border: 1px solid black;
+			margin-right: 5px;
+			background-image: url('/img/transparency.svg');
+			background-position:  center;
+			background-size: cover;
+			box-sizing: border-box;
+			cursor: pointer;
+
+			span {
+				display: block;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+			}
+		}
+		.filename {
+			flex: 0 1 auto;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.fileext {
+			flex: 1 1 auto;
+
+			&:before {
+				content: ".";
+			}
+		}
+		.close {
+			$size: .6em;
+			font-weight: bold;
+			flex: 0 0 $size;
+			border: 1px solid transparent;
+			padding: 1px 2px;
+			margin-left: 4px;
+			border-radius: 2px;
+			height: $size;
+			line-height: $size;
+			width: $size;
+			text-align: center;
+			cursor: pointer;
+
+			&:hover {
+				border-color: $UIBorders;
+				background-color: rgba(black, .3);
+			}
+		}
+	}
+}
+#statusbar {
+	position: absolute;
+	z-index: 2;
+	bottom: 0;
+	height: $StatusbarHeight;
+	background: $UIBackground;
+	color: $UIColor;
+	padding: 0 5px;
+	margin: 0;
+	display: flex;
+	flex-flow: row nowrap;
+	font-size: 18px;
+	width: 100%;
+	user-select: none;
+	cursor: default;
+	box-sizing: border-box;
+	border-top: 1px solid $UIBorders;
+
+	> *:not(:last-child) {
+		border-right: 1px solid $UIBorders;
+		padding-right: 6px !important;
+		margin-right: 6px !important;
+	}
+
+	.info {
+		flex: 1 1 85%;
+		text-align: left;
+	}
+	.pos {
+		flex: 1 1 5%;
+		text-align: center;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		font-family: $monospace;
+
+		> * {
+			flex: 1 1 25%;
+		}
+
+		li {
+			cursor: default;
+			display: inline-block;
+			font-size: .8em;
+		}
+	}
+	.colorat {
+		flex: 1 1 10%;
+		@extend %colorat;
+
+		.opacity {
+			white-space: pre;
+
+			&:empty { display:none }
+			&:not(:empty):before {
+				content: " @ ";
+			}
+		}
+	}
+}
+%panel {
+	position: absolute;
+	z-index: 4;
+	background-color: rgba(darken($UIBackground,6), .9);
+	color: $UIColor;
+	border: 1px solid $UIBorders;
+	cursor: default;
+}
+#areas-sidebar {
+	@extend %panel;
+	top: $MenubarHeight+$TabbarHeight;
+	right: 0;
+	width: 0;
+	height: calc(100% - #{$MenubarHeight+$TabbarHeight+$StatusbarHeight});
+	border-width: 0 0 0 1px;
+	box-sizing: border-box;
+	user-select: none;
+	text-align: left;
+	background-color: $UIBackground;
+
+	$handleSize: 4px;
+
+	body.area-list-resizing & .resize-handle, .resize-handle:hover {
+		$color: darken(deepskyblue,7);
+		background-color: $color;
+		box-shadow: 0 0 10px black;
+	}
+
+	> .resize-handle {
+		position: absolute;
+		z-index: 3;
+		top: 0;
+		left: -$handleSize/2;
+		height: 100%;
+		width: $handleSize;
+		background-color: transparent;
+		cursor: w-resize;
+		border-left: 0 solid transparent;
+		transition-property: background-color, box-shadow;
+		transition-duration: .2s;
+		transition-timing-function: linear;
+	}
+
+	$sbHeadingHeight: 16px;
+	$sbHeadingMargin: 14px;
+	> .label {
+		display: block;
+		font-size: 14px;
+		margin: 4px 0 10px;
+		line-height: 1em;
+		text-transform: uppercase;
+		pointer-events: none;
+		text-align: center;
+		height: $sbHeadingHeight;
+		box-sizing: border-box;
+	}
+
+	$selectCircleColor: #b7b7b7;
+
+	li {
+    &.selected {
+      > span, & {
+        > .select-handle {
+          border-color: $selectCircleColor;
+        }
+      }
+    }
+		.select-handle {
+			$size: 8px;
+			display: block;
+			flex: 0 0 auto;
+			width: $size;
+			height: $size;
+			border-radius: 50%;
+			padding: 1px;
+			border: 1px solid transparent;
+			margin-left: $size;
+			cursor: pointer;
+
+			&:before {
+				content:"";
+				display: block;
+				width: $size;
+				height: $size;
+				border: 1px solid $selectCircleColor;
+				border-radius: 50%;
+				box-sizing: border-box;
+			}
+		}
+	}
+
+	ul {
+		margin: 0;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: flex-start;
+		list-style: none;
+
+		li {
+			&.selected {
+				&.entry, > .entry {
+		      background-color: #374E63 !important;
+		      border-color: transparent !important;
+				}
+			}
+			&.entry, > .entry {
+				height: 1.5em;
+			}
+		}
+
+		> li {
+			flex: 0 0 auto;
+			width: 100%;
+			display: block;
+      overflow: hidden;
+		}
+	}
+
+	$buttonsHeight: 28px;
+	$buttonMargin: 1px;
+
+	> ul {
+		position: absolute;
+		top: $sbHeadingHeight + $sbHeadingMargin;
+		left: 0;
+		height: calc(100% - #{$sbHeadingHeight + $sbHeadingMargin + $buttonsHeight});
+		padding: 0 0 6px;
+		width: 100%;
+		overflow-y: auto;
+		box-sizing: border-box;
+
+		&:not(:last-child) {
+			border-bottom: 1px solid $UIBorders;
+		}
+
+		&:empty:before {
+			content: "Use the eyedropper tool to place picking areas on opened images. Once you do, they will appear here.";
+			display: block;
+			font-style: italic;
+			opacity: .7;
+			padding: 0 8px;
+			text-align: justify;
+		}
+
+		> li {
+			> span {
+				display: flex;
+				flex-flow: row nowrap;
+				white-space: nowrap;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 8px;
+				box-sizing: border-box;
+
+				> .name {
+					flex: 0 1 auto;
+					display: block;
+			    overflow: hidden;
+          text-overflow: ellipsis;
+				}
+			}
+			> ul {
+				padding: 0;
+				display: block;
+				list-style: none;
+
+				> li {
+					display: flex;
+					flex-flow: row nowrap;
+					white-space: nowrap;
+					align-items: center;
+					justify-content: space-between;
+					padding: 0 8px 0 16px;
+					box-sizing: border-box;
+					border: 1px solid transparent;
+
+					&:hover {
+						border-color: rgba(white,.2);
+						background: rgba(white,.05);
+					}
+
+					> .index {
+						flex: 0 0 20px;
+						font-family: $monospace;
+						margin-right: 10px;
+						text-align:center;
+					}
+					> .color {
+						flex: 0 1 auto;
+						display: block;
+				    overflow: hidden;
+	          text-overflow: ellipsis;
+            padding: 0 3px;
+            border-radius: 2px;
+            font-family: $monospace;
+					}
+					> .size {
+						flex: 1 0 auto;
+						display: block;
+						text-align: right;
+						font-size: .9em;
+						color: white;
+
+						&.rounded span {
+							border-radius: 50%;
+						}
+						span {
+							background-color: rgba(gray, .8);
+							text-shadow: 0 0 5px black;
+							line-height: 1em;
+							display: inline-block;
+							padding: 3px;
+							border: 1px solid silver;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.action-buttons {
+		position: absolute;
+		z-index: 2;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: $buttonsHeight;
+		border-top: 1px solid $UIBorders;
+		background-color: $UIBackground;
+		box-sizing: border-box;
+		display: flex;
+
+		button {
+			display: inline-block;
+			height: $buttonsHeight - ($buttonMargin*2);
+			box-sizing: border-box;
+			margin: 1px;
+			border: 1px solid transparent;
+			background-color: transparent;
+			flex: 1 1 auto;
+
+			&:not(:last-child) {
+			 margin-right: $buttonMargin;
+			}
+
+			&:hover, &:active {
+				border-color: $UIBorders;
+				background-color: rgba(black, .3);
+			}
+
+			&:active {
+				box-shadow: inset 0 2px 5px black;
+			}
+		}
+	}
+}
+#picker {
+	position: absolute;
+	z-index: 1;
+	overflow: hidden;
+	box-sizing: border-box;
+	user-select: none;
+	top: $MenubarHeight + $TabbarHeight;
+	left: 0;
+	width: 100%;
+	height: calc(100% - #{$MenubarHeight+$TabbarHeight+$StatusbarHeight});
+	cursor: url('/img/colorpicker/normal.cur'), default;
+	background: $EditorBG;
+
+	.image-element {
+		position: absolute;
+		z-index: 1;
+		image-rendering: pixelated;
+		background: url('/img/transparency.svg') repeat top left;
+		background-size: 16px 16px;
+	}
+
+	.mouse-overlay {
+		position: absolute;
+		z-index: 2;
+		image-rendering: pixelated;
+
+		&:not(.picking):not(.zooming) {
+			pointer-events: none;
+		}
+		&.picking {
+			cursor: url('/img/colorpicker/picker.cur'), crosshair;
+		}
+		&.zooming {
+			cursor: url('/img/colorpicker/zoom.cur'), zoom-in;
+		}
+	}
+
+	.image-overlay {
+		position: absolute;
+		z-index: 3;
+		image-rendering: pixelated;
+
+		&:not(.draggable){
+			pointer-events: none;
+		}
+		&.draggable {
+			cursor: grab;
+		}
+		&.draggable.dragging {
+			cursor: grabbing;
+		}
+	}
+
+	$btnsize: 24px;
+	$btnpadding: 4px;
+
+	.actions {
+		$actionsPadding: 5px;
+		padding: 0 $actionsPadding $actionsPadding;
+		text-align: center;
+		@extend %panel;
+
+		&:empty {
+			display: none;
+		}
+
+		> div {
+			$spacing: 4px;
+			$labelsize: 9px;
+			position: relative;
+			padding-top: $labelsize+$spacing+$actionsPadding;
+			margin-left: -$spacing;
+			width: 100%;
+			display: flex;
+			justify-content: space-around;
+
+			&:not(:last-child){
+				$spacing: 4px;
+				margin-bottom: $spacing;
+				border-bottom: 1px solid transparent;
+				padding-bottom: $spacing;
+
+				&:after {
+					content: "";
+					position: absolute;
+					display: block;
+					bottom: -$spacing - 1px;
+					left: $spacing;
+					width: 100%;
+					height: 0;
+					border-bottom: 1px solid $UIBorders;
+				}
+			}
+
+			> .label {
+				position: absolute;
+				top: $labelsize/1.5;
+				left: 0;
+				width: 100%;
+				font-size: $labelsize;
+				line-height: 1em;
+				text-transform: uppercase;
+				pointer-events: none;
+				margin-left: $spacing;
+			}
+			> :not(.label) {
+				margin: $spacing 0 0 $spacing;
+				color: inherit;
+				background-color: transparent;
+				box-sizing: border-box;
+				border-radius: 2px;
+				border: 1px solid transparent;
+
+				&:not(:disabled):not(.text) {
+					&:hover, &:active {
+						border-color: gray;
+					}
+					&:not(:active):not(:focus):hover {
+						background-color: rgba(black, .1);
+					}
+				}
+			}
+			[contenteditable] {
+				flex: 0 0 100%;
+				display: block;
+				cursor: text;
+				max-width: 100%;
+				overflow: hidden;
+				white-space: nowrap;
+				margin-top: 5px;
+
+				&:focus {
+					background-color: $UIColor;
+					color: $UIBackground;
+				}
+			}
+		}
+
+		button[readonly] {
+			opacity: .4;
+			cursor: not-allowed;
+
+			&:hover, &:active, &:focus {
+				border-color: transparent !important;
+				background-color: transparent !important;
+				box-shadow: none !important;
+			}
+		}
+	}
+	.actions-tl {
+		top: 0;
+		left: 0;
+		width: 75px;
+		border-top: 0;
+		border-left: 0;
+		display: flex;
+		flex-flow: column nowrap;
+		justify-content: space-around;
+
+		> div {
+			flex-flow: row wrap;
+		}
+
+		button {
+			display: inline-block;
+			padding: 0;
+			font-size: $btnsize*0.8;
+			line-height: $btnsize;
+			$size: $btnsize + ($btnpadding*2);
+			height: $size;
+			width: $size;
+			flex: 0 0 $size;
+
+			&:active, &.selected {
+				background: rgba(black, .5) !important;
+				box-shadow: inset 0 0 2px black !important;
+			}
+			&.selected {
+				border-color: $UIBorders;
+			}
+
+			&:disabled {
+				opacity: .6;
+			}
+		}
+	}
+	.actions-bl {
+		bottom: 0;
+		left: 0;
+		border-bottom: 0;
+		border-left: 0;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+
+		> * {
+			flex: 0 0 100%;
+			white-space: nowrap;
+		}
+
+		> div {
+			flex-flow: column nowrap;
+		}
+
+		button {
+			background-color: transparent;
+			border: 1px solid transparent;
+			padding: 4px 6px;
+			border-radius: 2px;
+
+			&:hover {
+				border-color: $UIBorders;
+			}
+
+			&:active {
+				background-color: rgba(black,.5);
+				box-shadow: inset 0 0 2px black;
+			}
+		}
+
+		.picking-controls {
+			display: flex;
+			flex-flow: row nowrap;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+
+			button {
+				flex: 1 1 15%;
+			}
+			.picking-size {
+				flex: 1 1 60%;
+				margin: 0 8px;
+			}
+		}
+		.average {
+			@extend %colorat;
+			padding: 3px 5px;
+			font-size: 1.2em;
+
+			&:empty {
+				display: none;
+			}
+
+			&.rgb {
+				font-size: .8em;
+				margin: 0;
+			}
+
+			.color {
+				user-select: all;
+			}
+
+			button {
+				margin: 0 0 0 5px !important;
+			}
+		}
+	}
+
+	&:not(.loading) .loader {
+		display: none;
+	}
+
+	.loader {
+		position: absolute;
+		$size: 128px;
+		top: calc(50% - #{$size/2});
+		left: calc(50% - #{$size/2});
+
+		@include loading-indicator($size);
+	}
+}
+
+#set-area-color {
+	.input-red {
+		color: red !important;
+		background-color: rgba(red, .1);
+	}
+	.input-green {
+		color: green !important;
+		background-color: rgba(green, .1);
+	}
+	.input-blue {
+		color: blue !important;
+		background-color: rgba(blue, .1);
+	}
+
+	//noinspection CssOptimizeSimilarProperties
+	.color-preview {
+		display: block;
+		width: 175px;
+		height: 175px;
+		margin: 10px auto;
+		border: 2px solid black;
+		background-image: url('/img/transparency.svg');
+		background-position: center;
+		background-size: 16px;
+
+		> div {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+
+#levels-changer {
+	.slider-holder {
+		.slider {
+			width: calc(100% - 40px);
+			margin: 10px auto;
+		}
+		.inputs {
+			display: flex;
+			width: 100%;
+			flex-flow: row nowrap;
+
+			> * {
+				flex: 1 1 50%;
+
+				input {
+					text-align: center;
+				}
+			}
+			.low {
+				text-align: left;
+			}
+			.high {
+				text-align: right;
+			}
+		}
+	}
+}
+
+#paste-div {
+	width: 100%;
+	border: 1px dotted;
+	padding: 10px;
+	box-sizing: border-box;
+	text-align: center;
+	cursor: text;
+
+	&:before {
+		content: "Paste here";
+		opacity: .7;
+	}
+}

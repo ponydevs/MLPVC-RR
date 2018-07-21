@@ -1,0 +1,19 @@
+{# @controller \App\Models\Appearance::getColorsHTML #}
+{# @var color_groups \App\Models\ColorGroup[] #}
+{# @var all_colors \App\Models\Color[][] #}
+{# @var compact bool #}
+{% spaceless %}
+{% set type = compact ? 'compact' : 'full' %}
+{% set extra_info = not user_pref('cg_hideclrinfo') %}
+{% if wrap %}
+<ul class="colors {{ type }}">
+{% endif %}
+{% if color_groups is not empty %}
+	{% for color_group in color_groups %}
+		{% include 'appearances/_color_group.html.twig' %}
+	{% endfor %}
+{% endif %}
+{% if wrap %}
+</ul>
+{% endif %}
+{% endspaceless %}

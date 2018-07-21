@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Sign-in process</title>
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+<script nonce="{{ constant('CSP_NONCE') }}">
+if (!document.querySelector('.xdebug-error'))
+	window.opener.__authCallback();
+else console.log('xdebug error detected');
+</script>
+</head>
+<body></body>
+</html>

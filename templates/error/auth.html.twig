@@ -1,0 +1,17 @@
+{# @controller \App\Controllers\AuthController::_error #}
+{# @var err string #}
+{# @var errdesc string|null #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+<div id="content">
+	<h1>{{ title }}</h1>
+
+	<div class="notice fail">
+		<p>There was a(n) <strong>{{ err | escape }}</strong> error while trying to authenticate with DeviantArt{% if constant('App\\DeviantArt::OAUTH_RESPONSE')[err] is not empty %}; {{ constant('App\\DeviantArt::OAUTH_RESPONSE')[err] }}{% endif %}.</p>
+		{% if errdesc is not empty %}
+		<p>Additional details: {{ errdesc | escape }}</p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

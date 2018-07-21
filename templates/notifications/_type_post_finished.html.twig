@@ -1,0 +1,4 @@
+{% spaceless %}
+	{# @var notif \App\Models\Notification #}
+	Your <a href='{{ notif.post.toURL }}'>request</a> under {{ notif.post.get_ep.getID }} has been fulfilled
+{% endspaceless %}

@@ -1,0 +1,17 @@
+{# @controller App\Controllers\UserController::contrib #}
+{# @var pagination \App\Pagination #}
+{# @var contribution_list string #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+<div id="content">
+    <h1>{{ heading }}</h1>
+    <p>Displaying {{ pagination.itemsPerPage }} items/page</p>
+
+    {{ pagination }}
+    <div class="responsive-table">
+    {{ contribution_list }}
+    </div>
+    {{ pagination }}
+</div>
+{% endblock %}

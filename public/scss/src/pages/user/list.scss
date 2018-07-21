@@ -1,0 +1,28 @@
+@import "../../vars";
+
+#users > section {
+	&:not(:last-child) {
+		margin-bottom: 10px;
+	}
+
+	.letter-group {
+		display: block;
+
+		&:not(:last-child) {
+			margin-bottom: 10px;
+		}
+
+		strong {
+			margin: 0 1em 0 .75em;
+			font-family: $monospace;
+		}
+
+		.da-userlink {
+			display: inline-block;
+
+			&:not(:last-child) {
+				margin-right: .75em;
+			}
+		}
+	}
+}

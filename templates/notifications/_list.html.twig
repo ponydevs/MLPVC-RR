@@ -1,0 +1,10 @@
+{# @var notifications \App\Models\Notification[] #}
+{% if wrap is not defined or wrap %}
+<ul class='notif-list'>
+{% endif %}
+	{% for notif in notifications %}
+		{{ notif.html }}
+	{% endfor %}
+{% if wrap is not defined or wrap %}
+</ul>
+{% endif %}

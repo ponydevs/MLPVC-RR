@@ -1,0 +1,46 @@
+{# @var event \App\Models\Event #}
+{# @var entry \App\Models\EventEntry #}
+{# @var wrap bool #}
+{# @var lazyload bool #}
+{# @var signed_in bool #}
+{# @var current_user \App\Models\User #}
+{% spaceless %}
+{% set is_staff = permission('staff') %}
+{% if wrap %}
+<li id='entry-{{ entry.id }}'>
+{% endif %}
+{% include 'event/_entry_voting.html.twig' %}
+{% if lazyload %}
+<div class='entry-deviation-promise image-promise' data-entryid='{{ entry.id }}'></div>
+{% else %}
+{{ entry.listItemPreview }}
+{% endif %}
+<div class="details">
+	<span class="label">
+		{% set make_link = entry.sub_prov == 'fav.me' or is_staff %}
+		{% if make_link %}
+		<a href='http://{{ entry.sub_prov }}/{{ entry.sub_id }}' target='_blank' rel='noopener'>
+		{% endif %}
+		{{ entry.title | escape }}
+		{% if make_link %}
+		</a>
+		{% endif %}
+	</span>
+	<div class="submitter">
+		<div><span class="shorten submitter">By </span><span class="typcn typcn-user" title="By"></span>{{ entry.submitter.toAnchor(false, false, true) }}</div>
+		<div><span class="shorten time">Submitted </span><span class="typcn typcn-time" title="Submitted"></span>{{ time_tag(entry.submitted_at) }}</div>
+		{% if entry.last_edited != entry.submitted_at %}
+		<div><span class="shorten edited">Last edited </span><span class="typcn typcn-pencil" title="Last edited"></span>{{ time_tag(entry.last_edited) }}</div>
+		{% endif %}
+	</div>
+	{% if signed_in and (current_user.id == entry.submitted_by or is_staff) %}
+	<div class='actions'>
+		<button class='blue typcn typcn-pencil edit-entry' title='Edit'></button>
+		<button class='red typcn typcn-times delete-entry' title='Withdraw'></button>
+	</div>
+	{% endif %}
+</div>
+{% if wrap %}
+</li>
+{% endif %}
+{% endspaceless %}

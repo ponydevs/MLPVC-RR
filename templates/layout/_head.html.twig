@@ -1,0 +1,12 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+{% include 'layout/_opengraph.html.twig' %}
+{% if canonical_url is defined %}
+<link rel='canonical' href='{{ canonical_url | apos_encode }}'>
+{% endif %}
+<meta name="format-detection" content="telephone=no">
+{% include 'layout/_favicons.html.twig' %}
+{% if robots is defined and not robots %}
+<meta name='robots' content='noindex'>
+{% endif %}
+{% include 'layout/_styles.html.twig' %}
