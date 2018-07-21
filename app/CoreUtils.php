@@ -817,7 +817,10 @@ class CoreUtils {
 			$commit_info = rtrim(shell_exec('git log -1 --date=short  --pretty="format:%h;%ci"'));
 			RedisHelper::set('commit_info', $commit_info);
 		}
-		$data = [ 'wrap' => $wrap ];
+		$data = [
+			'wrap' => $wrap,
+			'reload_warning' => $reload_warning,
+		];
 		if (!empty($commit_info)){
 			[ $commit_id, $commit_time ] = explode(';', $commit_info);
 			$data['commit_id'] = $commit_id;

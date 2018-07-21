@@ -8,7 +8,7 @@ Running <strong><a href='{{ constant('GITHUB_URL') }}' title='Visit the GitHub r
 	{%- endif -%}
 </strong>
 {%- if reload_warning is defined and reload_warning -%}
-	{{- reload_warning }}
+	{{- reload_warning_text }}
 {%- endif -%}
 {%- if commit_time is defined %}
  created {{ commit_time }}
