@@ -19,10 +19,10 @@
 
 	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/cg{{ eqg_path }}">Back to {{ eqg ? 'EQG ' : '' }}Color Guide</a>
-<?php if (Permission::sufficient('staff')){ ?>
+		{% if permission('staff') %}
 		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"{{ not guide_order ? ' disabled' : '' }}>Re-order</button>
 		<button class='red typcn typcn-times hidden' id="guide-reorder-cancel">Cancel</button>
-<?php } ?>
+		{% endif %}
 		<a class='btn link typcn typcn-world' href="/cg{{ eqg ? '' : '/eqg' }}/full">List of {{ eqg ? 'Ponies' : 'Equestria Girls' }}</a>
 		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
 		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>

@@ -45,7 +45,7 @@
 						<button class="typcn btn-da da-login" id="signin">Sign in</button>
 					{% endif %}
 					{% if not user_pref('p_hidediscord') and (not signed_in or not current_user.isDiscordServerMember) %}
-						<a class="btn typcn btn-discord discord-join" href="<?=DISCORD_INVITE_LINK?>">Join Discord</a>
+						<a class="btn typcn btn-discord discord-join" href="{{ constant('DISCORD_INVITE_LINK') }}">Join Discord</a>
 					{% endif %}
 				</div>
 			</section>
