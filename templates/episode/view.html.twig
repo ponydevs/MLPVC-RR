@@ -85,7 +85,7 @@
 		'SEASON': current_episode.season,
 		'EPISODE': current_episode.episode,
 	}) -}}
-	{% if username_regex is not empty %}
+	{% if username_regex is defined and username_regex is not empty %}
 		{{ export_vars({ 'USERNAME_REGEX': username_regex }) }}
 	{% endif %}
 	{% if fullsize_match_regex is not empty %}

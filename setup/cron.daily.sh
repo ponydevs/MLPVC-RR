@@ -7,7 +7,7 @@
 # $ sudo editor /etc/cron.daily/mlpvc-rr
 
 # Change path (no trailing slash)
-SCRIPTS_DIR="/path/to/includes/scripts"
+SCRIPTS_DIR="/path/to/scripts"
 
 if [ ! -d "$SCRIPTS_DIR" ]; then
 	>&2 echo "$SCRIPTS_DIR is not a folder"
