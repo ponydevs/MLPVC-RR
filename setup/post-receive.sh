@@ -9,7 +9,7 @@ CMD_FETCH="$GIT fetch"
 CMD_COMPOSER="sudo -u www-data composer install --no-dev 2>&1 && sudo chmod -R ug+rw vendor/"
 CMD_MIGRATE="sudo -u www-data vendor/bin/phinx migrate"
 CMD_NPM="sudo -u www-data npm install --production --no-save"
-CMD_REDIS_CLEAR="sudo -u www-data php -f scripts/clear_redis_keys.php commit_id commit_time"
+CMD_REDIS_CLEAR="sudo -u www-data php -f scripts/clear_redis_keys.php commit_info"
 
 echo "$ $CMD_CD"
 eval ${CMD_CD}
