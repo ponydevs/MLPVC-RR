@@ -292,7 +292,7 @@ class CoreUtils {
 		self::_checkAssets($options, $scope['css'], 'scss/min', 'css', $view);
 		$scope['js'] = isset($options['default-js']) && $options['default-js'] === false ? [] : self::DEFAULT_JS;
 		self::_checkAssets($options, $scope['js'], 'js/min', 'js', $view);
-		$scope['local_jquery'] = self::cachedAssetLink('jquery-3.2.1','js/min','js');
+		$scope['local_jquery'] = self::cachedAssetLink('jquery-3.3.1','js/min','js');
 		$scope['server_name'] = $_SERVER['SERVER_NAME'];
 
 		// OpenGraph values
