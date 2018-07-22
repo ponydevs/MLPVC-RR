@@ -92,7 +92,7 @@ class UserController extends Controller {
 				}
 			}
 
-			if ($user->isDiscordServerMember()){
+			if ($user->boundToDiscordMember()){
 				$discord_membership = $user->discord_member;
 			}
 
