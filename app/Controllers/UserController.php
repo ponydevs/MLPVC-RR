@@ -48,7 +48,7 @@ class UserController extends Controller {
 		if (empty($user) || !($user instanceof User)){
 			if (Auth::$signed_in && isset($user) && $user === false){
 				if (strpos(Auth::$session->scope, 'browse') !== false){
-					$error = 'user does not exist';
+					$error = 'User does not exist';
 					$sub_error = 'Check the name for typos and try again';
 				}
 				else {
@@ -77,40 +77,42 @@ class UserController extends Controller {
 
 		if ($error !== null)
 			HTTP::statusCode(404);
-		else $sessions = $user->sessions;
+		else {
+			$sessions = $user->sessions;
 
-		$is_staff = Permission::sufficient('staff');
+			$is_staff = Permission::sufficient('staff');
 
-		if ($same_user || $is_staff){
-			if (\count($user->name_changes) > 0){
-				$old_names = [];
-				foreach ($user->name_changes as $entry)
-					$old_names[] = $entry->old;
+			if ($same_user || $is_staff){
+				if (\count($user->name_changes) > 0){
+					$old_names = [];
+					foreach ($user->name_changes as $entry)
+						$old_names[] = $entry->old;
 
-				$old_names = implode(', ', $old_names);
+					$old_names = implode(', ', $old_names);
+				}
 			}
-		}
 
-		$contribs = $user->getCachedContributions();
-		$contrib_cache_duration = Users::getContributionsCacheDuration();
+			$contribs = $user->getCachedContributions();
+			$contrib_cache_duration = Users::getContributionsCacheDuration();
 
-		if ($can_edit){
-			$export_roles = [];
-			$roles_copy = Permission::ROLES_ASSOC;
-			unset($roles_copy['guest']);
-			foreach ($roles_copy as $name => $label){
-				if (Permission::insufficient($name, Auth::$user->role))
-					continue;
-				$export_roles[$name] = $label;
+			if ($can_edit){
+				$export_roles = [];
+				$roles_copy = Permission::ROLES_ASSOC;
+				unset($roles_copy['guest']);
+				foreach ($roles_copy as $name => $label){
+					if (Permission::insufficient($name, Auth::$user->role))
+						continue;
+					$export_roles[$name] = $label;
+				}
 			}
-		}
-		else if ($dev_on_dev)
-			$export_roles = Permission::ROLES_ASSOC;
+			else if ($dev_on_dev)
+				$export_roles = Permission::ROLES_ASSOC;
 
-		$pcg_section_is_private = UserPrefs::get('p_hidepcg', $user);
-		$list_pcgs = !$pcg_section_is_private || $same_user || $is_staff;
-		if ($list_pcgs)
-			$personal_color_guides = $user->pcg_appearances;
+			$pcg_section_is_private = UserPrefs::get('p_hidepcg', $user);
+			$list_pcgs = !$pcg_section_is_private || $same_user || $is_staff;
+			if ($list_pcgs)
+				$personal_color_guides = $user->pcg_appearances;
+		}
 
 		$settings = [
 			'title' => $error === null ? ($same_user?'Your':CoreUtils::posess($user->name)).' '.($same_user || $can_edit?'account':'profile') : 'Account',
@@ -123,19 +125,19 @@ class UserController extends Controller {
 			],
 			'import' => [
 				'user' => $user ?? null,
-				'discord_membership' => $user->discord_member,
+				'discord_membership' => $user->discord_member ?? null,
 				'can_edit' => $can_edit,
 				'same_user' => $same_user,
-				'is_staff' => $is_staff,
+				'is_staff' => $is_staff ?? null,
 				'dev_on_dev' => $dev_on_dev,
 				'sessions' => $sessions ?? null,
 				'da_logo' => str_replace(' fill="#FFF"','', File::get(APPATH.'img/da-logo.svg')),
 				'old_names' => $old_names ?? null,
-				'contribs' => $contribs,
-				'contrib_cache_duration' => $contrib_cache_duration,
+				'contribs' => $contribs ?? null,
+				'contrib_cache_duration' => $contrib_cache_duration ?? null,
 				'export_roles' => $export_roles ?? null,
-				'section_is_private' => $pcg_section_is_private,
-				'list_pcgs' => $list_pcgs,
+				'section_is_private' => $pcg_section_is_private ?? null,
+				'list_pcgs' => $list_pcgs ?? null,
 				'personal_color_guides' => $personal_color_guides ?? null,
 			],
 		];

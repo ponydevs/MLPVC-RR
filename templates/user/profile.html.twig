@@ -162,7 +162,7 @@
 				{% if same_user %}
 				<a href="/discord-connect/begin" class="btn link typcn typcn-link">Link account</a>
 				{% endif %}
-				{% if discord_membership is false %}
+				{% if discord_membership == false %}
 				{{ unlink_btn }}
 				{% endif %}
 			</div>
