@@ -29,7 +29,7 @@
 				<a class="da" title="Visit DeviantArt profile" href="{{ user.toDALink }}">{{ da_logo }}</a>
 				{{ user.vectorAppIcon }}
 				{% if user.isDiscordServerMember %}
-				<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server{{ discord_membership.get_name != user.name ? ('as ' ~ user.discord_member.get_name) | escape : ''}}'>
+				<img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server{{ discord_membership.get_name != user.name ? ('as ' ~ discord_membership.get_name) | escape : ''}}'>
 				{% endif %}
 			</h1>
 			{% endspaceless %}
@@ -162,7 +162,7 @@
 				{% if same_user %}
 				<a href="/discord-connect/begin" class="btn link typcn typcn-link">Link account</a>
 				{% endif %}
-				{% if not discord_membership.isLinked %}
+				{% if discord_membership is false %}
 				{{ unlink_btn }}
 				{% endif %}
 			</div>
