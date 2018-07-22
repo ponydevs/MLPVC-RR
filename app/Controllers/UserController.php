@@ -92,6 +92,10 @@ class UserController extends Controller {
 				}
 			}
 
+			if ($user->isDiscordServerMember()){
+				$discord_membership = $user->discord_member;
+			}
+
 			$contribs = $user->getCachedContributions();
 			$contrib_cache_duration = Users::getContributionsCacheDuration();
 
@@ -125,7 +129,7 @@ class UserController extends Controller {
 			],
 			'import' => [
 				'user' => $user ?? null,
-				'discord_membership' => $user->discord_member ?? null,
+				'discord_membership' => $discord_membership ?? null,
 				'can_edit' => $can_edit,
 				'same_user' => $same_user,
 				'is_staff' => $is_staff ?? null,
