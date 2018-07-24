@@ -31,12 +31,11 @@
 			overflow: auto;
 		}
 		&.recent-posts {
-			> div:empty {
-				height: 100px;
-				width: 100%;
-				margin: 10px 0 20px;
-				background: url('/img/loading-gears.svg') no-repeat center;
-				background-size: contain;
+			> div:empty:before {
+				content: "No recent posts to display.";
+				display: block;
+				font-style: italic;
+				padding: 10px;
 			}
 			ul {
 				@extend %post-ul;

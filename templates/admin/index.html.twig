@@ -27,7 +27,7 @@
 
 	{% if permission('developer') %}
 	<section class="elastic-status">
-		<h2><span class="typcn typcn-zoom"></span>Elastic status</h2>
+		<h2><span class="typcn typcn-zoom"></span>Elasticsearch status</h2>
 		{% if elastic_down %}
 		<strong>Server is down.</strong>
 		{% else %}
@@ -38,9 +38,9 @@
 	{% endif %}
 
 	<section class="recent-posts">
-		<h2><span class="typcn typcn-bell"></span>Most recent posts</h2>
+		<h2><span class="typcn typcn-bell"></span>{{ make_plural('Most recent post', (recent_posts|length), constant('PREPEND_NUMBER')) }}</h2>
 		<div>
-			{% include 'admin/_most_recent_posts.html.twig' %}
+			{%- include 'admin/_most_recent_posts.html.twig' -%}
 		</div>
 	</section>
 </div>

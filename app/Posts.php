@@ -53,14 +53,7 @@ class Posts {
 	 * @return Post[]
 	 */
 	public static function getRecentPosts():array {
-		return DB::$instance->setModel(Post::class)->query(
-			"SELECT * FROM posts
-			WHERE
-				(requested_by IS NOT NULL && requested_at > NOW() - INTERVAL '20 DAYS')
-				OR
-				(requested_by IS NULL && reserved_at > NOW() - INTERVAL '20 DAYS')
-			ORDER BY ".Post::ORDER_BY_POSTED_AT.' DESC
-			LIMIT 20');
+		return DB::$instance->orderByLiteral(Post::ORDER_BY_POSTED_AT, 'DESC')->get('posts', 20);
 	}
 
 	/**
