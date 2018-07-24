@@ -614,7 +614,7 @@ class User extends AbstractUser implements LinkableInterface {
 			->where('deviation_id IS NOT NULL')
 			->where('lock', false)
 			->orderByLiteral(Post::ORDER_BY_POSTED_AT)
-			->query('posts');
+			->get('posts');
 		return $awaiting_approval;
 	}
 

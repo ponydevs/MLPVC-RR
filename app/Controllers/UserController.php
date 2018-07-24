@@ -116,6 +116,8 @@ class UserController extends Controller {
 			$list_pcgs = !$pcg_section_is_private || $same_user || $is_staff;
 			if ($list_pcgs)
 				$personal_color_guides = $user->pcg_appearances;
+
+			$awaiting_approval = $user->getPostsAwaitingApproval();
 		}
 
 		$settings = [
@@ -143,6 +145,7 @@ class UserController extends Controller {
 				'section_is_private' => $pcg_section_is_private ?? null,
 				'list_pcgs' => $list_pcgs ?? null,
 				'personal_color_guides' => $personal_color_guides ?? null,
+				'awaiting_approval' => $awaiting_approval ?? null,
 			],
 		];
 		if ($error !== null)

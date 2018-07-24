@@ -14,7 +14,7 @@
 	{% set waiting = 'waiting to be submitted to and/or approved by the group' %}
 	{% if await_count %}
 		<p>
-			{{ You_have }} <strong>#{await_count}</strong> {{ images }} {{ waiting }}, listed below.
+			{{ You_have }} <strong>{{ await_count }}</strong> {{ images }} {{ waiting }}, listed below.
 			{% if same_user %}
 				{% set them = await_count != 1 ? 'them' : 'it' %}
 				Please submit {{ them }} to the group gallery as soon as possible to have {{ them }} spot-checked for any issues. As stated in the rules, the goal is to add finished images to the group gallery, making {{ them }} easier to find for everyone.
