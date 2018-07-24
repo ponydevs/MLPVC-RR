@@ -68,11 +68,16 @@ class EpisodeController extends Controller {
 
 		$section = $_GET['section'];
 		$only = $section === 'requests' ? ONLY_REQUESTS : ONLY_RESERVATIONS;
-		$posts = Posts::get($this->episode, $only, Permission::sufficient('staff'));
 
 		switch ($only){
-			case ONLY_REQUESTS: $rendered = Posts::getRequestsSection($posts); break;
-			case ONLY_RESERVATIONS: $rendered = Posts::getReservationsSection($posts); break;
+			case ONLY_REQUESTS:
+				$requests = $this->episode->getRequests();
+				$rendered = Posts::getRequestsSection($requests);
+			break;
+			case ONLY_RESERVATIONS:
+				$reservations = $this->episode->getReservations();
+				$rendered = Posts::getReservationsSection($reservations);
+			break;
 			default:
 				Response::fail('This should never happen');
 		}

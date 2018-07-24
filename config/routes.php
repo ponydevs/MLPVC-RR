@@ -167,7 +167,7 @@ $api_endpoint('/notif',                              'NotificationsController#ge
 $api_endpoint('/notif/[i:id]/mark-read',             'NotificationsController#markRead');
 $api_endpoint('/post/[i:id]?',                       'PostController#api');
 $api_endpoint('/post/[i:id]/lazyload',               'PostController#lazyload');
-$api_endpoint('/post/[i:id]/finish',                 'PostController#finish');
+$api_endpoint('/post/[i:id]/finish',                 'PostController#finishApi');
 $api_endpoint('/post/[i:id]/locate',                 'PostController#locate');
 $api_endpoint('/post/[i:id]/reload',                 'PostController#reload');
 $api_endpoint('/post/[i:id]/transfer',               'PostController#transfer');

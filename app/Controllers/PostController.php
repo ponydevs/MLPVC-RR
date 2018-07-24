@@ -411,7 +411,7 @@ class PostController extends Controller {
 		}
 	}
 
-	public function finish($params){
+	public function finishApi($params){
 		$this->_authorizeMember();
 
 		$this->load_post($params, 'finish');
