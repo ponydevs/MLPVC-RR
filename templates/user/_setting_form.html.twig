@@ -3,7 +3,7 @@
 {# @var input string #}
 {# @var map array #}
 {% spaceless %}
-<form {% if signed_in %}action="/user/{{ current_user.id }}/preference/{$this->_setting_name}"{% endif %}>
+<form {% if signed_in %}action="/user/{{ current_user.id }}/preference/{{ setting_name }}"{% endif %}>
 	<label>
 		{% set content = map.options.desc %}
 		{% if map.type == 'checkbox' %}
