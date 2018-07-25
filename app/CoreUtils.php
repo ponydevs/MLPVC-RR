@@ -144,7 +144,7 @@ class CoreUtils {
 	/**
 	 * Display a 400 page
 	 */
-	public static function badReq(){
+	public static function badRequest(){
 		HTTP::statusCode(400);
 
 		if (self::isJSONExpected())
@@ -243,29 +243,26 @@ class CoreUtils {
 	/**
 	 * Page loading function
 	 * ---------------------
-	 * $options = array(
-	 *     'title' => string,     - Page title
-	 *     'noindex' => bool,     - Disable crawlers (that respect meta tags)
-	 *     'default-css' => bool, - Disable loading of default CSS files
-	 *     'default-js' => bool,  - Disable loading of default JS files
-	 *     'css' => array,        - Specify a an array of CSS files to load (true = autodetect)
-	 *     'js' => array,         - Specify a an array of JS files to load (true = autodetect)
-	 *     'view' => string,      - Which view file to open (defaults to $do)
-	 *     'url' => string,       - A URL which will replace the one sent to the browser
-	 *     'import' => array,     - An array containing key-value pairs to pass to the view as local variables
-	 *     'og' => array,         - OpenGraph data replacement to override defaults
-	 *     'canonical' => string, - If specified, provides the supplied URL as the canonical URL in a meta tag
-	 * );
-	 *
-	 * @param string $view_name
-	 * @param array  $options
-	 *
+	 * @param string $method_name Name of the method calling this function (typically the __METHOD__ constant)
+	 *                            @see View::processName for expected format when specifying it yourself
+	 * @param array  $options {
+	 *     @var string          $title        Page title
+	 *     @var bool            $noindex      Discourage crawlers (that respect meta tags)
+	 *     @var bool            $default-css  Set to false to disable loading of default CSS files
+	 *     @var bool            $default-js   Set to false to disable loading of default JS files
+	 *     @var string[]|bool[] $css          Specify an array of CSS files to load (true = autodetect)
+	 *     @var string[]|bool[] $js           Specify an array of JS files to load (true = autodetect)
+	 *     @var string          $url          A URL which will replace the one sent to the browser (using JS)
+	 *     @var mixed[]         $import       An array containing key-value pairs to pass to the view as local variables
+	 *     @var string[]        $og           OpenGraph data replacement to override defaults
+	 *     @var string          $canonical    If specified, provides the supplied URL as the canonical URL in a meta tag
+	 * }
 	 * @throws \RuntimeException
 	 */
-	public static function loadPage(string $view_name, array $options = []){
+	public static function loadPage(string $method_name, array $options = []){
 		if (self::isJSONExpected()){
 			HTTP::statusCode(400);
-			self::error_log(__METHOD__.": JSON expected, but this was called instead.\nView: $view_name\nOptions:\n".var_export($options, true)."\nStacktrace:\n".(new \Exception())->getTraceAsString());
+			self::error_log(__METHOD__.": JSON expected, but this was called instead.\nView: $method_name\nOptions:\n".var_export($options, true)."\nStacktrace:\n".(new \Exception())->getTraceAsString());
 			$path = self::escapeHTML($_SERVER['REQUEST_URI']);
 			Response::fail("The requested endpoint ($path) does not support JSON responses");
 		}
@@ -278,11 +275,11 @@ class CoreUtils {
 		$fatal_error_page = isset($scope['fatal_error_page']);
 		$minimal = !empty($options['minimal']);
 
-		// Auth data
+		// Add auth data
 		$scope = array_merge($scope, Auth::to_array());
 
 		// Resolve view
-		$view = new View($view_name);
+		$view = new View($method_name);
 
 		// Disable crawling
 		$scope['robots'] = !isset($options['noindex']) || $options['noindex'] === false;

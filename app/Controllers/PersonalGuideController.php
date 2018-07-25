@@ -66,7 +66,7 @@ class PersonalGuideController extends ColorGuideController {
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
 			$settings['import']['hex_color_regex'] = $HEX_COLOR_REGEX;
 		}
-		CoreUtils::loadPage('UserController::colorGuide', $settings);
+		CoreUtils::loadPage('UserController::colorguide', $settings);
 	}
 
 	public function pointHistory($params){

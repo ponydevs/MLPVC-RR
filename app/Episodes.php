@@ -20,16 +20,19 @@ class Episodes {
 	 *
 	 * @param int|int[]   $limit
 	 * @param string|null $where
-	 * @param bool        $allowMovies
+	 * @param bool        $allow_movies
+	 * @param bool        $pre_ordered Indicates whether the user paid half their salary for an unfinished game /s
+	 *                                 Jokes aside, this indicates that orderBy calls took place before this point, so that we don't order further.
 	 *
 	 * @return Episode|Episode[]
 	 */
-	public static function get($limit = null, $where = null, bool $allowMovies = false){
+	public static function get($limit = null, $where = null, bool $allow_movies = false, bool $pre_ordered = false){
 		/** @var $ep Episode */
 		if (!empty($where))
 			DB::$instance->where($where);
-		DB::$instance->orderBy('season','DESC')->orderBy('episode','DESC');
-		if (!$allowMovies)
+		if (!$pre_ordered)
+			DB::$instance->orderBy('season','DESC')->orderBy('episode','DESC');
+		if (!$allow_movies)
 			DB::$instance->where('season != 0');
 		if ($limit !== 1)
 			return DB::$instance->get('episodes',$limit);

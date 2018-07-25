@@ -12,10 +12,17 @@ class View {
 		$this->name = "$this->class/$this->method";
 	}
 
-	public static function processName(string $name){
-		$name = strtolower(preg_replace(new RegExp('List$'),'-list',$name));
+	/**
+	 * Turns a string in the format of SomeThingController::methodNameHere into ['something', 'method-name-here']
+	 * @param string $name
+	 * @return string[]
+	 * @throws \RuntimeException
+	 */
+	public static function processName(string $name):array {
+		[$controller, $method] = explode('::', $name);
+		$name = strtolower($controller.'::'.preg_replace(new RegExp('([a-z])([A-Z])'),'$1-$2',$method));
 		if (!preg_match(new RegExp('^(?:\\\\?app\\\\controllers\\\\)?([a-z]+)controller::([a-z-]+)$'), $name, $match))
-			throw new \RuntimeException('Could not resolve view based on value '.$name);
+			throw new \RuntimeException("Could not resolve view based on value $name");
 		[$class, $method] = \array_slice($match, 1, 2);
 		return [$class, $method];
 	}
@@ -50,9 +57,9 @@ class View {
 				$bc = new NavBreadcrumb('Admin Area', '/admin');
 				switch ($this->method){
 					case 'log':
-					case 'usefullinks':
+					case 'useful-links':
 					case 'wsdiag':
-					case 'pcgappearances':
+					case 'pcg-appearances':
 					case 'notices':
 						$bc->setChild($scope['heading']);
 					break;
@@ -80,7 +87,7 @@ class View {
 						$ret->setLink('/cg');
 						$ret->setChild(new NavBreadcrumb('Color Blending Calculator', '/cg/blending', true));
 					break;
-					case 'blendingreverse':
+					case 'blending-reverse':
 						$ret->setLink('/cg');
 						$ret->setChild(new NavBreadcrumb('Color Blending Reverser', '/cg/blending-reverse', true));
 					break;
@@ -138,13 +145,13 @@ class View {
 					case 'auth':
 						$bc->setChild('Auth');
 					break;
-					case 'notfound':
+					case 'not-found':
 						$bc->setChild('Not Found');
 					break;
-					case 'noperm':
+					case 'no-perm':
 						$bc->setChild('Unauthorized');
 					break;
-					case 'badreq':
+					case 'bad-request':
 						$bc->setChild('Bad Request');
 					break;
 					default:
@@ -168,7 +175,7 @@ class View {
 						switch ($this->method){
 							case 'colorguide':
 								return $user->getPCGBreadcrumb(true);
-							case 'pcgslots':
+							case 'pcg-slots':
 								$bc = $user->getPCGBreadcrumb();
 								$bc->end()->setChild(
 									 new NavBreadcrumb('Slot History', null, true)

@@ -14,7 +14,9 @@ class ShowController extends Controller {
 		$episodes_pagination = new Pagination($base_path, 8, Episode::count(['conditions' => 'season != 0']), 'ep');
 		$movies_pagination = new Pagination($base_path, 8, Episode::count(['conditions' => 'season = 0']), 'movie');
 
-		$episodes = Episodes::get($episodes_pagination->getLimit());
+		// Pre-order episodes by overall number
+		\App\DB::$instance->orderBy('no', 'DESC');
+		$episodes = Episodes::get($episodes_pagination->getLimit(), null, false, true);
 		$movies = Episodes::get($movies_pagination->getLimit(), 'season = 0', true);
 
 		$path = $episodes_pagination->toURI();
