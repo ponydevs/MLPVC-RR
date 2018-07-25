@@ -8,8 +8,9 @@
 
 		$.Dialog.info(
 			'Request Roulette™',
-			`<p>If you feel like making a vector but don't have any screencap in mind, then you are in the right place.</p>
-			<p>With this tool you can get a random request from the site instantly delivered straight to your screen. Club Members can choose to reserve the requests immediately, and everyone can ask for subsequent suggestions. You are not forced to commit to a suggestion, whether you take it or leave it is all up to you.</p>
+			`<p>If you feel like making a vector but don't have any specific screencap in mind then you are in the right place.</p>
+			<p>With this tool you can get a random request from the site instantly delivered straight to your screen. Anyone can ask for suggestions, and Club Members are given the option to reserve any suggestions they feel like completing with a single click.</p>
+			<p>Once you dismiss a post here by clicking the button repeatedly it will not be suggested to you again until you reload the page. If you are persistent enough you may find that the site runs out of requests to suggest eventually.</p>
 			<div class="align-center"><button id="suggestion-press" class="btn large orange typcn typcn-lightbulb">Give me a suggestion</button></button>`,
 			function(){
 				let $btn = $('#suggestion-press'),
