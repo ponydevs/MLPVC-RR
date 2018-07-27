@@ -224,7 +224,7 @@ ul.colors {
 		font-style: italic;
 		margin-top: 5px;
 	}
-	&:not(#colors) {
+	&:not(.full) {
 		user-select: none;
 
 		&:empty:before {
