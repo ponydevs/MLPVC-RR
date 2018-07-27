@@ -1,7 +1,7 @@
 {# @controller \App\Controllers\ColorGuideController::fullList #}
 {# @var is_staff bool #}
 {# @var eqg bool #}
-{# @var guide_order bool #}
+{# @var ordering string #}
 {# @var appearances \App\Models\Appearance[] #}
 {# @var max_upload_size string #}
 {# @var hex_color_pattern \App\RegExp #}
@@ -12,15 +12,16 @@
 {% set eqg_path = eqg ? '/eqg' : '' %}
 <div id="content" class="section-container">
 	<h1>Complete {{ eqg ? 'EQG Character' : 'Pony' }} List</h1>
-	<p>Sorted <select id="sort-by" data-baseurl="/cg{{ eqg_path }}/full">
-		<option value='alphabetically'{{ guide_order ? '' : ' selected' }}>alphabetically</option>
-		<option value=''{{ guide_order ? ' selected' : '' }}>by relevance</option>
+	<p>Sorted <select id="sort-by" name="sort_by" data-base-url="/cg{{ eqg_path }}/full">
+		{% for value, name in constant('App\\Controllers\\ColorGuideController::FULL_LIST_ORDER') %}
+		<option value='{{ value }}'{{ sort_by == value ? ' selected' : '' }}>{{ name }}</option>
+		{% endfor %}
 	</select></p>
 
 	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-arrow-back' href="/cg{{ eqg_path }}">Back to {{ eqg ? 'EQG ' : '' }}Color Guide</a>
 		{% if permission('staff') %}
-		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"{{ not guide_order ? ' disabled' : '' }}>Re-order</button>
+		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"{{ sort_by != 'relevance' ? ' disabled' : '' }}>Re-order</button>
 		<button class='red typcn typcn-times hidden' id="guide-reorder-cancel">Cancel</button>
 		{% endif %}
 		<a class='btn link typcn typcn-world' href="/cg{{ eqg ? '' : '/eqg' }}/full">List of {{ eqg ? 'Ponies' : 'Equestria Girls' }}</a>

@@ -7,9 +7,9 @@
 		$ReorderCancelBtn = $('#guide-reorder-cancel'),
 		EQG = !!window.EQG;
 	$sortBy.on('change',function(){
-		let baseurl = $sortBy.data('baseurl'),
+		let baseUrl = $sortBy.data('base-url'),
 			val = $sortBy.val(),
-			url = `${baseurl}?ajax&${val}`.replace(/&$/,'');
+			url = `${baseUrl}?ajax&sort_by=${val}`;
 
 		$.Dialog.wait('Changing sort order');
 

@@ -140,21 +140,36 @@ class ColorGuideController extends Controller {
 		'pages/colorguide/manage',
 	];
 
+	public const FULL_LIST_ORDER = [
+		'label' => 'alphabetically',
+		'relevance' => 'by relevance',
+		'added' => 'by date added',
+	];
+
 	public function fullList($params){
 		$this->_initialize($params);
 
-		$guide_order = !isset($_GET['alphabetically']);
-		if (!$guide_order)
-			DB::$instance->orderBy('label');
+		$sort_by = $_GET['sort_by'] ?? null;
+		if (!isset(self::FULL_LIST_ORDER[$sort_by]))
+			$sort_by = 'relevance';
+		switch ($sort_by){
+			case 'label':
+				DB::$instance->orderBy('label');
+			break;
+			case 'added';
+				DB::$instance->orderBy('added', 'DESC');
+			break;
+		}
 		$appearances = Appearances::get($this->_EQG,null,null,'id,label,private');
+		$eqg = $this->_EQG;
 
 		$path = new NSUriBuilder("{$this->path}/full");
-		if (!$guide_order)
-			$path->append_query_param('alphabetically', null);
+		if ($sort_by !== 'relevance')
+			$path->append_query_param('sort_by', $sort_by);
 
 		if (CoreUtils::isJSONExpected())
 			Response::done([
-				'html' => CGUtils::getFullListHTML($appearances, $guide_order, $this->_EQG, NOWRAP),
+				'html' => CGUtils::getFullListHTML($appearances, $sort_by, $eqg, NOWRAP),
 				'stateUrl' => (string)$path,
 			]);
 
@@ -167,13 +182,12 @@ class ColorGuideController extends Controller {
 			$js[] = 'Sortable';
 		$js[] = true;
 
-		$eqg = $this->_EQG;
 		$import = [
 			'eqg' => $eqg,
 			'appearances' => $appearances,
-			'guide_order' => $guide_order,
+			'sort_by' => $sort_by,
 			'is_staff' => $is_staff,
-			'full_list' => CGUtils::getFullListHTML($appearances, $guide_order, $eqg),
+			'full_list' => CGUtils::getFullListHTML($appearances, $sort_by, $eqg),
 		];
 		if ($is_staff){
 			global $HEX_COLOR_REGEX;

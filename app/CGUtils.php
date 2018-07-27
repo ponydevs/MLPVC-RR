@@ -57,46 +57,55 @@ class CGUtils {
 	/**
 	 * Returns HTML for the full list
 	 *
-	 * @param Appearance[] $Appearances
-	 * @param bool         $GuideOrder
-	 * @param bool         $EQG
+	 * @param Appearance[] $appearances
+	 * @param string       $order_by
+	 * @param bool         $eqg
 	 * @param bool         $wrap
 	 *
 	 * @return string
 	 */
-	public static function getFullListHTML(array $Appearances, $GuideOrder, bool $EQG, $wrap = WRAP){
+	public static function getFullListHTML(array $appearances, $order_by, bool $eqg, $wrap = WRAP){
 		$HTML = '';
-		if (!empty($Appearances)){
+		if (!empty($appearances)){
 			$previews = !empty(UserPrefs::get('cg_fulllstprev'));
-			if (!$GuideOrder){
-				$PrevFirstLetter = '';
-				$upcaseAZ = (string)new RegExp('^[A-Z]$');
-				foreach ($Appearances as $p){
-					$FirstLetter = strtoupper($p->label[0]);
-					if (!preg_match($upcaseAZ, $FirstLetter))
-						$FirstLetter = '#';
-					if (!is_numeric($FirstLetter) ? ($FirstLetter !== $PrevFirstLetter) : !is_numeric($PrevFirstLetter)){
-						if ($PrevFirstLetter !== ''){
-							$HTML .= '</ul></section>';
+			switch ($order_by){
+				case 'label':
+					$PrevFirstLetter = '';
+					$upcaseAZ = (string)new RegExp('^[A-Z]$');
+					foreach ($appearances as $p){
+						$FirstLetter = strtoupper($p->label[0]);
+						if (!preg_match($upcaseAZ, $FirstLetter))
+							$FirstLetter = '#';
+						if (!is_numeric($FirstLetter) ? ($FirstLetter !== $PrevFirstLetter) : !is_numeric($PrevFirstLetter)){
+							if ($PrevFirstLetter !== ''){
+								$HTML .= '</ul></section>';
+							}
+							$PrevFirstLetter = $FirstLetter;
+							$HTML .= "<section><h2>$PrevFirstLetter</h2><ul>";
 						}
-						$PrevFirstLetter = $FirstLetter;
-						$HTML .= "<section><h2>$PrevFirstLetter</h2><ul>";
+						self::_processFullListLink($p, $HTML, $previews);
 					}
-					self::_processFullListLink($p, $HTML, $previews);
-				}
-			}
-			else {
-				$Sorted = Appearances::sort($Appearances, $EQG);
-				foreach (CGUtils::GROUP_TAG_IDS_ASSOC[$EQG?'eqg':'pony'] as $Category => $CategoryName){
-					if (empty($Sorted[$Category]))
-						continue;
+				break;
+				case 'relevance':
+					$Sorted = Appearances::sort($appearances, $eqg);
+					foreach (CGUtils::GROUP_TAG_IDS_ASSOC[$eqg?'eqg':'pony'] as $Category => $CategoryName){
+						if (empty($Sorted[$Category]))
+							continue;
 
-					$HTML .= "<section><h2>$CategoryName<button class='sort-alpha blue typcn typcn-sort-alphabetically hidden' title='Sort this section alphabetically'></button></h2><ul>";
+						$HTML .= "<section><h2>$CategoryName<button class='sort-alpha blue typcn typcn-sort-alphabetically hidden' title='Sort this section alphabetically'></button></h2><ul>";
+						/** @var $Sorted Appearance[][] */
+						foreach ($Sorted[$Category] as $p)
+							self::_processFullListLink($p, $HTML, $previews);
+						$HTML .= '</ul></section>';
+					}
+				break;
+				case 'added':
+					$HTML .= "<section><ul class='justify'>";
 					/** @var $Sorted Appearance[][] */
-					foreach ($Sorted[$Category] as $p)
+					foreach ($appearances as $p)
 						self::_processFullListLink($p, $HTML, $previews);
 					$HTML .= '</ul></section>';
-				}
+				break;
 			}
 		}
 		return $wrap ? "<div id='full-list'>$HTML</div>" : $HTML;

@@ -52,6 +52,10 @@
 			flex-flow: row wrap;
 			justify-content: flex-start;
 
+			&.justify {
+				justify-content: space-between;
+			}
+
 			li {
 				flex: 0 1 auto;
 				margin: $spacing/2 0 $spacing/2 $spacing;
