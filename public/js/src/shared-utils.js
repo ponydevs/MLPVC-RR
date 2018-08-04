@@ -534,6 +534,8 @@
 		return Math.round(number*pow)/pow;
 	};
 
+	$.average = arr => arr.reduce( ( p, c ) => p + c, 0 ) / arr.length;
+
 	$.clamp = (input, min, max) => Math.min(max, Math.max(min, input));
 	$.clampCycle = function(input, min, max){
 		if (input > max)

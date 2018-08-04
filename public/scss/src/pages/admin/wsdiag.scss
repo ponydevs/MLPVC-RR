@@ -1,45 +1,71 @@
 @import "../../vars";
 
-#wss-status {
-	padding: 8px;
-	overflow: auto;
-	max-height: 70vh;
-	margin-bottom: 0;
-	@include l33th4x();
-
-	&:empty:before {
-		content: "Updating...";
-	}
-}
-
 #wss-heartbeat {
+	color: red;
 	display: inline-block;
 	margin-left: 8px;
 	will-change: transform, color;
 	transition: opacity .5s linear;
 
 	&.beat {
-		animation: beat 1s linear;
+		animation: beat .3s linear;
 
 		@keyframes beat {
 			from, to {
 				transform: scale(1);
-				color: black;
 			}
-			50% {
+			33% {
+				transform: scale(.5);
+			}
+			66% {
 				transform: scale(1.5);
-				color: red;
 			}
 		}
 	}
 
 	&.dead {
-		display: none;
-	}
+		color: black;
 
-	&.paused {
-		opacity: .6;
-		color: green;
-		animation: none !important;
+		+ #wss-response-time {
+			display: none;
+		}
+	}
+}
+
+#wss-response-time {
+	font-family: $monospace;
+}
+
+#connection-list {
+	display: flex;
+	margin: 0;
+	padding: 0;
+	flex-flow: row wrap;
+
+	> li {
+		display: block;
+		flex-flow: column nowrap;
+		padding: 10px;
+		margin: 5px;
+		border: 1px solid rgba(black, .2);
+		background: rgba(black, .05);
+
+		h3 {
+			margin: 0 0 10px 0;
+			font-family: $monospace;
+			text-align: center;
+		}
+
+		ul {
+			list-style: none;
+			padding-left: .75em;
+			margin: 0;
+
+			li:before {
+				content: "-";
+				margin-right: .75em;
+				display: inline;
+			}
+		}
 	}
 }
