@@ -114,7 +114,7 @@
 				const endTime = new Date().getTime();
 				responseTimes.push(endTime-startTime);
 				responseTimes = responseTimes.slice(-20);
-				$wssResponseTime.text($.average(responseTimes).toFixed(2)+'ms');
+				$wssResponseTime.text($.average(responseTimes).toFixed(0)+'ms');
 				setTimeout(updateStatus, 1000);
 			});
 		};
