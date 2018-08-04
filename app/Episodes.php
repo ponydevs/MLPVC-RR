@@ -78,12 +78,13 @@ class Episodes {
 	}
 
 	/**
-	 * Returns the latest episode
+	 * Returns the latest episode by air time
 	 *
 	 * @return Episode
 	 */
 	public static function getLatest(){
-		return self::get(1,"airs < NOW() + INTERVAL '24 HOUR'");
+		DB::$instance->orderBy('airs', 'DESC');
+		return self::get(1,"airs < NOW() + INTERVAL '24 HOUR'", false, true);
 	}
 
 	public static function removeTitlePrefix($title){

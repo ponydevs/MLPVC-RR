@@ -196,8 +196,11 @@ class Episode extends NSModel implements LinkableInterface {
 		return $this->season === $ep->season && $this->episode === $ep->episode;
 	}
 
+	private $latest_episode;
 	public function isLatest():bool {
-		return $this->is(Episodes::getLatest());
+		if ($this->latest_episode === null)
+			$this->latest_episode = Episodes::getLatest();
+		return $this->is($this->latest_episode);
 	}
 
 	/**
