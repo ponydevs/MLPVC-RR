@@ -144,20 +144,6 @@
 				if ($entry.length)
 					$entry.refreshVoting();
 			}));
-			this.conn.on('devaction', wsdecoder(response => {
-				console.log('[WS] DevAction', response);
-
-				if (typeof response.remoteAction === 'string'){
-					switch (response.remoteAction){
-						case "reload":
-							window.location.reload();
-						break;
-						case "message":
-							$.Dialog.info('Message from the developer', response.data.html);
-						break;
-					}
-				}
-			}));
 			this.conn.on('update', wsdecoder(response => {
 				console.log('[WS] %cWebsite updated','color:darkblue');
 				const speed = 100;
@@ -268,16 +254,6 @@
 					return cb(data);
 
 				console.log('[WS] DevQuery '+(data.status?'Success':'Fail'), data);
-			}));
-		}
-		devaction(clientId, remoteAction, data = {}){
-			if (typeof this.conn === 'undefined')
-				return setTimeout(() => {
-					this.devaction(clientId, remoteAction, data);
-				},2000);
-
-			this.conn.emit('devaction',{clientId, remoteAction, data},wsdecoder(data => {
-				console.log('[WS] DevAction '+(data.status?'Success':'Fail'), data);
 			}));
 		}
 		essentialElements(){
