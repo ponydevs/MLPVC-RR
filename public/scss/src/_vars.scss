@@ -36,25 +36,25 @@ $AvatarSize: 50px;
 $Link: #337287;
 $LinkHover: desaturate(lighten($Link, 13), 7);
 $LinkLight: lighten($Link, 30);
-$LinkHoverLight: lighten($LinkHover, 30);
+$LinkHoverLight: lighten($LinkHover, 37);
 
 // Notices & buttons
-$NBlue: #07f;
+$NBlue: #0062c4;
 $NBlueBG: #def;
 $NDarkBlue: #04b;
 $NDarkBlueBG: #ddf;
 $_lh: 50;
 $NLavender: adjust_hue($NBlue, $_lh);
 $NLavenderBG: adjust_hue($NBlueBG, $_lh);
-$NTeal: #09a;
+$NTeal: #008080;
 $NTealBG: #dff;
-$NGreen: #090;
+$NGreen: #008000;
 $NGreenBG: #dfd;
-$NRed: #d00;
+$NRed: #c00;
 $NRedBG: #fdd;
-$NOrange: #d50;
+$NOrange: #b40;
 $NOrangeBG: #fed;
-$NYellow: #b70;
+$NYellow: #aa6500;
 $NYellowBG: #ffd;
 $DefaultUIColor: #357;
 
@@ -67,21 +67,6 @@ $NoFontChange: true;
 	cursor: pointer;
 
 	&:hover { color: $hover }
-}
-
-%clearfix {
-	&:before,
-	&:after {
-		content: ".";
-		display: block;
-		overflow: hidden;
-		visibility: hidden;
-		font-size: 0;
-		line-height: 0;
-		width: 0;
-		height: 0;
-	}
-	&:after { clear: both }
 }
 
 // Mobile-to-Desktop breakpoint pixel value
