@@ -43,6 +43,7 @@
 	flex-flow: row wrap;
 
 	> li {
+		flex: 1 1 auto;
 		display: block;
 		flex-flow: column nowrap;
 		padding: 10px;
@@ -53,7 +54,6 @@
 		h3 {
 			margin: 0 0 10px 0;
 			font-family: $monospace;
-			text-align: center;
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
