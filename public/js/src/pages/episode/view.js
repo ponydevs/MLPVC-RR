@@ -676,7 +676,11 @@
 			$reportBroken.on('click',function(e){
 				e.preventDefault();
 
-				$.Dialog.confirm('Report broken video','<p>Have any of the linked videos been removed from their respective platform?<p><p>Please note that availability checking is automatic, bad video quality or sound issues cannot be detected this way. You should <a class="send-feedback">tell us</a> directly if that is the case.</p>',['Send report','Never mind'],function(sure){
+				$.Dialog.confirm('Report broken video',
+					'<p>Have any of the linked videos been removed from their respective platform?<p>'+
+					'<p>Please note that availability checking is automatic, bad video quality or sound issues cannot be detected this way. You should <a class="send-feedback">tell us</a> directly if that is the case.</p>'+
+					'<p>Due to technical difficulties <strong>broken Mega links cannot be detected automatically</strong>, please <a class="send-feedback">contact us</a> if you find a broken Mega link.</p>',
+				['Send report','Never mind'],function(sure){
 					if (!sure) return;
 
 					$.Dialog.wait(false, 'Sending report');
