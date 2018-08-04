@@ -61,10 +61,12 @@
 						let pages = {};
 						let usernames = {};
 						ipConns.forEach(conn => {
-							pages[conn.page] = {
-								since: conn.connectedSince,
-							};
-							usernames[conn.username] = true;
+							if (conn.page)
+								pages[conn.page] = {
+									since: conn.connectedSince,
+								};
+							if (conn.username)
+								usernames[conn.username] = true;
 						});
 						usernames = Object.keys(usernames);
 						let $li = $(document.getElementById(ip));
