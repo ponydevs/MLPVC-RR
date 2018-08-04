@@ -54,6 +54,8 @@
 			margin: 0 0 10px 0;
 			font-family: $monospace;
 			text-align: center;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		ul {

@@ -9,6 +9,7 @@
 		$wssHeartbeat = $('#wss-heartbeat'),
 		$wssResponseTime = $('#wss-response-time'),
 		$connectionList = $('#connection-list'),
+		anonUsername = 'Anonymous',
 		updateStatus = function(){
 			$wssHeartbeat.removeClass('beat');
 			const startTime = new Date().getTime();
@@ -41,7 +42,6 @@
 
 			$.WS.devquery('status',{},function(data){
 				$wssHeartbeat.addClass('beat');
-				const $childs = $connectionList.children();
 				const ips = [];
 				const conns = {};
 				Object.keys(data.clients).forEach(key => {
@@ -55,31 +55,45 @@
 				if (ips.length === 0)
 					$connectionList.empty();
 				else {
-					$childs.filter((_, el) => !conns[el.id]).remove();
+					$connectionList.children().filter((_, el) => !conns[el.id]).remove();
 					ips.forEach(ip => {
 						const ipConns = conns[ip];
-						let pages = {};
-						let usernames = {};
+						const pages = {};
+						const usernames = {};
 						ipConns.forEach(conn => {
 							if (conn.page)
 								pages[conn.page] = {
 									since: conn.connectedSince,
 								};
 							if (conn.username)
-								usernames[conn.username] = true;
+								usernames[conn.username] = (usernames[conn.username] || 0) + 1;
+							else usernames[anonUsername] = (usernames[anonUsername] || 0) + 1;
 						});
-						usernames = Object.keys(usernames);
+						const usernameKeys = Object.keys(usernames);
 						let $li = $(document.getElementById(ip));
 						if ($li.length === 0){
 							$li = $.mk('li', ip);
 							$connectionList.append($li);
 						}
 						$li.empty().append(`<h3>${ipConns[0].ip}</h3>`);
-						if (usernames.length)
+						if (usernameKeys.length)
 							$li.append(
 								`<p><strong>Users:</strong></p>`,
 								$.mk('ul').append(
-									usernames.map(el => $.mk('li').html(`<a href="/@${el}" target="_blank">${el}</a>`))
+									usernameKeys.map(el => {
+										const count = usernames[el];
+										return $.mk('li').html(
+											(
+												el !== anonUsername
+												? `<a href="/@${el}" target="_blank">${el}</a>`
+												: anonUsername
+											)+(
+												count > 1
+												? ` (${count})`
+												: ''
+											)
+										)
+									})
 								)
 							);
 						const pageKeys = Object.keys(pages);
