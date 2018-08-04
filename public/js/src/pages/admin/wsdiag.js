@@ -46,7 +46,8 @@
 				const conns = {};
 				Object.keys(data.clients).forEach(key => {
 					const c = data.clients[key];
-					const ip = 'ip-'+c.ip.replace(/^::ffff:/,'').replace(/[^a-f\d]/g,'-');
+					c.ip = c.ip.replace(/^::ffff:/,'');
+					const ip = 'ip-'+c.ip.replace(/[^a-f\d]/g,'-');
 					ips.push(ip);
 					if (!conns[ip])
 						conns[ip] = [];
