@@ -208,7 +208,11 @@ class Episodes {
 	 * @return string
 	 */
 	public static function getVideosHTML(Episode $Episode, bool $wrap = WRAP):string {
-		return Twig::$env->render('episode/_watch.html.twig', ['current_episode' => $Episode, 'wrap' => $wrap ]);
+		return Twig::$env->render('episode/_watch.html.twig', [
+			'current_episode' => $Episode,
+			'wrap' => $wrap,
+			'videos' => $Episode->videos,
+		]);
 	}
 
 	/**
