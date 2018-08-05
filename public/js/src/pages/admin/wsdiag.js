@@ -4,6 +4,7 @@
 	let interval = false;
 	let responseTimes = [];
 	const
+		responseTimeHistorySize = 6,
 		$sendHello = $('#send-hello'),
 		$wssStatus = $('#wss-status'),
 		$wssHeartbeat = $('#wss-heartbeat'),
@@ -114,7 +115,7 @@
 				}
 				const endTime = new Date().getTime();
 				responseTimes.push(endTime-startTime);
-				responseTimes = responseTimes.slice(-20);
+				responseTimes = responseTimes.slice(-responseTimeHistorySize);
 				$wssResponseTime.text($.average(responseTimes).toFixed(0)+'ms');
 				setTimeout(updateStatus, 1000);
 			});
