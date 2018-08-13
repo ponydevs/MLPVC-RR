@@ -7,7 +7,7 @@
 		name = $briefing.find('.username').text().trim(),
 		$currRole = $briefing.find('.role-label'),
 		currRole = $currRole.text().trim(),
-		$RoleModFormTemplate = $.mk('form').attr('id','rolemod').html('<select name="value" required><optgroup label="Possible roles"></optgroup></select>'),
+		$RoleModFormTemplate = $.mk('form').attr('id','rolemod').html('<select name="newrole" required><optgroup label="Possible roles"></optgroup></select>'),
 		$OptGrp = $RoleModFormTemplate.find('optgroup'),
 		$changeRole = $('#change-role'),
 		$changeRoleMask = $('#change-dev-role-mask');
