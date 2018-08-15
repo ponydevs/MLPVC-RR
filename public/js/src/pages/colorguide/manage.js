@@ -372,7 +372,7 @@
 			return mkPonyEditor($this,title);
 
 		$.Dialog.wait(title, 'Checking whether there are available slots');
-		$.API.get(`${PGRq}/pcg/slots`,$.mkAjaxHandler(function(){
+		$.API.get(`/user/${PersonalGuide}/pcg/slots`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			mkPonyEditor($this,title);
