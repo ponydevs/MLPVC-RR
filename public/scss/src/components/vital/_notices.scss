@@ -11,7 +11,8 @@
 	button, .btn {
 		font-size: .9em;
 		padding: 0 2px;
-		margin: 3px 3px;
+		margin: 0 3px;
+		vertical-align: baseline;
 	}
 
 	&:not(:last-child) { margin-bottom: 10px }
