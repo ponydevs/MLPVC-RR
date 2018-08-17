@@ -3,7 +3,7 @@
 
 	window.copyHashToggler();
 
-	const $colors = $('#colors');
+	const $colors = $('.colors');
 	$('.color-list').on('click','.reorder-cgs',function(e){
 		e.preventDefault();
 		$.ctxmenu.triggerItem($colors, 1);
