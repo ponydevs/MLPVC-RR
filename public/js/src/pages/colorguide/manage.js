@@ -1929,7 +1929,7 @@
 								if (AppearancePage)
 									data.APPEARANCE_PAGE = true;
 
-								$.put(endpoint,data,$.mkAjaxHandler(function(){
+								$.API.put(endpoint,data,$.mkAjaxHandler(function(){
 									if (!this.status) return $.Dialog.fail(null, this.message);
 
 									$colors.html(this.cgs);
