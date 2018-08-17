@@ -99,8 +99,8 @@
 				@include tag-button-style($TGender);
 			}
 			&.typ-app {
-				@include tag-style($TAppearance);
-				@include tag-button-style($TAppearance);
+				@include tag-style($TClothing);
+				@include tag-button-style($TClothing);
 			}
 			&.typ-ep {
 				@include tag-style($TEpisode);
@@ -109,6 +109,10 @@
 			&.typ-char {
 				@include tag-style($TCharacter);
 				@include tag-button-style($TCharacter);
+			}
+			&.typ-warn {
+				@include tag-style($TWarning);
+				@include tag-button-style($TWarning);
 			}
 
 			&:last-child td { border-bottom: 0 }

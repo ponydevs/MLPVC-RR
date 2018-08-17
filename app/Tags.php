@@ -13,6 +13,7 @@ class Tags {
 		'gen' => 'Gender',
 		'spec' => 'Species',
 		'char' => 'Character',
+		'warn' => 'Warning',
 	];
 
 	/**

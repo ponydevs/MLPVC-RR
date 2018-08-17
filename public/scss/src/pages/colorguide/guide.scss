@@ -181,9 +181,10 @@ div.tags {
 	&.typ-cat { @include tag-style($TCategory, '\e083')	}
 	&.typ-spec { @include tag-style($TSpecies, '\e148') }
 	&.typ-gen { @include tag-style($TGender, '\e10f') }
-	&.typ-app { @include tag-style($TAppearance, '\e07e') }
+	&.typ-app { @include tag-style($TClothing, '\e07e') }
 	&.typ-ep { @include tag-style($TEpisode, '\e131') }
 	&.typ-char { @include tag-style($TCharacter, '\e12c') }
+	&.typ-warn { @include tag-style($TWarning, '\e137') }
 	&.synonym {
 		font-weight: normal !important;
 		opacity: .8;
