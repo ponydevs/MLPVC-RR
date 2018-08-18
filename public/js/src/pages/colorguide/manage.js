@@ -1568,7 +1568,7 @@
 					type: 'checkbox',
 					name: 'accept_terms',
 				}).on('change mouseup',function(){
-					$downloadButton.prop('disabled',!this.checked);
+					$downloadButton.attr('disabled',!this.checked);
 				}),
 				templateImageNames = [
 					"cm_square",
@@ -1672,7 +1672,7 @@
 				},
 				colorReplaceEntry = (label, hex) => {
 					const labelInitials = (label.replace(/[^A-Z]/g,'').toLowerCase());
-					return $.mk('div','color-replace-'+labelInitials).attr('class','color-replace').append(
+					return $.mk('div',`color-replace-${labelInitials}`).attr('class','color-replace').append(
 						$.mk('input').attr({
 							type: 'text',
 							value: hex,
@@ -1743,7 +1743,7 @@
 			let loaded = 0;
 			$.each(templateImageNames,function(_,name){
 				const img = new Image();
-				img.src = `/img/sprite_template/${name}.png?v=`+IMAGES_VERSION;
+				img.src = `/img/sprite_template/${name}.png?v=${IMAGES_VERSION}`;
 				$(img).on('load',function(){
 					loaded++;
 					templateImages[name] = img;
