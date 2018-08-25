@@ -1,4 +1,5 @@
 {# @var current_episode \App\Models\Episode #}
+{# @var signed_in boolean #}
 {% set thing = current_episode.get_is_movie ? 'movie' : 'episode' %}
 {% if not current_episode.hasAired -%}
 	<p>Voting will start {{ time_tag(current_episode.get_willair) }}, after the {{ thing }} aired.</p>

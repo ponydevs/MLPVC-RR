@@ -223,7 +223,10 @@ class Episodes {
 	 * @return string
 	 */
 	public static function getSidebarVoting(Episode $Episode):string {
-		return Twig::$env->render('episode/_sidebar_voting.html.twig', ['current_episode' => $Episode]);
+		return Twig::$env->render('episode/_sidebar_voting.html.twig', [
+			'current_episode' => $Episode,
+			'signed_in' => Auth::$signed_in,
+		]);
 	}
 
 	public static function getAppearancesSectionHTML(Episode $Episode):string {

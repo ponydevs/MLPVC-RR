@@ -108,7 +108,7 @@
 {% if current_episode is not empty %}
 <section id="voting">
 	<h2>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} rating</h2>
-	{% include "episode/_sidebar_voting.html.twig" %}
+	{% include "episode/_sidebar_voting.html.twig" with { current_episode: current_episode, signed_in: signed_in } only %}
 </section>
 {% endif %}
 {% endblock %}
