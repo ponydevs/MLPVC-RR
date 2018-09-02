@@ -13,8 +13,6 @@ if (defined('CSP_ENABLED') && CSP_ENABLED === true){
 }
 
 use App\About;
-use App\DB;
-use App\PostgresDbWrapper;
 
 function fatal_error(string $cause, ?Throwable $e = null){
 	\App\HTTP::statusCode(503);
@@ -53,8 +51,7 @@ catch (Exception $e){
 }
 
 try {
-	$conn = \Activerecord\Connection::instance();
-	DB::$instance = PostgresDbWrapper::withConnection(DB_NAME, $conn->connection);
+	require __DIR__.'/init/db_class.php';
 }
 catch (Exception $e){
 	fatal_error('db', $e);
