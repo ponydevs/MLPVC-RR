@@ -40,7 +40,7 @@
 		{% if not appearance.protected and (appearance.hasTags or is_staff) %}
 		<section id="tags">
 			<h2><span class='typcn typcn-tags'></span>Tags</h2>
-			<div class='tags'>{{ appearance.tagsHTML(constant('NOWRAP')) }}</div>
+			{{ appearance.tagsHTML() }}
 			{% if is_staff %}
 			<div class="button-block">
 				<button id="edit-tags-btn" class="darkblue typcn typcn-pencil">Edit tags</button>

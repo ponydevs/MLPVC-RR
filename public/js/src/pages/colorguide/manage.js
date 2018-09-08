@@ -2331,17 +2331,18 @@
 	$editTagsBtn.on('click',function(e){
 		e.preventDefault();
 
-		const oldHtml = $editTagsBtn.html();
+		const oldHTML = $editTagsBtn.html();
 		$editTagsBtn.disable().html('Please wait&hellip;');
 
 		const appearanceID = $(this).closest('[id^=p]').attr('id').replace(/\D/g, '');
 		$.API.get(`/cg/appearance/${appearanceID}/tagged`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
-			const editor = new TagEditor(this.tags, tags => {
+			const orig_tags = this.tags;
+			const editor = new TagEditor(orig_tags, tags => {
 				editor.disableButtons();
 
-				$.API.put(`/cg/appearance/${appearanceID}/tagged`, { tags }, $.mkAjaxHandler(function(){
+				$.API.put(`/cg/appearance/${appearanceID}/tagged`, { tags, orig_tags }, $.mkAjaxHandler(function(){
 					if (!this.status){
 						editor.enableButtons();
 						return $.Dialog.fail('Saving tags', this.message);
@@ -2353,7 +2354,7 @@
 				});
 			});
 		})).always(() => {
-			$editTagsBtn.html(oldHtml).enable();
+			$editTagsBtn.html(oldHTML).enable();
 		});
 	});
 

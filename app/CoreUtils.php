@@ -29,7 +29,7 @@ class CoreUtils {
 	 *
 	 * @param string $fix_uri URL to forcibly redirect to
 	 */
-	public static function fixPath($fix_uri){
+	public static function fixPath(string $fix_uri){
 		$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
 		$path = $_split[0];
 		$query = empty($_split[1]) ? '' : "?{$_split[1]}";

@@ -10,45 +10,48 @@ use HtmlGenerator\HtmlTag;
  */
 class Pagination {
 	/** @var int|null */
-	private $_maxPages;
+	private $max_pages;
 	/** @var int */
-	private $_itemsPerPage;
+	private $items_per_page;
 	/** @var int */
-	private $_context = 2;
+	private $context = 2;
 	/** @var string */
-	private $_basePath;
+	private $base_path;
 	/** @var int */
-	private $_page;
+	private $page = 1;
 	/** @var string */
-	private $_noconflict;
+	private $query_prefix;
 
 	/**
-	 * Creates an instance of the class and return the generated HTML
-	 *
-	 * @param string $basePath     The starting path of each paginated page
-	 * @param int    $itemsPerPage Number of items to display on a single page
-	 * @param int    $entryCount   Number of available entries
-	 * @param string $noConflict   Specify a name to use for the query string parameter
+	 * @param string $base_path      The starting path of each paginated page
+	 * @param int    $items_per_page Number of items to display on a single page
+	 * @param int    $entry_count    Number of available entries
+	 * @param string $query_prefix   Specify a name to use for the query string parameter
 	 */
-	public function __construct(string $basePath, int $itemsPerPage, ?int $entryCount = null, string $noConflict = ''){
-		$this->_itemsPerPage = $itemsPerPage;
-		$this->_basePath = $basePath;
-		$this->_noconflict = $noConflict;
-		$this->_page = 1;
+	public function __construct(string $base_path, int $items_per_page, ?int $entry_count = null, string $query_prefix = ''){
+		$this->items_per_page = $items_per_page;
+		$this->base_path = $base_path;
+		$this->query_prefix = $query_prefix;
 		$this->guessPage();
 
-		if ($entryCount !== null)
-			$this->calcMaxPages($entryCount);
+		if ($entry_count !== null)
+			$this->calcMaxPages($entry_count);
 	}
 
-	private function guessPage(){
-		$page = $_GET["{$this->_noconflict}page"] ?? null;
-		if ($page === null){
-			$uri = explode('/', $_SERVER['REQUEST_URI']);
+	public function guessPage(){
+		$page = $_GET["{$this->query_prefix}page"] ?? null;
+		if ($page === null && !empty($_SERVER['REQUEST_URI'])){
+			$uri = explode('/', strtok($_SERVER['REQUEST_URI'], '?'));
 			$page = array_pop($uri);
 		}
-		if (is_numeric($page))
-			$this->_page = max((int) $page, 1);
+		if (is_numeric($page)){
+			$page_int = \intval($page, 10);
+			if ($this->max_pages !== null)
+				$page_int = min($page_int, $this->max_pages);
+			$this->page = max($page_int, 1);
+		}
+
+		return $this->page;
 	}
 
 	/**
@@ -59,7 +62,7 @@ class Pagination {
 	 * @return self
 	 */
 	public function forcePage(int $page){
-		$this->_page = max($page, 1);
+		$this->page = max($page, 1);
 
 		return $this;
 	}
@@ -67,14 +70,14 @@ class Pagination {
 	/**
 	 * Calculate the number of maximum possible pages
 	 *
-	 * @param int $EntryCount
+	 * @param int $entry_count
 	 *
 	 * @return self
 	 */
-	public function calcMaxPages(int $EntryCount){
-		$this->_maxPages = (int) max(1, ceil($EntryCount/$this->_itemsPerPage));
-		if ($this->_page > $this->_maxPages)
-			$this->_page = $this->_maxPages;
+	public function calcMaxPages(int $entry_count){
+		$this->max_pages = (int) max(1, ceil($entry_count/$this->items_per_page));
+		if ($this->page > $this->max_pages)
+			$this->page = $this->max_pages;
 
 		return $this;
 	}
@@ -86,33 +89,33 @@ class Pagination {
 	 * @throws \RuntimeException
 	 */
 	private function _getLinks(){
-		if ($this->_maxPages === null)
+		if ($this->max_pages === null)
 			throw new \RuntimeException('$this->maxPages must be defined');
 
 		return array_unique(
 			array_merge(
 				[1],
 				range(
-					max($this->_page - $this->_context, 1),
-					min($this->_page + $this->_context, $this->_maxPages)
+					max($this->page - $this->context, 1),
+					min($this->page + $this->context, $this->max_pages)
 				),
-				[$this->_maxPages]
+				[$this->max_pages]
 			)
 		);
 	}
 
 	private function _makeLink($i){
-		$href = new NSUriBuilder($this->_basePath);
+		$href = new NSUriBuilder($this->base_path);
 		$href->append_query_raw($this->getPageQueryString($i));
 		$get = $_GET;
-		if (isset($get["{$this->_noconflict}page"]))
-			unset($get["{$this->_noconflict}page"]);
+		if (isset($get["{$this->query_prefix}page"]))
+			unset($get["{$this->query_prefix}page"]);
 		$href->append_query_array($get);
 		return $href->build_http_string();
 	}
 
 	private function _makeItem(int $i, &$currentIndex = null, $nr = null){
-		$current = $i === (int) $this->_page;
+		$current = $i === (int) $this->page;
 		if ($currentIndex !== null && $current)
 			$currentIndex = $nr;
 		return '<li>'.(
@@ -123,19 +126,19 @@ class Pagination {
 	}
 
 	public function toHTML(bool $wrap = WRAP):string {
-		if ($this->_maxPages === null){
+		if ($this->max_pages === null){
 			CoreUtils::error_log(__METHOD__.": maxPages peroperty must be defined\nData: ".var_export($this, true)."\nTrace:\n".(new \RuntimeException())->getTraceAsString());
 			return '';
 		}
 
-		if (!($this->_page === 1 && $this->_maxPages === 1)){
+		if (!($this->page === 1 && $this->max_pages === 1)){
 			$Items = [];
 			$previousPage = 0;
 			$nr = 0;
 			$currentIndex = 0;
 
-			if ($this->_maxPages < 7){
-				for ($i = 1; $i <= $this->_maxPages; $i++){
+			if ($this->max_pages < 7){
+				for ($i = 1; $i <= $this->max_pages; $i++){
 					$Items[$nr] = $this->_makeItem($i, $currentIndex, $nr++);
 					$nr++;
 				}
@@ -143,7 +146,7 @@ class Pagination {
 			else {
 				/** @noinspection MagicMethodsValidityInspection */
 				foreach ($this->_getLinks() as $i) {
-					if ($i !== min($previousPage + 1, $this->_maxPages)){
+					if ($i !== min($previousPage + 1, $this->max_pages)){
 						$diff = $i - ($previousPage + 1);
 						if ($diff > 1){
 							$item = HtmlTag::createElement('li')->set('class','spec');
@@ -164,7 +167,7 @@ class Pagination {
 		}
 		else $Items = '';
 
-		$path = CoreUtils::aposEncode($this->_basePath);
+		$path = CoreUtils::aposEncode($this->base_path);
 
 		return $wrap ? "<ul class='pagination' data-for='$path'>$Items</ul>" : $Items;
 	}
@@ -178,7 +181,7 @@ class Pagination {
 		return $this->toHTML();
 	}
 
-	public function toElastic(){
+	public function toElastic():array {
 		$limit = $this->getLimit();
 		return [
 			'from' => $limit[0],
@@ -191,8 +194,8 @@ class Pagination {
 	 *
 	 * @return int[] Array in the format [offset, limit]
 	 */
-	public function getLimit(){
-		return [($this->_page-1)*$this->_itemsPerPage, $this->_itemsPerPage ];
+	public function getLimit():array {
+		return [($this->page-1)*$this->items_per_page, $this->items_per_page ];
 	}
 
 	/**
@@ -200,9 +203,9 @@ class Pagination {
 	 *
 	 * @return array
 	 */
-	public function getAssocLimit(){
-		$arr = $this->toElastic();
-		return [ 'offset' => $arr['from'], 'limit' => $arr['size'] ];
+	public function getAssocLimit():array {
+		$limit = $this->getLimit();
+		return [ 'offset' => $limit[0], 'limit' => $limit[1] ];
 	}
 
 	/**
@@ -234,23 +237,27 @@ class Pagination {
 	 * @return string
 	 */
 	public function getPageQueryString($page = null):string {
-		$pagenum = $page ?? $this->_page;
+		$pagenum = $page ?? $this->page;
 		if ($pagenum === 1)
 			$pagenum = CoreUtils::FIXPATH_EMPTY;
-		return "{$this->_noconflict}page=$pagenum";
+		return "{$this->query_prefix}page=$pagenum";
 	}
 
 	public function toURI():NSUriBuilder {
-		$uri = new NSUriBuilder($this->_basePath);
+		$uri = new NSUriBuilder($this->base_path);
 		$uri->append_query_raw($this->getPageQueryString());
 		return $uri;
 	}
 
 	public function getPage(){
-		return $this->_page;
+		return $this->page;
 	}
 
 	public function getItemsPerPage(){
-		return $this->_itemsPerPage;
+		return $this->items_per_page;
+	}
+
+	public function getMaxPages():?int {
+		return $this->max_pages;
 	}
 }

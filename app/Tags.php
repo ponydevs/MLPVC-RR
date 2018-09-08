@@ -147,4 +147,16 @@ HTML;
 
 		return $wrap ? "<tbody>$HTML</tbody>" : $HTML;
 	}
+
+	/**
+	 * Turns an array of tags into a comma separated string
+	 *
+	 * @param Tag[]  $Tags
+	 * @param string $separator
+	 *
+	 * @return string
+	 */
+	public static function getList(array $Tags, $separator = ', '):string {
+		return implode($separator, array_map(function($t){ return $t->name; }, $Tags));
+	}
 }

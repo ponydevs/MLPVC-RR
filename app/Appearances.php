@@ -94,23 +94,18 @@ class Appearances {
 		if (empty($ids))
 			return;
 
-		$elastiClient = CoreUtils::elasticClient();
-		try {
-			$elasticAvail = CoreUtils::elasticClient()->ping();
-		}
-		catch (ElasticNoNodesAvailableException|ElasticServerErrorResponseException $e){
-			$elasticAvail = false;
-		}
-		$list = \is_string($ids) ? explode(',', $ids) : $ids;
-		foreach ($list as $i => $id){
-			$order = $i+1;
-			if (!DB::$instance->where('id', $id)->update('appearances', ['order' => $order]))
-				Response::fail("Updating appearance #$id failed, process halted");
+		$list = array_flip(\is_string($ids) ? explode(',', $ids) : $ids);
+		/** @var $appearances Appearance[] */
+		$appearances = DB::$instance->where('id', $list)->get(Appearance::$table_name);
+		foreach ($appearances as $app){
+			if (!isset($list[$app->id]))
+				continue;
 
-			if ($elasticAvail)
-				$elastiClient->update(array_merge((new Appearance(['id' => $id]))->getElasticMeta(), [
-					'body' => [ 'doc' => ['order' => $order] ],
-				]));
+			$app->order = $list[$app->id];
+			if (!$app->save())
+				Response::fail("Updating appearance #{$app->id} failed, process halted");
+
+			$app->updateIndex();
 		}
 	}
 

@@ -9,6 +9,7 @@ use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
 use App\Episodes;
+use App\JSON;
 use App\Models\Logs\MajorChange;
 use App\Permission;
 use App\RegExp;
@@ -19,6 +20,8 @@ use App\Twig;
 use App\UserPrefs;
 use App\Users;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
+use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
+use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
 use HtmlGenerator\HtmlTag;
 use SeinopSys\RGBAColor;
 
@@ -271,10 +274,10 @@ class Appearance extends NSModel implements LinkableInterface {
 	 */
 	public function getTagsHTML(bool $wrap = WRAP):string {
 		$isStaff = Permission::sufficient('staff');
-		$Tags = Tags::getFor($this->id, null, $isStaff);
+		$tags = Tags::getFor($this->id, null, $isStaff);
 
 		$HTML = '';
-		if (!empty($Tags)) foreach ($Tags as $t)
+		if (!empty($tags)) foreach ($tags as $t)
 			$HTML .= $t->getHTML($this->ishuman);
 
 		return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;
@@ -484,8 +487,11 @@ HTML;
 		try {
 			CoreUtils::elasticClient()->update($this->toElasticArray(false, true));
 		}
-		catch (ElasticNoNodesAvailableException $e){
-			CoreUtils::error_log('ElasticSearch server was down when server attempted to index appearance '.$this->id);
+		catch (ElasticNoNodesAvailableException|ElasticServerErrorResponseException $e){
+			CoreUtils::error_log("ElasticSearch server was down when server attempted to index appearance {$this->id}");
+		}
+		catch (ElasticMissing404Exception $e){
+			CoreUtils::elasticClient()->update($this->toElasticArray(false));
 		}
 	}
 
@@ -767,29 +773,29 @@ HTML;
 		'Mane & Tail Fill' => '#5E5E5E',
 	];
 	public function getColorMapping($DefaultColorMapping){
-		$Colors = DB::$instance->query(
+		$colors = DB::$instance->query(
 			'SELECT cg.label as cglabel, c.label as clabel, c.hex
 			FROM color_groups cg
 			LEFT JOIN colors c on c.group_id = cg.id
 			WHERE cg.appearance_id = ?
 			ORDER BY cg.order ASC, c.label ASC', [$this->id]);
 
-		$ColorMapping = [];
-		foreach ($Colors as $row){
+		$color_mapping = [];
+		foreach ($colors as $row){
 			$cglabel = preg_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
 			$cglabel = preg_replace(new RegExp('^(Coat|Mane & Tail) \([^)]+\)$'),'$1',$cglabel);
 			$eye = $row['cglabel'] === 'Iris';
 			$colorlabel = preg_replace(new RegExp('^(?:(?:(?:Purple|Yellow|Red)\s)?(?:Main|First|Normal'.(!$eye?'|Gradient(?:\s(?:Light|(?:\d+\s)?(?:Top|Botom)))?\s':'').'))?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['clabel']);
 			$label = "$cglabel $colorlabel";
-			if (isset($DefaultColorMapping[$label]) && !isset($ColorMapping[$label]))
-				$ColorMapping[$label] = $row['hex'];
+			if (isset($DefaultColorMapping[$label]) && !isset($color_mapping[$label]))
+				$color_mapping[$label] = $row['hex'];
 		}
-		if (!isset($ColorMapping['Coat Shadow Outline']) && isset($ColorMapping['Coat Outline']))
-			$ColorMapping['Coat Shadow Outline'] = $ColorMapping['Coat Outline'];
-		if (!isset($ColorMapping['Coat Shadow Fill']) && isset($ColorMapping['Coat Fill']))
-			$ColorMapping['Coat Shadow Fill'] = $ColorMapping['Coat Fill'];
+		if (!isset($color_mapping['Coat Shadow Outline']) && isset($color_mapping['Coat Outline']))
+			$color_mapping['Coat Shadow Outline'] = $color_mapping['Coat Outline'];
+		if (!isset($color_mapping['Coat Shadow Fill']) && isset($color_mapping['Coat Fill']))
+			$color_mapping['Coat Shadow Fill'] = $color_mapping['Coat Fill'];
 
-		return $ColorMapping;
+		return $color_mapping;
 	}
 
 	public function render_notes(){
@@ -803,39 +809,31 @@ HTML;
 	}
 
 	public function getTagsAsText(string $separator = ', '){
-		$tags = [];
-		foreach (Tags::getFor($this->id, null, Permission::sufficient('staff')) as $tag)
-			$tags[] = $tag->name;
-		return implode($separator, $tags);
+		$tags = Tags::getFor($this->id, null, Permission::sufficient('staff'));
+		return Tags::getList($tags, $separator);
 	}
 
-	public function processTagChanges(string $new_tags, bool $eqg){
-		$new = [];
-		foreach (explode(',', $new_tags) as $new_tag)
-			$new[CoreUtils::trim($new_tag)] = true;
-		$old = [];
-		$old_tags = DB::$instance->query(
-			'SELECT t.name as name, t.id as id FROM tags t
-			LEFT JOIN tagged tg ON t.id = tg.tag_id
-			WHERE tg.appearance_id = ?', [$this->id]);
+	public function processTagChanges(string $old_tags, string $new_tags, bool $eqg){
+		$old = array_map([CoreUtils::class, 'trim'], explode(',', $old_tags));
+		$new = array_map([CoreUtils::class, 'trim'], explode(',', $new_tags));
+		$added = array_diff($new, $old);
+		$removed = array_diff($old, $new);
 
-		/** @var $removed int[] */
-		$removed = [];
-		foreach ($old_tags as $row){
-			$name = $row['name'];
-			if (!isset($new[$name]))
-				$removed[] = $row['id'];
-			else unset($new[$name]);
-		}
 		if (!empty($removed)){
-			DB::$instance->where('tag_id', $removed)->where('appearance_id', $this->id)->delete(Tagged::$table_name);
-			foreach ($removed as $tag_id){
-				TagChange::record(false, $tag_id, $this->id);
+			$removed_tags = DB::$instance->disableAutoClass()->where('name', $removed)->get('tags', null, 'id, name');
+			$removed_tags = array_reduce($removed_tags, function ($acc, $el){
+				$acc[$el['id']] = $el['name'];
+				return $acc;
+			}, []);
+			$removed_tag_ids = array_keys($removed_tags);
+			DB::$instance->where('tag_id', $removed_tag_ids)->where('appearance_id', $this->id)->delete(Tagged::$table_name);
+			foreach ($removed_tags as $tag_id => $tag_name){
+				TagChange::record(false, $tag_id, $tag_name, $this->id);
 				Tags::updateUses($tag_id);
 			}
 		}
 
-		foreach ($new as $name => $_){
+		foreach ($added as $name){
 			$_REQUEST['tag_name'] = CoreUtils::trim($name);
 			if (empty($_REQUEST['tag_name']))
 				continue;
@@ -869,11 +867,22 @@ HTML;
 	 * @return self
 	 */
 	public function addTag(Tag $tag, bool $update_uses = true):self {
-		if (!Tagged::make($tag->id, $this->id)->save()){
+		try {
+			$created = Tagged::make($tag->id, $this->id)->save();
+		}
+		catch (\ActiveRecord\DatabaseException $e){
+			// Relation already exists, moving on
+			if (strpos($e->getMessage(), 'duplicate key value violates unique constraint "tagged_pkey"')){
+				return $this;
+			}
+
+			$created = false;
+		}
+		if (!$created){
 			CoreUtils::error_log(__METHOD__.": Failed to add tag {$tag->name} (#{$tag->id}) to appearance {$this->label} (#{$this->id}), skipping");
 			return $this;
 		}
-		TagChange::record(true, $tag->id, $this->id);
+		TagChange::record(true, $tag->id, $tag->name, $this->id);
 		if ($update_uses)
 			$tag->updateUses();
 
@@ -893,8 +902,6 @@ HTML;
 		$this->clearRenderedImages();
 		Appearances::clearSpriteColorIssueNotifications($this->appearance->id, 'del', null);
 	}
-
-	/* Permission-related functions only beyond this point */
 
 	public static function checkCreatePermission(User $user, bool $personal){
 		if (!$personal){
@@ -933,7 +940,7 @@ HTML;
 	 * For Twig
 	 * @return bool
 	 */
-	public function getProtected(){
+	public function getProtected():bool {
 		return $this->protected;
 	}
 
@@ -941,7 +948,7 @@ HTML;
 	 * For Twig
 	 * @return Cutiemark[]
 	 */
-	public function getCutiemarks(){
+	public function getCutiemarks():array {
 		return $this->cutiemarks;
 	}
 }

@@ -6,6 +6,7 @@ use App\Auth;
 
 /**
  * @property int        $tag_id
+ * @property string     $tag_name
  * @property int        $appearance_id
  * @property string     $user_id
  * @property bool       $added
@@ -21,7 +22,7 @@ class TagChange extends NSModel {
 		['user'],
 	];
 
-	public static function record(bool $added, int $tag_id, int $appearance_id, ?string $user_id = null):self {
+	public static function record(bool $added, int $tag_id, string $tag_name, int $appearance_id, ?string $user_id = null):self {
 		if ($user_id === null){
 			if (!Auth::$signed_in)
 				throw new \RuntimeException(__METHOD__.' called without $user_id but no user is signed in');
@@ -30,6 +31,7 @@ class TagChange extends NSModel {
 
 		$instance = new self();
 		$instance->tag_id = $tag_id;
+		$instance->tag_name = $tag_name;
 		$instance->appearance_id = $appearance_id;
 		$instance->user_id = $user_id;
 		$instance->added = $added;
