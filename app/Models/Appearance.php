@@ -441,12 +441,22 @@ HTML;
 			(!empty($_GET['token']) ? "&token={$_GET['token']}" : '');
 	}
 
-	public function toURL():string {
-		$safeLabel = $this->getURLSafeLabel();
+	/**
+	 * Get a link to this appearance
+	 *
+	 * Because redirects take care of setting & enforcing the guide
+	 * and owner data in the URL we can skip that for short sharing links.
+	 *
+	 * @param bool $sharing
+	 *
+	 * @return string
+	 */
+	public function toURL($sharing = false):string {
+		$safe_label = $this->getURLSafeLabel();
 		$pcg = $this->owner_id !== null;
-		$owner = $pcg ? '/@'.User::find($this->owner_id)->name : '';
-		$guide = $pcg ? '' : ($this->ishuman ? 'eqg' : 'pony').'/';
-		return "$owner/cg/{$guide}v/{$this->id}-$safeLabel";
+		$owner = !$pcg || $sharing ? '' : $this->owner->toURL();
+		$guide = $pcg || $sharing ? '' : ($this->ishuman ? 'eqg' : 'pony').'/';
+		return "$owner/cg/{$guide}v/{$this->id}-$safe_label";
 	}
 
 	public function toAnchor():string {
@@ -929,7 +939,7 @@ HTML;
 	}
 
 	public function getShareURL(bool $can_see_token = false):string {
-		return rtrim(ABSPATH,'/').$this->toURL().($can_see_token && $this->private ? "?token={$this->token}" : '');
+		return rtrim(ABSPATH,'/').$this->toURL(true).($can_see_token && $this->private ? "?token={$this->token}" : '');
 	}
 
 	public function hasTags():bool {
