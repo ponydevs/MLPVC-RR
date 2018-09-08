@@ -1,4 +1,4 @@
-# MLPVC-RR [![Build status](https://travis-ci.org/ponydevs/MLPVC-RR.svg?branch=master)](https://travis-ci.org/ponydevs/MLPVC-RR)
+# MLPVC-RR [![Build Status](https://travis-ci.org/SeinopSys/MLPVC-RR.svg?branch=master)](https://travis-ci.org/SeinopSys/MLPVC-RR)
 
 ## Attributions
 
