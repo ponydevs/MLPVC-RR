@@ -6,12 +6,13 @@
 {%- else -%}
 	{% set score = current_episode.get_score %}
 	{% set score_percent = (((score/5)*1000) | round)/10 -%}
-	<p>{% if score is not empty -%}
+	{% set has_score = score is not empty and score != 0 %}
+	<p>{% if has_score -%}
 			This {{ thing }} is rated {{ score }}/5 (<a class='detail'>Details</a>)
 		{%- else -%}
 			Nopony voted yet.
 		{%- endif %}</p>
-	{% if score > 0 %}
+	{% if has_score %}
 	<img src='/muffin-rating?w={{ score_percent }}' id='muffins' alt='muffin rating svg'>
 	{% endif %}
 	{# @var user_vote \App\Models\EpisodeVote #}
