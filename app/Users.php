@@ -34,81 +34,101 @@ class Users {
 		if ($column === 'name' && !empty(self::$_USER_CACHE[$value]))
 			return self::$_USER_CACHE[$value];
 
-		$User = DB::$instance->where($column, $value)->getOne('users');
+		$user = DB::$instance->where($column, $value)->getOne('users');
 
-		if (empty($User) && $column === 'name')
-			$User = self::fetch($value);
+		if (empty($user) && $column === 'name'){
+			global $USERNAME_REGEX;
+			if ($USERNAME_REGEX->match($value)){
+				$user = self::fetch([$value]);
+			}
+		}
 
-		if (isset($User->name))
-			self::$_USER_CACHE[$User->name] = $User;
+		if (isset($user->name))
+			self::$_USER_CACHE[$user->name] = $user;
 
-		return $User;
+		return $user;
 	}
 
 	/**
 	 * User Information Fetching
 	 * -------------------------
 	 * Fetch user info from DeviantArt's API
+	 * If multiple usernames are passed as an array it will not return a value
 	 *
-	 * @param string $username
+	 * @param string[] $usernames
 	 *
-	 * @return User|null|false
+	 * @return User|null|false|void
 	 * @throws \Exception
 	 */
-	public static function fetch($username){
+	public static function fetch($usernames){
 		global $USERNAME_REGEX;
 
-		if (!$USERNAME_REGEX->match($username))
-			return null;
+		$count = \count($usernames);
+		if ($count < 1)
+			throw new \RuntimeException('No usernames specified');
+		else if ($count > 50)
+			throw new \RuntimeException("Too many usernames specified ($count)");
+		$single_user = $count === 1;
+		$fetch_index = 0;
+		$fetch_params = [];
+		foreach ($usernames as $un){
+			if ($single_user){
+				$old_name = DANameChange::find_by_old($un);
+				if (!empty($old_name))
+					return $old_name->user;
+			}
 
-		$oldName = DANameChange::find_by_old($username);
-		if (!empty($oldName))
-			return $oldName->user;
+			$fetch_params["usernames[{$fetch_index}]"] = $un;
+			$fetch_index++;
+		}
 
 		try {
-			$userdata = DeviantArt::request('user/whois', null, ['usernames[0]' => $username]);
+			$userdata = DeviantArt::request('user/whois', null, $fetch_params);
 		}
 		catch (CURLRequestException $e){
-			return false;
+			if ($single_user)
+				return false;
+			else throw new \RuntimeException('Failed to fetch users: '.$e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
 		}
 
-		if (empty($userdata['results'][0]))
+		if ($single_user && empty($userdata['results'][0]))
 			return false;
 
-		$userdata = $userdata['results'][0];
-		$ID = strtolower($userdata['userid']);
+		foreach ($userdata['results'] as $userdata){
+			$id = strtolower($userdata['userid']);
 
-		$DBUser = User::find($ID);
-		$userExists = !empty($DBUser);
-		if (!$userExists)
-			$DBUser = new User([ 'id' => $ID ]);
+			$db_user = User::find($id);
+			$user_exists = !empty($db_user);
+			if (!$user_exists)
+				$db_user = new User([ 'id' => $id ]);
 
-		$DBUser->name = $userdata['username'];
-		$DBUser->avatar_url = URL::makeHttps($userdata['usericon']);
+			$db_user->name = $userdata['username'];
+			$db_user->avatar_url = URL::makeHttps($userdata['usericon']);
 
-		$clubRole = DeviantArt::getClubRoleByName($userdata['username']);
-		if (!empty($clubRole))
-			$DBUser->role = $clubRole;
+			$club_role = DeviantArt::getClubRoleByName($userdata['username']);
+			if (!empty($club_role))
+				$db_user->role = $club_role;
 
-		if (!$DBUser->save())
-			throw new \Exception('Saving user data failed'.(Permission::sufficient('developer')?': '.DB::$instance->getLastError():''));
+			if (!$db_user->save())
+				throw new \RuntimeException('Saving user data failed'.(Permission::sufficient('developer')?': '.DB::$instance->getLastError():''));
 
-		if (!$userExists)
-			Logs::logAction('userfetch', ['userid' => $DBUser->id]);
-		$names = [$username];
-		if ($userExists && $DBUser->name !== $username)
-			$names[] = $DBUser->name;
-		foreach ($names as $name){
-			if (strcasecmp($name, $DBUser->name) !== 0){
-				Logs::logAction('da_namechange', [
-					'old' => $name,
-					'new' => $DBUser->name,
-					'user_id' => $ID,
-				], Logs::FORCE_INITIATOR_WEBSERVER);
+			if (!$user_exists)
+				Logs::logAction('userfetch', ['userid' => $db_user->id]);
+			$names = \array_slice($usernames, 0);
+			if ($user_exists && $db_user->name !== $usernames[0])
+				$names[] = $db_user->name;
+			foreach ($names as $name){
+				if (strcasecmp($name, $db_user->name) !== 0){
+					Logs::logAction('da_namechange', [
+						'old' => $name,
+						'new' => $db_user->name,
+						'user_id' => $id,
+					], Logs::FORCE_INITIATOR_WEBSERVER);
+				}
 			}
+			if ($single_user)
+				return $db_user;
 		}
-
-		return $DBUser;
 	}
 
 	/**

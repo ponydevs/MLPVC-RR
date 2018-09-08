@@ -9,14 +9,16 @@
 
 {% block content %}
 <div id="content">
-{% if current_episode is empty %}
+{% if current_episode is not defined or current_episode is empty %}
 	<h1>There's nothing here yet&hellip;</h1>
 	<p>&hellip;but there could be!</p>
 
+	{% if permission('staff') %}
 	<div class="notice info">
 		<label>No episodes found</label>
-		<p>To create requests and reservations, an episode must be added to the database first. Head on over to the <a href='/episodes'>Episodes</a> page and add one now!</p>
+		<p>To create requests and reservations, an episode must be added to the database first. Head on over to the <a href='/show'>Show</a> page and add one now!</p>
 	</div>
+	{% endif %}
 {% else %}
 {% set reverse_btns = user_pref('ep_revstepbtn') %}
 {% if reverse_btns %}
@@ -105,7 +107,7 @@
 {% endblock %}
 
 {% block widgets %}
-{% if current_episode is not empty %}
+{% if current_episode is defined and current_episode is not empty %}
 <section id="voting">
 	<h2>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} rating</h2>
 	{% include "episode/_sidebar_voting.html.twig" with { current_episode: current_episode, signed_in: signed_in } only %}

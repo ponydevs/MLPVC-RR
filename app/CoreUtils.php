@@ -1314,6 +1314,11 @@ class CoreUtils {
 	public static function error_log(string $message){
 		global $logger;
 
+		if (PHP_SAPI === 'cli'){
+			echo $message;
+			return;
+		}
+
 		if (\defined('DISABLE_MONOLOG')){
 			/** @noinspection ForgottenDebugOutputInspection */
 			error_log($message);

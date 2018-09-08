@@ -32,7 +32,7 @@
 		"php-activerecord/php-activerecord": "dev-master",
 		"seinopsys/oauth2-deviantart": "^1.0",
 		"s1lentium/iptools": "^1.1",
-		"robmorgan/phinx": "^0.10.0",
+		"robmorgan/phinx": "^0.10.6",
 		"enshrined/svg-sanitize": "^0.8.2",
 		"monolog/monolog": "^1.23",
 		"seinopsys/rgbacolor": "1.*",
