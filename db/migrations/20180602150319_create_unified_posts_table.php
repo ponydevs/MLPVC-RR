@@ -89,8 +89,8 @@ class CreateUnifiedPostsTable extends AbstractMigration {
 		if (!empty($data))
 			$posts_table->insert($data)->save();
 
-		$this->table('requests')->drop();
-		$this->table('reservations')->drop();
+		$this->table('requests')->drop()->save();
+		$this->table('reservations')->drop()->save();
 
 		$img_update_table = $this->table('log__img_update');
 		$img_update_table->renameColumn('thing', 'type')->save();

@@ -204,6 +204,13 @@ class ConvertSchemaToMigration extends AbstractMigration {
 			->addColumn('owner_id',    'uuid',      ['null' => true]);
 		$this->tables[$table]->create();
 
+		$table = 'log__banish';
+		$this->tables[$table] = $this->table($table, ['id' => 'entryid'])
+			->addColumn('target_id', 'uuid')
+			->addColumn('reason',    'string', ['length' => 255])
+			->addIndex('target_id');
+		$this->tables[$table]->create();
+
 		$table = 'log__cg_modify';
 		$this->tables[$table] = $this->table($table, ['id' => 'entryid'])
 			->addColumn('group_id',      'integer')
@@ -355,6 +362,13 @@ class ConvertSchemaToMigration extends AbstractMigration {
 			->addColumn('oldrole', 'string', ['length' => 10])
 			->addColumn('newrole', 'string', ['length' => 10])
 			->addIndex('target');
+		$this->tables[$table]->create();
+
+		$table = 'log__unbanish';
+		$this->tables[$table] = $this->table($table, ['id' => 'entryid'])
+			->addColumn('target_id', 'uuid')
+			->addColumn('reason',    'string', ['length' => 255])
+			->addIndex('target_id');
 		$this->tables[$table]->create();
 
 		$table = 'log__userfetch';
@@ -542,8 +556,14 @@ SQL
 		$this->tables['log']
 			->addForeignKey('initiator', 'users', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 			->update();
+		$this->tables['log__banish']
+			->addForeignKey('target_id', 'users', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+			->update();
 		$this->tables['log__da_namechange']
 			->addForeignKey('user_id', 'users', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+			->update();
+		$this->tables['log__unbanish']
+			->addForeignKey('target_id', 'users', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 			->update();
 		$this->tables['notifications']
 			->addForeignKey('recipient_id', 'users', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
