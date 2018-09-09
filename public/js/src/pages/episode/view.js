@@ -480,10 +480,10 @@
 
 			const $el = $(el);
 			$(image).on('load', function(e){
-				$(el).trigger(e).closest('.image').html($link);
+				$el.trigger(e).closest('.image').html($link);
 				$link.closest('li').rebindFluidbox();
 			}).on('error', function(e){
-				$el.trigger(e);
+				$el.closest('li').reloadLi();
 			});
 		});
 	});
