@@ -52,13 +52,13 @@ $router->map('GET', '/[cg]/[guide:guide]?/changes/[i]?',   'ColorGuideController
 $router->map('GET', '/[cg]/[guide:guide]?/[v]',            'ColorGuideController#guide');
 $router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]', 'ColorGuideController#guide');
 # AppearanceController
-$router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id]-?',                                     'AppearanceController#view');
+$router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id]-?',                                   'AppearanceController#view');
 $router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id]-[adi]',                               'AppearanceController#view');
 $router->map('GET', '/[cg]/[guide:guide]?/[v]/[adi]-[i:id]',                               'AppearanceController#view');
 $router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id][cgimg:type]?.[cgext:ext]',            'AppearanceController#asFile');
 $router->map('GET', '/[cg]/[guide:guide]?/sprite(-colors)?/[i:id][adi]?',                  'AppearanceController#sprite');
 $router->map('GET', '/[cg]/[guide:guide]?/tag-changes/[i:id][adi]?',                       'AppearanceController#tagChanges');
-$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[i:id]-?',                          'AppearanceController#view');
+$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[i:id]-?',                        'AppearanceController#view');
 $router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[i:id]-[adi]',                    'AppearanceController#view');
 $router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[adi]-[i:id]',                    'AppearanceController#view');
 $router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[i:id][cgimg:type]?.[cgext:ext]', 'AppearanceController#asFile');
