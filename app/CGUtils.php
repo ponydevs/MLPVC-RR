@@ -845,33 +845,40 @@ XML;
 		CoreUtils::downloadAsFile(JSON::encode($JSON), "$label.json");
 	}
 	/**
-	 * @param Appearance $Appearance
+	 * @param Appearance $appearance
 	 */
-	public static function getSwatchesInkscape(Appearance $Appearance){
-		$label = $Appearance->label;
-		$exportts = gmdate('Y-m-d H:i:s T');
-		$File = <<<GPL
+	public static function getSwatchesInkscape(Appearance $appearance){
+		$label = $appearance->label;
+		$export_ts = gmdate('Y-m-d H:i:s T');
+		$file = <<<GPL
 GIMP Palette
 Name: $label
 Columns: 6
 #
-# Exported at: $exportts
+# Exported at: $export_ts
 #
 
 GPL;
 
-		$CGs = $Appearance->color_groups;
-		$Colors = self::getColorsForEach($CGs, true);
-		foreach ($CGs as $cg){
-			foreach ($Colors[$cg->id] as $c){
+		$color_groups = $appearance->color_groups;
+		$colors = self::getColorsForEach($color_groups, true);
+		foreach ($color_groups as $cg){
+			foreach ($colors[$cg->id] as $c){
 				if (empty($c->hex))
 					continue;
 				$rgb = RGBAColor::parse($c->hex);
-				$File .= CoreUtils::pad($rgb->red,3,' ').' '.CoreUtils::pad($rgb->green,3,' ').' '.CoreUtils::pad($rgb->blue,3,' ').' '.$cg->label.' | '.$c->label.PHP_EOL;
+				$file .= implode(' ', [
+					CoreUtils::pad($rgb->red,3,' '),
+					CoreUtils::pad($rgb->green,3,' '),
+					CoreUtils::pad($rgb->blue,3,' '),
+					htmlspecialchars($cg->label),
+					'|',
+					htmlspecialchars($c->label),
+				])."\n";
 			}
 		}
 
-		CoreUtils::downloadAsFile(rtrim($File), "$label.gpl");
+		CoreUtils::downloadAsFile(rtrim($file), "$label.gpl");
 	}
 
 	/**
