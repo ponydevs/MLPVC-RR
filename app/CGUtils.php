@@ -844,41 +844,68 @@ XML;
 
 		CoreUtils::downloadAsFile(JSON::encode($JSON), "$label.json");
 	}
+
 	/**
-	 * @param Appearance $appearance
+	 * @param string   $name
+	 * @param array    $colors [ [r,g,b,label], ... ]
+	 * @param int|null $ts     Timestamp to be included in the file
+	 *
+	 * @return string
 	 */
-	public static function getSwatchesInkscape(Appearance $appearance){
-		$label = $appearance->label;
-		$export_ts = gmdate('Y-m-d H:i:s T');
+	public static function generateGimpPalette(string $name, array $colors, ?int $ts = null):string {
+		$label = htmlspecialchars($name);
 		$file = <<<GPL
 GIMP Palette
 Name: $label
 Columns: 6
+
+GPL;
+		if ($ts === null)
+			$ts = time();
+		$export_ts = gmdate('Y-m-d H:i:s T', $ts);
+		$file .= <<<GPL
 #
 # Exported at: $export_ts
 #
 
 GPL;
 
+		$file .= implode("\n", array_map(function($arr){
+			$arr[0] = CoreUtils::pad($arr[0],3,' ');
+			$arr[1] = CoreUtils::pad($arr[1],3,' ');
+			$arr[2] = CoreUtils::pad($arr[2],3,' ');
+			if (isset($arr[3]))
+				$arr[3] = htmlspecialchars($arr[3]);
+			return implode(' ', $arr);
+		}, $colors));
+
+		return "$file\n";
+	}
+
+	/**
+	 * @param Appearance $appearance
+	 */
+	public static function getSwatchesInkscape(Appearance $appearance){
+		$label = $appearance->label;
+
 		$color_groups = $appearance->color_groups;
 		$colors = self::getColorsForEach($color_groups, true);
+		$list = [];
 		foreach ($color_groups as $cg){
 			foreach ($colors[$cg->id] as $c){
 				if (empty($c->hex))
 					continue;
 				$rgb = RGBAColor::parse($c->hex);
-				$file .= implode(' ', [
-					CoreUtils::pad($rgb->red,3,' '),
-					CoreUtils::pad($rgb->green,3,' '),
-					CoreUtils::pad($rgb->blue,3,' '),
-					htmlspecialchars($cg->label),
-					'|',
-					htmlspecialchars($c->label),
-				])."\n";
+				$list[] = [
+					$rgb->red,
+					$rgb->green,
+					$rgb->blue,
+					htmlspecialchars($cg->label).'|'.htmlspecialchars($c->label)
+				];
 			}
 		}
 
-		CoreUtils::downloadAsFile(rtrim($file), "$label.gpl");
+		CoreUtils::downloadAsFile(self::generateGimpPalette($label, $list), "$label.gpl");
 	}
 
 	/**
