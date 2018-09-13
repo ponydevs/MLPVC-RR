@@ -9,7 +9,7 @@ class UserPrefs extends GlobalSettings {
 	/** @see process */
 	public const DEFAULTS = [
 		'cg_itemsperpage' => 7,
-		//'cg_hidesynon' => 0,
+		'cg_hidesynon' => 1,
 		'cg_hideclrinfo' => 0,
 		'cg_fulllstprev' => 1,
 		'p_avatarprov' => 'deviantart',
@@ -147,7 +147,7 @@ class UserPrefs extends GlobalSettings {
 					throw new \RuntimeException('The specified avatar provider is invalid');
 			break;
 			case 'p_hidediscord':
-			//case 'cg_hidesynon':
+			case 'cg_hidesynon':
 			case 'cg_hideclrinfo':
 			case 'cg_fulllstprev':
 			case 'ep_revstepbtn':

@@ -21,13 +21,13 @@ class UserSettingForm {
 				'max' => 20,
 			],
 		],
-		/*'cg_hidesynon' => [
+		'cg_hidesynon' => [
 			'type' => 'checkbox',
 			'options' => [
 				'perm' => 'staff',
-				'desc' => 'Hide synonym relations',
+				'desc' => 'Hide synonym tags under appearances',
 			],
-		],*/
+		],
 		'cg_hideclrinfo' => [
 			'type' => 'checkbox',
 			'options' => [
