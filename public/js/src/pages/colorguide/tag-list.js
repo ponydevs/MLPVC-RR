@@ -55,7 +55,7 @@
 					}
 
 					let $TagActionForm = $.mk('form',`tag-${action}`),
-						$select = $.mk('select').attr('required',true).attr('name','targetid'),
+						$select = $.mk('select').attr('required',true).attr('name','target_id'),
 						optgroups = {}, ogorder = [];
 
 					$.each(this, function(_, tag){
@@ -88,8 +88,8 @@
 							let sent = $form.mkData();
 							$.Dialog.wait(false, 'Creating tag synonym');
 
-							$.API.put(`/cg/tag/${tagID}/synonym`,sent, $.mkAjaxHandler(function(){
-								updateList.call(this, $tr, action);
+							$.API.put(`/cg/tag/${tagID}/synonym`,sent, $.mkAjaxHandler(function(data){
+								updateList.call(data, $tr, action);
 							}));
 						});
 					});

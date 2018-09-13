@@ -296,26 +296,26 @@ HTML;
 				if ($this->tag->synonym_of !== null)
 					Response::fail("The selected tag is already a synonym of the \"{$this->tag->synonym->name}\" (".Tags::TAG_TYPES[$this->tag->synonym->type].') tag');
 
-				$targetid = (new Input('targetid', 'int', [
+				$target_id = (new Input('target_id', 'int', [
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'Target tag ID is missing',
 						Input::ERROR_INVALID => 'Target tag ID is invalid',
 					],
 				]))->out();
-				$target = Tag::find($targetid);
+				$target = Tag::find($target_id);
 				if (empty($target))
 					Response::fail('Target tag does not exist');
 				if ($target->synonym_of !== null)
 					Response::fail("The selected tag is already a synonym of the \"{$target->synonym->name}\" (".Tags::TAG_TYPES[$target->synonym->type].') tag');
 
-				$TargetTagged = Tagged::by_tag($target->id);
-				$TaggedAppearanceIDs = [];
-				foreach ($TargetTagged as $tg)
-					$TaggedAppearanceIDs[] = $tg->appearance_id;
+				$target_tagged = Tagged::by_tag($target->id);
+				$tagged_appearance_ids = [];
+				foreach ($target_tagged as $tg)
+					$tagged_appearance_ids[] = $tg->appearance_id;
 
-				$Tagged = Tagged::by_tag($this->tag->id);
-				foreach ($Tagged as $tg){
-					if (\in_array($tg->appearance_id, $TaggedAppearanceIDs, true))
+				$tagged = Tagged::by_tag($this->tag->id);
+				foreach ($tagged as $tg){
+					if (\in_array($tg->appearance_id, $tagged_appearance_ids, true))
 						continue;
 
 					if (!Tagged::make($target->id, $tg->appearance_id)->save())
@@ -326,14 +326,14 @@ HTML;
 					'synonym_of' => $target->id,
 					'uses' => 0,
 				]);
-				if (!empty($TaggedAppearanceIDs)){
-					$TaggedAppearances = Appearance::find('all', [
+				if (!empty($tagged_appearance_ids)){
+					$tagged_appearances = Appearance::find('all', [
 						'conditions' => [
 							'id IN (?)',
-							$TaggedAppearanceIDs
+							$tagged_appearance_ids
 						]
 					]);
-					foreach ($TaggedAppearances as $tapp)
+					foreach ($tagged_appearances as $tapp)
 						$tapp->updateIndex();
 				}
 
@@ -344,11 +344,11 @@ HTML;
 				if ($this->tag->synonym_of === null)
 					Response::done();
 
-				if (!empty($this->tag->synonym)){
+				if ($this->tag->synonym){
 					$keep_tagged = isset($_REQUEST['keep_tagged']);
 					if ($keep_tagged){
-						$TargetTagged = Tagged::by_tag($this->tag->synonym->id);
-						foreach ($TargetTagged as $tg)
+						$target_tagged = Tagged::by_tag($this->tag->synonym->id);
+						foreach ($target_tagged as $tg)
 							$tg->appearance->addTag($this->tag);
 					}
 				}

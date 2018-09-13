@@ -424,7 +424,7 @@
 									$affected.addClass('synonym');
 									//noinspection ES6ConvertVarToLetConst
 									var $ssp = $affected.eq(0).clone().removeClass('ctxmenu-bound'),
-										$tsp = new TagSpan(target),
+										$tsp = createTagSpan(target),
 										$tagsDivs = $affected.add($('.tag.id-' + target.id)).closest('.tags');
 									$tagsDivs.filter(function(){
 										return $(this).children('.id-'+tagID).length === 0;
@@ -471,12 +471,11 @@
 
 	const TagAutocompleteCache = new KeyValueCache();
 
-	class TagSpan extends jQuery {
-		constructor(data){
-			return super(`<span class="tag id-${data.id}${data.type?` typ-${data.type}`:''}${data.synonym_of?' synonym':''}" data-syn-of="${data.synonym_of}">`)
+	function createTagSpan(){
+		return
+			$(`<span class="tag id-${data.id}${data.type?` typ-${data.type}`:''}${data.synonym_of?' synonym':''}" data-syn-of="${data.synonym_of}">`)
 				.attr('title', data.title)
 				.text(data.name);
-		}
 	}
 
 	function createNewTag($tag, name, typehint){
