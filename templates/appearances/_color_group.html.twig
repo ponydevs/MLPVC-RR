@@ -16,7 +16,7 @@
 {% import _self as cg %}
 {% set is_staff = permission('staff') %}
 <li id="cg-{{ color_group.id }}" class="color-group {{ type }}">
-	{% set colors = all_colors is defined ? all_colors[color_group.id] : color_group.colors %}
+	{% set colors = all_colors is defined and  all_colors[color_group.id] is defined ? all_colors[color_group.id] : color_group.colors %}
 	{% if compact %}
 		<span class="cat">{{ color_group.label | escape }}:</span>
 		{% for c in colors %}
