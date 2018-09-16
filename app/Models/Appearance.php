@@ -836,7 +836,8 @@ HTML;
 				return $acc;
 			}, []);
 			$removed_tag_ids = array_keys($removed_tags);
-			DB::$instance->where('tag_id', $removed_tag_ids)->where('appearance_id', $this->id)->delete(Tagged::$table_name);
+			if (!empty($removed_tag_ids))
+				DB::$instance->where('tag_id', $removed_tag_ids)->where('appearance_id', $this->id)->delete(Tagged::$table_name);
 			foreach ($removed_tags as $tag_id => $tag_name){
 				TagChange::record(false, $tag_id, $tag_name, $this->id);
 				Tags::updateUses($tag_id);

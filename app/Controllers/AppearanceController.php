@@ -923,6 +923,7 @@ class AppearanceController extends ColorGuideController {
 			break;
 			case 'PUT':
 				$orig_tags = (new Input('orig_tags','string',[
+					Input::IS_OPTIONAL => true,
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'Initial list of tags is missing',
 						Input::ERROR_INVALID => 'Initial list of tags is invalid',
@@ -934,7 +935,7 @@ class AppearanceController extends ColorGuideController {
 						Input::ERROR_INVALID => 'List of tags is invalid',
 					]
 				]))->out();
-				$this->appearance->processTagChanges($orig_tags, $tags, $this->_EQG);
+				$this->appearance->processTagChanges($orig_tags ?? '', $tags, $this->_EQG);
 				$this->appearance->updateIndex();
 
 				Response::done();
