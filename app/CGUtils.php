@@ -18,6 +18,7 @@ class CGUtils {
 			664 => 'Main Cast',
 			45  => 'Cutie Mark Crusaders',
 			59  => 'Royalty',
+			666 => 'Student Six',
 			9   => 'Antagonists',
 			44  => 'Foals',
 			78  => 'Original Characters',
