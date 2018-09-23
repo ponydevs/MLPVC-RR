@@ -81,7 +81,10 @@
 					list.push($(this).children().attr('data-href').split('/').pop().replace(/^(\d+)\D.*$/,'$1'));
 				});
 
-				const data = {list:list.join(',')};
+				const data = {
+					list: list.join(','),
+					ordering: $sortBy.val(),
+				};
 				if (EQG)
 					data.eqg = true;
 

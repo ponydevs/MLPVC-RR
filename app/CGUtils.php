@@ -15,21 +15,21 @@ use SeinopSys\RGBAColor;
 class CGUtils {
 	public const GROUP_TAG_IDS_ASSOC = [
 		'pony' => [
-			6  => 'Mane Six & Spike',
-			45 => 'Cutie Mark Crusaders',
-			59 => 'Royalty',
-			9  => 'Antagonists',
-			44 => 'Foals',
-			78 => 'Original Characters',
-			1  => 'Unicorns',
-			3  => 'Pegasi',
-			2  => 'Earth Ponies',
-			10 => 'Pets',
+			664 => 'Main Cast',
+			45  => 'Cutie Mark Crusaders',
+			59  => 'Royalty',
+			9   => 'Antagonists',
+			44  => 'Foals',
+			78  => 'Original Characters',
+			1   => 'Unicorns',
+			3   => 'Pegasi',
+			2   => 'Earth Ponies',
+			10  => 'Pets',
 			437 => 'Non-pony Characters',
-			96 => 'Outfits & Clothing',
+			96  => 'Outfits & Clothing',
 			// add other tags here
-			64 => 'Objects',
-			-1 => 'Other',
+			64  => 'Objects',
+			-1  => 'Other',
 		],
 		'eqg' => [
 			76 => 'Humans',
@@ -106,6 +106,8 @@ class CGUtils {
 						self::_processFullListLink($p, $HTML, $previews);
 					$HTML .= '</ul></section>';
 				break;
+				default:
+					Response::fail("Unknown full list sorting order: $order_by");
 			}
 		}
 		return $wrap ? "<div id='full-list'>$HTML</div>" : $HTML;

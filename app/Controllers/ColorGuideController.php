@@ -219,7 +219,11 @@ class ColorGuideController extends Controller {
 			]
 		]))->out());
 
-		Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG), true, $this->_EQG, NOWRAP)]);
+		$ordering = (new Input('ordering','string', [
+			Input::IS_OPTIONAL => true,
+		]))->out();
+
+		Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG), $ordering, $this->_EQG, NOWRAP)]);
 	}
 
 	public function changeList($params){
