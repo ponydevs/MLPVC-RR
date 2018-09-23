@@ -94,14 +94,15 @@ class Appearances {
 		if (empty($ids))
 			return;
 
-		$list = array_flip(\is_string($ids) ? explode(',', $ids) : $ids);
+		$normalized_ids = \is_string($ids) ? explode(',', $ids) : $ids;
+		$order_map = array_flip($normalized_ids);
 		/** @var $appearances Appearance[] */
-		$appearances = DB::$instance->where('id', $list)->get(Appearance::$table_name);
+		$appearances = DB::$instance->where('id', $normalized_ids)->get(Appearance::$table_name);
 		foreach ($appearances as $app){
-			if (!isset($list[$app->id]))
+			if (!isset($order_map[$app->id]))
 				continue;
 
-			$app->order = $list[$app->id];
+			$app->order = $order_map[$app->id];
 			if (!$app->save())
 				Response::fail("Updating appearance #{$app->id} failed, process halted");
 
