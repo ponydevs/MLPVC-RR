@@ -53,24 +53,26 @@ class CGUtilsTest extends TestCase {
 		$c = \SeinopSys\RGBAColor::parse('#0122ff');
 		$ts = strtotime('2018-09-10T19:19:19+02:00');
 		$colors = [
-			[ $c->red, $c->green, $c->blue, '<a>This is not safe</a>' ],
-			[ 0, 0, 0, 'Black' ],
-			[ 10, 100, 255 ],
-			[ 255, 255, 255, 'White' ],
+			[ $c->red, $c->green, $c->blue, 'Mane & Tail | Outline' ],
+			[   0,   0,   0, 'Mane & Tail | Fill' ],
+			[  10, 100, 255, 'Coat | Outline' ],
+			[ 255, 255, 255, 'Glasses | Fill (90% opacity)' ],
+			[  30,  30,  30, 'Hat | Thingies (<4 pieces)' ],
 		];
 		$file = CGUtils::generateGimpPalette('Test & test', $colors, $ts);
 
 		$expected = <<<GPL
 GIMP Palette
-Name: Test &amp; test
+Name: Test & test
 Columns: 6
 #
 # Exported at: 2018-09-10 17:19:19 GMT
 #
-  1  34 255 &lt;a&gt;This is not safe&lt;/a&gt;
-  0   0   0 Black
- 10 100 255
-255 255 255 White
+  1  34 255 Mane &amp; Tail | Outline
+  0   0   0 Mane &amp; Tail | Fill
+ 10 100 255 Coat | Outline
+255 255 255 Glasses | Fill (90% opacity)
+ 30  30  30 Hat | Thingies (&lt;4 pieces)
 
 GPL;
 

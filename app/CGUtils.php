@@ -856,10 +856,9 @@ XML;
 	 * @return string
 	 */
 	public static function generateGimpPalette(string $name, array $colors, ?int $ts = null):string {
-		$label = htmlspecialchars($name);
 		$file = <<<GPL
 GIMP Palette
-Name: $label
+Name: $name
 Columns: 6
 
 GPL;
