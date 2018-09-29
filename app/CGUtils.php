@@ -902,7 +902,7 @@ GPL;
 					$rgb->red,
 					$rgb->green,
 					$rgb->blue,
-					htmlspecialchars($cg->label).'|'.htmlspecialchars($c->label)
+					"{$cg->label} | {$c->label}"
 				];
 			}
 		}
