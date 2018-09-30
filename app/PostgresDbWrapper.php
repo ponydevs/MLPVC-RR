@@ -6,8 +6,8 @@ use ActiveRecord\Model;
 use App\Models\Episode;
 
 class PostgresDbWrapper extends \PostgresDb {
-	public static function withConnection(string $db, \PDO $PDO):PostgresDbWrapper {
-		$instance = new self($db);
+	public static function withConnection(\PDO $PDO):PostgresDbWrapper {
+		$instance = new self();
 		$instance->setConnection($PDO);
 		return $instance;
 	}
