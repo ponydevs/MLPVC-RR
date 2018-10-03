@@ -394,7 +394,7 @@ class EpisodeController extends Controller {
 
 		switch ($this->action){
 			case 'GET':
-				$return = [
+				$response = [
 					'twoparter' => $this->episode->twoparter,
 					'vidlinks' => [],
 					'fullep' => [],
@@ -403,11 +403,11 @@ class EpisodeController extends Controller {
 				$videos = $this->episode->videos;
 				foreach ($videos as $part => $vid){
 					if (!empty($vid->id))
-						$return['vidlinks']["{$vid->provider}_{$vid->part}"] = VideoProvider::getEmbed($vid, VideoProvider::URL_ONLY);
+						$response['vidlinks']["{$vid->provider}_{$vid->part}"] = VideoProvider::getEmbed($vid, VideoProvider::URL_ONLY);
 					if ($vid->fullep)
-						$return['fullep'][] = $vid->provider;
+						$response['fullep'][] = $vid->provider;
 				}
-				Response::done($return);
+				Response::done($response);
 			break;
 			case 'PUT':
 				foreach (array_keys(Episodes::VIDEO_PROVIDER_NAMES) as $provider){
@@ -566,8 +566,10 @@ class EpisodeController extends Controller {
 			unset($this->episode->videos[$k]);
 		}
 
-		if ($removed === 0)
-			return Response::success('No broken videos found under this '.($this->episode->is_movie?'movie':'episode').'.');
+		if ($removed === 0){
+			Response::success('No broken videos found under this '.($this->episode->is_movie?'movie':'episode').'.');
+			return;
+		}
 
 		Response::success("$removed video link".($removed===1?' has':'s have').' been removed from the site. Thank you for letting us know.', [
 			'epsection' => Episodes::getVideosHTML($this->episode, NOWRAP),
