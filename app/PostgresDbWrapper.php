@@ -58,7 +58,7 @@ class PostgresDbWrapper extends \SeinopSys\PostgresDb {
 	/**
 	 * @inheritdoc
 	 */
-	protected function _execStatement($stmt, $reset = true){
+	protected function execStatement($stmt, $reset = true){
 		$class_name = $this->tableNameToClassName();
 		if ($class_name !== null && empty($this->non_existing_class_cache[$class_name])){
 			try {
@@ -67,7 +67,7 @@ class PostgresDbWrapper extends \SeinopSys\PostgresDb {
 			catch (\RuntimeException $e){$this->non_existing_class_cache[$class_name] = true; }
 		}
 
-		$exec_result = parent::_execStatement($stmt, $reset);
+		$exec_result = parent::execStatement($stmt, $reset);
 		$is_array = \is_array($exec_result);
 		if ($is_array && \count($exec_result) > 0)
 			$check = $exec_result[0];
