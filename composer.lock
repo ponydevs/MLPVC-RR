@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fed724a09807340a6eb8d0a59231545",
+    "content-hash": "86121a44bedd93010bc3dab3665d796e",
     "packages": [
         {
             "name": "airmanbzh/php-html-generator",
@@ -5953,6 +5953,7 @@
         "ext-gd": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "ext-pdo": "*",
         "ext-pdo_pgsql": "*",
         "ext-pdo_sqlite": "*",
         "ext-redis": "*",
