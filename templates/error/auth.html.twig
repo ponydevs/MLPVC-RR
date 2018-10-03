@@ -8,7 +8,8 @@
 	<h1>{{ title }}</h1>
 
 	<div class="notice fail">
-		<p>There was a(n) <strong>{{ err | escape }}</strong> error while trying to authenticate with DeviantArt{% if constant('App\\DeviantArt::OAUTH_RESPONSE')[err] is not empty %}; {{ constant('App\\DeviantArt::OAUTH_RESPONSE')[err] }}{% endif %}.</p>
+		{% set responses = constant('App\\DeviantArt::OAUTH_RESPONSE') %}
+		<p>There was a(n) <strong>{{ err | escape }}</strong> error while trying to authenticate with DeviantArt{% if responses[err] is defined and responses[err] is not empty %}; {{ responses[err] }}{% endif %}.</p>
 		{% if errdesc is not empty %}
 		<p>Additional details: {{ errdesc | escape }}</p>
 		{% endif %}
