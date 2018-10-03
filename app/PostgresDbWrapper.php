@@ -5,7 +5,7 @@ namespace App;
 use ActiveRecord\Model;
 use App\Models\Episode;
 
-class PostgresDbWrapper extends \PostgresDb {
+class PostgresDbWrapper extends \SeinopSys\PostgresDb {
 	public static function withConnection(\PDO $PDO):PostgresDbWrapper {
 		$instance = new self();
 		$instance->setConnection($PDO);
@@ -20,7 +20,7 @@ class PostgresDbWrapper extends \PostgresDb {
 	 *
 	 * @return self
 	 */
-	public function whereEp($s, $e = null){
+	public function whereEp($s, $e = null):self {
 		if ($e === null){
 			if (!$s instanceof Episode)
 				throw new \InvalidArgumentException(__METHOD__.' expects parameter 1 to be an instance of '.Episode::class.' (because parameter 2 is null), '.\gettype($s).' given');
@@ -38,50 +38,50 @@ class PostgresDbWrapper extends \PostgresDb {
 	 * Sets the output format to use the specified class with late property fetching for php-activerecord
 	 * Expects ModelName::class as the name argument, or the equivalent fully qualified model name.
 	 *
-	 * @param string $className Fully qualified class name
+	 * @param string $class_name Fully qualified class name
 	 *
 	 * @return self
 	 */
-	public function setModel(string $className){
-		if (strpos($className, 'App\\') !== 0)
-			$className = "App\\Models\\$className";
-		if (!class_exists($className))
-			throw new \RuntimeException("The model $className does not exist");
+	public function setModel(string $class_name):self {
+		if (strpos($class_name, 'App\\') !== 0)
+			$class_name = "App\\Models\\$class_name";
+		if (!class_exists($class_name))
+			throw new \RuntimeException("The model $class_name does not exist");
 
-		$this->setClass($className, \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE);
+		$this->setClass($class_name, \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE);
 
 		return $this;
 	}
 
-	private $_nonexistantClassCache = [];
+	private $non_existing_class_cache = [];
 
 	/**
 	 * @inheritdoc
 	 */
 	protected function _execStatement($stmt, $reset = true){
-		$className = $this->tableNameToClassName();
-		if ($className !== null && empty($this->_nonexistantClassCache[$className])){
+		$class_name = $this->tableNameToClassName();
+		if ($class_name !== null && empty($this->non_existing_class_cache[$class_name])){
 			try {
-				$this->setModel($className);
+				$this->setModel($class_name);
 			}
-			catch (\RuntimeException $e){ $this->_nonexistantClassCache[$className] = true; }
+			catch (\RuntimeException $e){$this->non_existing_class_cache[$class_name] = true; }
 		}
 
-		$execResult = parent::_execStatement($stmt, $reset);
-		$isarray = \is_array($execResult);
-		if ($isarray && \count($execResult) > 0)
-			$check = $execResult[0];
-		else $check = $execResult;
+		$exec_result = parent::_execStatement($stmt, $reset);
+		$is_array = \is_array($exec_result);
+		if ($is_array && \count($exec_result) > 0)
+			$check = $exec_result[0];
+		else $check = $exec_result;
 
 		if ($check instanceof Model){
-			/** @var $execResult Model|Model[] */
-			if ($isarray){
-				foreach ($execResult as $el)
+			/** @var $exec_result Model|Model[] */
+			if ($is_array){
+				foreach ($exec_result as $el)
 					$el->forceExisting(true);
 			}
-			else $execResult->forceExisting(true);
+			else $exec_result->forceExisting(true);
 		}
 
-		return $execResult;
+		return $exec_result;
 	}
 }
