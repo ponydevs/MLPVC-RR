@@ -368,8 +368,6 @@ class CoreUtils {
 	 * @return string
 	 */
 	public static function getSidebarUpcoming($wrap = WRAP){
-		global $PREFIX_REGEX;
-
 		$HTML = [];
 		/** @var $UpcomingEpisodes Episode[] */
 		$UpcomingEpisodes = Episode::find('all', ['conditions' => "airs > NOW() AND airs < NOW() + INTERVAL '6 MONTH'", 'order' => 'airs asc']);
@@ -384,7 +382,7 @@ class CoreUtils {
 				$title = !$Episode->is_movie
 					? $Episode->title
 					: (
-					$PREFIX_REGEX->match($Episode->title)
+					Regexes::$ep_title_prefix->match($Episode->title)
 						? Episodes::shortenTitlePrefix($Episode->title)
 						: "Movie: {$Episode->title}"
 					);
@@ -1334,9 +1332,7 @@ class CoreUtils {
 	}
 
 	public static function isURLSafe(string $url, &$matches = null):bool {
-		global $REWRITE_REGEX;
-
-		return mb_strlen($url) <= 256 && $REWRITE_REGEX->match(strtok($url,'?'), $matches);
+		return mb_strlen($url) <= 256 && Regexes::$rewrite->match(strtok($url,'?'), $matches);
 	}
 
 	public static function getSidebarLoggedIn():string {

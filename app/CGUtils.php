@@ -242,27 +242,25 @@ class CGUtils {
 	 * @return string|false
 	 */
 	public static function normalizeEpisodeTagName(string $tag){
-		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
-
 		$_match = [];
-		if (preg_match($EPISODE_ID_REGEX,$tag,$_match)){
+		if (preg_match(Regexes::$episode_id,$tag,$_match)){
 			$season = \intval($_match[1], 10);
 			if ($season === 0)
 				return false;
 			$episode = \intval($_match[2], 10);
 			$name = 's'.CoreUtils::pad($season).'e'.CoreUtils::pad($episode);
-			$episodeIsRange = !empty($_match[3]);
-			if ($episodeIsRange){
-				$episodeTo = \intval($_match[3], 10);
-				if ($episodeTo-1 !== $episode)
+			$episode_is_range = !empty($_match[3]);
+			if ($episode_is_range){
+				$episode_to = \intval($_match[3], 10);
+				if ($episode_to-1 !== $episode)
 					return false;
 
-				$name .= '-'.CoreUtils::pad($episodeTo);
+				$name .= '-'.CoreUtils::pad($episode_to);
 			}
 
 			return $name;
 		}
-		if (preg_match($MOVIE_ID_REGEX,$tag,$_match)){
+		if (preg_match(Regexes::$movie_id,$tag,$_match)){
 			$movie = \intval($_match[1], 10);
 			if ($movie <= 0)
 				return false;
@@ -279,11 +277,9 @@ class CGUtils {
 	 * @return string|false
 	 */
 	public static function checkEpisodeTagType(string $name):?string {
-		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
-
-		if (preg_match($EPISODE_ID_REGEX,$name,$_match))
+		if (preg_match(Regexes::$episode_id,$name,$_match))
 			return 'episode';
-		if (preg_match($MOVIE_ID_REGEX,$name,$_match))
+		if (preg_match(Regexes::$movie_id,$name,$_match))
 			return 'movie';
 		return null;
 	}
@@ -1113,11 +1109,9 @@ GPL;
 	 * @return string
 	 */
 	public static function expandEpisodeTagName(string $tagname):string {
-		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
-
-		if (preg_match($EPISODE_ID_REGEX, $tagname, $_match))
+		if (preg_match(Regexes::$episode_id, $tagname, $_match))
 			return 'S'.CoreUtils::pad($_match[1]).' E'.CoreUtils::pad($_match[2]);
-		if (preg_match($MOVIE_ID_REGEX, $tagname, $_match))
+		if (preg_match(Regexes::$movie_id, $tagname, $_match))
 			return 'Movie #'.$_match[1];
 
 		return $tagname;

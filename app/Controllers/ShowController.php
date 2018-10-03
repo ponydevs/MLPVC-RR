@@ -7,6 +7,7 @@ use App\Episodes;
 use App\Pagination;
 use App\Permission;
 use App\Models\Episode;
+use App\Regexes;
 
 class ShowController extends Controller {
 	public function index(){
@@ -41,9 +42,8 @@ class ShowController extends Controller {
 				$settings['js'],
 				['moment-timezone', 'pages/show/index-manage']
 			);
-			global $EP_TITLE_REGEX;
 			$settings['import']['export'] = [
-				'EP_TITLE_REGEX' => $EP_TITLE_REGEX,
+				'EP_TITLE_REGEX' => Regexes::$ep_title,
 			];
 		}
 		CoreUtils::loadPage(__METHOD__, $settings);

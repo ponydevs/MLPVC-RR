@@ -24,16 +24,14 @@ use App\Users;
 class UserController extends Controller {
 	use UserLoaderTrait;
 
-	public function homepage(){
+	public function homepage():void {
 		if (UserPrefs::get('p_homelastep'))
 			HTTP::tempRedirect('/episode/latest');
 
 		HTTP::tempRedirect('/cg');
 	}
 
-	public function profile($params){
-		global $USERNAME_REGEX;
-
+	public function profile($params):void {
 		$un = $params['name'] ?? null;
 
 		$error = null;
@@ -154,46 +152,46 @@ class UserController extends Controller {
 			$settings['import']['sub_error'] = $sub_error;
 		if ($can_edit || $dev_on_dev)
 			$settings['js'][] = 'pages/user/manage';
-		$showSuggestions = $same_user;
-		if ($showSuggestions){
+		$show_suggestions = $same_user;
+		if ($show_suggestions){
 			$settings['js'][] = 'pages/user/suggestion';
 			$settings['css'][] = 'pages/user/suggestion';
 		}
-		$settings['import']['showSuggestions'] = $showSuggestions;
+		$settings['import']['showSuggestions'] = $show_suggestions;
 		CoreUtils::loadPage(__METHOD__, $settings);
 	}
 
-	public function profileByUuid($params){
+	public function profileByUuid($params):void {
 		if (!isset($params['uuid']) || Permission::insufficient('developer'))
 			CoreUtils::notFound();
 
-		/** @var $User User */
-		$User = DB::$instance->where('id', $params['uuid'])->getOne('users','name');
-		if (empty($User))
+		/** @var $user User */
+		$user = DB::$instance->where('id', $params['uuid'])->getOne('users','name');
+		if (empty($user))
 			CoreUtils::notFound();
 
-		HTTP::permRedirect('/@'.$User->name);
+		HTTP::permRedirect('/@'.$user->name);
 	}
 
-	public function sessionApi($params){
+	public function sessionApi($params):void {
 		if ($this->action !== 'DELETE')
 			CoreUtils::notAllowed();
 
 		if (!isset($params['id']))
 			Response::fail('Missing session ID');
 
-		$Session = Session::find($params['id']);
-		if (empty($Session))
+		$session = Session::find($params['id']);
+		if (empty($session))
 			Response::fail('This session does not exist');
-		if ($Session->user_id !== Auth::$user->id && Permission::insufficient('staff'))
+		if ($session->user_id !== Auth::$user->id && Permission::insufficient('staff'))
 			Response::fail('You are not allowed to delete this session');
 
-		$Session->delete();
+		$session->delete();
 
 		Response::success('Session successfully removed');
 	}
 
-	public function roleApi($params){
+	public function roleApi($params):void {
 		if ($this->action !== 'PUT')
 			CoreUtils::notAllowed();
 
@@ -203,25 +201,25 @@ class UserController extends Controller {
 		if (!isset($params['id']))
 			Response::fail('Missing user ID');
 
-		$targetUser = User::find($params['id']);
-		if (empty($targetUser))
+		$target_user = User::find($params['id']);
+		if (empty($target_user))
 			Response::fail('User not found');
 
-		if ($targetUser->id === Auth::$user->id)
+		if ($target_user->id === Auth::$user->id)
 			Response::fail('You cannot modify your own group');
-		if (Permission::insufficient($targetUser->role))
+		if (Permission::insufficient($target_user->role))
 			Response::fail('You can only modify the group of users who are in the same or a lower-level group than you');
 
-		$newrole = (new Input('newrole','role', [
+		$new_role = (new Input('newrole','role', [
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'The new group is not specified',
 				Input::ERROR_INVALID => 'The specified group (@value) does not exist',
 			]
 		]))->out();
-		if ($targetUser->role === $newrole)
+		if ($target_user->role === $new_role)
 			Response::done(['already_in' => true]);
 
-		$targetUser->updateRole($newrole);
+		$target_user->updateRole($new_role);
 
 		Response::done();
 	}
@@ -234,7 +232,7 @@ class UserController extends Controller {
 		'fulfilled-requests' => 'Requests fulfilled',
 	];
 
-	public function contrib($params){
+	public function contrib($params):void {
 		if (!isset(self::CONTRIB_NAMES[$params['type']]))
 			CoreUtils::notFound();
 
@@ -244,8 +242,8 @@ class UserController extends Controller {
 		if ($user->id !== (Auth::$user->id ?? null) && $params['type'] === 'requests' && Permission::insufficient('staff'))
 			CoreUtils::notFound();
 
-		$itemsPerPage = 10;
-		$pagination = new Pagination("/@{$user->name}/contrib/{$params['type']}", $itemsPerPage);
+		$items_per_page = 10;
+		$pagination = new Pagination("/@{$user->name}/contrib/{$params['type']}", $items_per_page);
 
 		/** @var $cnt int */
 		/** @var $data array */
@@ -297,7 +295,7 @@ class UserController extends Controller {
 		]);
 	}
 
-	public function contribLazyload($params){
+	public function contribLazyload($params):void {
 		$CachedDeviation = DeviantArt::getCachedDeviation($params['favme']);
 		if (empty($CachedDeviation))
 			HTTP::statusCode(404, AND_DIE);
@@ -311,7 +309,7 @@ class UserController extends Controller {
 		}
 	}
 
-	public function list(){
+	public function list():void {
 		if (Permission::insufficient('staff'))
 			CoreUtils::noPerm();
 
@@ -371,7 +369,7 @@ class UserController extends Controller {
 		]);
 	}
 
-	public function avatarWrap($params){
+	public function avatarWrap($params):void {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 

@@ -109,8 +109,6 @@ class DeviantArt {
 	 * @return CachedDeviation|null
 	 */
 	public static function getCachedDeviation($ID, $type = 'fav.me'){
-		global $FULLSIZE_MATCH_REGEX;
-
 		if ($type === 'sta.sh')
 			$ID = self::nomralizeStashID($ID);
 
@@ -186,7 +184,7 @@ class DeviantArt {
 				break;
 			}
 
-			if ($insert['fullsize'] === null || !preg_match($FULLSIZE_MATCH_REGEX, $insert['fullsize'])){
+			if ($insert['fullsize'] === null || !preg_match(Regexes::$fullsize_match, $insert['fullsize'])){
 				$fullsize_attempt = self::getDownloadURL($ID, $type);
 				if (\is_string($fullsize_attempt))
 					$insert['fullsize'] = $fullsize_attempt;

@@ -162,17 +162,15 @@ class Input {
 				$this->_origValue = strtolower($this->_origValue);
 			break;
 			case 'username':
-				global $USERNAME_REGEX;
-				if (!\is_string($this->_origValue) || !$USERNAME_REGEX->match($this->_origValue))
+				if (!\is_string($this->_origValue) || !Regexes::$username->match($this->_origValue))
 					return self::ERROR_INVALID;
 			break;
 			case 'url':
 				if (!\is_string($this->_origValue))
 					return self::ERROR_INVALID;
-				global $REWRITE_REGEX;
 				if (stripos($this->_origValue, ABSPATH) === 0)
 					$this->_origValue = mb_substr($this->_origValue, mb_strlen(ABSPATH)-1);
-				if (!preg_match($REWRITE_REGEX,$this->_origValue) && !preg_match(new RegExp('^#[a-z\-]+$'),$this->_origValue)){
+				if (!preg_match(Regexes::$rewrite, $this->_origValue) && !preg_match(new RegExp('^#[a-z\-]+$'), $this->_origValue)){
 					if (self::checkStringLength($this->_origValue, $this->_range, $code))
 						return $code;
 					if (!preg_match(new RegExp('^https?://[a-z\d/.-]+(?:/[ -~]+)?$','i'), $this->_origValue))

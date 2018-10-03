@@ -88,15 +88,11 @@ class Episodes {
 	}
 
 	public static function removeTitlePrefix($title){
-		global $PREFIX_REGEX;
-
-		return $PREFIX_REGEX->replace('', $title);
+		return Regexes::$ep_title_prefix->replace('', $title);
 	}
 
 	public static function shortenTitlePrefix($title){
-		global $PREFIX_REGEX;
-
-		if (!$PREFIX_REGEX->match($title, $match) || !isset(self::ALLOWED_PREFIXES[$match[1]]))
+		if (!Regexes::$ep_title_prefix->match($title, $match) || !isset(self::ALLOWED_PREFIXES[$match[1]]))
 			return $title;
 
 		return self::ALLOWED_PREFIXES[$match[1]].': '.self::removeTitlePrefix($title);
@@ -147,8 +143,7 @@ class Episodes {
 
 		$ep_title_regex = null;
 		if (Permission::sufficient('staff')){
-			global $EP_TITLE_REGEX;
-			$ep_title_regex = $EP_TITLE_REGEX;
+			$ep_title_regex = Regexes::$ep_title;
 		}
 		$import = [
 			'ep_title_regex' => $ep_title_regex,
@@ -160,12 +155,10 @@ class Episodes {
 			'linked_post' => $linked_post,
 		];
 		if (Permission::sufficient('developer')){
-			global $USERNAME_REGEX;
-			$import['username_regex'] = $USERNAME_REGEX;
+			$import['username_regex'] = Regexes::$username;
 		}
 		if (Auth::$signed_in){
-			global $FULLSIZE_MATCH_REGEX;
-			$import['fullsize_match_regex'] = $FULLSIZE_MATCH_REGEX;
+			$import['fullsize_match_regex'] = Regexes::$fullsize_match;
 		}
 
 		$heading = $current_episode->formatTitle();

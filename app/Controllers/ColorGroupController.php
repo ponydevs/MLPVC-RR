@@ -14,6 +14,7 @@ use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Logs\MajorChange;
 use App\Permission;
+use App\Regexes;
 use App\Response;
 use App\Users;
 use GuzzleHttp\Exception\BadResponseException;
@@ -60,8 +61,6 @@ class ColorGroupController extends ColorGuideController {
 			break;
 			case 'POST':
 			case 'PUT':
-				global $HEX_COLOR_REGEX;
-
 				if ($this->creating){
 					$ponyid = (new Input('ponyid', 'int', [
 						Input::CUSTOM_ERROR_MESSAGES => [
@@ -191,7 +190,7 @@ class ColorGroupController extends ColorGuideController {
 					}
 					else {
 						$hex = CoreUtils::trim($c['hex']);
-						if (!$HEX_COLOR_REGEX->match($hex, $_match))
+						if (!Regexes::$hex_color->match($hex, $_match))
 							Response::fail('Hex color '.CoreUtils::escapeHTML($hex)." is invalid, please leave empty or fix $index");
 						$append->hex = '#'.strtoupper($_match[1]);
 						if ($this->colorgroup->appearance->owner_id === null)

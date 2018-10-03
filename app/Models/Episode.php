@@ -9,6 +9,7 @@ use App\DB;
 use App\Episodes;
 use App\Permission;
 use App\Posts;
+use App\Regexes;
 use App\RegExp;
 use App\VideoProvider;
 
@@ -291,14 +292,13 @@ class Episode extends NSModel implements LinkableInterface {
 		if (empty($id))
 			return null;
 
-		global $EPISODE_ID_REGEX, $MOVIE_ID_REGEX;
-		if (preg_match($EPISODE_ID_REGEX, $id, $match))
+		if (preg_match(Regexes::$episode_id, $id, $match))
 			return [
 				'season' => \intval($match[1], 10),
 				'episode' => \intval($match[2], 10),
 				'twoparter' => !empty($match[3]),
 			];
-		else if (preg_match($MOVIE_ID_REGEX, $id, $match))
+		else if (preg_match(Regexes::$movie_id, $id, $match))
 			return [
 				'season' => 0,
 				'episode' => \intval($match[1], 10),

@@ -18,6 +18,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Permission;
 use App\Posts;
+use App\Regexes;
 use App\Response;
 use App\Time;
 use App\UserPrefs;
@@ -770,8 +771,6 @@ class PostController extends Controller {
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();
 
-		global $FULLSIZE_MATCH_REGEX;
-
 		$this->_authorize();
 
 		if (Permission::insufficient('staff'))
@@ -780,7 +779,7 @@ class PostController extends Controller {
 		$this->load_post($params, 'view');
 
 		// Link is already full size, we're done
-		if (preg_match($FULLSIZE_MATCH_REGEX, $this->post->fullsize))
+		if (preg_match(Regexes::$fullsize_match, $this->post->fullsize))
 			Response::done(['fullsize' => $this->post->fullsize]);
 
 		// Reverse submission lookup

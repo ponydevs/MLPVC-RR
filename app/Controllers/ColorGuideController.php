@@ -30,6 +30,7 @@ use App\Models\User;
 use App\NSUriBuilder;
 use App\Pagination;
 use App\Permission;
+use App\Regexes;
 use App\RegExp;
 use App\Response;
 use App\Twig;
@@ -65,14 +66,14 @@ class ColorGuideController extends Controller {
 	protected $_appearancePage, $_personalGuide;
 	/** @var string */
 	protected $_guide;
-	protected function _initCGPath(){
+	protected function _initCGPath():void {
 		$this->path = rtrim("/cg/{$this->_guide}", '/');
 	}
 	/** @var User|null|false */
 	protected $owner;
 	/** @var bool */
 	protected $ownerIsCurrentUser = false;
-	protected function _initialize($params){
+	protected function _initialize($params):void {
 		$this->_guide = strtolower($params['guide'] ?? 'pony');
 		$this->_EQG = $this->_guide === 'eqg' || isset($_REQUEST['eqg']);
 		$nameSet = isset($params['name']);
@@ -91,7 +92,7 @@ class ColorGuideController extends Controller {
 
 	/** @var Appearance */
 	protected $appearance;
-	public function load_appearance($params, bool $set_properties = true){
+	public function load_appearance($params, bool $set_properties = true):void {
 		if (!isset($params['id']))
 			Response::fail('Missing appearance ID');
 		$this->appearance = Appearance::find($params['id']);
@@ -146,7 +147,7 @@ class ColorGuideController extends Controller {
 		'added' => 'by date added',
 	];
 
-	public function fullList($params){
+	public function fullList($params):void {
 		$this->_initialize($params);
 
 		$sort_by = $_GET['sort_by'] ?? null;
@@ -190,10 +191,8 @@ class ColorGuideController extends Controller {
 			'full_list' => CGUtils::getFullListHTML($appearances, $sort_by, $eqg),
 		];
 		if ($is_staff){
-			global $HEX_COLOR_REGEX;
-
 			$import['max_upload_size'] = CoreUtils::getMaxUploadSize();
-			$import['hex_color_pattern'] = $HEX_COLOR_REGEX;
+			$import['hex_color_pattern'] = Regexes::$hex_color;
 		}
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Full List - '.($this->_EQG?'EQG':'Pony').' Color Guide',
@@ -203,7 +202,7 @@ class ColorGuideController extends Controller {
 		]);
 	}
 
-	public function reorderFullList($params){
+	public function reorderFullList($params):void {
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();
 
@@ -226,7 +225,7 @@ class ColorGuideController extends Controller {
 		Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG), $ordering, $this->_EQG, NOWRAP)]);
 	}
 
-	public function changeList($params){
+	public function changeList($params):void {
 		$this->_initialize($params);
 		$pagination = new Pagination("{$this->path}/changes", 9, MajorChange::total($this->_EQG));
 
@@ -249,7 +248,7 @@ class ColorGuideController extends Controller {
 		]);
 	}
 
-	public function guide($params){
+	public function guide($params):void {
 		$this->_initialize($params);
 
 		$title = '';
@@ -394,13 +393,12 @@ class ColorGuideController extends Controller {
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
 			$settings['import']['max_upload_size'] = CoreUtils::getMaxUploadSize();
-			global $HEX_COLOR_REGEX;
-			$settings['import']['hex_color_regex'] = $HEX_COLOR_REGEX;
+			$settings['import']['hex_color_regex'] = Regexes::$hex_color;
 		}
 		CoreUtils::loadPage(__METHOD__, $settings);
 	}
 
-	public function export(){
+	public function export():void {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
@@ -410,7 +408,7 @@ class ColorGuideController extends Controller {
 		CoreUtils::downloadAsFile(ElasticNoNodesAvailableException::getExportData(), 'mlpvc-colorguide.json');
 	}
 
-	public function reindex(){
+	public function reindex():void {
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();
 
@@ -419,12 +417,10 @@ class ColorGuideController extends Controller {
 		Appearances::reindex();
 	}
 
-	public function blending(){
-		global $HEX_COLOR_REGEX;
-
+	public function blending():void {
 		CoreUtils::fixPath('/cg/blending');
 
-		$hex_pattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1',$HEX_COLOR_REGEX->jsExport());
+		$hex_pattern = preg_replace(new RegExp('^/(.*)/.*$'),'$1', Regexes::$hex_color->jsExport());
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Color Blending Calculator',
 			'css' => [true],
@@ -433,14 +429,12 @@ class ColorGuideController extends Controller {
 				'hex_pattern' => $hex_pattern,
 				'nav_blending' => true,
 				'dasprid_link' => Users::get('dasprid', 'name')->toAnchor(User::WITH_AVATAR),
-				'hex_color_regex' => $HEX_COLOR_REGEX,
+				'hex_color_regex' => Regexes::$hex_color,
 			],
 		]);
 	}
 
-	public function blendingReverse(){
-		global $HEX_COLOR_REGEX;
-
+	public function blendingReverse():void {
 		if (Permission::insufficient('staff'))
 			CoreUtils::noPerm();
 
@@ -452,12 +446,12 @@ class ColorGuideController extends Controller {
 			'js' => ['nouislider', 'Blob', 'canvas-toBlob', 'FileSaver', true],
 			'import' => [
 				'nav_blendingrev' => true,
-				'hex_color_regex' => $HEX_COLOR_REGEX,
+				'hex_color_regex' => Regexes::$hex_color,
 			],
 		]);
 	}
 
-	public function picker(){
+	public function picker():void {
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Color Picker',
 			'view' => [true],
@@ -466,7 +460,7 @@ class ColorGuideController extends Controller {
 		]);
 	}
 
-	public function pickerFrame(){
+	public function pickerFrame():void {
 		CoreUtils::loadPage(__METHOD__, [
 			'noindex' => true,
 			'title' => 'Color Picker',
@@ -486,7 +480,7 @@ class ColorGuideController extends Controller {
 		]);
 	}
 
-	public function spriteColorCheckup(){
+	public function spriteColorCheckup():void {
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();
 

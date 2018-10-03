@@ -31,6 +31,7 @@ use App\Models\User;
 use App\Notifications;
 use App\Pagination;
 use App\Permission;
+use App\Regexes;
 use App\RegExp;
 use App\Response;
 use App\UploadedFile;
@@ -49,7 +50,7 @@ use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use Ramsey\Uuid\Uuid;
 
 class AppearanceController extends ColorGuideController {
-	public function view($params){
+	public function view($params):void {
 		if ($this->owner === null)
 			$this->_initialize($params);
 		$this->load_appearance($params);
@@ -90,18 +91,17 @@ class AppearanceController extends ColorGuideController {
 		if ($this->ownerIsCurrentUser || Permission::sufficient('staff')){
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
-		global $HEX_COLOR_REGEX, $TAG_NAME_REGEX;
 			$settings['import']['exports'] = [
 				'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
-				'TAG_NAME_REGEX' => $TAG_NAME_REGEX,
+				'TAG_NAME_REGEX' => Regexes::$tag_name,
 				'MAX_SIZE' => CoreUtils::getMaxUploadSize(),
-				'HEX_COLOR_PATTERN' => $HEX_COLOR_REGEX,
+				'HEX_COLOR_PATTERN' => Regexes::$hex_color,
 			];
 		}
 		CoreUtils::loadPage('ColorGuideController::appearance', $settings);
 	}
 
-	public function viewPersonal($params){
+	public function viewPersonal($params):void {
 		$this->_initialize($params);
 		if ($this->owner === null)
 			CoreUtils::notFound();
@@ -109,7 +109,7 @@ class AppearanceController extends ColorGuideController {
 		$this->view($params);
 	}
 
-	public function tagChanges($params){
+	public function tagChanges($params):void {
 		// TODO Finish feature
 		CoreUtils::notFound();
 
@@ -126,7 +126,7 @@ class AppearanceController extends ColorGuideController {
 		$Pagination = new Pagination("{$this->path}/tag-changes/{$this->appearance->getURLSafeLabel()}", 25, $totalChangeCount);
 	}
 
-	public function asFile($params){
+	public function asFile($params):void {
 		$this->_initialize($params);
 		$this->load_appearance($params);
 
@@ -156,7 +156,7 @@ class AppearanceController extends ColorGuideController {
 		CoreUtils::notFound();
 	}
 
-	public function api($params){
+	public function api($params):void {
 		$this->_initialize($params);
 
 		if (!Auth::$signed_in)
@@ -387,7 +387,7 @@ class AppearanceController extends ColorGuideController {
 		}
 	}
 
-	public function applyTemplate($params){
+	public function applyTemplate($params):void {
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();
 
@@ -404,7 +404,7 @@ class AppearanceController extends ColorGuideController {
 		Response::done(['cgs' => $this->appearance->getColorsHTML(!$this->_appearancePage, NOWRAP)]);
 	}
 
-	public function selectiveClear($params){
+	public function selectiveClear($params):void {
 		if ($this->action !== 'DELETE')
 			CoreUtils::notAllowed();
 
@@ -521,7 +521,7 @@ class AppearanceController extends ColorGuideController {
 		Response::done();
 	}
 
-	public function colorGroupsApi($params){
+	public function colorGroupsApi($params):void {
 		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -576,7 +576,7 @@ class AppearanceController extends ColorGuideController {
 		}
 	}
 
-	public function sprite($params){
+	public function sprite($params):void {
 		if (Permission::insufficient('member'))
 			CoreUtils::noPerm();
 
@@ -609,7 +609,7 @@ class AppearanceController extends ColorGuideController {
 		]);
 	}
 
-	public function spriteApi($params){
+	public function spriteApi($params):void {
 		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -638,7 +638,7 @@ class AppearanceController extends ColorGuideController {
 		}
 	}
 
-	public function relationsApi($params){
+	public function relationsApi($params):void {
 		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -711,7 +711,7 @@ class AppearanceController extends ColorGuideController {
 		}
 	}
 
-	public function cutiemarkApi($params){
+	public function cutiemarkApi($params):void {
 		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -818,10 +818,9 @@ class AppearanceController extends ColorGuideController {
 							$cm->contributor_id = $contributor->id;
 						break;
 						case 'user':
-							global $USERNAME_REGEX;
 							if (empty($item['username']))
 								Response::fail('Username is missing');
-							if (!preg_match($USERNAME_REGEX, $item['username']))
+							if (!preg_match(Regexes::$username, $item['username']))
 								Response::fail("Username ({$item['username']}) is invalid");
 							$contributor = Users::get($item['username'], 'name');
 							if (empty($contributor))
@@ -907,7 +906,7 @@ class AppearanceController extends ColorGuideController {
 		}
 	}
 
-	public function taggedApi($params){
+	public function taggedApi($params):void {
 		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
@@ -945,7 +944,7 @@ class AppearanceController extends ColorGuideController {
 		}
 	}
 
-	public function listApi(){
+	public function listApi():void {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
@@ -973,7 +972,7 @@ class AppearanceController extends ColorGuideController {
 	 *
 	 * @param $params
 	 */
-	public function linkTargets($params){
+	public function linkTargets($params):void {
 		if (!$this->action === 'GET')
 			CoreUtils::notAllowed();
 
@@ -1003,7 +1002,7 @@ class AppearanceController extends ColorGuideController {
 		Response::done([ 'list' =>  $list ]);
 	}
 
-	public function sanitizeSvg($params){
+	public function sanitizeSvg($params):void {
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();
 
@@ -1028,7 +1027,7 @@ class AppearanceController extends ColorGuideController {
 		Response::done(['svgel' => $svgel, 'svgdata' => $svgdata, 'keep_dialog' => true]);
 	}
 
-	public function checkColors($params){
+	public function checkColors($params):void {
 		if ($this->action !== 'POST')
 			CoreUtils::notAllowed();
 

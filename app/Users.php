@@ -37,8 +37,7 @@ class Users {
 		$user = DB::$instance->where($column, $value)->getOne('users');
 
 		if (empty($user) && $column === 'name'){
-			global $USERNAME_REGEX;
-			if ($USERNAME_REGEX->match($value)){
+			if (Regexes::$username->match($value)){
 				$user = self::fetch([$value]);
 			}
 		}
@@ -61,8 +60,6 @@ class Users {
 	 * @throws \Exception
 	 */
 	public static function fetch($usernames){
-		global $USERNAME_REGEX;
-
 		$count = \count($usernames);
 		if ($count < 1)
 			throw new \RuntimeException('No usernames specified');
@@ -83,7 +80,7 @@ class Users {
 		}
 
 		try {
-			$userdata = DeviantArt::request('user/whois', null, $fetch_params);
+			$user_data = DeviantArt::request('user/whois', null, $fetch_params);
 		}
 		catch (CURLRequestException $e){
 			if ($single_user)
@@ -91,21 +88,21 @@ class Users {
 			else throw new \RuntimeException('Failed to fetch users: '.$e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
 		}
 
-		if ($single_user && empty($userdata['results'][0]))
+		if ($single_user && empty($user_data['results'][0]))
 			return false;
 
-		foreach ($userdata['results'] as $userdata){
-			$id = strtolower($userdata['userid']);
+		foreach ($user_data['results'] as $user_data){
+			$id = strtolower($user_data['userid']);
 
 			$db_user = User::find($id);
 			$user_exists = !empty($db_user);
 			if (!$user_exists)
 				$db_user = new User([ 'id' => $id ]);
 
-			$db_user->name = $userdata['username'];
-			$db_user->avatar_url = URL::makeHttps($userdata['usericon']);
+			$db_user->name = $user_data['username'];
+			$db_user->avatar_url = URL::makeHttps($user_data['usericon']);
 
-			$club_role = DeviantArt::getClubRoleByName($userdata['username']);
+			$club_role = DeviantArt::getClubRoleByName($user_data['username']);
 			if (!empty($club_role))
 				$db_user->role = $club_role;
 

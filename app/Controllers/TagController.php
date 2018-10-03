@@ -11,6 +11,7 @@ use App\Models\TagChange;
 use App\Models\Tagged;
 use App\Pagination;
 use App\Permission;
+use App\Regexes;
 use App\Response;
 use App\Appearances;
 use App\Tags;
@@ -45,8 +46,6 @@ class TagController extends ColorGuideController {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
-		global $TAG_NAME_REGEX;
-
 		if (Permission::insufficient('staff'))
 			Response::fail();
 
@@ -64,7 +63,7 @@ class TagController extends ColorGuideController {
 		$limit = null;
 		$cols = 'id, name, type';
 		if ($viaAutocomplete){
-			if (!preg_match($TAG_NAME_REGEX, $_GET['s']))
+			if (!preg_match(Regexes::$tag_name, $_GET['s']))
 				CGUtils::autocompleteRespond('[]');
 
 			$query = CoreUtils::trim(strtolower($_GET['s']));

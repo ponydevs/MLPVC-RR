@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Notifications;
 use App\Pagination;
 use App\Permission;
+use App\Regexes;
 use App\Response;
 use App\Time;
 use App\UserPrefs;
@@ -60,11 +61,9 @@ class PersonalGuideController extends ColorGuideController {
 			],
 		];
 		if ($owner_or_staff){
-			global $HEX_COLOR_REGEX;
-
 			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
 			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
-			$settings['import']['hex_color_regex'] = $HEX_COLOR_REGEX;
+			$settings['import']['hex_color_regex'] = Regexes::$hex_color;
 		}
 		CoreUtils::loadPage('UserController::colorguide', $settings);
 	}

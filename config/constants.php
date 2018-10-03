@@ -1,6 +1,7 @@
 <?php
 
 use App\RegExp;
+use App\Regexes;
 
 // Configuration \\
 define('HTTPS', !empty($_SERVER['HTTPS']));
@@ -78,30 +79,29 @@ define('HEIGHT', 1);
 // Site-wide regular expressions \\
 # User
 define('USERNAME_PATTERN', '([A-Za-z\-\d]{1,20})');
-$USERNAME_REGEX = new RegExp('^'.USERNAME_PATTERN.'$');
+Regexes::$username = new RegExp('^'.USERNAME_PATTERN.'$');
 define('GUEST_AVATAR','/img/guest.svg');
 # Episode
 define('EPISODE_ID_PATTERN','[sS]0*([0-9])[eE]0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\b|$)');
-$EPISODE_ID_REGEX = new RegExp('^'.EPISODE_ID_PATTERN);
+Regexes::$episode_id = new RegExp('^'.EPISODE_ID_PATTERN);
 define('MOVIE_ID_PATTERN','(?:[mM]ovie)#?0*(\d+)(?:\b|$)');
-$MOVIE_ID_REGEX = new RegExp('^'.MOVIE_ID_PATTERN,'i');
-$EP_TITLE_REGEX = new RegExp('^([A-Za-z\s]+: )?[ -~]{5,35}$','u');
+Regexes::$movie_id = new RegExp('^'.MOVIE_ID_PATTERN,'i');
+Regexes::$ep_title = new RegExp('^([A-Za-z\s]+: )?[ -~]{5,35}$','u');
 define('INVERSE_EP_TITLE_PATTERN','[^ -~]');
-$PREFIX_REGEX = new RegExp('^\s*(^|.*?[^\\\\]):\s*');
+Regexes::$ep_title_prefix = new RegExp('^\s*(^|.*?[^\\\\]):\s*');
 # Colors
-$HEX_COLOR_REGEX = new RegExp('^#?([\dA-Fa-f]{6})$','u');
+Regexes::$hex_color = new RegExp('^#?([\dA-Fa-f]{6})$','u');
 # DeviantArt
-$FULLSIZE_MATCH_REGEX = new RegExp('^https?:\/\/orig\d+\.');
+Regexes::$fullsize_match = new RegExp('^https?:\/\/orig\d+\.');
 # General
 define('PRINTABLE_ASCII_PATTERN','^[ -~\n]+$');
 define('INVERSE_PRINTABLE_ASCII_PATTERN','[^ -~\n\t]');
 define('NEWEST_FIRST', 'desc');
 define('OLDEST_FIRST', 'asc');
-$REWRITE_REGEX = new RegExp('^/([^/].*)?$');
+Regexes::$rewrite = new RegExp('^/([^/].*)?$');
 
 // Color Guide regular expression \\
-$EQG_URL_PATTERN = new RegExp('^eqg/?');
 # Tags
 define('TAG_NAME_PATTERN', '^[a-z\d ().\-\']{2,64}$');
-$TAG_NAME_REGEX = new RegExp(TAG_NAME_PATTERN,'u');
+Regexes::$tag_name = new RegExp(TAG_NAME_PATTERN,'u');
 define('INVERSE_TAG_NAME_PATTERN', '[^a-z\d ().\-\']');
