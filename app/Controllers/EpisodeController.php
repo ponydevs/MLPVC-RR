@@ -415,15 +415,15 @@ class EpisodeController extends Controller {
 						$set = null;
 						$post_key = "{$provider}_$part";
 						if (!empty($_REQUEST[$post_key])){
-							$provider = Episodes::VIDEO_PROVIDER_NAMES[$provider];
+							$provider_name = Episodes::VIDEO_PROVIDER_NAMES[$provider];
 							try {
 								$vid_provider = new VideoProvider(DeviantArt::trimOutgoingGateFromUrl($_REQUEST[$post_key]));
 							}
 							catch (\Exception $e){
-								Response::fail("$provider link issue: ".$e->getMessage());
+								Response::fail("$provider_name link issue: ".$e->getMessage());
 							}
 							if ($vid_provider->episodeVideo === null || $vid_provider->episodeVideo->provider !== $provider)
-								Response::fail("Incorrect $provider URL specified");
+								Response::fail("Incorrect $provider_name URL specified");
 							/** @noinspection PhpUndefinedFieldInspection */
 							$set = $vid_provider::$id;
 						}
