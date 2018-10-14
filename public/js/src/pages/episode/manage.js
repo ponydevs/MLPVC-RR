@@ -48,7 +48,7 @@
 						${yt_input.replace('yt_1', 'yt_2')}
 						${dm_input.replace('dm_1', 'dm_2')}
 						${sv_input.replace('sv_1', 'sv_2')}
-						${sv_input.replace('mg_1', 'mg_2')}
+						${mg_input.replace('mg_1', 'mg_2')}
 					</div>`
 				);
 				$VidLinksForm.find('input[type="checkbox"]').on('change',function(){
