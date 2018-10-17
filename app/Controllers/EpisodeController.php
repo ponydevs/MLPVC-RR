@@ -580,7 +580,7 @@ class EpisodeController extends Controller {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
-		$next_episode = DB::$instance->where('airs > now()')->orderBy('airs')->getOne('episodes');
+		$next_episode = DB::$instance->where('season != 0 AND airs > now()')->orderBy('airs')->getOne('episodes');
 		if (empty($next_episode))
 			Response::fail("The show is on hiatus, the next episode's title and air date is unknown.");
 
