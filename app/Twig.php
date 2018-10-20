@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Models\LinkableInterface;
+use App\Models\Linkable;
 use SeinopSys\RGBAColor;
 
 class Twig {
@@ -26,7 +26,7 @@ class Twig {
 		self::$env->addFunction(new \Twig_SimpleFunction('setting_form', function (...$args){
 			return (new UserSettingForm(...$args))->render();
 		}));
-		self::$env->addFunction(new \Twig_SimpleFunction('url', function (LinkableInterface $linkable){
+		self::$env->addFunction(new \Twig_SimpleFunction('url', function (Linkable $linkable){
 			return $linkable->toURL();
 		}));
 		self::$env->addFunction(new \Twig_SimpleFunction('hex2rgb', function (string $color){

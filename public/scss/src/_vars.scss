@@ -58,6 +58,10 @@ $NYellow: #aa6500;
 $NYellowBG: #ffd;
 $DefaultUIColor: #357;
 
+// TMDb Colors
+$TMDBPrimary: #01d277;
+$TMDBSecondary: #081c24;
+
 $NoFontChange: true;
 @mixin link($color:$Link, $hover:$LinkHover){
 	color: $color;

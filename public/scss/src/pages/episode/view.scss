@@ -184,6 +184,90 @@
 			+ p { margin: 0 }
 		}
 
+		&.synopsis {
+			h2 {
+				color: #fff;
+				background-color: $TMDBSecondary;
+
+				&:after { border-left-color: $TMDBSecondary }
+
+				img {
+					height: 1em;
+					vertical-align: bottom;
+					margin-right: .5em;
+				}
+			}
+
+			.synopsis-promise {
+				margin: 0 auto;
+				@include loading-indicator(192px, 'wedges');
+			}
+
+			.synopsis-content {
+				display: flex;
+				flex-flow: row nowrap;
+				justify-content: center;
+				border-radius: 8px;
+				border: 1px solid #aaa;
+				background: #efefef;
+				overflow: hidden;
+				width: 100%;
+				max-width: 760px;
+
+				&:not(:last-of-type) {
+					margin-bottom: 10px;
+				}
+
+				.synopsis-image {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					flex: 0 1 auto;
+          max-width: 30vw;
+          background: black;
+          border-right: inherit;
+
+					img {
+						display: block;
+						width: 100%;
+						height: 100%;
+						object-fit: cover;
+					}
+				}
+
+				.synopsis-text {
+					display: flex;
+					flex-flow: column nowrap;
+					justify-content: center;
+					flex: 1 0 200px;
+					padding: 1em;
+					box-sizing: border-box;
+
+					.synopsis-part-label {
+						margin: 0 0 10px;
+					}
+
+					.synopsis-body {
+						margin: 0;
+					}
+
+					.synopsis-link {
+						margin: 10px 0 0;
+						font-size: .75em;
+					}
+				}
+			}
+
+			.synopsis-disclaimer {
+				font-size: .7em;
+				color: rgba(black, .5);
+				background: #fff;
+				padding: 2px;
+				user-select: none;
+				display: inline-block;
+				margin: 5px 0 0;
+			}
+		}
 		&.episode {
 			> .actions {
 				button, .btn {

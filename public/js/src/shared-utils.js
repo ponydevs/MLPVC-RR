@@ -697,12 +697,15 @@
 	$.loadImages = html => {
 		const $el = $(html);
 
-		return new Promise((fulfill) => {
+		return new Promise(fulfill => {
 			const $imgs = $el.find('img');
+			let loaded = 0;
 			if ($imgs.length)
-				$el.find('img').on('load error',function(e){
-					fulfill({ $el, e });
-				});
+				$imgs.on('load',() => {
+					loaded++;
+					if (loaded === $imgs.length)
+						fulfill({ $el });
+				}).on('error', e => fulfill({ e }));
 			else fulfill({ $el });
 		});
 	};

@@ -35,6 +35,9 @@ define('CSP_HEADER', '');
 define('REDIS_HOST', '127.0.0.1');
 define('REDIS_PORT', 6379);
 
+// The Movie Database API \\
+define('TMDB_API_KEY', '');
+
 // Development \\
 //define('MAINTENANCE_START', strtotime(''));
 define('SOCKET_SSL_CTX', ['verify_peer' => false]);

@@ -7,8 +7,8 @@ namespace App\Models;
  * @property int     $episode
  * @property int     $vote
  * @property string  $user_id
- * @property User    $user
- * @property Episode $ep
+ * @property User    $user    (Via relations)
+ * @property Episode $ep      (Via relations)
  * @method static EpisodeVote find_by_season_and_episode_and_user_id(int $season, int $episode, string $user_id)
  */
 class EpisodeVote extends NSModel {

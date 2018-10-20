@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
@@ -13,12 +14,16 @@ use App\Input;
 use App\Logs;
 use App\Models\Appearance;
 use App\Models\EpisodeVote;
+use App\Models\Synopsis;
 use App\Models\Tag;
 use App\Models\Tagged;
 use App\Permission;
 use App\Posts;
 use App\Regexes;
 use App\Response;
+use App\Time;
+use App\TMDBHelper;
+use App\Twig;
 use App\VideoProvider;
 use App\Models\Episode;
 use App\Models\EpisodeVideo;
@@ -51,6 +56,7 @@ class EpisodeController extends Controller {
 
 	/** @var Episode */
 	private $episode;
+
 	private function load_episode($params):void {
 		$ep_data = Episode::parseID(!empty($params['id']) ? $params['id'] : null);
 		if (empty($ep_data))
@@ -117,8 +123,11 @@ class EpisodeController extends Controller {
 				$original_season = $this->creating ? $update['season'] : $this->episode->season;
 				if ($this->creating){
 					$matching_id = Episode::find_by_season_and_episode($update['season'], $update['episode']);
-					if (!empty($matching_id))
-						Response::fail(($is_movie?'A movie':'An episode').' with the same '.($is_movie?'overall':'season and episode').' number already exists');
+					if (!empty($matching_id)){
+						$a_what = $is_movie ? 'A movie' : 'An episode';
+						$same_what = $is_movie ? 'overall' : 'season and episode';
+						Response::fail("$a_what with the same $same_what number already exists");
+					}
 				}
 				else {
 					$season_changed = $is_movie ? false : $update['season'] !== $this->episode->season;
@@ -135,23 +144,23 @@ class EpisodeController extends Controller {
 				}
 
 				if (!$is_movie)
-					$update['no'] = (new Input('no','int', [
+					$update['no'] = (new Input('no', 'int', [
 						Input::IS_OPTIONAL => true,
-						Input::IN_RANGE => [1,255],
+						Input::IN_RANGE => [1, 255],
 						Input::CUSTOM_ERROR_MESSAGES => [
-						    Input::ERROR_INVALID => 'Overall episode number (@value) is invalid',
-						    Input::ERROR_RANGE => 'Overall episode number must be between @min and @max',
-						]
+							Input::ERROR_INVALID => 'Overall episode number (@value) is invalid',
+							Input::ERROR_RANGE => 'Overall episode number must be between @min and @max',
+						],
 					]))->out();
 
-				$update['twoparter'] = !$is_movie  && isset($_REQUEST['twoparter']);
+				$update['twoparter'] = !$is_movie && isset($_REQUEST['twoparter']);
 				if ($update['twoparter']){
-					$next_part = Episode::find_by_season_and_episode($update['season'], $update['episode']+1);
+					$next_part = Episode::find_by_season_and_episode($update['season'], $update['episode'] + 1);
 					if (!empty($next_part))
 						Response::fail("This episode cannot have two parts because {$next_part->toURL()} already exists.");
 				}
 
-				$update['title'] = (new Input('title',function(&$value, $range) use ($is_movie){
+				$update['title'] = (new Input('title', function (&$value, $range) use ($is_movie) {
 					$prefixed = Regexes::$ep_title_prefix->match($value, $match);
 					if ($prefixed){
 						if (!$is_movie){
@@ -169,7 +178,8 @@ class EpisodeController extends Controller {
 									}
 								}
 							}
-							Response::fail("Unsupported prefix: {$match[1]}. ".($most_similar !== null ? "<em>Did you mean <span class='color-ui'>$most_similar</span></em>?" : ''));
+							$did_you_mean = $most_similar !== null ? "<em>Did you mean <span class='color-ui'>$most_similar</span></em>?" : '';
+							Response::fail("Unsupported prefix: {$match[1]}. $did_you_mean");
 						}
 
 						$title = Episodes::removeTitlePrefix($value);
@@ -181,31 +191,31 @@ class EpisodeController extends Controller {
 					else if (Input::checkStringLength($value, $range, $code))
 						return $code;
 				}, [
-					Input::IN_RANGE => [5,35],
+					Input::IN_RANGE => [5, 35],
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => "$what title is missing",
 						Input::ERROR_RANGE => "$what title must be between @min and @max characters",
 						'prefix-movie-only' => 'Prefixes can only be used for movies',
-					]
+					],
 				]))->out();
 				CoreUtils::checkStringValidity($update['title'], "$what title", INVERSE_EP_TITLE_PATTERN);
 
-				$airs = (new Input('airs','timestamp', [
+				$airs = (new Input('airs', 'timestamp', [
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'No air date & time specified',
-						Input::ERROR_INVALID => 'Invalid air date and/or time (@value) specified'
-					]
+						Input::ERROR_INVALID => 'Invalid air date and/or time (@value) specified',
+					],
 				]))->out();
 				if (empty($airs))
 					Response::fail('Please specify an air date & time');
-				$update['airs'] = date('c',strtotime('this minute', $airs));
+				$update['airs'] = date('c', strtotime('this minute', $airs));
 
-				$notes = (new Input('notes','text', [
+				$notes = (new Input('notes', 'text', [
 					Input::IS_OPTIONAL => true,
-					Input::IN_RANGE => [null,1000],
+					Input::IN_RANGE => [null, 1000],
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_RANGE => "$what notes cannot be longer than @max characters",
-					]
+					],
 				]))->out();
 				if ($notes !== null){
 					CoreUtils::checkStringValidity($notes, "$what notes", INVERSE_PRINTABLE_ASCII_PATTERN);
@@ -239,13 +249,15 @@ class EpisodeController extends Controller {
 							else if (!(new Tag([
 								'name' => $tag_name,
 								'type' => 'ep',
-							]))->save()) Response::dbError('Episode tag creation failed');
+							]))->save()
+							) Response::dbError('Episode tag creation failed');
 						}
 					}
 					else if ($season_changed || $episode_changed){
 						/** @var $TagName string */
 						$tag_name = CGUtils::normalizeEpisodeTagName("s{$update['season']}e{$update['episode']}");
-						$ep_tag = DB::$instance->where('name', $this->creating ? $tag_name : CGUtils::normalizeEpisodeTagName("s{$original_season}e{$original_episode}"))->getOne('tags');
+						$ep_tag = DB::$instance->where('name', $this->creating ? $tag_name
+							: CGUtils::normalizeEpisodeTagName("s{$original_season}e{$original_episode}"))->getOne('tags');
 
 						if (!empty($ep_tag)){
 							if (!$this->creating){
@@ -256,7 +268,8 @@ class EpisodeController extends Controller {
 						else if (!(new Tag([
 							'name' => $tag_name,
 							'type' => 'ep',
-						]))->save()) Response::dbError('Episode tag creation failed');
+						]))->save()
+						) Response::dbError('Episode tag creation failed');
 					}
 				}
 
@@ -275,10 +288,10 @@ class EpisodeController extends Controller {
 					$log_entry = ['target' => $this->episode->getID()];
 					$changes = 0;
 					if (!empty($this->episode->airs))
-						$this->episode->airs = date('c',strtotime($this->episode->airs));
+						$this->episode->airs = date('c', strtotime($this->episode->airs));
 
-					$map_int = function(string $s){ return \intval($s, 10); };
-					$map_bool = function(string $s){ return (bool) $s; };
+					$map_int = function (string $s) { return \intval($s, 10); };
+					$map_bool = function (string $s) { return (bool)$s; };
 					$type_map = [
 						'season' => $map_int,
 						'episode' => $map_int,
@@ -297,7 +310,7 @@ class EpisodeController extends Controller {
 						}
 					}
 					if ($changes > 0)
-						Logs::logAction('episode_modify',$log_entry);
+						Logs::logAction('episode_modify', $log_entry);
 					Response::done();
 				}
 			break;
@@ -312,7 +325,7 @@ class EpisodeController extends Controller {
 					'title' => $this->episode->title,
 					'airs' => $this->episode->airs,
 				]);
-				DB::$instance->where('name', "s{$this->episode->season}e{$this->episode->episode}")->where('uses',0)->delete('tags');
+				DB::$instance->where('name', "s{$this->episode->season}e{$this->episode->episode}")->where('uses', 0)->delete('tags');
 				Response::success('Episode deleted successfully', [
 					'upcoming' => CoreUtils::getSidebarUpcoming(NOWRAP),
 				]);
@@ -353,12 +366,12 @@ class EpisodeController extends Controller {
 				if (!empty($user_vote))
 					Response::fail('You already voted for this episode');
 
-				$vote_value = (new Input('vote','int', [
-					Input::IN_RANGE => [1,5],
+				$vote_value = (new Input('vote', 'int', [
+					Input::IN_RANGE => [1, 5],
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'Vote value missing from request',
 						Input::ERROR_RANGE => 'Vote value must be an integer between @min and @max (inclusive)',
-					]
+					],
 				]))->out();
 
 				$vote = new EpisodeVote();
@@ -398,7 +411,7 @@ class EpisodeController extends Controller {
 					'twoparter' => $this->episode->twoparter,
 					'vidlinks' => [],
 					'fullep' => [],
-					'airs' => date('c',strtotime($this->episode->airs)),
+					'airs' => date('c', strtotime($this->episode->airs)),
 				];
 				$videos = $this->episode->videos;
 				foreach ($videos as $part => $vid){
@@ -411,7 +424,7 @@ class EpisodeController extends Controller {
 			break;
 			case 'PUT':
 				foreach (array_keys(Episodes::VIDEO_PROVIDER_NAMES) as $provider){
-					for ($part = 1; $part <= ($this->episode->twoparter?2:1); $part++){
+					for ($part = 1; $part <= ($this->episode->twoparter ? 2 : 1); $part++){
 						$set = null;
 						$post_key = "{$provider}_$part";
 						if (!empty($_REQUEST[$post_key])){
@@ -430,7 +443,7 @@ class EpisodeController extends Controller {
 
 						$fullep = $this->episode->twoparter ? false : true;
 						if ($part === 1 && $this->episode->twoparter && isset($_REQUEST["{$post_key}_full"])){
-							$next_part = $provider.'_'.($part+1);
+							$next_part = $provider.'_'.($part + 1);
 							$_REQUEST[$next_part] = null;
 							$fullep = true;
 						}
@@ -496,9 +509,9 @@ class EpisodeController extends Controller {
 				/** @var $appearances Appearance[] */
 				$appearances = DB::$instance->disableAutoClass()
 					->where('ishuman', $this->episode->is_movie)
-					->where('id',0,'!=')
+					->where('id', 0, '!=')
 					->orderBy('label')
-					->get('appearances',null,'id,label');
+					->get('appearances', null, 'id,label');
 
 				$sorted = [
 					'unlinked' => [],
@@ -511,12 +524,12 @@ class EpisodeController extends Controller {
 			break;
 			case 'PUT':
 				/** @var $appearance_ids int[] */
-				$appearance_ids = (new Input('ids','int[]', [
+				$appearance_ids = (new Input('ids', 'int[]', [
 					Input::IS_OPTIONAL => true,
 					Input::CUSTOM_ERROR_MESSAGES => [
 						Input::ERROR_MISSING => 'Missing appearance ID list',
 						Input::ERROR_INVALID => 'Appearance ID list is invalid',
-					]
+					],
 				]))->out();
 
 				$ep_tag_ids = $this->episode->getTagIDs();
@@ -528,23 +541,22 @@ class EpisodeController extends Controller {
 					$ep_tag_ids[] = $tag->id;
 				}
 				/** @var $tag Tag */
-				else $tag = DB::$instance->where('id', $ep_tag_ids)->orderByLiteral('char_length(name)','DESC')->getOne('tags');
+				else $tag = DB::$instance->where('id', $ep_tag_ids)->orderByLiteral('char_length(name)', 'DESC')->getOne('tags');
 
 				if (!empty($appearance_ids)){
 					foreach ($appearance_ids as $appearance_id){
 						if (!Tagged::multi_is($ep_tag_ids, $appearance_id))
 							$tag->add_to($appearance_id);
 					}
-					DB::$instance->where('appearance_id',$appearance_ids,'!=');
+					DB::$instance->where('appearance_id', $appearance_ids, '!=');
 				}
-				DB::$instance->where('tag_id',$ep_tag_ids)->delete('tagged');
+				DB::$instance->where('tag_id', $ep_tag_ids)->delete('tagged');
 
 				Response::done(['section' => Episodes::getAppearancesSectionHTML($this->episode)]);
 			break;
 			default:
 				CoreUtils::notAllowed();
 		}
-
 	}
 
 	public function brokenVideos($params):void {
@@ -567,12 +579,49 @@ class EpisodeController extends Controller {
 		}
 
 		if ($removed === 0){
-			Response::success('No broken videos found under this '.($this->episode->is_movie?'movie':'episode').'.');
+			Response::success('No broken videos found under this '.($this->episode->is_movie ? 'movie' : 'episode').'.');
+
 			return;
 		}
 
-		Response::success("$removed video link".($removed===1?' has':'s have').' been removed from the site. Thank you for letting us know.', [
+		Response::success("$removed video link".($removed === 1 ? ' has' : 's have').' been removed from the site. Thank you for letting us know.', [
 			'epsection' => Episodes::getVideosHTML($this->episode, NOWRAP),
+		]);
+	}
+
+	public function synopsis($params) {
+		$this->load_episode($params);
+
+		if (empty($this->episode->synopsis)){
+			if (!$this->episode->shouldFetchSynopsis())
+				HTTP::statusCode(404, AND_DIE);
+
+			$client = TMDBHelper::getClient();
+			if (empty($client))
+				throw new \RuntimeException('Could not get TMDB client');
+
+			$ep_data = TMDBHelper::getEpisodes($client, $this->episode);
+			foreach ($ep_data as $i => $data){
+				$part = $i + 1;
+				$cached = Synopsis::for($this->episode, $part);
+				$is_empty = empty($cached);
+				if ($is_empty || $cached->cacheExpired()){
+					if ($is_empty)
+						$cached = new Synopsis();
+					$cached->season = $this->episode->season;
+					$cached->episode = $this->episode->episode;
+					$cached->part = $part;
+				}
+				$cached->updateCache($data);
+				$cached->save();
+			}
+		}
+
+		Response::done([
+			'html' => Twig::$env->render('episode/_synopsis.html.twig', [
+				'current_episode' => $this->episode,
+				'wrap' => false,
+			]),
 		]);
 	}
 
@@ -585,7 +634,7 @@ class EpisodeController extends Controller {
 			Response::fail("The show is on hiatus, the next episode's title and air date is unknown.");
 
 		Response::done($next_episode->to_array([
-			'only' => ['episode','airs','season','title'],
+			'only' => ['episode', 'airs', 'season', 'title'],
 		]));
 	}
 
@@ -597,7 +646,7 @@ class EpisodeController extends Controller {
 			Response::fail();
 
 		/** @var $last_added Episode */
-		$last_added = DB::$instance->orderBy('no','DESC')->where('season != 0')->getOne(Episode::$table_name);
+		$last_added = DB::$instance->orderBy('no', 'DESC')->where('season != 0')->getOne(Episode::$table_name);
 		if (empty($last_added))
 			Response::fail('No last added episode found');
 
@@ -605,7 +654,7 @@ class EpisodeController extends Controller {
 		if ($last_added->twoparter && $last_added->episode + 1 === 26){
 			$season++;
 			$episode = 1;
-			$airs = date('Y-m-d',strtotime('this saturday'));
+			$airs = date('Y-m-d', strtotime('this saturday'));
 		}
 		else {
 			$episode = min($last_added->episode + 1, 26);

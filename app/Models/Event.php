@@ -31,7 +31,7 @@ use App\UserPrefs;
  * @property User         $finalizer    (Via relations)
  * @method static Event find(...$args)
  */
-class Event extends NSModel implements LinkableInterface {
+class Event extends NSModel implements Linkable {
 	public static $has_many = [
 		['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
 	];

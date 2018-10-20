@@ -11,6 +11,7 @@ use App\Permission;
 use App\Posts;
 use App\Regexes;
 use App\RegExp;
+use App\TMDBHelper;
 use App\VideoProvider;
 
 /**
@@ -31,16 +32,17 @@ use App\VideoProvider;
  * @property int            $willairts           (Via magic method)
  * @property string         $short_title         (Via magic method)
  * @property Appearance[]   $related_appearances (Via magic method)
+ * @property Synopsis[]     $synopses            (Via magic method)
  * @property EpisodeVideo[] $videos              (Via relations)
  * @property User           $poster              (Via relations)
  * @method static Episode find_by_season_and_episode(int $season, int $episode)
  */
-class Episode extends NSModel implements LinkableInterface {
+class Episode extends NSModel implements Linkable {
 	public static $primary_key = ['season', 'episode'];
 	public static $table_name = 'episodes';
 
 	public static $has_many = [
-		['videos', 'class' => 'EpisodeVideo', 'foreign_key' => ['season','episode'], 'order' => 'provider asc, part asc']
+		['videos', 'class' => 'EpisodeVideo', 'foreign_key' => ['season','episode'], 'order' => 'provider asc, part asc'],
 	];
 	public static $belongs_to = [
 		['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
@@ -83,6 +85,28 @@ class Episode extends NSModel implements LinkableInterface {
 
 	public function get_short_title(){
 		return Episodes::shortenTitlePrefix($this->title);
+	}
+
+	public function get_synopses(){
+		/** @var Synopsis[] $data */
+		$data = DB::$instance
+			->setModel(Synopsis::class)
+			->where('season', $this->season)
+			->where('episode', $this->episode)
+			->orderBy('part')
+			->get(Synopsis::$table_name);
+
+		foreach ($data as $synopsis) {
+			if ($synopsis->cacheExpired()){
+				$synopsis->updateCache();
+			}
+		}
+
+		return $data;
+	}
+	/* For Twig */
+	public function getSynopses(){
+		return $this->synopses;
 	}
 
 	private $rel_appearances;
@@ -429,5 +453,9 @@ class Episode extends NSModel implements LinkableInterface {
 			'parts' => $parts,
 			'html' => $embed
 		];
+	}
+
+	public function shouldFetchSynopsis():bool {
+		return $this->season > 0 && TMDBHelper::apiKeyConfigured();
 	}
 }

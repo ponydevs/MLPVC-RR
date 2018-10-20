@@ -154,6 +154,7 @@ $api_endpoint('/episode/[epid:id]/video-embeds',     'EpisodeController#videoEmb
 $api_endpoint('/episode/[epid:id]/video-data',       'EpisodeController#videoDataApi');
 $api_endpoint('/episode/[epid:id]/guide-relations',  'EpisodeController#guideRelationsApi');
 $api_endpoint('/episode/[epid:id]/broken-videos',    'EpisodeController#brokenVideos');
+$api_endpoint('/episode/[epid:id]/synopsis',         'EpisodeController#synopsis');
 $api_endpoint('/episode/next',                       'EpisodeController#next');
 $api_endpoint('/episode/prefill',                    'EpisodeController#prefill');
 $api_endpoint('/event/[i:id]?',                      'EventController#api');

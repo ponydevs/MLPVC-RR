@@ -506,10 +506,34 @@
 			});
 		});
 	});
+	const synopsisIO = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (!entry.isIntersecting)
+				return;
+
+			const el = entry.target;
+			synopsisIO.unobserve(el);
+
+			const epID = el.dataset.id;
+
+			$.API.get(`/episode/${epID}/synopsis`,$.mkAjaxHandler(function(){
+				const $section = $(el).closest('section');
+				if (!this.status){
+					$section.remove();
+					return;
+				}
+
+				$.loadImages(this.html).then(function(resp){
+					$section.html(resp.$el);
+				});
+			}));
+		});
+	});
 
 	$('.post-deviation-promise').each((_, el) => deviationIO.observe(el));
 	$('.post-image-promise').each((_, el) => screencapIO.observe(el));
 	$('.user-avatar-promise').each((_, el) => avatarIO.observe(el));
+	$('.synopsis-promise').each((_, el) => synopsisIO.observe(el));
 
 	if (window.linkedPostURL)
 		history.replaceState({}, null, window.linkedPostURL);

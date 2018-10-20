@@ -33,7 +33,8 @@
    [Parsedown](https://github.com/erusev/parsedown),
    [IPTools](https://github.com/S1lentium/IPTools),
    [svg-sanitizer](https://github.com/darylldoyle/svg-sanitizer),
-   [svgo](https://github.com/svg/svgo)
+   [svgo](https://github.com/svg/svgo),
+   [php-tmdb/api](https://github.com/php-tmdb/api)
  - Development tools:
    [Gulp](http://gulpjs.com/),
    [Uglify-js](https://www.npmjs.com/package/uglify-js),

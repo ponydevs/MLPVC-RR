@@ -52,7 +52,7 @@ use SeinopSys\RGBAColor;
  * @method static Appearance|Appearance[] find(...$args)
  * @method static Appearance[] all(...$args)
  */
-class Appearance extends NSModel implements LinkableInterface {
+class Appearance extends NSModel implements Linkable {
 	public static $table_name = 'appearances';
 
 	public static $has_many = [

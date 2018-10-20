@@ -51,7 +51,7 @@ use App\UserPrefs;
  * @method static Post find_by_deviation_id(string $deviation_id)
  * @method static Post find_by_preview(string $preview_url)
  */
-class Post extends NSModel implements LinkableInterface {
+class Post extends NSModel implements Linkable {
 	public static $belongs_to = [
 		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
 		['requester', 'class' => 'User', 'foreign_key' => 'requested_by'],

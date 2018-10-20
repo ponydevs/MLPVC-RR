@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-interface LinkableInterface {
+interface Linkable {
 	/**
 	 * Returns the public-facing URL of this model
 	 *

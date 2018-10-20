@@ -55,6 +55,7 @@
 		{%- endif -%}
 		</div>
 	</div>
+	{% include 'episode/_synopsis.html.twig' %}
 	{% include 'episode/_watch.html.twig' %}
 	<section class="about-res">
 		<h2>What Vector Reservations Are{% if permission('staff') %}<button class="blue typcn typcn-pencil" id="edit-about_reservations">Edit</button>{% endif %}</h2>

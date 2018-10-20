@@ -1,0 +1,39 @@
+{# @var current_episode \App\Models\Episode #}
+{# @var wrap bool #}
+{% spaceless %}
+{% if current_episode and (current_episode.synopses or current_episode.shouldFetchSynopsis) and not user_pref('p_hidesynopses') %}
+	{% if wrap is not defined or wrap %}
+	<section class='synopsis'>
+	{% endif %}
+
+		<h2><a href="https://www.themoviedb.org/"><img src="/img/tmdb.svg?v=1" alt="Powered by The Movie DB"></a>Synopsis</h2>
+
+		{% if current_episode.synopses %}
+			{% for synopsis in current_episode.synopses %}
+			<div class="synopsis-content">
+				{% if synopsis.image %}
+				<div class="synopsis-image">
+					<img src="{{ synopsis.image }}">
+				</div>
+				{% endif %}
+				<div class="synopsis-text">
+					{% if current_episode.twoparter %}
+					<h3 class="synopsis-part-label">Part {{ synopsis.part }}</h3>
+					{% endif %}
+					<p class="synopsis-body">{{ synopsis.body }}</p>
+					<p class="synopsis-link">{{ synopsis.toAnchor }}</p>
+				</div>
+			</div>
+			{% endfor %}
+
+			<p class="synopsis-disclaimer">Don't want to see this? You can disable it in <a href="/u/#settings">your settings</a> ({{ constant('App\\UserSettingForm::INPUT_MAP').p_hidesynopses.options.desc }}). &bull; {{ constant('App\\TMDBHelper::REQUIRED_MESSAGE') }}</p>
+		{% else %}
+		<div class="synopsis-promise" data-id="S{{ current_episode.season }}E{{ current_episode.episode }}"></div>
+		{% endif %}
+
+
+	{% if wrap is not defined or wrap %}
+	</section>
+	{% endif %}
+{% endif %}
+{% endspaceless %}

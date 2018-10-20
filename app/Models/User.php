@@ -42,7 +42,7 @@ use App\Users;
  * @property string           $avatar_provider  (Via magic method)
  * @method static User find(...$args)
  */
-class User extends AbstractUser implements LinkableInterface {
+class User extends AbstractUser implements Linkable {
 	public static $table_name = 'users';
 
 	public static $has_many = [
