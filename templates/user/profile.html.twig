@@ -16,7 +16,7 @@
 <div id="content">
 {% if error is defined and error is not null %}
 	<h1>{{ error }}</h1>
-	{% if sub_error is not null %}
+	{% if sub_error is defined and sub_error is not null %}
 	<p>{{ sub_error }}</p>
 	{% endif %}
 {% else %}

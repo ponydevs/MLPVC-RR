@@ -124,8 +124,8 @@ class UserController extends Controller {
 			'css' => [true],
 			'js' => ['jquery.fluidbox',true],
 			'og' => [
-				'image' => $user ? $user->avatar_url : null,
-				'description' => $user ? CoreUtils::posess($user->name)." profile on the MLP-VectorClub's website" : null,
+				'image' => !empty($user) ? $user->avatar_url : null,
+				'description' => !empty($user) ? CoreUtils::posess($user->name)." profile on the MLP-VectorClub's website" : null,
 			],
 			'import' => [
 				'user' => $user ?? null,
