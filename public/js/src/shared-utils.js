@@ -701,10 +701,10 @@
 			const $imgs = $el.find('img');
 			let loaded = 0;
 			if ($imgs.length)
-				$imgs.on('load',() => {
+				$imgs.on('load',e => {
 					loaded++;
 					if (loaded === $imgs.length)
-						fulfill({ $el });
+						fulfill({ $el, e });
 				}).on('error', e => fulfill({ e }));
 			else fulfill({ $el });
 		});
