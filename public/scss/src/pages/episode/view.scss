@@ -201,6 +201,10 @@
 			.synopsis-promise {
 				margin: 0 auto;
 				@include loading-indicator(192px, 'wedges');
+
+				&.twoparter {
+					@include loading-indicator(373px, 'wedges', 0.3);
+				}
 			}
 
 			.synopsis-content {
@@ -209,7 +213,7 @@
 				justify-content: center;
 				border-radius: 8px;
 				border: 1px solid #aaa;
-				background: #efefef;
+				background: #f7f7f7;
 				width: 100%;
 				max-width: 760px;
 

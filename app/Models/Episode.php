@@ -36,7 +36,6 @@ use App\VideoProvider;
  * @property Appearance[]   $related_appearances   (Via magic method)
  * @property EpisodeVideo[] $videos                (Via relations)
  * @property User           $poster                (Via relations)
- * @property Synopsis[]     $synopses              (Via relations)
  * @method static Episode find_by_season_and_episode(int $season, int $episode)
  */
 class Episode extends NSModel implements Linkable {
@@ -45,7 +44,6 @@ class Episode extends NSModel implements Linkable {
 
 	public static $has_many = [
 		['videos', 'class' => 'EpisodeVideo', 'foreign_key' => ['season','episode'], 'order' => 'provider asc, part asc'],
-		['synopses', 'class' => 'Synopsis', 'foreign_key' => ['season','episode'], 'order' => 'part asc'],
 	];
 	public static $belongs_to = [
 		['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
@@ -88,15 +86,6 @@ class Episode extends NSModel implements Linkable {
 
 	public function get_short_title(){
 		return Episodes::shortenTitlePrefix($this->title);
-	}
-
-	/**
-	 * For Twig
-	 *
-	 * @return Synopsis[]
-	 */
-	public function getSynopses():array {
-		return CoreUtils::cacheExpired($this->synopses) ? [] : $this->synopses;
 	}
 
 	private $rel_appearances;
@@ -445,9 +434,29 @@ class Episode extends NSModel implements Linkable {
 		];
 	}
 
-	public function shouldFetchSynopsis():bool {
-		$condition_one = $this->season > 0 && TMDBHelper::apiKeyConfigured();
-		$condition_two = $this->synopsis_last_checked === null || CoreUtils::tsDiff($this->synopsis_last_checked) > Time::IN_SECONDS['hour'] * 2;
-		return $condition_one && ($condition_two || CoreUtils::cacheExpired($this->synopses));
+	/**
+	 * Get synopses for the episode from TMDb
+	 *
+	 * @return array[]
+	 */
+	public function getSynopses():array {
+		$client = TMDBHelper::getClient();
+		$show_id = TMDBHelper::getShowId();
+		$ep_data = TMDBHelper::getEpisodes($client, $this);
+		$synopses = [];
+		foreach ($ep_data as $item){
+			$append = [
+				'id' => $item['id'],
+				'overview' => $item['overview'],
+				'url' => "https://www.themoviedb.org/tv/{$show_id}/season/{$item['season_number']}/episode/{$item['episode_number']}",
+			];
+
+			if (!empty($item['still_path'])){
+				$append['image'] = TMDBHelper::getImageUrl($client, $item['still_path']);
+			}
+
+			$synopses[] = $append;
+		}
+		return $synopses;
 	}
 }

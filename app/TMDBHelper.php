@@ -25,21 +25,12 @@ class TMDBHelper {
 
 		if (self::$client === null){
 			$token = new \Tmdb\ApiToken(TMDB_API_KEY);
-
-			self::$client = new \Tmdb\Client($token, [
-				'cache' => [
-					// We do our own caching in the DB
-					'enabled' => false,
-				],
-			]);
-
-			/* Maybe someday */
-			/* $cache_handler = new RedisCache();
+			$cache_handler = new RedisCache();
 			$cache_handler->setRedis(RedisHelper::getInstance());
 
 			self::$client = new \Tmdb\Client($token, [
 				'cache' => ['handler' => $cache_handler],
-			]); */
+			]);
 		}
 
 		return self::$client;
@@ -73,7 +64,7 @@ class TMDBHelper {
 		$eps = [];
 		for ($i = 0; $i < $parts; $i++){
 			$data = self::getEpisode($client, $ep->season, $ep->episode + $i);
-			if ($data!== null)
+			if ($data !== null)
 				$eps[] = $data;
 		}
 

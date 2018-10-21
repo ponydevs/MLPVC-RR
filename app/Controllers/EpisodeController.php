@@ -15,7 +15,6 @@ use App\Input;
 use App\Logs;
 use App\Models\Appearance;
 use App\Models\EpisodeVote;
-use App\Models\Synopsis;
 use App\Models\Tag;
 use App\Models\Tagged;
 use App\Permission;
@@ -593,49 +592,11 @@ class EpisodeController extends Controller {
 	public function synopsis($params) {
 		$this->load_episode($params);
 
-		if (empty($this->episode->synopsis)){
-			if (!$this->episode->shouldFetchSynopsis())
-				HTTP::statusCode(404, AND_DIE);
-
-			$client = TMDBHelper::getClient();
-			if (empty($client))
-				throw new \RuntimeException('Could not get TMDB client');
-
-			$ep_data = TMDBHelper::getEpisodes($client, $this->episode);
-			if (empty($ep_data)){
-				$this->episode->synopsis_last_checked = date('c');
-				$this->episode->save();
-				Response::fail('No synopsis found');
-			}
-			foreach ($ep_data as $i => $data){
-				$part = $i + 1;
-				$cached = Synopsis::for($this->episode, $part);
-				$is_empty = empty($cached);
-				if (!$is_empty && !$cached->cacheExpired())
-					continue;
-
-				if ($is_empty){
-					$cached = new Synopsis();
-					$cached->season = $this->episode->season;
-					$cached->episode = $this->episode->episode;
-					$cached->part = $part;
-				}
-				$cached->updateCache($data);
-			}
-		}
-		else {
-			foreach ($this->episode->synopses as $synopsis){
-				if ($synopsis->cacheExpired())
-					$synopsis->updateCache();
-			}
-
-			Table::clear_cache();
-		}
-
 		Response::done([
 			'html' => Twig::$env->render('episode/_synopsis.html.twig', [
 				'current_episode' => $this->episode,
 				'wrap' => false,
+				'lazyload' => false,
 			]),
 		]);
 	}
