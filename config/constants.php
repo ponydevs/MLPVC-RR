@@ -49,7 +49,6 @@ define('HTML_ONLY', true); // CoreUtils::_processHeaderLink
 define('PREPEND_NUMBER', true); // CoreUtils::MakePlural
 define('NOWRAP', false);
 define('WRAP', !NOWRAP);
-define('RETURN_ARRANGED', true); // Posts::GetRequestsSection & Posts::GetReservationsSection
 define('IS_REQUEST', true); // Posts::GetRequestsSection
 define('WITH_GIT_INFO', true); // CoreUtils::GetFooter
 define('RETURN_MAP', true); // CGUtils::RenderSpritePNG

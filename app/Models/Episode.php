@@ -128,9 +128,9 @@ class Episode extends NSModel implements Linkable {
 		$arranged = [
 			'finished' => [],
 			'unfinished' => [
-				'bg'  => [],
-				'obj' => [],
 				'chr' => [],
+				'obj' => [],
+				'bg'  => [],
 			],
 		];
 		if (!empty($requests))
