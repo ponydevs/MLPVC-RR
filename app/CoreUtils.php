@@ -5,6 +5,7 @@ namespace App;
 use ActiveRecord\ConnectionManager;
 use ActiveRecord\DateTime;
 use ActiveRecord\SQLBuilder;
+use App\Models\Cacheable;
 use App\Models\Episode;
 use App\Models\Event;
 use App\Models\FailsafeUser;
@@ -1350,5 +1351,21 @@ class CoreUtils {
 			return null;
 
 		return ($now ?? time()) - $ts->getTimestamp();
+	}
+
+	/**
+	 * @param Cacheable[] $cacheables
+	 *
+	 * @return bool
+	 */
+	public static function cacheExpired($cacheables){
+		foreach ($cacheables as $cacheable){
+			if (!($cacheable instanceof Cacheable))
+				throw new \RuntimeException('The following value does not implement '.Cacheable::class.":\n".var_export($cacheable, true));
+
+			if ($cacheable->cacheExpired())
+				return true;
+		}
+		return false;
 	}
 }

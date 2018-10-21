@@ -21,7 +21,10 @@
 					<h3 class="synopsis-part-label">Part {{ synopsis.part }}</h3>
 					{% endif %}
 					<p class="synopsis-body">{{ synopsis.body }}</p>
-					<p class="synopsis-link">{{ synopsis.toAnchor }}</p>
+					<p class="synopsis-link">
+						{{ synopsis.toAnchor }}<br>
+						<small>Last updated {{ time_tag(synopsis.updated_at) }}</small>
+					</p>
 				</div>
 			</div>
 			{% endfor %}

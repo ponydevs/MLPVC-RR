@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use ActiveRecord\Table;
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
@@ -620,6 +621,14 @@ class EpisodeController extends Controller {
 				$cached->updateCache($data);
 				$cached->save();
 			}
+		}
+		else {
+			foreach ($this->episode->synopses as $synopsis){
+				if ($synopsis->cacheExpired())
+					$synopsis->updateCache();
+			}
+
+			Table::clear_cache();
 		}
 
 		Response::done([
