@@ -314,7 +314,7 @@ class PostController extends Controller {
 					]
 				]))->out();
 
-				$pref = 'a_post'.substr($kind, 0, 3);
+				$pref = 'a_post'.mb_substr($kind, 0, 3);
 				if (!UserPrefs::get($pref, Auth::$user))
 					Response::fail("You are not allowed to post {$kind}s");
 

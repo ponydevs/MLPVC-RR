@@ -104,7 +104,7 @@ class Time {
 		$ts = gmdate($format, $time);
 		if ($format === 'c')
 			$ts = str_replace('+00:00','Z', $ts);
-		if ($format !== 'c' && strpos($format, 'T') === false)
+		if ($format !== 'c' && !CoreUtils::contains($format, 'T'))
 			$ts .= ' ('.date('T').')';
 		return $ts;
 	}

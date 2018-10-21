@@ -20,6 +20,7 @@
 		"ext-pdo_sqlite": "*",
 		"ext-redis": "*",
 		"ext-xml": "*",
+		"ext-zlib": "*",
 		"fightbulc/moment": "^1.25.1",
 		"wisembly/elephant.io": "^3.3.0",
 		"ezyang/htmlpurifier": "^4.8",

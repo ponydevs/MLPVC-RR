@@ -344,7 +344,7 @@ class Post extends NSModel implements Linkable {
 	}
 
 	public function getLabelHTML():string {
-		return !empty($this->label) ? '<span class="label'.(strpos($this->label, '"') !== false ? ' noquotes' : '').'">'.$this->processLabel().'</span>' : '';
+		return !empty($this->label) ? '<span class="label'.(CoreUtils::contains($this->label, '"') ? ' noquotes' : '').'">'.$this->processLabel().'</span>' : '';
 	}
 
 	/**

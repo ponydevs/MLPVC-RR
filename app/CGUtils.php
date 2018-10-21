@@ -147,7 +147,7 @@ class CGUtils {
 			if (!empty($charTags)){
 				$aka = [];
 				foreach ($charTags as $t){
-					if (stripos($appearance->label, $t['name']) !== false)
+					if (CoreUtils::contains($appearance->label, $t['name'], false))
 						continue;
 
 					$aka[] = $t['name'];
@@ -976,7 +976,7 @@ GPL;
 		$name = strtolower((new Input($key,function($value, $range){
 			if (Input::checkStringLength($value,$range,$code))
 				return $code;
-			if (strpos($value, ',') !== false)
+			if (CoreUtils::contains($value, ','))
 				return 'comma';
 			if ($value[0] === '-')
 				return 'dash';

@@ -135,7 +135,7 @@ class Event extends NSModel implements Linkable {
 				ORDER BY submitted_at ASC',[$this->id]);
 
 			if (empty($HighestScoringEntries))
-				$HTML .= CoreUtils::notice('info','<span class="typcn typcn-times"></span> No entries match the win criteria, thus the event ended without a winner');
+				$HTML .= "<div class='notice info'><span class='typcn typcn-times'></span> No entries match the win criteria, thus the event ended without a winner</div>";
 			else {
 				$HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner', \count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
 				foreach ($HighestScoringEntries as $entry){

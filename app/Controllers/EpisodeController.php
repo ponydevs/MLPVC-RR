@@ -601,6 +601,11 @@ class EpisodeController extends Controller {
 				throw new \RuntimeException('Could not get TMDB client');
 
 			$ep_data = TMDBHelper::getEpisodes($client, $this->episode);
+			if (empty($ep_data)){
+				$this->episode->synopsis_last_checked = date('c');
+				$this->episode->save();
+				Response::fail('No synopsis found');
+			}
 			foreach ($ep_data as $i => $data){
 				$part = $i + 1;
 				$cached = Synopsis::for($this->episode, $part);

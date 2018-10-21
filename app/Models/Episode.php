@@ -11,30 +11,32 @@ use App\Permission;
 use App\Posts;
 use App\Regexes;
 use App\RegExp;
+use App\Time;
 use App\TMDBHelper;
 use App\VideoProvider;
 
 /**
  * @property int            $season
  * @property int            $episode
- * @property bool           $twoparter           (Uses magic method)
+ * @property bool           $twoparter             (Uses magic method)
  * @property string         $title
  * @property DateTime       $posted
  * @property string         $posted_by
  * @property DateTime       $airs
  * @property int            $no
- * @property string|null    $score               (Uses magic method)
+ * @property string|null    $score                 (Uses magic method)
  * @property string         $notes
- * @property bool           $is_movie            (Via magic method)
- * @property bool           $displayed           (Via magic method)
- * @property bool           $aired               (Via magic method)
- * @property DateTime       $willair             (Via magic method)
- * @property int            $willairts           (Via magic method)
- * @property string         $short_title         (Via magic method)
- * @property Appearance[]   $related_appearances (Via magic method)
- * @property Synopsis[]     $synopses            (Via magic method)
- * @property EpisodeVideo[] $videos              (Via relations)
- * @property User           $poster              (Via relations)
+ * @property DateTime       $synopsis_last_checked
+ * @property bool           $is_movie              (Via magic method)
+ * @property bool           $displayed             (Via magic method)
+ * @property bool           $aired                 (Via magic method)
+ * @property DateTime       $willair               (Via magic method)
+ * @property int            $willairts             (Via magic method)
+ * @property string         $short_title           (Via magic method)
+ * @property Appearance[]   $related_appearances   (Via magic method)
+ * @property Synopsis[]     $synopses              (Via magic method)
+ * @property EpisodeVideo[] $videos                (Via relations)
+ * @property User           $poster                (Via relations)
  * @method static Episode find_by_season_and_episode(int $season, int $episode)
  */
 class Episode extends NSModel implements Linkable {
@@ -456,6 +458,8 @@ class Episode extends NSModel implements Linkable {
 	}
 
 	public function shouldFetchSynopsis():bool {
-		return $this->season > 0 && TMDBHelper::apiKeyConfigured();
+		$condition_one = $this->season > 0 && TMDBHelper::apiKeyConfigured();
+		$condition_two = $this->synopsis_last_checked === null || CoreUtils::tsDiff($this->synopsis_last_checked) > Time::IN_SECONDS['hour'] * 2;
+		return $condition_one && $condition_two;
 	}
 }

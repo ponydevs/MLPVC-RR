@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
+use App\CoreUtils;
 use App\Time;
 use App\TMDBHelper;
 
@@ -41,7 +42,7 @@ class Synopsis extends NSModel implements Linkable, Cacheable {
 	}
 
 	public function getAge():int {
-		return time() - $this->updated_at->getTimestamp();
+		return CoreUtils::tsDiff($this->updated_at);
 	}
 
 	public function cacheExpired():bool {

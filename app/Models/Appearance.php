@@ -764,7 +764,7 @@ HTML;
 		}
 		foreach ($which as $suffix){
 			$path = FSPATH."cg_render/appearance/{$this->id}/$suffix";
-			if (strpos($path, '*') === false)
+			if (!CoreUtils::contains($path, '*'))
 				$success[] = CoreUtils::deleteFile($path);
 			else {
 				foreach (glob($path) as $file)
@@ -883,7 +883,7 @@ HTML;
 		}
 		catch (\ActiveRecord\DatabaseException $e){
 			// Relation already exists, moving on
-			if (strpos($e->getMessage(), 'duplicate key value violates unique constraint "tagged_pkey"')){
+			if (CoreUtils::contains($e->getMessage(), 'duplicate key value violates unique constraint "tagged_pkey"')){
 				return $this;
 			}
 

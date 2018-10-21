@@ -243,7 +243,7 @@ class DeviantArt {
 		}
 		catch (\TypeError $e){
 			$trace = $e->getTrace();
-			if (!empty($trace[0]['function']) && $trace[0]['function'] === 'prepareAccessTokenResponse' && !empty($trace[0]['args']) && strpos($trace[0]['args'][0], 'DeviantArt: 403 Forbidden') !== false){
+			if (!empty($trace[0]['function']) && $trace[0]['function'] === 'prepareAccessTokenResponse' && !empty($trace[0]['args']) && CoreUtils::contains($trace[0]['args'][0], 'DeviantArt: 403 Forbidden')){
 				$_GET['error'] = 'server_error';
 				$_GET['error_description'] = 'DeviantArt returned a 403 Forbidden response. Please try again or contact us if this persists.';
 				return null;

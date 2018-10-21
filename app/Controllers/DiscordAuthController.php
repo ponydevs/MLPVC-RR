@@ -82,7 +82,7 @@ class DiscordAuthController extends Controller {
 			$token = $this->provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
 		}
 		catch(DiscordIdentityProviderException $e){
-			if (stripos($e->getMessage(), 'invalid_grant') !== false){
+			if (CoreUtils::contains($e->getMessage(), 'invalid_grant')){
 				CoreUtils::error_log('Discord connection resulted in invalid_grant error, redirecting to beginning');
 				HTTP::tempRedirect('/discord-connect/begin');
 			}

@@ -113,7 +113,7 @@ class Session extends NSModel {
 	}
 
 	public function registerVisit(){
-		if (time() - $this->last_visit->getTimestamp() > Time::IN_SECONDS['minute']){
+		if (CoreUtils::tsDiff($this->last_visit) > Time::IN_SECONDS['minute']){
 			$this->last_visit = date('c');
 			$this->detectBrowser();
 			$this->save();

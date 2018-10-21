@@ -34,17 +34,17 @@ class FailedAuthAttempt extends AbstractEntryType {
 			return true;
 
 		// Otherwise calculate average distance between failed login attempts
-		$totaldist = time() - $failedAttempts[0]->timestamp->getTimestamp();
+		$total_dist = CoreUtils::tsDiff($failedAttempts[0]->timestamp);
 		$cnt = \count($failedAttempts);
 		for ($i = 1; $i < $cnt; $i++)
-			$totaldist += $failedAttempts[$i-1]->timestamp->getTimestamp() - $failedAttempts[$i]->timestamp->getTimestamp();
-		$avg = $totaldist / $cnt;
-		$fiveMins = Time::IN_SECONDS['minute'] * 3;
+			$total_dist += $failedAttempts[$i-1]->timestamp->getTimestamp() - $failedAttempts[$i]->timestamp->getTimestamp();
+		$avg = $total_dist / $cnt;
+		$threshold = Time::IN_SECONDS['minute'] * 3;
 		// Allow login if average time between attempts is above 5 minutes
-		$allow = $avg > $fiveMins;
+		$allow = $avg > $threshold;
 
 		if (!$allow)
-			CoreUtils::error_log("Blocked login attempt from $ip due to the average time between the last $last login attempts ({$avg}s) falling below the {$fiveMins}s threshold");
+			CoreUtils::error_log("Blocked login attempt from $ip due to the average time between the last $last login attempts ({$avg}s) falling below the {$threshold}s threshold");
 		return $allow;
 	}
 

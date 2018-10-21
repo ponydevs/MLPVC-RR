@@ -43,7 +43,7 @@ class PostgresDbWrapper extends \SeinopSys\PostgresDb {
 	 * @return self
 	 */
 	public function setModel(string $class_name):self {
-		if (strpos($class_name, 'App\\') !== 0)
+		if (!CoreUtils::startsWith($class_name, 'App\\'))
 			$class_name = "App\\Models\\$class_name";
 		if (!class_exists($class_name))
 			throw new \RuntimeException("The model $class_name does not exist");

@@ -312,8 +312,8 @@ class ColorGuideController extends Controller {
 			catch (ServerErrorResponseException | BadRequest400Exception $e){
 				$message = $e->getMessage();
 				if (
-					strpos($message, 'Result window is too large, from + size must be less than or equal to') === false
-					&& strpos($message, 'Failed to parse int parameter [from] with value') === false
+					!CoreUtils::contains($message, 'Result window is too large, from + size must be less than or equal to')
+					&& !CoreUtils::contains($message, 'Failed to parse int parameter [from] with value')
 				){
 					throw $e;
 				}

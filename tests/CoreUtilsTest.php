@@ -5,7 +5,7 @@ use App\DeviantArt;
 use PHPUnit\Framework\TestCase;
 
 class CoreUtilsTest extends TestCase {
-	public function testQueryStringAssoc(){
+	public function testQueryStringAssoc():void {
 		$result = CoreUtils::queryStringAssoc('?a=b&c=1');
 		self::assertEquals([
 			'a' => 'b',
@@ -13,14 +13,14 @@ class CoreUtilsTest extends TestCase {
 		], $result);
 	}
 
-	public function testAposEncode(){
+	public function testAposEncode():void {
 		$result = CoreUtils::aposEncode("No Man's Lie");
 		self::assertEquals('No Man&apos;s Lie', $result);
 		$result = CoreUtils::aposEncode('"implying"');
 		self::assertEquals('&quot;implying&quot;', $result);
 	}
 
-	public function testEscapeHTML(){
+	public function testEscapeHTML():void {
 		$result = CoreUtils::escapeHTML("<script>alert('XSS')</script>");
 		self::assertEquals("&lt;script&gt;alert('XSS')&lt;/script&gt;", $result);
 		$result = CoreUtils::escapeHTML('<');
@@ -29,32 +29,14 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('&gt;', $result);
 	}
 
-	public function testNotice(){
-		$exception = false;
-		try {
-			CoreUtils::notice('invalid type','asd');
-		}
-		catch(Exception $e){ $exception = true; }
-		self::assertTrue($exception, 'Invalid notice type must throw exception');
-
-		$result = CoreUtils::notice('info','text');
-		self::assertEquals("<div class='notice info'><p>text</p></div>", $result);
-
-		$result = CoreUtils::notice('info','title','text');
-		self::assertEquals("<div class='notice info'><label>title</label><p>text</p></div>", $result);
-
-		$result = CoreUtils::notice('info','title',"mutliline\n\nnotice");
-		self::assertEquals("<div class='notice info'><label>title</label><p>mutliline</p><p>notice</p></div>", $result);
-	}
-
-	public function testPad(){
+	public function testPad():void {
 		$result = CoreUtils::pad(1);
 		self::assertEquals('01',$result);
 		$result = CoreUtils::pad(10);
 		self::assertEquals('10',$result);
 	}
 
-	public function testCapitalize(){
+	public function testCapitalize():void {
 		$result = CoreUtils::capitalize('apple pie');
 		self::assertEquals('Apple pie', $result);
 		$result = CoreUtils::capitalize('apple pie', true);
@@ -65,7 +47,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('Apple Pie', $result);
 	}
 
-	public function testGetMaxUploadSize(){
+	public function testGetMaxUploadSize():void {
 		$result = CoreUtils::getMaxUploadSize(['4M','10M']);
 		self::assertEquals('4 MB', $result);
 		$result = CoreUtils::getMaxUploadSize(['4k','4k']);
@@ -74,7 +56,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('5 MB', $result);
 	}
 
-	public function testExportVars(){
+	public function testExportVars():void {
 		$result = CoreUtils::exportVars([
 			'a' => 1,
 			'reg' => new \App\RegExp('^ab?c$','gui'),
@@ -85,7 +67,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('<aside class="datastore">{"a":1,"reg":"/^ab?c$/gi","b":true,"s":"string"}</aside>'."\n", $result);
 	}
 
-	public function testSanitizeHtml(){
+	public function testSanitizeHtml():void {
 		$result = CoreUtils::sanitizeHtml('<script>alert("XSS")</script><a href="/#hax">Click me</a>');
 		self::assertEquals('&lt;script&gt;alert("XSS")&lt;/script&gt;&lt;a href="/#hax"&gt;Click me&lt;/a&gt;',$result,'Attack attempt check');
 		$result = CoreUtils::sanitizeHtml('Text<strong>Strong</strong><em>Emphasis</em>Text');
@@ -96,7 +78,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('I like <code>while(true)window.open()</code> a lot&lt;sup&gt;*&lt;/sup&gt;',$result,'Tag whitelist check');
 	}
 
-	public function testArrayToNaturalString(){
+	public function testArrayToNaturalString():void {
 		$result = CoreUtils::arrayToNaturalString([1]);
 		self::assertEquals('1', $result);
 		$result = CoreUtils::arrayToNaturalString([1,2]);
@@ -107,21 +89,21 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('1, 2, 3 and 4', $result);
 	}
 
-	public function testCheckStringValidity(){
+	public function testCheckStringValidity():void {
 		$result = CoreUtils::checkStringValidity('Oh my~!', 'Exclamation', '[^A-Za-z!\s]', true);
 		self::assertEquals('Exclamation (Oh my~!) contains an invalid character: ~', $result);
 		$result = CoreUtils::checkStringValidity('A_*cbe>#', 'String', '[^A-Za-z]', true);
 		self::assertEquals('String (A_*cbe&gt;#) contains the following invalid characters: _, *, &gt; and #', $result);
 	}
 
-	public function testPosess(){
+	public function testPosess():void {
 		$result = CoreUtils::posess('David');
 		self::assertEquals("David's", $result);
 		$result = CoreUtils::posess('applications');
 		self::assertEquals("applications'", $result);
 	}
 
-	public function testMakePlural(){
+	public function testMakePlural():void {
 		$result = CoreUtils::makePlural('apple',2);
 		self::assertEquals('apples', $result);
 		$result = CoreUtils::makePlural('apple',1);
@@ -136,7 +118,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('10 entries', $result);
 	}
 
-	public function testBrowserNameToClass(){
+	public function testBrowserNameToClass():void {
 		$result = CoreUtils::browserNameToClass('Chrome');
 		self::assertEquals('chrome', $result);
 		$result = CoreUtils::browserNameToClass('Edge');
@@ -157,12 +139,12 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('vivaldi', $result);
 	}
 
-	public function testTrim(){
+	public function testTrim():void {
 		$result = CoreUtils::trim('I    like    spaces');
 		self::assertEquals('I like spaces', $result);
 	}
 
-	public function testAverage(){
+	public function testAverage():void {
 		$result = CoreUtils::average([1]);
 		self::assertEquals(1, $result);
 		$result = CoreUtils::average([1,2]);
@@ -171,13 +153,13 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals(2, $result);
 	}
 
-	public function testCutoff(){
+	public function testCutoff():void {
 		$result = CoreUtils::cutoff('This is a long string', 10);
 		self::assertEquals(10, mb_strlen($result));
 		self::assertEquals('This is a…', $result);
 	}
 
-	public function testSet(){
+	public function testSet():void {
 		$array = [];
 		CoreUtils::set($array, 'key', 'value');
 		self::assertArrayHasKey('key', $array);
@@ -189,13 +171,13 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('value', $object->key);
 	}
 
-	public function testSha256(){
+	public function testSha256():void {
 		$data = 'a3d5f3e5a67f38cd6e7ad8cfe41245acf';
 		$hash = CoreUtils::sha256($data);
 		self::assertEquals('fcb0c71edf2df18c7d39accbbb46083d511ea091d7ec56727a6a9931d40f46d8',$hash);
 	}
 
-	public function testMergeQuery(){
+	public function testMergeQuery():void {
 		$result = CoreUtils::mergeQuery('','?t=12');
 		self::assertEquals('?t=12',$result);
 		$result = CoreUtils::mergeQuery('?a=b','?a=c');
@@ -206,7 +188,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('?test&a=c',$result);
 	}
 
-	public function testAppendFragment(){
+	public function testAppendFragment():void {
 		$result = '';
 		CoreUtils::appendFragment('/a#c', $result);
 		self::assertEquals('#c',$result);
@@ -218,7 +200,7 @@ class CoreUtilsTest extends TestCase {
 		self::assertEquals('?c='.CoreUtils::FIXPATH_EMPTY.'#d',$result,'Should not explode if empty parameter is encountered');
 	}
 
-	public function testAbsoluteUrl(){
+	public function testAbsoluteUrl():void {
 		$result = 'https://example.com/path';
 		CoreUtils::toAbsoluteUrl($result);
 		self::assertEquals('https://example.com/path',$result);
@@ -234,5 +216,41 @@ class CoreUtilsTest extends TestCase {
 		$result = '/a/b/c#d';
 		CoreUtils::toAbsoluteUrl($result);
 		self::assertEquals(ABSPATH.'a/b/c#d',$result);
+	}
+
+	public function testStartsWith(){
+		self::assertEquals(true, CoreUtils::startsWith('abcd', 'ab'));
+		self::assertEquals(true, CoreUtils::startsWith(' abc', ' '));
+		self::assertEquals(true, CoreUtils::startsWith('0123', '01'));
+
+		self::assertEquals(false, CoreUtils::startsWith('abcd', 'cd'));
+		self::assertEquals(false, CoreUtils::startsWith(' abc', 'c'));
+		self::assertEquals(false, CoreUtils::startsWith('0123', '23'));
+	}
+
+	public function testEndsWith(){
+		self::assertEquals(false, CoreUtils::endsWith('abcd', 'ab'));
+		self::assertEquals(false, CoreUtils::endsWith(' abc', ' '));
+		self::assertEquals(false, CoreUtils::endsWith('0123', '01'));
+
+		self::assertEquals(true, CoreUtils::endsWith('abcd', 'cd'));
+		self::assertEquals(true, CoreUtils::endsWith(' abc', 'c'));
+		self::assertEquals(true, CoreUtils::endsWith('0123', '23'));
+	}
+
+	public function testContains(){
+		self::assertEquals(true, CoreUtils::contains('abcd', 'ab'));
+		self::assertEquals(true, CoreUtils::contains(' abc', 'ab'));
+		self::assertEquals(true, CoreUtils::contains('0123', '12'));
+
+		self::assertEquals(false, CoreUtils::contains('abcd', 'z'));
+		self::assertEquals(false, CoreUtils::contains(' abc', 'cfd'));
+		self::assertEquals(false, CoreUtils::contains('0123', '789'));
+	}
+
+	public function testTsDiff(){
+		$now = strtotime('2018-10-21T11:40:30Z');
+		self::assertEquals(10, CoreUtils::tsDiff(new ActiveRecord\DateTime('2018-10-21T11:40:20', new DateTimeZone('UTC')), $now));
+		self::assertEquals(-10, CoreUtils::tsDiff(new ActiveRecord\DateTime('2018-10-21T11:40:40', new DateTimeZone('UTC')), $now));
 	}
 }

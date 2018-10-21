@@ -168,7 +168,7 @@ class Input {
 			case 'url':
 				if (!\is_string($this->_origValue))
 					return self::ERROR_INVALID;
-				if (stripos($this->_origValue, ABSPATH) === 0)
+				if (CoreUtils::startsWith($this->_origValue, ABSPATH))
 					$this->_origValue = mb_substr($this->_origValue, mb_strlen(ABSPATH)-1);
 				if (!preg_match(Regexes::$rewrite, $this->_origValue) && !preg_match(new RegExp('^#[a-z\-]+$'), $this->_origValue)){
 					if (self::checkStringLength($this->_origValue, $this->_range, $code))

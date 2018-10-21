@@ -3,6 +3,7 @@
 namespace App;
 
 use ActiveRecord\ConnectionManager;
+use ActiveRecord\DateTime;
 use ActiveRecord\SQLBuilder;
 use App\Models\Episode;
 use App\Models\Event;
@@ -65,7 +66,7 @@ class CoreUtils {
 	}
 
 	public static function appendFragment($fix_uri, string &$fix_query):void {
-		if (strpos($fix_uri, '#') === false)
+		if (!self::contains($fix_uri, '#'))
 			return;
 
 		strtok($fix_uri, '#');
@@ -100,45 +101,6 @@ class CoreUtils {
 	public static function escapeHTML(?string $html, $mask = null){
 		$mask = $mask !== null ? $mask | ENT_HTML5 : ENT_HTML5;
 		return htmlspecialchars($html, $mask);
-	}
-
-	/**
-	 * Renders the markup of an HTML notice
-	 *
-	 * @deprecated Just use HTML
-	 *
-	 * @param string           $type   Notice type
-	 * @param string           $title  If $text is specified: Notice title
-	 *                                 If $text is null: Notice body
-	 * @param string|null|true $text   Notice body
-	 *                                 If there's no title, leave empty and use $title for body
-	 *                                 If $center is null: Defines centering
-	 * @param bool             $center Whether to center the contents of the notice
-	 *
-	 * @return string
-	 */
-	public static function notice($type, $title, $text = null, $center = false){
-		if (!isset(Notice::VALID_TYPES[$type]))
-			throw new \RuntimeException("Invalid notice type $type");
-
-		if (!\is_string($text)){
-			if (\is_bool($text))
-				$center = $text;
-			$text = $title;
-			$title = null;
-		}
-
-		$HTML = '';
-		if (!empty($title))
-			$HTML .= '<label>'.self::escapeHTML($title).'</label>';
-
-		$textRows = preg_split("/(\r\n|\n|\r){2}/", $text);
-		foreach ($textRows as $row)
-			$HTML .= '<p>'.self::trim($row).'</p>';
-
-		if ($center)
-			$type .= ' align-center';
-		return "<div class='notice $type'>$HTML</div>";
 	}
 
 	/**
@@ -1036,7 +998,7 @@ class CoreUtils {
 			return 9;
 
 		$html = $DiFiRequest->DiFi->response->calls[0]->response->content->html;
-		return strpos($html, 'gmi-groupname="MLP-VectorClub">') !== false;
+		return self::contains($html, 'gmi-groupname="MLP-VectorClub">');
 	}
 
 	/**
@@ -1361,12 +1323,32 @@ class CoreUtils {
 		]);
 	}
 
-	public static function startsWith(string $haystack, string $needle){
-		return 0 === strpos($haystack, $needle);
+	public static function startsWith(string $haystack, string $needle):bool {
+		return 0 === mb_strpos($haystack, $needle);
 	}
 
-	public static function endsWith(string $haystack, string $needle){
-		$length = \strlen($needle);
-		return $length === 0 || (substr($haystack, -$length) === $needle);
+	public static function endsWith(string $haystack, string $needle):bool {
+		$length = mb_strlen($needle);
+		return $length === 0 || (mb_substr($haystack, -$length) === $needle);
+	}
+
+	public static function contains(string $haystack, string $needle, bool $case_sensitive = true):bool {
+		$pos = $case_sensitive ? mb_strpos($haystack, $needle) : mb_stripos($haystack, $needle);
+		return $pos !== false;
+	}
+
+	/**
+	 * Get the difference between an AR DateTime object and the current time in seconds
+	 *
+	 * @param DateTime|null $ts
+	 * @param int|null      $now
+	 *
+	 * @return int|null
+	 */
+	public static function tsDiff(?DateTime $ts, ?int $now = null):?int {
+		if ($ts === null)
+			return null;
+
+		return ($now ?? time()) - $ts->getTimestamp();
 	}
 }

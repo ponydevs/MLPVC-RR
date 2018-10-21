@@ -85,7 +85,7 @@ class NavBreadcrumb {
 	public function toAnchor(int $position){
 		$extraAttributes = 'itemscope itemtype="http://schema.org/Thing" itemprop="item"';
 		if ($this->link){
-			$abspath = ABSPATH.\substr($this->link, 1);
+			$abspath = ABSPATH.\mb_substr($this->link, 1);
 			$extraAttributes .= " itemid='$abspath'";
 		}
 		$name = '<span itemprop="name">'.CoreUtils::escapeHTML($this->name).'</span>';

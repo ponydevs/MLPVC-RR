@@ -45,7 +45,7 @@ class UserController extends Controller {
 
 		if (empty($user) || !($user instanceof User)){
 			if (Auth::$signed_in && isset($user) && $user === false){
-				if (strpos(Auth::$session->scope, 'browse') !== false){
+				if (CoreUtils::contains(Auth::$session->scope, 'browse')){
 					$error = 'User does not exist';
 					$sub_error = 'Check the name for typos and try again';
 				}
