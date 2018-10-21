@@ -10,11 +10,11 @@
 
 		{% if current_episode.synopses %}
 			{% for synopsis in current_episode.synopses %}
-			<div class="synopsis-content">
+			<div class="synopsis-content{% if synopsis.image %} has-image{% endif %}">
 				{% if synopsis.image %}
-				<div class="synopsis-image">
+				<a class="synopsis-image" href="{{ synopsis.image | replace({'w300': 'original'}) }}">
 					<img src="{{ synopsis.image }}">
-				</div>
+				</a>
 				{% endif %}
 				<div class="synopsis-text">
 					{% if current_episode.twoparter %}

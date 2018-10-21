@@ -210,12 +210,16 @@
 				border-radius: 8px;
 				border: 1px solid #aaa;
 				background: #efefef;
-				overflow: hidden;
 				width: 100%;
 				max-width: 760px;
 
 				&:not(:last-of-type) {
 					margin-bottom: 10px;
+				}
+
+				&.has-image {
+					border-top-left-radius: 0;
+					border-bottom-left-radius: 0;
 				}
 
 				.synopsis-image {

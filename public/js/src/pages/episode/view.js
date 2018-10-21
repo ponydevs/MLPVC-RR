@@ -525,6 +525,7 @@
 
 				$.loadImages(this.html).then(function(resp){
 					$section.html(resp.$el);
+					$section.find('.synopsis-image').fluidboxThis();
 				});
 			}));
 		});
@@ -534,6 +535,8 @@
 	$('.post-image-promise').each((_, el) => screencapIO.observe(el));
 	$('.user-avatar-promise').each((_, el) => avatarIO.observe(el));
 	$('.synopsis-promise').each((_, el) => synopsisIO.observe(el));
+
+	$('.synopsis-image').fluidboxThis();
 
 	if (window.linkedPostURL)
 		history.replaceState({}, null, window.linkedPostURL);
