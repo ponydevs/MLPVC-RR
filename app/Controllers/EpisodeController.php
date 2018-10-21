@@ -611,15 +611,16 @@ class EpisodeController extends Controller {
 				$part = $i + 1;
 				$cached = Synopsis::for($this->episode, $part);
 				$is_empty = empty($cached);
-				if ($is_empty || $cached->cacheExpired()){
-					if ($is_empty)
-						$cached = new Synopsis();
+				if (!$is_empty && !$cached->cacheExpired())
+					continue;
+
+				if ($is_empty){
+					$cached = new Synopsis();
 					$cached->season = $this->episode->season;
 					$cached->episode = $this->episode->episode;
 					$cached->part = $part;
 				}
 				$cached->updateCache($data);
-				$cached->save();
 			}
 		}
 		else {

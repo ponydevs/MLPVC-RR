@@ -65,5 +65,6 @@ class Synopsis extends NSModel implements Linkable, Cacheable {
 			$this->image = TMDBHelper::getImageUrl($client, $data['still_path']);
 		}
 		$this->body = $data['overview'];
+		$this->save();
 	}
 }
