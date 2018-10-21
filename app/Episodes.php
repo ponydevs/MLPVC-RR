@@ -26,16 +26,17 @@ class Episodes {
 	 *
 	 * @return Episode|Episode[]
 	 */
-	public static function get($limit = null, $where = null, bool $allow_movies = false, bool $pre_ordered = false){
+	public static function get($limit = null, $where = null, bool $allow_movies = false, bool $pre_ordered = false) {
 		/** @var $ep Episode */
 		if (!empty($where))
 			DB::$instance->where($where);
 		if (!$pre_ordered)
-			DB::$instance->orderBy('season','DESC')->orderBy('episode','DESC');
+			DB::$instance->orderBy('season', 'DESC')->orderBy('episode', 'DESC');
 		if (!$allow_movies)
 			DB::$instance->where('season != 0');
 		if ($limit !== 1)
-			return DB::$instance->get('episodes',$limit);
+			return DB::$instance->get('episodes', $limit);
+
 		return DB::$instance->getOne('episodes');
 	}
 
@@ -53,27 +54,27 @@ class Episodes {
 	 * @param bool $cache
 	 *
 	 * @throws \InvalidArgumentException
-	 *
 	 * @return Episode|null
 	 */
-	public static function getActual(int $season, int $episode, bool $allowMovies = false, $cache = false){
-		$cacheKey = "$season-$episode";
+	public static function getActual(int $season, int $episode, bool $allowMovies = false, $cache = false) {
+		$cache_key = "$season-$episode";
 		if (!$allowMovies && $season === 0)
 			throw new \InvalidArgumentException('This action cannot be performed on movies');
 
-		if ($cache && isset(self::$episodeCache[$cacheKey]))
-			return self::$episodeCache[$cacheKey];
+		if ($cache && isset(self::$episodeCache[$cache_key]))
+			return self::$episodeCache[$cache_key];
 
-		$Ep = Episode::find_by_season_and_episode($season, $episode);
-		if (!empty($Ep))
-			return $Ep;
+		$ep = Episode::find_by_season_and_episode($season, $episode);
+		if (!empty($ep))
+			return $ep;
 
-		$Part1 = Episode::find_by_season_and_episode($season, $episode-1);
-		$output = !empty($Part1) && $Part1->twoparter === true
-			? $Part1
+		$part_1 = Episode::find_by_season_and_episode($season, $episode - 1);
+		$output = !empty($part_1) && $part_1->twoparter === true
+			? $part_1
 			: null;
 		if ($cache)
-			self::$episodeCache[$cacheKey] = $output;
+			self::$episodeCache[$cache_key] = $output;
+
 		return $output;
 	}
 
@@ -82,16 +83,17 @@ class Episodes {
 	 *
 	 * @return Episode
 	 */
-	public static function getLatest(){
+	public static function getLatest() {
 		DB::$instance->orderBy('airs', 'DESC');
-		return self::get(1,"airs < NOW() + INTERVAL '24 HOUR'", false, true);
+
+		return self::get(1, "airs < NOW() + INTERVAL '24 HOUR'", false, true);
 	}
 
-	public static function removeTitlePrefix($title){
+	public static function removeTitlePrefix($title) {
 		return Regexes::$ep_title_prefix->replace('', $title);
 	}
 
-	public static function shortenTitlePrefix($title){
+	public static function shortenTitlePrefix($title) {
 		if (!Regexes::$ep_title_prefix->match($title, $match) || !isset(self::ALLOWED_PREFIXES[$match[1]]))
 			return $title;
 
@@ -102,11 +104,11 @@ class Episodes {
 	 * Loads the episode page
 	 *
 	 * @param null|string|Episode $force       If null: Parses $data and loads appropriate episode
-	 *                                        If string: Loads episode by specified ID
-	 *                                        If Episode: Uses the object as Episode data
+	 *                                         If string: Loads episode by specified ID
+	 *                                         If Episode: Uses the object as Episode data
 	 * @param Post                $linked_post Linked post (when sharing)
 	 */
-	public static function loadPage($force = null, Post $linked_post = null){
+	public static function loadPage($force = null, Post $linked_post = null) {
 		if ($force instanceof Episode)
 			$current_episode = $force;
 		if (empty($current_episode))
@@ -137,7 +139,7 @@ class Episodes {
 			else {
 				$finishdeviation = DeviantArt::getCachedDeviation($linked_post->deviation_id);
 				if (!empty($finishdeviation->preview))
-					$ogImage  = $finishdeviation->preview;
+					$ogImage = $finishdeviation->preview;
 			}
 		}
 
@@ -161,7 +163,7 @@ class Episodes {
 			$import['fullsize_match_regex'] = Regexes::$fullsize_match;
 		}
 
-		$heading = $current_episode->formatTitle();
+		$heading = ($linked_post ? ucfirst($linked_post->kind).": {$linked_post->label} - " : '').$current_episode->formatTitle();
 		CoreUtils::loadPage('EpisodeController::view', [
 			'title' => "$heading - Vector Requests & Reservations",
 			'heading' => $heading,
@@ -172,7 +174,6 @@ class Episodes {
 				'url' => $linked_post ? $linked_post->toURL() : null,
 				'image' => $ogImage,
 				'description' => $ogDescription,
-				'title' => $linked_post ? $linked_post->label : null,
 			],
 			'import' => $import,
 		]);
@@ -180,17 +181,17 @@ class Episodes {
 
 	public const
 		VIDEO_PROVIDER_NAMES = [
-			'yt' => 'YouTube',
-			'dm' => 'Dailymotion',
-			'sv' => 'sendvid',
-			'mg' => 'Mega',
-		],
+		'yt' => 'YouTube',
+		'dm' => 'Dailymotion',
+		'sv' => 'sendvid',
+		'mg' => 'Mega',
+	],
 		PROVIDER_BTN_CLASSES = [
-			'yt' => 'red typcn-social-youtube',
-			'dm' => 'darkblue typcn-video',
-			'sv' => 'yellow typcn-video',
-			'mg' => 'red typcn-video',
-		];
+		'yt' => 'red typcn-social-youtube',
+		'dm' => 'darkblue typcn-video',
+		'sv' => 'yellow typcn-video',
+		'mg' => 'red typcn-video',
+	];
 
 	/**
 	 * Renders the HTML of the "Watch the Episode" section along with the buttons/links
@@ -223,29 +224,31 @@ class Episodes {
 	}
 
 	public static function getAppearancesSectionHTML(Episode $Episode):string {
-		return Twig::$env->render('episode/_related_appearances.html.twig', ['current_episode' => $Episode ]);
+		return Twig::$env->render('episode/_related_appearances.html.twig', ['current_episode' => $Episode]);
 	}
 
-	public static function validateSeason($allowMovies = false){
-		return (new Input('season','int', [
+	public static function validateSeason($allowMovies = false) {
+		return (new Input('season', 'int', [
 			Input::IN_RANGE => [$allowMovies ? 0 : 1, 9],
 			Input::CUSTOM_ERROR_MESSAGES => [
 				Input::ERROR_MISSING => 'Season number is missing',
 				Input::ERROR_INVALID => 'Season number (@value) is invalid',
 				Input::ERROR_RANGE => 'Season number must be between @min and @max',
-			]
+			],
 		]))->out();
 	}
-	public static function validateEpisode($optional = false, $EQG = false){
-		$FieldName = $EQG ? 'Overall movie number' : 'Episode number';
-		return (new Input('episode','int', [
+
+	public static function validateEpisode($optional = false, $EQG = false) {
+		$field_name = $EQG ? 'Overall movie number' : 'Episode number';
+
+		return (new Input('episode', 'int', [
 			Input::IS_OPTIONAL => $optional,
-			Input::IN_RANGE => [1,26],
+			Input::IN_RANGE => [1, 26],
 			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => "$FieldName is missing",
-				Input::ERROR_INVALID => "$FieldName (@value) is invalid",
-				Input::ERROR_RANGE => "$FieldName must be between @min and @max",
-			]
+				Input::ERROR_MISSING => "$field_name is missing",
+				Input::ERROR_INVALID => "$field_name (@value) is invalid",
+				Input::ERROR_RANGE => "$field_name must be between @min and @max",
+			],
 		]))->out();
 	}
 }
