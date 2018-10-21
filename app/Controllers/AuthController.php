@@ -146,7 +146,7 @@ class AuthController extends Controller {
 
 		Response::done([
 			'deleted' => !Auth::$signed_in,
-			'loggedIn' => CoreUtils::getSidebarLoggedIn(),
+			'loggedIn' => CoreUtils::getSidebarLoggedIn(NOWRAP),
 		]);
 	}
 }

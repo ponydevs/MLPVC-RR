@@ -130,13 +130,6 @@ class Session extends NSModel {
 		CoreUtils::callScript('access_token_refresher', [$this->id], $out);
 	}
 
-	public function getUpdateIndicatorHTML():string {
-		if (!$this->updating)
-			return '';
-
-		return ' <span id="session-update-indicator" title="Updating your session"></span>';
-	}
-
 	public function getProfileCard(bool $is_current){
 		$data = [
 			'session' => $this,

@@ -570,9 +570,40 @@ header, #sidebar .mobile-nav {
 		padding: 4px;
 		margin-bottom: 6px;
 		border-radius: 50px;
+		position: relative;
+
+		&:before {
+			content: '';
+			position: absolute;
+			$size: 2.5em;
+			$offset: calc(50% - #{$size/2});
+			top: $offset;
+			left: $offset;
+			width: $size;
+			height: $size;
+			background: url('/img/loading-ring-white.svg') no-repeat center;
+			background-size: contain;
+			display: block;
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		> *, &:before {
+			transition: opacity .5s;
+		}
 
 		&.provider-deviantart {
 			border-radius: 5px;
+		}
+
+		&.updating-session {
+			> * {
+				opacity: .3;
+				pointer-events: none;
+			}
+			&:before {
+				opacity: 1;
+			}
 		}
 
 		a { @include link($LinkLight, $LinkHoverLight) }
@@ -612,15 +643,6 @@ header, #sidebar .mobile-nav {
 				align-items: center;
 				text-transform: uppercase;
 				font-size: .8em;
-
-				#session-update-indicator {
-					width: 1em;
-					height: 1em;
-					margin-left: .4em;
-					background: url('/img/loading-ring-white.svg') no-repeat center;
-					background-size: contain;
-					display: inline-block;
-				}
 			}
 		}
 	}

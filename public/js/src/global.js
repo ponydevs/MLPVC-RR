@@ -433,7 +433,7 @@
 	});
 
 
-	let $sessionUpdating = $('#session-update-indicator');
+	let $sessionUpdating = $('.logged-in.updating-session');
 	if ($sessionUpdating.length){
 		const sessionRefTitle = 'Session refresh issue';
 		const pollInterval = 1000;
@@ -452,7 +452,7 @@
 
 				if (this.deleted === true)
 					$.Dialog.fail(sessionRefTitle, "We couldn't refresh your DeviantArt session automatically so you have been signed out. Due to elements on the page assuming you are signed in some actions will not work as expected until the page is reloaded.");
-				$('.logged-in').replaceWith(this.loggedIn);
+				$sessionUpdating.html(this.loggedIn).removeClass('updating-session');
 			}));
 		}, pollInterval);
 	}

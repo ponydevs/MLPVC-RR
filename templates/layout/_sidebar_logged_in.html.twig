@@ -1,12 +1,15 @@
-<div class='logged-in provider-{{ current_user.get_avatar_provider ?? 'deviantart' }}'>
+{% if wrap is not defined or wrap %}
+{% set session_updating = current_session is not empty and current_session.updating %}
+{% set classes = 'logged-in provider-' ~ (current_user.get_avatar_provider ?? 'deviantart') ~ (session_updating ? ' updating-session' : '') %}
+<div class='{{ classes }}'{% if session_updating %} title='Updating your session'{% endif %}>
+{% endif %}
 	{% include 'layout/_avatar_wrap.html.twig' %}
 	<div class="user-data">
 		<span class="user-name">{{ signed_in ? current_user.toAnchor : 'Curious Pony' }}</span>
 		<span class="user-role">
 			<span>{{ signed_in ? current_user.get_role_label : 'Guest' }}</span>
-			{% if current_session is not empty and current_session.updating %}
-			<span id="session-update-indicator" title="Updating your session"></span>
-			{% endif %}
 		</span>
 	</div>
+{% if wrap is not defined or wrap %}
 </div>
+{% endif %}

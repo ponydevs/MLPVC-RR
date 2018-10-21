@@ -1298,8 +1298,10 @@ class CoreUtils {
 		return mb_strlen($url) <= 256 && Regexes::$rewrite->match(strtok($url,'?'), $matches);
 	}
 
-	public static function getSidebarLoggedIn():string {
-		return Twig::$env->render('layout/_sidebar_logged_in.html.twig', Auth::to_array());
+	public static function getSidebarLoggedIn(bool $wrap = WRAP):string {
+		$data = Auth::to_array();
+		$data['wrap'] = $wrap;
+		return Twig::$env->render('layout/_sidebar_logged_in.html.twig', $data);
 	}
 
 	public static function callScript(string $name, array $args = [], &$output = null){
