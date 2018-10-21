@@ -52,6 +52,10 @@ class Episode extends NSModel implements Linkable {
 	public function get_is_movie():bool {
 		return $this->season === 0;
 	}
+	/** For Twig */
+	public function getIs_movie():bool {
+		return $this->is_movie;
+	}
 
 	private function _normalizeScore($value):string {
 		return is_numeric($value) ? preg_replace('/^(\d+)\.0+$/','$1',number_format($value,1)) : '0';

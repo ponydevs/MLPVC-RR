@@ -2,7 +2,7 @@
 {# @var wrap bool #}
 {# @var lazyload bool #}
 {% spaceless %}
-{% if current_episode and not user_pref('p_hidesynopses') %}
+{% if current_episode and not current_episode.is_movie and not user_pref('p_hidesynopses') %}
 	{% if wrap is not defined or wrap %}
 	<section class='synopsis'>
 	{% endif %}
