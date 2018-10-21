@@ -334,7 +334,6 @@
 	checkToTop();
 
 	// Sign in button handler
-	$.LocalStorage.remove('cookie_consent_v2');
 	$('#signin').off('click').on('click',function(){
 		let $this = $(this);
 		$this.disable();
@@ -349,7 +348,12 @@
 
 		$.Dialog.wait('Sign-in process', "Opening popup window");
 
-		let success = false, closeCheck, popup, waitForIt = false;
+		let
+			success = false,
+			closeCheck,
+			popup,
+			opened = null,
+			waitForIt = false;
 		window.__authCallback = function(fail, openedWindow){
 			clearInterval(closeCheck);
 			if (fail === true){
@@ -373,17 +377,28 @@
 		};
 		try {
 			popup = $.PopupOpenCenter('/da-auth/begin','login','450','580');
+			opened = new Date();
 		}catch(e){}
 		// http://stackoverflow.com/a/25643792
 		let onWindowClosed = function(){
+				opened = null;
+
 				if (success)
 					return;
 
 				if (document.cookie.indexOf('auth=') !== -1)
 					return window.__authCallback;
 
-				$.Dialog.fail(false, 'Popup-based login failed');
-				redirect();
+				// If the popup was open for less than Xms then try a redirect
+				// Otherwise it was likely closed intentionally
+				if (opened && (new Date()).getTime() - opened.getTime() < 4000){
+					$.Dialog.confirm(false, 'Popup-based login failed.');
+					redirect();
+					return;
+				}
+
+				$.Dialog.close();
+				$this.enable();
 			};
 		closeCheck = setInterval(function(){
 			try {
