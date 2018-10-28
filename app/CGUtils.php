@@ -1104,17 +1104,22 @@ GPL;
 	/**
 	 * Turns tag names into more readable text, e.g. "sNeM" into "S0N E0M" and "movie#N" into "Movie #N"
 	 *
-	 * @param string $tagname
+	 * @param string      $tag_name
+	 * @param string|null $type
 	 *
 	 * @return string
 	 */
-	public static function expandEpisodeTagName(string $tagname):string {
-		if (preg_match(Regexes::$episode_id, $tagname, $_match))
+	public static function expandEpisodeTagName(string $tag_name, ?string &$type = null):string {
+		if (preg_match(Regexes::$episode_id, $tag_name, $_match)){
+			$type = 'episode';
 			return 'S'.CoreUtils::pad($_match[1]).' E'.CoreUtils::pad($_match[2]);
-		if (preg_match(Regexes::$movie_id, $tagname, $_match))
+		}
+		if (preg_match(Regexes::$movie_id, $tag_name, $_match)){
+			$type = 'movie';
 			return 'Movie #'.$_match[1];
+		}
 
-		return $tagname;
+		return $tag_name;
 	}
 
 	/**

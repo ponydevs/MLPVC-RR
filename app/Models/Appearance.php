@@ -329,12 +329,10 @@ HTML;
 	/**
 	 * Returns the HTML of the "Linked to from # episodes" section of appearance pages
 	 *
-	 * @param bool       $allowMovies
-	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function getRelatedEpisodesHTML($allowMovies = false){
+	public function getRelatedEpisodesHTML(){
 		/** @var $EpTagsOnAppearance Tag[] */
 		$EpTagsOnAppearance = DB::$instance->setModel(Tag::class)->query(
 			"SELECT t.name
@@ -346,25 +344,41 @@ HTML;
 		if (empty($EpTagsOnAppearance))
 			return '';
 
-		$List = [];
+		$list = [];
+		$ep_count = 0;
+		$movie_count = 0;
 		foreach ($EpTagsOnAppearance as $tag){
 			$name = strtoupper($tag->name);
-			$EpData = Episode::parseID($name);
-			$Ep = Episodes::getActual($EpData['season'], $EpData['episode'], $allowMovies);
-			$List[] = (
-				empty($Ep)
-				? CGUtils::expandEpisodeTagName($name)
-				: $Ep->toAnchor($Ep->formatTitle())
-			);
+			$ep_data = Episode::parseID($name);
+			$ep = Episodes::getActual($ep_data['season'], $ep_data['episode'], true);
+			if (empty($ep)){
+				$list[] = CGUtils::expandEpisodeTagName($name, $type);
+			}
+			else {
+				$list[] = $ep->toAnchor($ep->formatTitle());
+				$type = $ep->is_movie ? 'movie' : 'episode';
+			}
+			switch ($type){
+				case 'episode':
+					$ep_count++;
+				break;
+				case 'movie':
+					$movie_count++;
+				break;
+			}
 		}
-		$List = implode(', ',$List);
-		$N_episodes = CoreUtils::makePlural($this->ishuman ? 'movie' : 'episode', \count($EpTagsOnAppearance),PREPEND_NUMBER);
-		$hide = '';
+		$list = implode(', ',$list);
+		$link_types = [];
+		if ($ep_count > 0)
+			$link_types[] = CoreUtils::makePlural('episode', $ep_count, PREPEND_NUMBER);
+		if ($movie_count > 0)
+			$link_types[] = CoreUtils::makePlural('movie', $movie_count, PREPEND_NUMBER);
+		$link_types = implode(' and ', $link_types);
 
 		return <<<HTML
-	<section id="ep-appearances" $hide>
-		<h2><span class='typcn typcn-video'></span>Linked to from $N_episodes</h2>
-		<p>$List</p>
+	<section id="ep-appearances">
+		<h2><span class='typcn typcn-video'></span>Linked to from $link_types</h2>
+		<p>$list</p>
 	</section>
 HTML;
 	}

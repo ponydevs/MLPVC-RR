@@ -173,7 +173,7 @@ class TagController extends ColorGuideController {
 					$Appearance = Appearance::find($AppearanceID);
 					$resp = [
 						'needupdate' => true,
-						'eps' => $Appearance->getRelatedEpisodesHTML($this->_EQG),
+						'eps' => $Appearance->getRelatedEpisodesHTML(),
 					];
 				}
 				else $resp = null;
@@ -259,7 +259,7 @@ HTML;
 						$r = ['tags' => $Appearance->getTagsHTML(NOWRAP)];
 						if ($this->_appearancePage){
 							$r['needupdate'] = true;
-							$r['eps'] = $Appearance->getRelatedEpisodesHTML($this->_EQG);
+							$r['eps'] = $Appearance->getRelatedEpisodesHTML();
 						}
 						Response::done($r);
 					}
@@ -275,7 +275,7 @@ HTML;
 						if ($tagged->appearance_id === $AppearanceID){
 							$data['needupdate'] = true;
 							$Appearance = Appearance::find($AppearanceID);
-							$data['eps'] = $Appearance->getRelatedEpisodesHTML($this->_EQG);
+							$data['eps'] = $Appearance->getRelatedEpisodesHTML();
 						}
 					}
 				}
