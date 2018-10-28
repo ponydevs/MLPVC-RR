@@ -14,7 +14,7 @@
 	.desktop-only { display: none !important }
 	body {
 		overflow: initial;
-		background: $StyledBackground;
+		background: $HeaderFooterBG;
 
 		@media all and (max-width: $Breakpoint){
 			&.sidebar-open { overflow: hidden }
@@ -216,7 +216,7 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		background: $StyledBackground;
+		background: $HeaderFooterBG;
 	}
 
 	.button-block {
