@@ -57,7 +57,7 @@
 				});
 			}},
 		],
-		function($el){ return `Color: ${$el.attr('title')}` }
+		function($el){ return `Color: ${$el.attr('title') || $el.next().children('.label').text()}` }
 	).on('mousedown', function(e){
 	    if (e.shiftKey)
 	        e.preventDefault();
