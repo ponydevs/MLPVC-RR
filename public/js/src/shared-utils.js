@@ -636,22 +636,6 @@
 		};
 	})(jQuery);
 
-	$.getAceEditor = (title, mode, cb) => {
-		let fail = () => $.Dialog.fail(false, 'Failed to load Ace Editor'),
-			done = () => {
-				$.Dialog.clearNotice();
-				cb(`ace/mode/${mode}`);
-			};
-		if (typeof window.ace === 'undefined'){
-			$.Dialog.wait(title, 'Loading Ace Editor');
-			$.getScript('/js/min/ace/ace.js', function(){
-				window.ace.config.set('basePath', '/js/min/ace');
-				done();
-			}).fail(fail);
-		}
-		else done();
-	};
-	
 	$.aceInit = function(editor){
 		editor.$blockScrolling = Infinity;
 		editor.setShowPrintMargin(false);

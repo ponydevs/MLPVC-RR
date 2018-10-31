@@ -193,6 +193,7 @@ class CoreUtils {
 		'datastore',
 		'moment',
 		'jquery.ba-throttle-debounce',
+		'jquery.fluidbox',
 		'jquery.swipe',
 		'jquery.simplemarquee',
 		'ace/ace',
