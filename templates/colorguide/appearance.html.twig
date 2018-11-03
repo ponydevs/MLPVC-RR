@@ -19,7 +19,7 @@
 	{%- endif %}</p>
 
 	{% if owner_or_staff %}
-	<div class="notice warn align-center appearance-private-notice{{ not appearance.private ? ' hidden' : '' }}"><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to {{ owner is defined ? (is_owner ? 'you' : owner.name) ~ 'and ' : '' }}staff members)</strong></p></div>
+	<div class="notice warn align-center appearance-private-notice{{ not appearance.private ? ' hidden' : '' }}"><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to {{ owner is defined ? (is_owner ? 'you' : owner.name) ~ ' and ' : '' }}staff members)</strong></p></div>
 	{% endif %}
 
 	<div id="p{{ appearance.id }}" class="section-container">

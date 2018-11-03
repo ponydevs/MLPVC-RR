@@ -27,6 +27,7 @@ class CGUtils {
 			2   => 'Earth Ponies',
 			10  => 'Pets',
 			437 => 'Non-pony Characters',
+			385 => 'Creatures',
 			96  => 'Outfits & Clothing',
 			// add other tags here
 			64  => 'Objects',
