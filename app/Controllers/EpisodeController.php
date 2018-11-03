@@ -301,7 +301,7 @@ class EpisodeController extends Controller {
 					];
 					foreach ($type_map as $k => $v){
 						if (isset($update[$k])){
-							$value = !empty($type_map[$k]) ? $type_map[$k]($v) : $v;
+							$value = !empty($v) ? $v($update[$k]) : $update[$k];
 							if ($value !== $this->episode->{$k}){
 								$log_entry["old$k"] = $this->episode->{$k};
 								$log_entry["new$k"] = $value;
