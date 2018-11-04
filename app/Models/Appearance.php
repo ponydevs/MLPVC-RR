@@ -45,6 +45,8 @@ use SeinopSys\RGBAColor;
  * @property Tag[]               $tags                (Via relations)
  * @property Tagged[]            $tagged              (Via relations)
  * @property MajorChange[]       $major_changes       (Via relations)
+ * @property ShowAppearance[]    $show_appearances    (Via relations)
+ * @property Show[]              $related_shows       (Via relations)
  * @property bool                $protected           (Via magic method)
  * @method static Appearance[] find_by_sql($sql, $values = null)
  * @method static Appearance find_by_owner_id_and_label(string $uuid, string $label)
@@ -62,6 +64,8 @@ class Appearance extends NSModel implements Linkable {
 		['color_groups', 'order' => '"order" asc, id asc'],
 		['related_appearances', 'class' => 'RelatedAppearance', 'foreign_key' => 'source_id', 'order' => 'target_id asc'],
 		['major_changes', 'class' => 'Logs\MajorChange', 'order' => 'entryid desc'],
+		['show_appearances'],
+		['related_shows', 'class' => 'Show', 'through' => 'show_appearances'],
 	];
 	/**
 	 * For Twig
@@ -332,58 +336,26 @@ HTML;
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function getRelatedEpisodesHTML(){
-		/** @var $EpTagsOnAppearance Tag[] */
-		$EpTagsOnAppearance = DB::$instance->setModel(Tag::class)->query(
-			"SELECT t.name
-			FROM tagged tg
-			LEFT JOIN tags t ON tg.tag_id = t.id
-			WHERE tg.appearance_id = ? AND  t.type = 'ep'
-			ORDER BY t.name", [$this->id]);
-
-		if (empty($EpTagsOnAppearance))
+	public function getRelatedShowsHTML(){
+		$related_shows = $this->related_shows;
+		if (empty($related_shows))
 			return '';
 
 		$list = [];
-		$ep_count = 0;
-		$movie_count = 0;
-		foreach ($EpTagsOnAppearance as $tag){
-			$name = strtoupper($tag->name);
-			$ep_data = Show::parseID($name);
-			$ep = ShowHelper::getActual($ep_data['season'], $ep_data['episode'], true);
-			if (empty($ep)){
-				$list[] = CGUtils::expandEpisodeTagName($name, $type);
-			}
-			else {
-				$list[] = $ep->toAnchor($ep->formatTitle());
-				$type = $ep->is_movie ? 'movie' : 'episode';
-			}
-			switch ($type){
-				case 'episode':
-					$ep_count++;
-				break;
-				case 'movie':
-					$movie_count++;
-				break;
-			}
+		foreach ($related_shows as $show){
+			$list[] = $show->toAnchor($show->formatTitle());
 		}
 		$list = implode(', ',$list);
-		$link_types = [];
-		if ($ep_count > 0)
-			$link_types[] = CoreUtils::makePlural('episode', $ep_count, PREPEND_NUMBER);
-		if ($movie_count > 0)
-			$link_types[] = CoreUtils::makePlural('movie', $movie_count, PREPEND_NUMBER);
-		$link_types = implode(' and ', $link_types);
 
 		return <<<HTML
 	<section id="ep-appearances">
-		<h2><span class='typcn typcn-video'></span>Linked to from $link_types</h2>
+		<h2><span class='typcn typcn-video'></span>Featured in</h2>
 		<p>$list</p>
 	</section>
 HTML;
 	}
 
-	public function veirfyToken(?string $token = null){
+	public function verifyToken(?string $token = null){
 		if ($token === null){
 			if (!isset($_GET['token']))
 				return false;
@@ -398,7 +370,7 @@ HTML;
 		if (!$ignoreStaff && (
 			Permission::sufficient('staff')
 			|| (Auth::$signed_in ? $this->owner_id === Auth::$user->id : false)
-			|| ($this->owner_id !== null && $this->veirfyToken())
+			|| ($this->owner_id !== null && $this->verifyToken())
 		))
 			$isPrivate = false;
 		return $isPrivate;
@@ -865,12 +837,6 @@ HTML;
 
 			$tag_name = CGUtils::validateTagName('tag_name');
 			$tag_type = null;
-
-			$episodeTagCheck = CGUtils::normalizeEpisodeTagName($tag_name);
-			if ($episodeTagCheck !== false){
-				$tag_name = $episodeTagCheck;
-				$tag_type = 'ep';
-			}
 
 			$tag = Tags::getActual($tag_name, 'name');
 			if (empty($tag))

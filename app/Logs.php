@@ -124,7 +124,7 @@ class Logs {
 				$details[] = ['Description', CoreUtils::escapeHTML($data['label'])];
 				$details[] = ['Type', Post::REQUEST_TYPES[$data['type']]];
 				$ep = Show::find($data['show_id']);
-				$details[] = ['Posted under', !empty($ep) ? $ep->toAnchor() : "S{$data['season']}E{$data['episode']}"];
+				$details[] = ['Posted under', !empty($ep) ? $ep->toAnchor() : "Show #{$data['show_id']} <em>(deleted)</em>"];
 				$details[] = ['Requested on', Time::tag($data['requested_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 				if (!empty($data['requested_by']))
 					$details[] = ['Requested by', User::find($data['requested_by'])->toAnchor()];

@@ -67,9 +67,6 @@ class TagController extends ColorGuideController {
 				CGUtils::autocompleteRespond('[]');
 
 			$query = CoreUtils::trim(strtolower($_GET['s']));
-			$TagCheck = CGUtils::normalizeEpisodeTagName($query);
-			if ($TagCheck !== false)
-				$query = $TagCheck;
 			DB::$instance->where('name',"%$query%",'LIKE');
 			$limit = 5;
 			$cols = "id, name, 'typ-'||type as type";
@@ -173,7 +170,7 @@ class TagController extends ColorGuideController {
 					$Appearance = Appearance::find($AppearanceID);
 					$resp = [
 						'needupdate' => true,
-						'eps' => $Appearance->getRelatedEpisodesHTML(),
+						'eps' => $Appearance->getRelatedShowsHTML(),
 					];
 				}
 				else $resp = null;
@@ -183,8 +180,6 @@ class TagController extends ColorGuideController {
 			case 'PUT':
 				$data['name'] = CGUtils::validateTagName('name');
 
-				$epTagName = CGUtils::normalizeEpisodeTagName($data['name']);
-				$surelyAnEpisodeTag = $epTagName !== false;
 				$type = (new Input('type',function($value){
 					if (!isset(Tags::TAG_TYPES[$value]))
 						return Input::ERROR_INVALID;
@@ -194,37 +189,7 @@ class TagController extends ColorGuideController {
 						Input::ERROR_INVALID => 'Invalid tag type: @value',
 					]
 				]))->out();
-				if (empty($type)){
-					if ($surelyAnEpisodeTag)
-						$data['name'] = $epTagName;
-					$data['type'] = $epTagName === false ? null : 'ep';
-				}
-				else {
-					if ($type === 'ep'){
-						if (!$surelyAnEpisodeTag){
-							$errmsg = <<<HTML
-Episode tags must be in one of the following formats:
-<ol>
-<li>
-	<code>s<var>S</var>e<var>E<sub>1</sub></var>[-<var>E<sub>2</sub></var>]</code> where
-	<ul>
-		<li><var>S</var> ∈ <var>{1, 2, 3, &hellip; 9}</var></li>
-		<li><var>E<sub>1</sub></var>, <var>E<sub>2</sub></var> ∈ <var>{1, 2, 3, &hellip; 26}</var></li>
-		<li>if specified: <var>E<sub>1</sub></var>+1 = <var>E<sub>2</sub></var></li>
-	</ul>
-</li>
-<li>
-	<code>movie<var>M</var></code> where <var>M</var> ∈ <var>&#x2124;<sup>+</sup></var>
-</li>
-</ol>
-HTML;
-
-							Response::fail($errmsg);
-						}
-						$data['name'] = $epTagName;
-					}
-					else if ($surelyAnEpisodeTag)
-						$type = 'ep';
+				if (!empty($type)){
 					$data['type'] = $type;
 				}
 
@@ -259,7 +224,7 @@ HTML;
 						$r = ['tags' => $Appearance->getTagsHTML(NOWRAP)];
 						if ($this->_appearancePage){
 							$r['needupdate'] = true;
-							$r['eps'] = $Appearance->getRelatedEpisodesHTML();
+							$r['eps'] = $Appearance->getRelatedShowsHTML();
 						}
 						Response::done($r);
 					}
@@ -275,7 +240,7 @@ HTML;
 						if ($tagged->appearance_id === $AppearanceID){
 							$data['needupdate'] = true;
 							$Appearance = Appearance::find($AppearanceID);
-							$data['eps'] = $Appearance->getRelatedEpisodesHTML();
+							$data['eps'] = $Appearance->getRelatedShowsHTML();
 						}
 					}
 				}

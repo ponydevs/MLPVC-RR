@@ -9,7 +9,7 @@
 {% else %}
 {% for show in shows %}
 	{% set is_movie = show.get_is_movie %}
-<tr data-id='{{ show.id }}'>
+<tr data-id='{{ show.id }}' data-type='{{ show.type }}'>
 	{% if not is_movie %}
 	<td class='season' rowspan='2'>{{ show.season }}</td>
 	<td class='episode' rowspan='2'>{{ show.episode }}{% if show.twoparter %}-{{ show.episode + 1 }}{% endif %}</td>
@@ -27,8 +27,8 @@
 		{% if is_staff %}
 		<span class='admin-controls'>
 			{# TODO Make this .edit-show #}
-			<button class='edit-episode typcn typcn-pencil blue' title='Edit {{ show.type }}'></button>
-			<button class='delete-episode typcn typcn-times red' title='Delete {{ show.type }}'></button>
+			<button class='edit-show typcn typcn-pencil blue' title='Edit {{ show.type }}'></button>
+			<button class='delete-show typcn typcn-times red' title='Delete {{ show.type }}'></button>
 		</span>
 		{% endif  %}
 	</td>

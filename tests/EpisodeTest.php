@@ -44,7 +44,7 @@ class EpisodeTest extends TestCase {
 			'episode' => 1,
 			'title' => "A#bc-d'?e",
 		]);
-		$result = $Movie->movieSafeTitle();
+		$result = $Movie->safeTitle();
 		self::assertEquals('A-bc-d-e', $result);
 	}
 

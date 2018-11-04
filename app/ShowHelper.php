@@ -27,20 +27,17 @@ class ShowHelper {
 	 *
 	 * @param int|int[]   $limit
 	 * @param string|null $where
-	 * @param bool        $allow_movies
 	 * @param bool        $pre_ordered Indicates whether the user paid half their salary for an unfinished game /s
 	 *                                 Jokes aside, this indicates that orderBy calls took place before this point, so that we don't order further.
 	 *
 	 * @return Show|Show[]
 	 */
-	public static function get($limit = null, $where = null, bool $allow_movies = false, bool $pre_ordered = false) {
+	public static function get($limit = null, $where = null, bool $pre_ordered = false) {
 		/** @var $ep Show */
 		if (!empty($where))
 			DB::$instance->where($where);
 		if (!$pre_ordered)
 			DB::$instance->orderBy('season', 'DESC')->orderBy('episode', 'DESC');
-		if (!$allow_movies)
-			DB::$instance->where('season != 0');
 		if ($limit !== 1)
 			return DB::$instance->get(Show::$table_name, $limit);
 
@@ -93,7 +90,7 @@ class ShowHelper {
 	public static function getLatest() {
 		DB::$instance->orderBy('airs', 'DESC');
 
-		return self::get(1, "airs < NOW() + INTERVAL '24 HOUR'", false, true);
+		return self::get(1, "season is not null AND airs < NOW() + INTERVAL '24 HOUR'", true);
 	}
 
 	public static function removeTitlePrefix($title) {
@@ -110,10 +107,10 @@ class ShowHelper {
 	/**
 	 * Loads the episode page
 	 *
-	 * @param null|string|Show $force          If null: Parses $data and loads appropriate episode
-	 *                                         If string: Loads episode by specified ID
-	 *                                         If Episode: Uses the object as Episode data
-	 * @param Post             $linked_post    Linked post (when sharing)
+	 * @param null|string|Show $force       If null: Parses $data and loads appropriate episode
+	 *                                      If string: Loads episode by specified ID
+	 *                                      If SHow: Uses the object as Show data
+	 * @param Post             $linked_post Linked post (when sharing)
 	 */
 	public static function loadPage($force = null, Post $linked_post = null) {
 		if ($force instanceof Show)
@@ -124,7 +121,7 @@ class ShowHelper {
 		if (!$linked_post)
 			CoreUtils::fixPath($current_episode->toURL());
 
-		$js = ['jquery.fluidbox', true, 'pages/episode/manage'];
+		$js = ['jquery.fluidbox', true, 'pages/show/manage'];
 		if (Permission::sufficient('staff')){
 			$js[] = 'moment-timezone';
 			$js[] = 'pages/show/index-manage';
@@ -133,20 +130,20 @@ class ShowHelper {
 		$prev_episode = $current_episode->getPrevious();
 		$next_episode = $current_episode->getNext();
 
-		$ogImage = null;
-		$ogDescription = null;
+		$og_image = null;
+		$og_description = null;
 		if ($linked_post){
 			if ($linked_post->is_request)
-				$ogDescription = 'A request';
-			else $ogDescription = "A reservation by {$linked_post->reserver->name}";
-			$ogDescription .= " on the MLP Vector Club's website";
+				$og_description = 'A request';
+			else $og_description = "A reservation by {$linked_post->reserver->name}";
+			$og_description .= " on the MLP Vector Club's website";
 
 			if (!$linked_post->finished)
-				$ogImage = $linked_post->preview;
+				$og_image = $linked_post->preview;
 			else {
 				$finishdeviation = DeviantArt::getCachedDeviation($linked_post->deviation_id);
 				if (!empty($finishdeviation->preview))
-					$ogImage = $finishdeviation->preview;
+					$og_image = $finishdeviation->preview;
 			}
 		}
 
@@ -170,17 +167,19 @@ class ShowHelper {
 			$import['fullsize_match_regex'] = Regexes::$fullsize_match;
 		}
 
-		$heading = ($linked_post ? ucfirst($linked_post->kind).": {$linked_post->label} - " : '').$current_episode->formatTitle();
-		CoreUtils::loadPage('EpisodeController::view', [
-			'title' => "$heading - Vector Requests & Reservations",
+		$linked_post_prefix = $linked_post ? ucfirst($linked_post->kind).": {$linked_post->label} - " : '';
+		$heading = $current_episode->formatTitle();
+		$title = "$linked_post_prefix$heading - Vector Requests & Reservations";
+		CoreUtils::loadPage('ShowController::view', [
+			'title' => $title,
 			'heading' => $heading,
 			'css' => [true],
 			'js' => $js,
 			'canonical' => $linked_post ? $linked_post->toURL() : null,
 			'og' => [
 				'url' => $linked_post ? $linked_post->toURL() : null,
-				'image' => $ogImage,
-				'description' => $ogDescription,
+				'image' => $og_image,
+				'description' => $og_description,
 			],
 			'import' => $import,
 		]);
@@ -209,7 +208,7 @@ class ShowHelper {
 	 * @return string
 	 */
 	public static function getVideosHTML(Show $Episode, bool $wrap = WRAP):string {
-		return Twig::$env->render('episode/_watch.html.twig', [
+		return Twig::$env->render('show/_watch.html.twig', [
 			'current_episode' => $Episode,
 			'wrap' => $wrap,
 			'videos' => $Episode->videos,
@@ -224,14 +223,14 @@ class ShowHelper {
 	 * @return string
 	 */
 	public static function getSidebarVoting(Show $Episode):string {
-		return Twig::$env->render('episode/_sidebar_voting.html.twig', [
+		return Twig::$env->render('show/_sidebar_voting.html.twig', [
 			'current_episode' => $Episode,
 			'signed_in' => Auth::$signed_in,
 		]);
 	}
 
-	public static function getAppearancesSectionHTML(Show $Episode):string {
-		return Twig::$env->render('episode/_related_appearances.html.twig', ['current_episode' => $Episode]);
+	public static function getAppearancesSectionHTML(Show $show):string {
+		return Twig::$env->render('show/_related_appearances.html.twig', ['current_episode' => $show]);
 	}
 
 	public static function validateSeason($allowMovies = false) {

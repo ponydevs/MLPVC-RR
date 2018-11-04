@@ -235,56 +235,6 @@ class CGUtils {
 		Image::checkSize($path, $width, $height, $min, $max);
 	}
 
-	/**
-	 * Checks and normalizes episode tag names
-	 *
-	 * @param string $tag
-	 *
-	 * @return string|false
-	 */
-	public static function normalizeEpisodeTagName(string $tag){
-		$_match = [];
-		if (preg_match(Regexes::$episode_id,$tag,$_match)){
-			$season = \intval($_match[1], 10);
-			if ($season === 0)
-				return false;
-			$episode = \intval($_match[2], 10);
-			$name = 's'.CoreUtils::pad($season).'e'.CoreUtils::pad($episode);
-			$episode_is_range = !empty($_match[3]);
-			if ($episode_is_range){
-				$episode_to = \intval($_match[3], 10);
-				if ($episode_to-1 !== $episode)
-					return false;
-
-				$name .= '-'.CoreUtils::pad($episode_to);
-			}
-
-			return $name;
-		}
-		if (preg_match(Regexes::$movie_id,$tag,$_match)){
-			$movie = \intval($_match[1], 10);
-			if ($movie <= 0)
-				return false;
-			return "movie$movie";
-		}
-		else return false;
-	}
-
-	/**
-	 * Checks the type of an episode tag name
-	 *
-	 * @param string $name
-	 *
-	 * @return string|false
-	 */
-	public static function checkEpisodeTagType(string $name):?string {
-		if (preg_match(Regexes::$episode_id,$name,$_match))
-			return 'episode';
-		if (preg_match(Regexes::$movie_id,$name,$_match))
-			return 'movie';
-		return null;
-	}
-
 	public const CHANGES_SECTION = <<<HTML
 <section>
 	<h2><span class='typcn typcn-warning'></span>List of major changes</h2>

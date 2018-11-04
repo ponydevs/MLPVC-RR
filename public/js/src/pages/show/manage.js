@@ -2,21 +2,18 @@
 (function(){
 	'use strict';
 
-	let SEASON = window.SEASON,
-		EPISODE = window.EPISODE,
-		USERNAME_REGEX = window.USERNAME_REGEX,
+	let USERNAME_REGEX = window.USERNAME_REGEX,
 		FULLSIZE_MATCH_REGEX = window.FULLSIZE_MATCH_REGEX,
-		EpID = 'S'+SEASON+'E'+EPISODE,
-		isMovie = SEASON === 0,
-		What = isMovie ? 'Movie' : 'Episode',
-		what = What.toLowerCase(),
+		showId = window.SHOW_ID,
 		$epSection = $content.children('section.episode');
 
 	$('#video').on('click',function(){
 		$.Dialog.wait('Set video links', 'Requesting links from the server');
 
-		$.API.get(`/episode/${EpID}/video-data`,$.mkAjaxHandler(function(){
-			let data = this;
+		const endpoint = `/show/${showId}/video-data`;
+		$.API.get(endpoint, $.mkAjaxHandler(function(){
+			const data = this;
+			const { type } = data;
 
 			if (!data.status) return $.Dialog.fail(false, data.message);
 
@@ -25,7 +22,7 @@
 				sv_input = `<input type='url' class='sv' name='sv_1' placeholder='sendvid' spellcheck='false' autocomplete='off'>`,
 				mg_input = `<input type='url' class='mg' name='mg_1' placeholder='Mega' spellcheck='false' autocomplete='off'>`,
 				$VidLinksForm = $.mk('form').attr('id','vidlinks').attr('class','align-center').html(
-					`<p>Enter vido links below, leave any input blank to remove that video from the ${what} page.</p>
+					`<p>Enter video links below, leave any input blank to remove that video from the page.</p>
 					<div class='inputs'>
 						${yt_input}
 						${dm_input}
@@ -36,7 +33,7 @@
 			if (data.twoparter){
 				$.mk('p').html('<strong>~ Part 1 ~</strong>').insertBefore($VidLinksForm.children('input').first());
 				$VidLinksForm.append(
-					`<p>Check below if either link contains the full ${what} instead of just one part</p>
+					`<p>Check below if either link contains the entire ${type} instead of just one part</p>
 					<div>
 						<label><input type='checkbox' name='yt_1_full'> YouTube</label>
 						<label><input type='checkbox' name='dm_1_full'> Dailymotion</label>
@@ -77,7 +74,7 @@
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Saving links');
 
-					$.API.put(`/episode/${EpID}/video-data`,data,$.mkAjaxHandler(function(){
+					$.API.put(endpoint, data, $.mkAjaxHandler(function() {
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.epsection){
@@ -103,9 +100,11 @@
 	$('#cg-relations').on('click',function(){
 		$.Dialog.wait('Guide relation editor', 'Retrieving relations from server');
 
-		$.API.get(`/episode/${EpID}/guide-relations`,$.mkAjaxHandler(function(){
+		const endpoint = `/show/${showId}/guide-relations`;
+		$.API.get(endpoint, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
+			// TODO Make an equivalent form for appearance pages
 			let data = this,
 				$GuideRelationEditorForm = $.mk('form').attr('id','guide-relation-editor'),
 				$selectLinked = $.mk('select').attr({name:'listed',multiple:true}),
@@ -170,11 +169,12 @@
 				$form.on('submit', function(e){
 					e.preventDefault();
 
-					let ids = [];
+					const ids = [];
 					$selectLinked.find('option').each(function(_, el){ ids.push(el.value) });
+
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.API.put(`/episode/${EpID}/guide-relations`,{ids:ids.join(',')},$.mkAjaxHandler(function(){
+					$.API.put(endpoint, { ids: ids.join(',') }, $.mkAjaxHandler(function() {
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.section){

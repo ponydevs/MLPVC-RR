@@ -1,3 +1,4 @@
+{# @controller \App\Posts::getReservationsSection #}
 {# @var arranged array #}
 {# @var current_user \App\Models\User #}
 {% set can_reserve = permission('member') and user_pref('a_postres', current_user) %}
@@ -27,6 +28,6 @@
 		</ul>
 	</div>
 	{% if can_reserve %}
-		{% include 'episode/_post_form.html.twig' with {'kind':'reservation'} %}
+		{% include 'show/_post_form.html.twig' with {'kind':'reservation'} %}
 	{% endif %}
 </section>

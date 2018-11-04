@@ -51,8 +51,7 @@
 			<div class="label movie-only">
 				<span>Overall number</span>
 				<input type="number" min="1" name="no" placeholder="Overall #" required>
-			</div>
-			<input class="movie-only" type="hidden" name="season" value="0">`,
+			</div>`,
 			$.mk('label').append(
 				'<span>Title (5-35 chars.)</span>',
 				$.mk('input').attr({
@@ -93,14 +92,14 @@
 	let $AddEpFormTemplate = new EpisodeForm('addep'),
 		$EditEpFormTemplate = new EpisodeForm('editep');
 
-	$('#add-episode, #add-movie').on('click', function(e){
+	$('#add-episode, #add-show').on('click', function(e){
 		e.preventDefault();
 
-		const movie = /movie/.test(this.id);
+		const is_episode = /episode/.test(this.id);
 		let $AddEpForm = $AddEpFormTemplate.clone(true, true);
-		$AddEpForm.find(movie ? '.episode-only' : '.movie-only').remove();
+		$AddEpForm.find(is_episode ? '.movie-only' : '.episode-only').remove();
 
-		if (!movie)
+		if (is_episode)
 			$AddEpForm.prepend(
 				$.mk('div').attr('class','align-center').html(
 					$.mk('button').attr('class','typcn typcn-flash blue').text('Pre-fill based on last added').on('click', e => {
@@ -110,7 +109,7 @@
 
 						$this.disable();
 
-						$.API.get('/episode/prefill', $.mkAjaxHandler(function(){
+						$.API.get('/show/prefill', $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							let airs = setSat830(this.airday);
@@ -130,7 +129,7 @@
 				)
 			);
 
-		$.Dialog.request(`Add ${movie?'Movie':'Episode'}`, $AddEpForm,'Add', function($form){
+		$.Dialog.request($(this).text(), $AddEpForm,'Add', function($form){
 			let session;
 			try {
 				const mode = 'html';
@@ -150,12 +149,13 @@
 					data = $(this).mkData({airs:airs});
 				data.notes = session.getValue();
 
-				$.Dialog.wait(false, `Adding ${movie?'movie':'episode'} to database`);
+				const what = is_episode ? 'episode' : 'show entry';
+				$.Dialog.wait(false, `Adding ${what} to database`);
 
-				$.API.post('/episode', data, $.mkAjaxHandler(function(){
+				$.API.post('/show', data, $.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Dialog.wait(false, `Opening ${movie?'movie':'episode'} page`, true);
+					$.Dialog.wait(false, `Opening ${what} page`, true);
 
 					$.Navigation.visit(this.url);
 				}));
@@ -167,14 +167,15 @@
 		e.preventDefault();
 
 		let $this = $(this),
-			EpisodePage = $this.attr('id') === 'edit-ep',
+			EpisodePage = Boolean($this.attr('id')),
 			id = EpisodePage
 				? window.SHOW_ID
 				: $this.closest('tr').attr('data-id');
 
 		$.Dialog.wait(`Editing show #${id}`);
 
-		$.API.get(`/episode/${id}`, $.mkAjaxHandler(function(){
+		const endpoint = `/show/${id}`;
+		$.API.get(endpoint, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false,this.message);
 
 			const movie = this.ep.season === null;
@@ -224,7 +225,7 @@
 
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.API.put(`/episode/${id}`, data, $.mkAjaxHandler(function(){
+					$.API.put(endpoint, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.wait(false, 'Updating page', true);
@@ -234,20 +235,21 @@
 			});
 		}));
 	}
-	$content.on('click','#edit-ep',EditEp);
-	$tables.on('click', '.edit-episode', EditEp).on('click', '.delete-episode', function(e){
+	$content.on('click','#edit-show',EditEp);
+	$tables.on('click', '.edit-show', EditEp).on('click', '.delete-show', function(e){
 		e.preventDefault();
 
 		let $this = $(this),
-			epid = $this.closest('tr').data('epid'),
-			movie = /^Movie/.test(epid);
+			$tr = $this.closest('tr'),
+			id = $tr.attr('data-id'),
+			type = $tr.attr('data-type');
 
-		$.Dialog.confirm(`Deleting ${epid}`,`<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the ${movie?'movie':'episode'}, too.</p><p>Are you sure you want to delete it?</p>`, function(sure){
+		$.Dialog.confirm(`Deleting ${type} #${id}`,`<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the ${type}, too.</p><p>Are you sure you want to delete it?</p>`, function(sure){
 			if (!sure) return;
 
 			$.Dialog.wait(false, 'Removing episode');
 
-			$.API.delete(`/episode/${epid}`, $.mkAjaxHandler(function(){
+			$.API.delete(`/show/${id}`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Navigation.reload(true);

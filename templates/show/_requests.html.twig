@@ -1,3 +1,4 @@
+{# @controller \App\Posts::getRequestsSection #}
 {# @var arranged array #}
 {# @var current_user \App\Models\User #}
 {% set can_request = permission('user') and user_pref('a_postreq', current_user) %}
@@ -31,6 +32,6 @@
 		</ul>
 	</div>
 	{% if can_request %}
-		{% include 'episode/_post_form.html.twig' with {'kind':'request'} %}
+		{% include 'show/_post_form.html.twig' with {'kind':'request'} %}
 	{% endif %}
 </section>

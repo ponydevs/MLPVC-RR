@@ -231,7 +231,7 @@ class Posts {
 	 * @throws \Exception
 	 */
 	public static function getRequestsSection(?array $arranged = null, bool $lazyload = false){
-		return Twig::$env->render('episode/_requests.html.twig', [
+		return Twig::$env->render('show/_requests.html.twig', [
 			'arranged' => $arranged,
 			'current_user' => Auth::$user,
 			'lazyload' => $lazyload,
@@ -248,7 +248,7 @@ class Posts {
 	 * @return string|array
 	 */
 	public static function getReservationsSection(?array $arranged = null, bool $lazyload = false){
-		return Twig::$env->render('episode/_reservations.html.twig', [
+		return Twig::$env->render('show/_reservations.html.twig', [
 			'arranged' => $arranged,
 			'current_user' => Auth::$user,
 			'lazyload' => $lazyload,
