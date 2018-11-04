@@ -4,31 +4,30 @@ namespace App\Models;
 
 use ActiveRecord\DateTime;
 use App\CoreUtils;
-use App\Episodes;
+use App\ShowHelper;
 use App\JSON;
 use App\Response;
 use App\Time;
 use App\VideoProvider;
 
 /**
- * @property int      $season
- * @property int      $episode
+ * @property int      $show_id
  * @property int      $part
  * @property bool     $fullep
  * @property string   $provider
  * @property string   $id
  * @property DateTime $modified
  * @property DateTime $not_broken_at
- * @property Episode  $ep            (Via relations)
+ * @property Show     $show          (Via relations)
  * @property string   $url           (Via magic method)
  * @property string   $button_class  (Via magic method)
  * @property string   $provider_name (Via magic method)
  */
-class EpisodeVideo extends NSModel {
-	public static $primary_key = ['season', 'episode', 'provider', 'part'];
+class ShowVideo extends NSModel {
+	public static $primary_key = ['show_id', 'provider', 'part'];
 
 	public static $belongs_to = [
-		['ep', 'class' => 'Episode', 'foreign_key' => ['season','episode']],
+		['show'],
 	];
 
 	public function get_url():string {
@@ -36,11 +35,11 @@ class EpisodeVideo extends NSModel {
 	}
 
 	public function get_button_class():string {
-		return Episodes::PROVIDER_BTN_CLASSES[$this->provider];
+		return ShowHelper::PROVIDER_BTN_CLASSES[$this->provider];
 	}
 
 	public function get_provider_name():string {
-		return Episodes::VIDEO_PROVIDER_NAMES[$this->provider];
+		return ShowHelper::VIDEO_PROVIDER_NAMES[$this->provider];
 	}
 
 	public function isBroken():bool {

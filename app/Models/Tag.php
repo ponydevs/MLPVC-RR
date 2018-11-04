@@ -17,6 +17,7 @@ use HtmlGenerator\HtmlTag;
  * @property Tag          $synonym
  * @property Appearance[] $appearances
  * @method static Tag find(...$args)
+ * @method static Tag find_by_name(string $name)
  * @method static Tag create(...$args)
  */
 class Tag extends NSModel {

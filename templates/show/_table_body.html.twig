@@ -1,36 +1,39 @@
-{# @var episodes \App\Models\Episode[] #}
+{# @var shows \App\Models\Show[] #}
 {# @var are_movies bool #}
 {% spaceless %}
 {% if is_staff is not defined %}
 	{% set is_staff = permission('staff') %}
 {% endif %}
-{% if episodes is empty %}
+{% if shows is empty %}
 <tr class='empty align-center'><td colspan='3'><em>There are no {{ are_movies ? 'movies' ? 'episodes' }} to display</em></td></tr>
 {% else %}
-{% for episode in episodes %}
-	{% set is_movie = episode.get_is_movie %}
-<tr data-epid='{{ episode.getID }}'>
+{% for show in shows %}
+	{% set is_movie = show.get_is_movie %}
+<tr data-id='{{ show.id }}'>
 	{% if not is_movie %}
-	<td class='season' rowspan='2'>{{ episode.season }}</td>
+	<td class='season' rowspan='2'>{{ show.season }}</td>
+	<td class='episode' rowspan='2'>{{ show.episode }}{% if show.twoparter %}-{{ show.episode + 1 }}{% endif %}</td>
+	{% else %}
+	<td class='no' rowspan='2'>{{ show.no }}</td>
 	{% endif %}
-	<td class='episode' rowspan='2'>{{ episode.episode }}{% if episode.twoparter %}-{{ episode.episode + 1 }}{% endif %}</td>
 	<td class='title'>
-		{% if episode.isLatest %}
+		{% if show.isLatest %}
 		<span class="typcn typcn-home" title="Currently visible on the homepage"></span>
 		{% endif %}
-		{% if not episode.get_aired %}
+		{% if not show.get_aired %}
 		<span class="typcn typcn-chart-pie" title="{{ is_movie ? 'Movie' : 'Episode' }} didn't air yet, voting disabled"></span>
 		{% endif %}
-		<a href="{{ episode.toURL }}">{{ episode.title | escape }}</a>
+		<a href="{{ show.toURL }}">{{ show.title | escape }}</a>
 		{% if is_staff %}
 		<span class='admin-controls'>
-			<button class='edit-episode typcn typcn-pencil blue' title='Edit episode'></button>
-			<button class='delete-episode typcn typcn-times red' title='Delete episode'></button>
+			{# TODO Make this .edit-show #}
+			<button class='edit-episode typcn typcn-pencil blue' title='Edit {{ show.type }}'></button>
+			<button class='delete-episode typcn typcn-times red' title='Delete {{ show.type }}'></button>
 		</span>
 		{% endif  %}
 	</td>
 </tr>
-<tr><td class='airs'>{{ time_tag(episode.airs, constant('App\\Time::TAG_EXTENDED'), constant('App\\Time::TAG_STATIC_DYNTIME')) }}</td></tr>
+<tr><td class='airs'>{{ time_tag(show.airs, constant('App\\Time::TAG_EXTENDED'), constant('App\\Time::TAG_STATIC_DYNTIME')) }}</td></tr>
 {% endfor %}
 {% endif %}
 {% endspaceless %}

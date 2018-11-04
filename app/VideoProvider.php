@@ -2,11 +2,11 @@
 
 namespace App;
 
-use App\Models\EpisodeVideo;
+use App\Models\ShowVideo;
 
 class VideoProvider {
 	public static $id, $embed;
-	/** @var EpisodeVideo */
+	/** @var ShowVideo */
 	public $episodeVideo;
 	public function __construct(string $url){
 		$this->episodeVideo = self::getEpisodeVideo(CoreUtils::trim($url));
@@ -25,18 +25,18 @@ class VideoProvider {
 	 * @param string $pattern
 	 * @param string $name
 	 *
-	 * @return EpisodeVideo|null
+	 * @return ShowVideo|null
 	 */
 	private static function testProvider(string $url, string $pattern, string $name) {
 		$match = [];
 		if (preg_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
-			return new EpisodeVideo([
+			return new ShowVideo([
 				'provider' => $name,
 				'id' => $match[1]
 			]);
 		return null;
 	}
-	public static function getEpisodeVideo(string $url): EpisodeVideo {
+	public static function getEpisodeVideo(string $url): ShowVideo {
 		foreach (self::$providerRegexes as $pattern => $name){
 			$test = self::testProvider($url, $pattern, $name);
 			if (!empty($test))
@@ -45,7 +45,7 @@ class VideoProvider {
 		throw new \Exception('Unsupported provider');
 	}
 	public const URL_ONLY = true;
-	public static function getEmbed(EpisodeVideo $video, bool $urlOnly = false):string {
+	public static function getEmbed(ShowVideo $video, bool $urlOnly = false):string {
 		$urlOnly = $urlOnly === self::URL_ONLY;
 
 		switch ($video->provider){

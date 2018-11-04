@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Models\Episode;
+use App\Models\Show;
 use Doctrine\Common\Cache\RedisCache;
 
 class TMDBHelper {
@@ -59,7 +59,7 @@ class TMDBHelper {
 		return $cached_id;
 	}
 
-	public static function getEpisodes(\Tmdb\Client $client, Episode $ep):array {
+	public static function getEpisodes(\Tmdb\Client $client, Show $ep):array {
 		$parts = $ep->twoparter ? 2 : 1;
 		$eps = [];
 		for ($i = 0; $i < $parts; $i++){

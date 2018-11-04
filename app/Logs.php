@@ -5,8 +5,8 @@ namespace App;
 use ActiveRecord\RecordNotFound;
 use App\Models\Appearance;
 use App\Models\ColorGroup;
-use App\Models\Episode;
-use App\Models\EpisodeVideo;
+use App\Models\Show;
+use App\Models\ShowVideo;
 use App\Models\Logs\Log;
 use App\Models\PCGSlotGift;
 use App\Models\Post;
@@ -16,8 +16,6 @@ use cogpowered\FineDiff;
 class Logs {
 	public const LOG_DESCRIPTION = [
 		#--------------------# (max length)
-		'episodes'             => 'Episode management',
-		'episode_modify'       => 'Episode modified',
 		'rolechange'           => 'User group change',
 		'userfetch'            => 'Fetch user details',
 		'post_lock'            => 'Post approved',
@@ -111,50 +109,6 @@ class Logs {
 					['New group', Permission::ROLES_ASSOC[$data['newrole']]]
 				];
 			break;
-			case 'episodes':
-				$details[] = ['Action', self::$ACTIONS[$data['action']]];
-				$details[] = ['Name', (new Episode([
-					'season' => $data['season'],
-					'episode' => $data['episode'],
-					'title' => $data['title'],
-					'twoparter' => $data['twoparter'],
-					'airs' => $data['airs'],
-				]))->formatTitle()];
-				if ($data['season'] === 0)
-					$details[] = ['Overall', "#{$data['episode']}"];
-				if (!empty($data['airs']))
-					$details[] = ['Air date', Time::tag($data['airs'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
-				$details[] = ['Two parts', !empty($data['twoparter'])];
-			break;
-			case 'episode_modify':
-				$link = $data['target'];
-				$EpData = Episode::parseID($data['target']);
-				if (!empty($EpData)){
-					$Episode = Episodes::getActual($EpData['season'], $EpData['episode'], Episodes::ALLOW_MOVIES);
-					if (!empty($Episode))
-						$link = "<a href='".$Episode->toURL()."'>".$Episode->getID().'</a>';
-				}
-				$details[] = ['Episode', $link];
-				if (empty($Episode))
-					$details[] = ['Still exists', false];
-
-				unset($data['entryid'], $data['target']);
-				$newOld = self::_arrangeNewOld($data);
-
-				if (!empty($newOld['airs'])){
-					$newOld['airs']['old'] =  Time::tag($newOld['airs']['old'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
-					$newOld['airs']['new'] =  Time::tag($newOld['airs']['new'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME);
-				}
-				if (isset($newOld['title']['old'], $newOld['title']['new'])){
-					$details[] = ['Title', self::diff($newOld['title']['old'], $newOld['title']['new'])];
-					unset($newOld['title']);
-				}
-
-				foreach ($newOld as $thing => $ver){
-					$details[] = ["Old $thing", $ver['old']];
-					$details[] = ["New $thing", $ver['new']];
-				}
-			break;
 			case 'userfetch':
 				$details[] = ['User', User::find($data['userid'])->toAnchor()];
 			break;
@@ -169,7 +123,7 @@ class Logs {
 				$details[] = self::_getReferenceForDeletedPost($data, 'Request');
 				$details[] = ['Description', CoreUtils::escapeHTML($data['label'])];
 				$details[] = ['Type', Post::REQUEST_TYPES[$data['type']]];
-				$ep = Episode::find_by_season_and_episode($data['season'], $data['episode']);
+				$ep = Show::find($data['show_id']);
 				$details[] = ['Posted under', !empty($ep) ? $ep->toAnchor() : "S{$data['season']}E{$data['episode']}"];
 				$details[] = ['Requested on', Time::tag($data['requested_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 				if (!empty($data['requested_by']))
@@ -287,9 +241,9 @@ class Logs {
 				}
 			break;
 			case 'video_broken':
-				$IDstr = "S{$data['season']}E{$data['episode']}";
-				$details[] = ['Episode', "<a href='/episode/$IDstr'>$IDstr</a>"];
-				$url = VideoProvider::getEmbed(new EpisodeVideo([
+				$show = Show::find($data['show_id']);
+				$details[] = ['Episode', $show->toAnchor()];
+				$url = VideoProvider::getEmbed(new ShowVideo([
 					'provider' => $data['provider'],
 					'id' => $data['id'],
 				]), VideoProvider::URL_ONLY);
@@ -390,7 +344,7 @@ class Logs {
 		else {
 			$details[] = [self::REF_KEY, $post->toAnchor("Post #{$post->id}")];
 			$details[] = ['Kind', CoreUtils::capitalize($post->kind)];
-			$details[] = ['Posted under', $post->ep->toAnchor()];
+			$details[] = ['Posted under', $post->show->toAnchor()];
 			$details[] = ['Posted by', $post->poster->toAnchor()];
 			if ($post->reserved_by !== null)
 				$details[] = ['Reserved by', $post->reserver->toAnchor()];

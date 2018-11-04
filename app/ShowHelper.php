@@ -3,16 +3,23 @@
 namespace App;
 
 use App\Models\Appearance;
-use App\Models\Episode;
-use App\Models\EpisodeVideo;
-use App\Models\EpisodeVote;
+use App\Models\Show;
+use App\Models\ShowVideo;
+use App\Models\ShowVote;
 use App\Models\Post;
 
-class Episodes {
+class ShowHelper {
 	public const TITLE_CUTOFF = 26;
 	public const ALLOWED_PREFIXES = [
 		'Equestria Girls' => 'EQG',
 		'My Little Pony' => 'MLP',
+	];
+	public const VALID_TYPES = [
+		#----------# - max length
+		'movie'      => true,
+		'short'      => true,
+		'episode'    => true,
+		'special'    => true,
 	];
 
 	/**
@@ -24,10 +31,10 @@ class Episodes {
 	 * @param bool        $pre_ordered Indicates whether the user paid half their salary for an unfinished game /s
 	 *                                 Jokes aside, this indicates that orderBy calls took place before this point, so that we don't order further.
 	 *
-	 * @return Episode|Episode[]
+	 * @return Show|Show[]
 	 */
 	public static function get($limit = null, $where = null, bool $allow_movies = false, bool $pre_ordered = false) {
-		/** @var $ep Episode */
+		/** @var $ep Show */
 		if (!empty($where))
 			DB::$instance->where($where);
 		if (!$pre_ordered)
@@ -35,9 +42,9 @@ class Episodes {
 		if (!$allow_movies)
 			DB::$instance->where('season != 0');
 		if ($limit !== 1)
-			return DB::$instance->get('episodes', $limit);
+			return DB::$instance->get(Show::$table_name, $limit);
 
-		return DB::$instance->getOne('episodes');
+		return DB::$instance->getOne(Show::$table_name);
 	}
 
 	public const ALLOW_MOVIES = true;
@@ -54,7 +61,7 @@ class Episodes {
 	 * @param bool $cache
 	 *
 	 * @throws \InvalidArgumentException
-	 * @return Episode|null
+	 * @return Show|null
 	 */
 	public static function getActual(int $season, int $episode, bool $allowMovies = false, $cache = false) {
 		$cache_key = "$season-$episode";
@@ -64,11 +71,11 @@ class Episodes {
 		if ($cache && isset(self::$episodeCache[$cache_key]))
 			return self::$episodeCache[$cache_key];
 
-		$ep = Episode::find_by_season_and_episode($season, $episode);
+		$ep = Show::find_by_season_and_episode($season, $episode);
 		if (!empty($ep))
 			return $ep;
 
-		$part_1 = Episode::find_by_season_and_episode($season, $episode - 1);
+		$part_1 = Show::find_by_season_and_episode($season, $episode - 1);
 		$output = !empty($part_1) && $part_1->twoparter === true
 			? $part_1
 			: null;
@@ -81,7 +88,7 @@ class Episodes {
 	/**
 	 * Returns the latest episode by air time
 	 *
-	 * @return Episode
+	 * @return Show
 	 */
 	public static function getLatest() {
 		DB::$instance->orderBy('airs', 'DESC');
@@ -103,13 +110,13 @@ class Episodes {
 	/**
 	 * Loads the episode page
 	 *
-	 * @param null|string|Episode $force       If null: Parses $data and loads appropriate episode
+	 * @param null|string|Show $force          If null: Parses $data and loads appropriate episode
 	 *                                         If string: Loads episode by specified ID
 	 *                                         If Episode: Uses the object as Episode data
-	 * @param Post                $linked_post Linked post (when sharing)
+	 * @param Post             $linked_post    Linked post (when sharing)
 	 */
 	public static function loadPage($force = null, Post $linked_post = null) {
-		if ($force instanceof Episode)
+		if ($force instanceof Show)
 			$current_episode = $force;
 		if (empty($current_episode))
 			CoreUtils::notFound();
@@ -196,12 +203,12 @@ class Episodes {
 	/**
 	 * Renders the HTML of the "Watch the Episode" section along with the buttons/links
 	 *
-	 * @param Episode $Episode
-	 * @param bool    $wrap
+	 * @param Show $Episode
+	 * @param bool $wrap
 	 *
 	 * @return string
 	 */
-	public static function getVideosHTML(Episode $Episode, bool $wrap = WRAP):string {
+	public static function getVideosHTML(Show $Episode, bool $wrap = WRAP):string {
 		return Twig::$env->render('episode/_watch.html.twig', [
 			'current_episode' => $Episode,
 			'wrap' => $wrap,
@@ -212,18 +219,18 @@ class Episodes {
 	/**
 	 * Render episode voting HTML
 	 *
-	 * @param Episode $Episode
+	 * @param Show $Episode
 	 *
 	 * @return string
 	 */
-	public static function getSidebarVoting(Episode $Episode):string {
+	public static function getSidebarVoting(Show $Episode):string {
 		return Twig::$env->render('episode/_sidebar_voting.html.twig', [
 			'current_episode' => $Episode,
 			'signed_in' => Auth::$signed_in,
 		]);
 	}
 
-	public static function getAppearancesSectionHTML(Episode $Episode):string {
+	public static function getAppearancesSectionHTML(Show $Episode):string {
 		return Twig::$env->render('episode/_related_appearances.html.twig', ['current_episode' => $Episode]);
 	}
 
@@ -248,6 +255,19 @@ class Episodes {
 				Input::ERROR_MISSING => "$field_name is missing",
 				Input::ERROR_INVALID => "$field_name (@value) is invalid",
 				Input::ERROR_RANGE => "$field_name must be between @min and @max",
+			],
+		]))->out();
+	}
+
+	public static function validateType() {
+		return (new Input('type', function($value){
+			if (!isset(self::VALID_TYPES[$value]))
+				return Input::ERROR_INVALID;
+		}, [
+			Input::IS_OPTIONAL => false,
+			Input::CUSTOM_ERROR_MESSAGES => [
+				Input::ERROR_MISSING => 'Show type is missing',
+				Input::ERROR_INVALID => 'Show type (@value) is invalid',
 			],
 		]))->out();
 	}

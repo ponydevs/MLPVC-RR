@@ -30,7 +30,7 @@
 		<div class="prev-ep">
 		{%- if prev_episode is not empty -%}
 			<div>
-				<a href="{{ prev_episode.toURL }}" class="btn link ep-button typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span>{{ cutoff(prev_episode.get_short_title, constant('App\\Episodes::TITLE_CUTOFF')) }}</a>
+				<a href="{{ prev_episode.toURL }}" class="btn link ep-button typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span>{{ cutoff(prev_episode.get_short_title, constant('App\\ShowHelper::TITLE_CUTOFF')) }}</a>
 			</div>
 		{%- else -%}
 		&nbsp;
@@ -48,7 +48,7 @@
 		<div class="next-ep">
 		{%- if next_episode is not empty -%}
 			<div>
-				<a href="{{ next_episode.toURL }}" class="btn link ep-button typcn typcn-media-fast-forward">{{ cutoff(next_episode.get_short_title, constant('App\\Episodes::TITLE_CUTOFF')) }}<span class="typcn typcn-media-fast-forward"></span></a>
+				<a href="{{ next_episode.toURL }}" class="btn link ep-button typcn typcn-media-fast-forward">{{ cutoff(next_episode.get_short_title, constant('App\\ShowHelper::TITLE_CUTOFF')) }}<span class="typcn typcn-media-fast-forward"></span></a>
 			</div>
 		{%- else -%}
 		&nbsp;
@@ -81,12 +81,14 @@
 			<button id="cg-relations" class="typcn typcn-pencil large darkblue">Guide relations</button>
 		</p>
 	</section>
+	{{ export_vars({ 'SHOW_TYPES': constant('App\\ShowHelper::VALID_TYPES') | keys }) }}
 	{% endif %}
 	{% include 'episode/_reservations.html.twig' with { 'arranged': current_episode.reservations, lazyload: true } %}
 	{% include 'episode/_requests.html.twig' with { 'arranged': current_episode.requests, lazyload: true } %}
 	{{ export_vars({
 		'SEASON': current_episode.season,
 		'EPISODE': current_episode.episode,
+		'SHOW_ID': current_episode.id,
 	}) -}}
 	{% if username_regex is defined and username_regex is not empty %}
 		{{ export_vars({ 'USERNAME_REGEX': username_regex }) }}

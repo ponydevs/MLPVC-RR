@@ -6,7 +6,7 @@ use ActiveRecord\DateTime;
 use App\Auth;
 use App\CoreUtils;
 use App\DB;
-use App\Episodes;
+use App\ShowHelper;
 use App\Permission;
 use App\Posts;
 use App\Regexes;
@@ -16,41 +16,43 @@ use App\TMDBHelper;
 use App\VideoProvider;
 
 /**
- * @property int            $season
- * @property int            $episode
- * @property bool           $twoparter             (Uses magic method)
- * @property string         $title
- * @property DateTime       $posted
- * @property string         $posted_by
- * @property DateTime       $airs
- * @property int            $no
- * @property string|null    $score                 (Uses magic method)
- * @property string         $notes
- * @property DateTime       $synopsis_last_checked
- * @property bool           $is_movie              (Via magic method)
- * @property bool           $displayed             (Via magic method)
- * @property bool           $aired                 (Via magic method)
- * @property DateTime       $willair               (Via magic method)
- * @property int            $willairts             (Via magic method)
- * @property string         $short_title           (Via magic method)
- * @property Appearance[]   $related_appearances   (Via magic method)
- * @property EpisodeVideo[] $videos                (Via relations)
- * @property User           $poster                (Via relations)
- * @method static Episode find_by_season_and_episode(int $season, int $episode)
+ * @property int          $id
+ * @property string       $type
+ * @property int          $season
+ * @property int          $episode
+ * @property bool         $twoparter             (Uses magic method)
+ * @property string       $title
+ * @property DateTime     $posted
+ * @property string       $posted_by
+ * @property DateTime     $airs
+ * @property int          $no
+ * @property string|null  $score                 (Uses magic method)
+ * @property string       $notes
+ * @property DateTime     $synopsis_last_checked
+ * @property bool         $is_movie              (Via magic method)
+ * @property bool         $displayed             (Via magic method)
+ * @property bool         $aired                 (Via magic method)
+ * @property DateTime     $willair               (Via magic method)
+ * @property int          $willairts             (Via magic method)
+ * @property string       $short_title           (Via magic method)
+ * @property Appearance[] $related_appearances   (Via magic method)
+ * @property ShowVideo[]  $videos                (Via relations)
+ * @property User         $poster                (Via relations)
+ * @method static Show find_by_season_and_episode(int $season, int $episode)
+ * @method static Show find(int $show_id)
  */
-class Episode extends NSModel implements Linkable {
-	public static $primary_key = ['season', 'episode'];
-	public static $table_name = 'episodes';
+class Show extends NSModel implements Linkable {
+	public static $table_name = 'show';
 
 	public static $has_many = [
-		['videos', 'class' => 'EpisodeVideo', 'foreign_key' => ['season','episode'], 'order' => 'provider asc, part asc'],
+		['videos', 'class' => 'ShowVideo', 'order' => 'provider asc, part asc'],
 	];
 	public static $belongs_to = [
 		['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
 	];
 
 	public function get_is_movie():bool {
-		return $this->season === 0;
+		return $this->season === null;
 	}
 	/** For Twig */
 	public function getIs_movie():bool {
@@ -89,7 +91,7 @@ class Episode extends NSModel implements Linkable {
 	}
 
 	public function get_short_title(){
-		return Episodes::shortenTitlePrefix($this->title);
+		return ShowHelper::shortenTitlePrefix($this->title);
 	}
 
 	private $rel_appearances;
@@ -116,7 +118,7 @@ class Episode extends NSModel implements Linkable {
 	 * @return Post[]|null
 	 */
 	public function getRequests(){
-		$requests = Posts::get($this, ONLY_REQUESTS, Permission::sufficient('staff'));
+		$requests = Posts::get($this->id, ONLY_REQUESTS, Permission::sufficient('staff'));
 
 		$arranged = [
 			'finished' => [],
@@ -140,7 +142,7 @@ class Episode extends NSModel implements Linkable {
 	 * @return Post[]|null
 	 */
 	public function getReservations(){
-		$reservations = Posts::get($this, ONLY_RESERVATIONS, Permission::sufficient('staff'));
+		$reservations = Posts::get($this->id, ONLY_RESERVATIONS, Permission::sufficient('staff'));
 
 		$arranged = [
 			'unfinished' => [],
@@ -185,7 +187,7 @@ class Episode extends NSModel implements Linkable {
 	 * @return int
 	 */
 	public function getPostCount():int {
-		return DB::$instance->where('season', $this->season)->where('episode', $this->episode)->count('posts');
+		return DB::$instance->where('show_id', $this->id)->count('posts');
 	}
 
 	/**
@@ -196,18 +198,18 @@ class Episode extends NSModel implements Linkable {
 	}
 
 	/**
-	 * @param Episode $ep
+	 * @param Show $ep
 	 *
 	 * @return bool
 	 */
-	public function is(Episode $ep):bool {
-		return $this->season === $ep->season && $this->episode === $ep->episode;
+	public function is(Show $ep):bool {
+		return $this->id === $ep->id;
 	}
 
 	private $latest_episode;
 	public function isLatest():bool {
 		if ($this->latest_episode === null)
-			$this->latest_episode = Episodes::getLatest();
+			$this->latest_episode = ShowHelper::getLatest();
 		return $this->is($this->latest_episode);
 	}
 
@@ -279,7 +281,7 @@ class Episode extends NSModel implements Linkable {
 	}
 
 	public function updateScore(){
-		$Score = DB::$instance->whereEp($this)->disableAutoClass()->getOne('episode_votes','AVG(vote) as score');
+		$Score = DB::$instance->where('show_id', $this->id)->disableAutoClass()->getOne(ShowVote::$table_name,'AVG(vote) as score');
 		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
 		$this->save();
 	}
@@ -319,12 +321,12 @@ class Episode extends NSModel implements Linkable {
 	 *
 	 * @param User $user
 	 *
-	 * @return EpisodeVote|null
+	 * @return ShowVote|null
 	 */
-	public function getUserVote(?User $user = null):?EpisodeVote {
+	public function getUserVote(?User $user = null):?ShowVote {
 		if ($user === null && Auth::$signed_in)
 			$user = Auth::$user;
-		return EpisodeVote::find_for($this, $user);
+		return ShowVote::find_for($this, $user);
 	}
 
 	public const
@@ -333,12 +335,12 @@ class Episode extends NSModel implements Linkable {
 	/**
 	 * @param string $dir Expects self::PREVIOUS or self::NEXT
 	 *
-	 * @return Episode|null
+	 * @return Show|null
 	 */
-	private function _getAdjacent($dir):?Episode {
+	private function _getAdjacent($dir):?Show {
 		$is = $this->is_movie ? '=' : '!=';
 		$col = $this->is_movie ? 'episode' : 'no';
-		return Episode::find('first', [
+		return Show::find('first', [
 			'conditions' => [
 				"season $is 0 AND $col $dir ?",
 				$this->{$col}
@@ -350,22 +352,26 @@ class Episode extends NSModel implements Linkable {
 
 	/**
 	 * Get the previous episode based on overall episode number
-	 * @return Episode|null
+	 *
+	 * @return Show|null
 	 */
-	public function getPrevious():?Episode {
+	public function getPrevious():?Show {
 		return $this->_getAdjacent(self::PREVIOUS);
 	}
 
 	/**
 	 * Get the previous episode based on overall episode number
-	 * @return Episode|null
+	 *
+	 * @return Show|null
 	 */
-	public function getNext():?Episode {
+	public function getNext():?Show {
 		return $this->_getAdjacent(self::NEXT);
 	}
 
 	/**
 	 * Get a list of IDs for tags related to the episode
+	 *
+	 * @deprecated Use getCGTag
 	 *
 	 * @return int[]
 	 */
@@ -381,35 +387,38 @@ class Episode extends NSModel implements Linkable {
 
 		$sn = CoreUtils::pad($this->season);
 		$en = CoreUtils::pad($this->episode);
-		$EpTagIDs = [];
-		/** @var $EpTagPt1 array */
-		$EpTagPt1 = DB::$instance->disableAutoClass()->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','id');
-		if (!empty($EpTagPt1))
-			$EpTagIDs[] = $EpTagPt1['id'];
+		$tag_ids = [];
+		/** @var $tag_pt1 array */
+		$tag_pt1 = DB::$instance->disableAutoClass()->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','id');
+		if (!empty($tag_pt1))
+			$tag_ids[] = $tag_pt1['id'];
 		if ($this->twoparter){
 			$next_en = CoreUtils::pad($this->episode+1);
-			/** @var $EpTagPt2 array */
-			$EpTagPt2 = DB::$instance->query("SELECT id FROM tags WHERE name IN (?, ?) AND type = 'ep'",["s{$sn}e{$next_en}", "s{$sn}e{$en}-{$next_en}"]);
-			foreach ($EpTagPt2 as $t)
-				$EpTagIDs[] = $t['id'];
+			/** @var $tag_pt2 array */
+			$tag_pt2 = DB::$instance
+				->where('name', ["s{$sn}e{$next_en}", "s{$sn}e{$en}-{$next_en}"])
+				->where('type', 'ep')
+				->get('tags', null, 'id');
+			foreach ($tag_pt2 as $t)
+				$tag_ids[] = $t['id'];
 		}
-		return $EpTagIDs;
+		return $tag_ids;
 	}
 
 
 	/**
 	 * Get a user's vote for this episode
-	 *
 	 * Accepts a single array containing values
 	 *  for the keys 'season' and 'episode'
 	 * Return's the user's vote entry from the DB
 	 *
 	 * @param User $user
-	 * @return EpisodeVote|null
+	 *
+	 * @return ShowVote|null
 	 */
-	public function getVoteOf(?User $user = null):?EpisodeVote {
+	public function getVoteOf(?User $user = null):?ShowVote {
 		if ($user === null) return null;
-		return EpisodeVote::find_for($this, $user);
+		return ShowVote::find_for($this, $user);
 	}
 
 	/**
@@ -426,7 +435,7 @@ class Episode extends NSModel implements Linkable {
 				$Videos[$v->provider][$v->part] = $v;
 			// YouTube embed preferred
 			$Videos = !empty($Videos['yt']) ? $Videos['yt'] : ($Videos['dm'] ?? $Videos['sv'] ?? $Videos['mg']);
-			/** @var $Videos EpisodeVideo[] */
+			/** @var $Videos ShowVideo[] */
 
 			$parts = \count($Videos);
 			foreach ($Videos as $v)
@@ -462,5 +471,20 @@ class Episode extends NSModel implements Linkable {
 			$synopses[] = $append;
 		}
 		return $synopses;
+	}
+
+	public function getCGTagName(){
+		return $this->type.$this->id;
+	}
+
+	public function getCGTag(){
+		return Tag::find_by_name($this->getCGTagName());
+	}
+
+	public function createCGTag(){
+		$tag = new Tag();
+		$tag->name = $this->getCGTagName();
+		$tag->type = 'ep';
+		return $tag->save();
 	}
 }

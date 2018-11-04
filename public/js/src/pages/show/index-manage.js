@@ -26,16 +26,31 @@
 				<div class=input-group-3>
 					<input type="number" min="1" max="9" name="season" placeholder="Season #" required>
 					<input type="number" min="1" max="26" name="episode" placeholder="Episode #" required>
-					<input type="number" min="1" max="255" name="no" placeholder="Overall #" required>
+					<input type="number" min="1" name="no" placeholder="Overall #" required>
 				</div>
 			</div>
+			<input class="episode-only" type="hidden" name="type" value="episode">
 			<label class="episode-only"><input type="checkbox" name="twoparter"> Has two parts</label>
 			<div class="notice info align-center episode-only">
 				<p>If this is checked, enter the episode number of the first part</p>
 			</div>
 			<div class="label movie-only">
-				<span>Overall movie number</span>
-				<input type="number" min="1" max="26" name="episode" placeholder="Overall #" required>
+				<span>Type</span>
+				<select name="type" required>
+					<option value="" hidden selected>(choose one)</option>
+					<optgroup label="Available types">
+						${window.SHOW_TYPES.map(type => {
+							if (type === 'episode')
+								return '';
+								
+							return `<option value="${type}">${$.capitalize(type)}</option>`;
+						}).join('')}
+					</optgroup>
+				</select>
+			</div>
+			<div class="label movie-only">
+				<span>Overall number</span>
+				<input type="number" min="1" name="no" placeholder="Overall #" required>
 			</div>
 			<input class="movie-only" type="hidden" name="season" value="0">`,
 			$.mk('label').append(
@@ -153,18 +168,16 @@
 
 		let $this = $(this),
 			EpisodePage = $this.attr('id') === 'edit-ep',
-			epid = EpisodePage
-				? SEASON ? 'S'+SEASON+'E'+EPISODE : 'Movie#'+EPISODE
-				: $this.closest('tr').attr('data-epid'),
-			movie = /^Movie/.test(epid);
+			id = EpisodePage
+				? window.SHOW_ID
+				: $this.closest('tr').attr('data-id');
 
-		$.Dialog.wait(`Editing ${epid}`, `Getting ${movie?'movie':'episode'} details from server`);
+		$.Dialog.wait(`Editing show #${id}`);
 
-		if (movie)
-			epid = `S0E${epid.split('#')[1]}`;
-
-		$.API.get(`/episode/${epid}`, $.mkAjaxHandler(function(){
+		$.API.get(`/episode/${id}`, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false,this.message);
+
+			const movie = this.ep.season === null;
 
 			let $EditEpForm = $EditEpFormTemplate.clone(true, true);
 			$EditEpForm.find(movie ? '.episode-only' : '.movie-only').remove();
@@ -181,7 +194,7 @@
 			delete this.ep.notes;
 
 			$.each(this.ep,function(k,v){
-				$EditEpForm.find('input[name='+k+']').val(v);
+				$EditEpForm.find(`:input[name=${k}]`).val(v);
 			});
 
 			$.Dialog.request(false, $EditEpForm,'Save', function($form){
@@ -211,7 +224,7 @@
 
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.API.put(`/episode/${epid}`, data, $.mkAjaxHandler(function(){
+					$.API.put(`/episode/${id}`, data, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.wait(false, 'Updating page', true);

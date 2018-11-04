@@ -8,7 +8,7 @@ use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
-use App\Episodes;
+use App\ShowHelper;
 use App\JSON;
 use App\Models\Logs\MajorChange;
 use App\Permission;
@@ -195,15 +195,15 @@ class Appearance extends NSModel implements Linkable {
 		$notes = CoreUtils::sanitizeHtml($notes);
 		$notes = preg_replace(new RegExp('(\s)(&gt;&gt;(\d+))(\D|$)'),"$1<a href='https://derpibooru.org/$3'>$2</a>$4",$notes);
 		$notes = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
-			$Ep = Episodes::getActual((int) $a[1], (int) $a[2]);
+			$Ep = ShowHelper::getActual((int)$a[1], (int)$a[2]);
 			return !empty($Ep)
 				? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title')).'</a>'
 				: "<strong>{$a[0]}</strong>";
 		},$notes);
 		$notes = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
-			$Ep = Episodes::getActual(0, (int) $a[1], true);
+			$Ep = ShowHelper::getActual(0, (int)$a[1], true);
 			return !empty($Ep)
-				? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(Episodes::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY,'title'))).'</a>'
+				? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(ShowHelper::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY,'title'))).'</a>'
 				: "<strong>{$a[0]}</strong>";
 		},$notes);
 		$notes = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))(\'s?)?\b/',function($a){
@@ -349,8 +349,8 @@ HTML;
 		$movie_count = 0;
 		foreach ($EpTagsOnAppearance as $tag){
 			$name = strtoupper($tag->name);
-			$ep_data = Episode::parseID($name);
-			$ep = Episodes::getActual($ep_data['season'], $ep_data['episode'], true);
+			$ep_data = Show::parseID($name);
+			$ep = ShowHelper::getActual($ep_data['season'], $ep_data['episode'], true);
 			if (empty($ep)){
 				$list[] = CGUtils::expandEpisodeTagName($name, $type);
 			}

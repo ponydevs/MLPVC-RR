@@ -179,7 +179,7 @@ class Notification extends NSModel {
 				/** @var $Post Post */
 				/** @noinspection PhpUndefinedMethodInspection */
 				$Post = Post::find($data['id']);
-				$Episode = $Post->ep;
+				$Episode = $Post->show;
 				$EpID = $Episode->getID();
 				$url = $Post->toURL($Episode);
 			}
