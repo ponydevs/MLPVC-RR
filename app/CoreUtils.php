@@ -355,7 +355,7 @@ class CoreUtils {
 					: (
 					Regexes::$ep_title_prefix->match($Episode->title)
 						? ShowHelper::shortenTitlePrefix($Episode->title)
-						: "Movie: {$Episode->title}"
+						: self::capitalize($Episode->type).': '.$Episode->title
 					);
 
 				$type = $Episode->is_movie ? 'movie' : 'episode';
@@ -367,23 +367,23 @@ class CoreUtils {
 		}
 		else $i = 0;
 
-		/** @var $UpcomingEvents Event[] */
-		$UpcomingEvents = Event::upcoming();
-		if (!empty($UpcomingEvents)){
-			foreach ($UpcomingEvents as $j => $Event){
-				$time = strtotime($Event->starts_at);
-				$beforestartdate = time() < $time;
-				if (!$beforestartdate){
-					$time = strtotime($Event->ends_at);
+		/** @var $upcoming_events Event[] */
+		$upcoming_events = Event::upcoming();
+		if (!empty($upcoming_events)){
+			foreach ($upcoming_events as $j => $event){
+				$time = strtotime($event->starts_at);
+				$before_start_date = time() < $time;
+				if (!$before_start_date){
+					$time = strtotime($event->ends_at);
 				}
 				$month = date('M', $time);
 				$day = date('j', $time);
-				$Verbs = $beforestartdate ? 'Starts' : 'Ends';
-				$timetag = self::_eventTimeTag($time, $i+$j);
+				$Verbs = $before_start_date ? 'Starts' : 'Ends';
+				$time_tag = self::_eventTimeTag($time, $i+$j);
 
 				$HTML[] = [
 					$time, "<li><div class='calendar'><span class='top event'>$month</span><span class='bottom'>$day</span></div>".
-					"<div class='meta'><span class='title'><a href='{$Event->toURL()}'>$Event->name</a></span><span class='time'>$Verbs $timetag</span></div></li>"
+					"<div class='meta'><span class='title'><a href='{$event->toURL()}'>{$event->name}</a></span><span class='time'>$Verbs $time_tag</span></div></li>"
 				];
 			}
 		}
@@ -392,8 +392,8 @@ class CoreUtils {
 		usort($HTML, function ($a, $b){
 			return $a[0] <=> $b[0];
 		});
-		foreach ($HTML as $i => $v)
-			$HTML[$i] = $v[1];
+		foreach ($HTML as &$v)
+			$v = $v[1];
 		$HTML = implode('', $HTML);
 
 		return $wrap ? "<section id='upcoming'><h2>Happening soon</h2><ul>$HTML</ul></section>" : $HTML;

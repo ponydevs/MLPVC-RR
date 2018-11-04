@@ -6,6 +6,7 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
 use App\DeviantArt;
+use App\Models\Show;
 use App\ShowHelper;
 use App\HTTP;
 use App\ImageProvider;
@@ -331,20 +332,23 @@ class PostController extends Controller {
 					Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
 				}
 
-				/** @var $Post Post */
-				$Post = new Post();
-				$Post->preview = $Image->preview;
-				$Post->fullsize = $Image->fullsize;
+				/** @var $post Post */
+				$post = new Post();
+				$post->preview = $Image->preview;
+				$post->fullsize = $Image->fullsize;
 
-				$season = ShowHelper::validateSeason(ShowHelper::ALLOW_MOVIES);
-				$episode = ShowHelper::validateEpisode();
-				$epdata = ShowHelper::getActual($season, $episode, ShowHelper::ALLOW_MOVIES);
-				if (empty($epdata))
-					Response::fail("The specified episode (S{$season}E$episode) does not exist");
-				$Post->season = $epdata->season;
-				$Post->episode = $epdata->episode;
+				$show_id = (new Input('show_id','int',[
+					Input::IS_OPTIONAL => false,
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Show entry ID is missing',
+						Input::ERROR_INVALID => 'Show entry ID (@value) is invalid',
+					],
+				]))->out();
+				if (!DB::$instance->where('id', $show_id)->has(Show::$table_name))
+					Response::fail('The specified show entry does not exist');
+				$post->show_id = $show_id;
 
-				$ByID = Auth::$user->id;
+				$by_id = Auth::$user->id;
 				if (Permission::sufficient('developer')){
 					$username = Posts::validatePostAs();
 					if ($username !== null){
@@ -356,32 +360,32 @@ class PostController extends Controller {
 						if ($kind === 'reservation' && Permission::insufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
 							Response::fail('The user you wanted to post as is not a club member, do you want to post as them anyway?', ['canforce' => true]);
 
-						$ByID = $PostAs->id;
+						$by_id = $PostAs->id;
 					}
 
 					$posted_at = Posts::validatePostedAt();
 					if ($posted_at !== null)
-						$Post->posted_at = date('c', $posted_at);
+						$post->posted_at = date('c', $posted_at);
 				}
 
-				$Post->{$is_reservation ? 'reserved_by' : 'requested_by'} = $ByID;
-				Posts::checkPostDetails($Post->is_request, $Post);
+				$post->{$is_reservation ? 'reserved_by' : 'requested_by'} = $by_id;
+				Posts::checkPostDetails($post->is_request, $post);
 
-				if (!$Post->save())
+				if (!$post->save())
 					Response::dbError();
 
 				try {
 					CoreUtils::socketEvent('post-add',[
-						'id' => $Post->id,
-						'type' => $Post->kind,
-						'show_id' => $Post->show_id,
+						'id' => $post->id,
+						'type' => $post->kind,
+						'show_id' => $post->show_id,
 					]);
 				}
 				catch (\Exception $e){
 					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 				}
 
-				Response::done(['id' => $Post->getIdString(), 'kind' => $kind]);
+				Response::done(['id' => $post->getIdString(), 'kind' => $kind]);
 			break;
 			case 'PUT':
 				$this->_checkPostEditPermission();
@@ -828,37 +832,36 @@ class PostController extends Controller {
 
 		if (Permission::insufficient('staff'))
 			Response::fail();
+
 		$_POST['allow_overwrite_reserver'] = true;
 		$insert = Posts::checkPostFinishingImage();
 		if (empty($insert['reserved_by']))
 			$insert['reserved_by'] = Auth::$user->id;
 
-		$epdata = (new Input('epid','epid', [
+		$show_id = (new Input('show_id','int', [
 			Input::CUSTOM_ERROR_MESSAGES => [
-				Input::ERROR_MISSING => 'Episode identifier is missing',
-				Input::ERROR_INVALID => 'Episode identifier (@value) is invalid',
+				Input::ERROR_MISSING => 'Show ID is missing',
+				Input::ERROR_INVALID => 'Show ID (@value) is invalid',
 			]
 		]))->out();
-		$epdata = ShowHelper::getActual($epdata['season'], $epdata['episode']);
-		if (empty($epdata))
-			Response::fail('The specified episode does not exist');
-		$insert['season'] = $epdata->season;
-		$insert['episode'] = $epdata->episode;
+		if (!DB::$instance->where('id', $show_id)->has(Show::$table_name))
+			Response::fail('The specified show entry does not exist');
+		$insert['show_id'] = $show_id;
 
 		$insert['finished_at'] = date('c');
 
-		$Post = new Post($insert);
-		if (!$Post->save())
+		$reservation = new Post($insert);
+		if (!$reservation->save())
 			Response::dbError();
 
 		if (!empty($insert['lock']))
 			Logs::logAction('post_lock', [
-				'id' => $Post->id,
+				'id' => $reservation->id,
 			]);
 
 		try {
 			CoreUtils::socketEvent('post-add',[
-				'id' => $Post->id,
+				'id' => $reservation->id,
 				'type' => 'reservation',
 				'season' => $insert['season'],
 				'episode' => $insert['episode'],
@@ -868,7 +871,7 @@ class PostController extends Controller {
 			CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
 		}
 
-		Response::success('Reservation added', ['id' => $Post->getIdString()]);
+		Response::success('Reservation added', ['id' => $reservation->getIdString()]);
 	}
 
 	public const SHARE_TYPE = [
@@ -893,16 +896,12 @@ class PostController extends Controller {
 		if ($id > 2147483647 || $id < 1)
 			CoreUtils::notFound();
 
-		/** @var $LinkedPost Post */
-		$LinkedPost = DB::$instance->where($attr, $id)->getOne('posts');
-		if (empty($LinkedPost))
+		/** @var $linked_post Post */
+		$linked_post = DB::$instance->where($attr, $id)->getOne('posts');
+		if (empty($linked_post))
 			CoreUtils::notFound();
 
-		$Episode = ShowHelper::getActual($LinkedPost->season, $LinkedPost->episode, ShowHelper::ALLOW_MOVIES);
-		if (empty($Episode))
-			CoreUtils::notFound();
-
-		ShowHelper::loadPage($Episode, $LinkedPost);
+		ShowHelper::loadPage($linked_post->show, $linked_post);
 	}
 
 	public function suggestRequest(){

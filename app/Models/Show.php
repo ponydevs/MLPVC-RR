@@ -16,28 +16,30 @@ use App\TMDBHelper;
 use App\VideoProvider;
 
 /**
- * @property int          $id
- * @property string       $type
- * @property int          $season
- * @property int          $episode
- * @property bool         $twoparter             (Uses magic method)
- * @property string       $title
- * @property DateTime     $posted
- * @property string       $posted_by
- * @property DateTime     $airs
- * @property int          $no
- * @property string|null  $score                 (Uses magic method)
- * @property string       $notes
- * @property DateTime     $synopsis_last_checked
- * @property bool         $is_movie              (Via magic method)
- * @property bool         $displayed             (Via magic method)
- * @property bool         $aired                 (Via magic method)
- * @property DateTime     $willair               (Via magic method)
- * @property int          $willairts             (Via magic method)
- * @property string       $short_title           (Via magic method)
- * @property Appearance[] $related_appearances   (Via magic method)
- * @property ShowVideo[]  $videos                (Via relations)
- * @property User         $poster                (Via relations)
+ * @property int              $id
+ * @property string           $type
+ * @property int              $season
+ * @property int              $episode
+ * @property bool             $twoparter             (Uses magic method)
+ * @property string           $title
+ * @property DateTime         $posted
+ * @property string           $posted_by
+ * @property DateTime         $airs
+ * @property int              $no
+ * @property string|null      $score                 (Uses magic method)
+ * @property string           $notes
+ * @property DateTime         $synopsis_last_checked
+ * @property bool             $is_episode            (Via magic method)
+ * @property bool             $is_movie              (Via magic method)
+ * @property bool             $displayed             (Via magic method)
+ * @property bool             $aired                 (Via magic method)
+ * @property DateTime         $willair               (Via magic method)
+ * @property int              $willairts             (Via magic method)
+ * @property string           $short_title           (Via magic method)
+ * @property ShowAppearance[] $show_appearances      (Via magic method)
+ * @property Appearance[]     $related_appearances   (Via magic method)
+ * @property ShowVideo[]      $videos                (Via relations)
+ * @property User             $poster                (Via relations)
  * @method static Show find_by_season_and_episode(int $season, int $episode)
  * @method static Show find(int $show_id)
  */
@@ -46,10 +48,24 @@ class Show extends NSModel implements Linkable {
 
 	public static $has_many = [
 		['videos', 'class' => 'ShowVideo', 'order' => 'provider asc, part asc'],
+		['show_appearances'],
+		['related_appearances', 'class' => 'Appearance', 'order' => 'label asc', 'through' => 'show_appearances']
 	];
+	/** For Twig */
+	public function getRelated_appearances():array {
+		return $this->related_appearances;
+	}
 	public static $belongs_to = [
 		['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
 	];
+
+	public function get_is_episode():bool {
+		return $this->season !== null;
+	}
+	/** For Twig */
+	public function getIs_episode():bool {
+		return $this->is_episode;
+	}
 
 	public function get_is_movie():bool {
 		return $this->season === null;
@@ -92,26 +108,6 @@ class Show extends NSModel implements Linkable {
 
 	public function get_short_title(){
 		return ShowHelper::shortenTitlePrefix($this->title);
-	}
-
-	private $rel_appearances;
-	/** @return Appearance[] */
-	public function get_related_appearances(){
-		if ($this->rel_appearances !== null)
-			return $this->rel_appearances;
-
-		$tag_ids = $this->getTagIDs();
-
-		if (!empty($tag_ids)){
-			$this->rel_appearances = DB::$instance->setModel(Appearance::class)->query(
-				'SELECT p.* FROM tagged t
-				LEFT JOIN appearances p ON t.appearance_id = p.id
-				WHERE t.tag_id IN ('.implode(',', $tag_ids).')
-				ORDER BY p.label');
-		}
-		else $this->rel_appearances = [];
-
-		return $this->rel_appearances;
 	}
 
 	/**
@@ -163,8 +159,8 @@ class Show extends NSModel implements Linkable {
 	 * @return string
 	 */
 	public function getID(array $o = []):string {
-		if ($this->is_movie)
-			return "Movie#{$this->episode}";
+		if (!$this->is_episode)
+			return CoreUtils::capitalize($this->type).' #'.$this->id;
 
 		$episode = $this->episode;
 		$season = $this->season;
@@ -193,7 +189,7 @@ class Show extends NSModel implements Linkable {
 	/**
 	 * @return string
 	 */
-	public function movieSafeTitle():string {
+	public function safeTitle():string {
 		return (new RegExp('-{2,}'))->replace('-', (new RegExp('[^a-z]','i'))->replace('-', $this->title));
 	}
 
@@ -271,7 +267,7 @@ class Show extends NSModel implements Linkable {
 	public function toURL():string {
 		if (!$this->is_movie)
 			return '/episode/'.$this->getID();
-		return "/movie/{$this->episode}".(!empty($this->title)?'-'.$this->movieSafeTitle():'');
+		return "/{$this->type}/{$this->id}".(!empty($this->title)?'-'.$this->safeTitle():'');
 	}
 
 	public function toAnchor(?string $text = null):string {
@@ -371,7 +367,7 @@ class Show extends NSModel implements Linkable {
 	/**
 	 * Get a list of IDs for tags related to the episode
 	 *
-	 * @deprecated Use getCGTag
+	 * @deprecated Use show_appearances relations
 	 *
 	 * @return int[]
 	 */

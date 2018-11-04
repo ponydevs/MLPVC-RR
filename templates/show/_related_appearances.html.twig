@@ -1,0 +1,14 @@
+{# @controller \App\ShowHelper::getAppearancesSectionHTML #}
+{# @var current_episode \App\Models\Show #}
+{% if current_episode.related_appearances is not empty %}
+	{% set hide_previews = user_pref('ep_noappprev') %}
+	{% set pages = make_plural('page', (current_episode.related_appearances | length)) %}
+	<section class='appearances'>
+		<h2>Related <a href='/cg'>Color Guide</a> {{ pages }}</h2>
+		<ul>
+		{% for p in current_episode.related_appearances %}
+			<li>{{ hide_previews ? p.toAnchor : p.toAnchorWithPreview }}</li>
+		{% endfor %}
+		</ul>
+	</section>
+{% endif %}

@@ -1,16 +1,16 @@
 {# @controller \App\Controllers\ShowController::index #}
 {# @var export array #}
 {# @var episodes_pagination string #}
-{# @var movies_pagination string #}
-{# @var episodes \App\Models\Episode[] #}
-{# @var movies \App\Models\Episode[] #}
+{# @var show_pagination string #}
+{# @var episodes \App\Models\Show[] #}
+{# @var movies \App\Models\Show[] #}
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
 {% set is_staff = permission('staff') %}
 <div id="content">
 	<div class="sidebyside">
-		<h1>Episodes</h1>
+		<h1>TV Episodes</h1>
 {% if is_staff %}
 		<div class="actions button-block">
 			<button id="add-episode" class="green typcn typcn-plus">Add Episode</button>
@@ -32,13 +32,13 @@
 {{ episodes_pagination }}
 	</div>
 	<div class="sidebyside">
-		<h1>Movies &amp; Shorts</h1>
+		<h1>Movies, Shorts &amp; Specials</h1>
 {% if is_staff %}
 		<div class="actions button-block">
-			<button id="add-movie" class="green typcn typcn-plus">Add Movie</button>
+			<button id="add-show" class="green typcn typcn-plus">Add Show Entry</button>
 		</div>
 {% endif %}
-{{ movies_pagination }}
+{{ show_pagination }}
 {% if movies is not empty or (movies is empty and is_staff) %}
 		<table id="movies">
 			<thead>
@@ -50,7 +50,7 @@
 			<tbody>{% include 'show/_table_body.html.twig' with { shows: movies, are_movies: true } %}</tbody>
 		</table>
 {% endif %}
-{{ movies_pagination }}
+{{ show_pagination }}
 	</div>
 </div>
 {% if export is defined %}

@@ -81,9 +81,9 @@ define('USERNAME_PATTERN', '([A-Za-z\-\d]{1,20})');
 Regexes::$username = new RegExp('^'.USERNAME_PATTERN.'$');
 define('GUEST_AVATAR','/img/guest.svg');
 # Episode
-define('EPISODE_ID_PATTERN','[sS]0*([0-9])[eE]0*([1-9]|1\d|2[0-6])(?:-0*([1-9]|1\d|2[0-6]))?(?:\b|$)');
+define('EPISODE_ID_PATTERN','[sS]0*([0-9])[eE]0*(1\d|2[0-6]|[1-9])(?:-0*(1\d|2[0-6]|[1-9]))?');
 Regexes::$episode_id = new RegExp('^'.EPISODE_ID_PATTERN);
-define('MOVIE_ID_PATTERN','(?:[mM]ovie)#?0*(\d+)(?:\b|$)');
+define('MOVIE_ID_PATTERN','(?:[mM]ovie)#?0*(\d+)');
 Regexes::$movie_id = new RegExp('^'.MOVIE_ID_PATTERN,'i');
 Regexes::$ep_title = new RegExp('^([A-Za-z\s]+: )?[ -~]{5,35}$','u');
 define('INVERSE_EP_TITLE_PATTERN','[^ -~]');

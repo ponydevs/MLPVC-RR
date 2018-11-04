@@ -1,10 +1,9 @@
-{# @controller \App\Controllers\EpisodeController::view #}
-{# @controller \App\Controllers\MovieController::view #}
+{# @controller \App\ShowHelper::loadPage #}
 {# @controller \App\Controllers\PostController::share #}
 {# @var poster \App\Models\User #}
-{# @var current_episode \App\Models\Episode #}
-{# @var prev_episode \App\Models\Episode #}
-{# @var next_episode \App\Models\Episode #}
+{# @var current_episode \App\Models\Show #}
+{# @var prev_episode \App\Models\Show #}
+{# @var next_episode \App\Models\Show #}
 {% extends "layout/base.html.twig" %}
 
 {% block content %}
@@ -55,8 +54,8 @@
 		{%- endif -%}
 		</div>
 	</div>
-	{% include 'episode/_synopsis.html.twig' %}
-	{% include 'episode/_watch.html.twig' %}
+	{% include 'show/_synopsis.html.twig' %}
+	{% include 'show/_watch.html.twig' %}
 	<section class="about-res">
 		<h2>What Vector Reservations Are{% if permission('staff') %}<button class="blue typcn typcn-pencil" id="edit-about_reservations">Edit</button>{% endif %}</h2>
 		{{ global_setting('about_reservations') }}
@@ -71,24 +70,23 @@
 		<pre>{{ current_episode.notes }}</pre>
 	</section>
 	{% endif %}
-	{% include 'episode/_related_appearances.html.twig' %}
+	{% include 'show/_related_appearances.html.twig' %}
 	{% if permission('staff') %}
 	<section class="admin">
 		<h2>Administration area</h2>
 		<p class="align-center">
-			<button id="edit-ep" class="typcn typcn-pencil large darkblue">Metadata</button>
+			<button id="edit-show" class="typcn typcn-pencil large darkblue">Metadata</button>
 			<button id="video" class="typcn typcn-pencil large darkblue">Video links</button>
 			<button id="cg-relations" class="typcn typcn-pencil large darkblue">Guide relations</button>
 		</p>
 	</section>
 	{{ export_vars({ 'SHOW_TYPES': constant('App\\ShowHelper::VALID_TYPES') | keys }) }}
 	{% endif %}
-	{% include 'episode/_reservations.html.twig' with { 'arranged': current_episode.reservations, lazyload: true } %}
-	{% include 'episode/_requests.html.twig' with { 'arranged': current_episode.requests, lazyload: true } %}
+	{% include 'show/_reservations.html.twig' with { 'arranged': current_episode.reservations, lazyload: true } %}
+	{% include 'show/_requests.html.twig' with { 'arranged': current_episode.requests, lazyload: true } %}
 	{{ export_vars({
-		'SEASON': current_episode.season,
-		'EPISODE': current_episode.episode,
 		'SHOW_ID': current_episode.id,
+		'SHOW_TYPE': current_episode.type,
 	}) -}}
 	{% if username_regex is defined and username_regex is not empty %}
 		{{ export_vars({ 'USERNAME_REGEX': username_regex }) }}
@@ -113,7 +111,7 @@
 {% if current_episode is defined and current_episode is not empty %}
 <section id="voting">
 	<h2>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} rating</h2>
-	{% include "episode/_sidebar_voting.html.twig" with { current_episode: current_episode, signed_in: signed_in } only %}
+	{% include "show/_sidebar_voting.html.twig" with { current_episode: current_episode, signed_in: signed_in } only %}
 </section>
 {% endif %}
 {% endblock %}

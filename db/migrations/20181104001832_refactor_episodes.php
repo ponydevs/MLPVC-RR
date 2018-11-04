@@ -2,7 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class AddIdToEpisodesTable extends AbstractMigration {
+class RefactorEpisodes extends AbstractMigration {
 	public function up() {
 		# <Preparations>
 		// Remove old primary key relations
@@ -91,5 +91,32 @@ class AddIdToEpisodesTable extends AbstractMigration {
 			->addForeignKey('show_id', 'show', 'id', [ 'delete' => 'CASCADE', 'update' => 'CASCADE' ])
 			->update();
 		# </Post-Import>
+
+		// Ditch episode tags
+		$this->query("DELETE FROM tags WHERE type = 'ep' AND uses = 0");
+
+		$show_appearances = array_map(function($arr){
+			return ['show_id' => $arr['show_id'], 'appearance_id' => $arr['appearance_id']];
+		}, $this->fetchAll(
+			/** @lang PostgreSQL */
+			"SELECT s.id as show_id, tg.appearance_id FROM show s
+			INNER JOIN tags t ON (
+			  CASE WHEN s.type = 'episode'
+			  THEN (t.name = concat('s',lpad(s.season::text, 2, '0'),'e',lpad(s.episode::text, 2, '0')) OR t.name = concat('s',lpad(s.season::text, 2, '0'),'e',lpad(s.episode::text, 2, '0'),'-',lpad((s.episode + 1)::text, 2, '0')))
+			  ELSE t.name = concat(s.type, s.id) END
+			) AND t.type = 'ep'
+			INNER JOIN tagged tg ON tg.tag_id = t.id"));
+
+		$this->table('show_appearances', ['id' => false, 'primary_key' => ['show_id', 'appearance_id']])
+			->addColumn('show_id', 'integer', ['null' => false])
+			->addColumn('appearance_id', 'integer', ['null' => false])
+			->addForeignKey('show_id', 'show', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+			->addForeignKey('appearance_id', 'appearances', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+			->create();
+		$this->table('show_appearances')
+			->insert($show_appearances)
+			->save();
+
+		$this->query("DELETE FROM tags WHERE type = 'ep'");
 	}
 }

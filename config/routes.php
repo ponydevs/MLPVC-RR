@@ -21,6 +21,7 @@ $router->addMatchTypes([
 	'cg' => '(c(olou?r)?g(uide)?)',
 	'user' => 'u(ser)?',
 	'v' => '(v|appearance)',
+	'st' => '('. implode('|', array_keys(ShowHelper::VALID_TYPES)) .')',
 	'uuid' => '([0-9a-fA-F]{32}|[0-9a-fA-F-]{36})',
 ]);
 
@@ -77,21 +78,19 @@ $router->map('GET', '/da-auth/end',   'AuthController#end');
 # DiscordAuthController
 $router->map('GET', '/discord-connect/begin', 'DiscordAuthController#begin');
 $router->map('GET', '/discord-connect/end',   'DiscordAuthController#end');
-# EpisodeController
-$router->map('GET', '/episode/[epid:id]', 'EpisodeController#view');
-$router->map('GET', '/episode/latest',    'EpisodeController#latest');
 # ShowController
-$router->map('GET', '/episodes/[i]?', 'ShowController#index');
-$router->map('GET', '/movies/[i]?',   'ShowController#index');
-$router->map('GET', '/show',          'ShowController#index');
+$router->map('GET', '/episode/[epid:id]', 'ShowController#viewEpisode');
+$router->map('GET', '/episode/latest',    'ShowController#latest');
+$router->map('GET', '/episodes/[i]?',     'ShowController#index');
+$router->map('GET', '/[st]/[i:id][adi]?', 'ShowController#viewById');
+$router->map('GET', '/movies/[i]?',       'ShowController#index');
+$router->map('GET', '/show',              'ShowController#index');
 # EQGController
 $router->map('GET', '/eqg/[i:id]',   'EQGController#redirectInt');
 $router->map('GET', '/eqg/[adi:id]', 'EQGController#redirectStr');
 # EventController
 $router->map('GET', '/events/[i]?',        'EventController#list');
 $router->map('GET', '/event/[i:id][adi]?', 'EventController#view');
-# MovieController
-$router->map('GET', '/movie/[i:id][adi]?', 'MovieController#view');
 # MuffinRatingController
 $router->map('GET', '/muffin-rating', 'MuffinRatingController#image');
 # PostController
@@ -151,16 +150,16 @@ $api_endpoint('/cg/tag/[i:id]/synonym',              'TagController#synonymApi')
 $api_endpoint('/cg/colorgroup/[i:id]?',              'ColorGroupController#api');
 $api_endpoint('/da-auth/status',                     'AuthController#sessionStatus');
 $api_endpoint('/da-auth/sign-out',                   'AuthController#signOut');
-$api_endpoint('/episode/[i:id]?',                    'EpisodeController#api');
-$api_endpoint('/episode/[i:id]/posts',               'EpisodeController#postList');
-$api_endpoint('/episode/[i:id]/vote',                'EpisodeController#voteApi');
-$api_endpoint('/episode/[i:id]/video-embeds',        'EpisodeController#videoEmbeds');
-$api_endpoint('/episode/[i:id]/video-data',          'EpisodeController#videoDataApi');
-$api_endpoint('/episode/[i:id]/guide-relations',     'EpisodeController#guideRelationsApi');
-$api_endpoint('/episode/[i:id]/broken-videos',       'EpisodeController#brokenVideos');
-$api_endpoint('/episode/[i:id]/synopsis',            'EpisodeController#synopsis');
-$api_endpoint('/episode/next',                       'EpisodeController#next');
-$api_endpoint('/episode/prefill',                    'EpisodeController#prefill');
+$api_endpoint('/show/[i:id]?',                       'ShowController#api');
+$api_endpoint('/show/[i:id]/posts',                  'ShowController#postList');
+$api_endpoint('/show/[i:id]/vote',                   'ShowController#voteApi');
+$api_endpoint('/show/[i:id]/video-embeds',           'ShowController#videoEmbeds');
+$api_endpoint('/show/[i:id]/video-data',             'ShowController#videoDataApi');
+$api_endpoint('/show/[i:id]/guide-relations',        'ShowController#guideRelationsApi');
+$api_endpoint('/show/[i:id]/broken-videos',          'ShowController#brokenVideos');
+$api_endpoint('/show/[i:id]/synopsis',               'ShowController#synopsis');
+$api_endpoint('/show/next',                          'ShowController#next');
+$api_endpoint('/show/prefill',                       'ShowController#prefill');
 $api_endpoint('/event/[i:id]?',                      'EventController#api');
 $api_endpoint('/event/[i:id]/finalize',              'EventController#finalize');
 $api_endpoint('/event/[i:id]/check-entries',         'EventController#checkEntries');

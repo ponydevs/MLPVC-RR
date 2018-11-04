@@ -1,9 +1,10 @@
-{# @var videos \App\Models\EpisodeVideo[] #}
+{# @controller \App\ShowHelper::getVideosHTML #}
+{# @var videos \App\Models\ShowVideo[] #}
 {% if videos is not empty %}
 	{% if wrap is not defined or wrap %}
 	<section class='episode'>
 	{% endif %}
-		<h2>Watch the {{ current_episode.get_is_movie ? 'Movie' : 'Episode' }}</h2>
+		<h2>Watch the {{ current_episode.type | capitalize }}</h2>
 		<p class='button-block align-center'>
 			{% for v in videos %}
 				{% set part = current_episode.twoparter ? (v.fullep ? " (Full episode)" : " (Part #{v.part})") : '' %}

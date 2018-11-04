@@ -123,7 +123,6 @@ class View {
 			case 'components':
 				return new NavBreadcrumb('Components',null,true);
 			case 'show':
-			case 'episode':
 				$showbc = new NavBreadcrumb('Show','/show');
 				switch ($this->method){
 					case 'index':
@@ -133,7 +132,7 @@ class View {
 							return new NavBreadcrumb('Home',null,true);
 						/** @var $ep \App\Models\Show */
 						$ep = $scope['current_episode'];
-						$cat = new NavBreadcrumb($ep->is_movie ? 'Movies & Shorts' : 'Episodes');
+						$cat = new NavBreadcrumb($ep->is_episode ? 'TV Episodes' : 'Movies, Shorts & Specials');
 						$cat->setChild(new NavBreadcrumb($scope['heading'], $ep->toURL(), true));
 						$showbc->setChild($cat);
 						return $showbc->setActive(false);

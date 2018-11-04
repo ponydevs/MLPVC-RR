@@ -9,7 +9,6 @@ class Tags {
 	public const TAG_TYPES = [
 		'app' => 'Clothing',
 		'cat' => 'Category',
-		'ep' => 'Episode',
 		'gen' => 'Gender',
 		'spec' => 'Species',
 		'char' => 'Character',

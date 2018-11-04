@@ -1,9 +1,9 @@
 (function(){
 	'use strict';
 
-	let SEASON = window.SEASON,
-		EPISODE = window.EPISODE,
-		EpID = 'S'+SEASON+'E'+EPISODE;
+	const
+		showId = window.SHOW_ID,
+		showType = window.SHOW_TYPE;
 
 	window._HighlightHash = function (e){
 		$('.highlight').removeClass('highlight');
@@ -73,7 +73,7 @@
 			),
 			$voteButton = $voting.children('.rate');
 
-		$.Dialog.request('Rating '+EpID,$VoteForm,'Rate', function($form){
+		$.Dialog.request(`Rate this ${showType}`,$VoteForm,'Rate', function($form){
 			$form.on('submit', function(e){
 				e.preventDefault();
 
@@ -84,7 +84,7 @@
 
 				$.Dialog.wait(false, 'Submitting your rating');
 
-				$.API.post(`/episode/${EpID}/vote`,data,$.mkAjaxHandler(function(){
+				$.API.post(`/show/${showId}/vote`,data,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					let $section = $voteButton.closest('section');
@@ -101,7 +101,7 @@
 		if (diff.past !== true) return;
 
 		if (!$voting.children('.rate').length){
-			$.API.get(`/episode/${EpID}/vote?html`,$.mkAjaxHandler(function(){
+			$.API.get(`/show/${showId}/vote?html`,$.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail('Display voting buttons',this.message);
 
 				$voting.children('h2').nextAll().remove();
@@ -120,7 +120,7 @@
 
 			$.Dialog.wait('Voting details','Getting vote distribution information');
 
-			$.API.get(`/episode/${EpID}/vote`, $.mkAjaxHandler(function(){
+			$.API.get(`/show/${showId}/vote`, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				const $ul = $.mk('ul');
@@ -189,7 +189,7 @@
 				Kinds = $.capitalize(kinds);
 			if (silent !== true)
 				$.Dialog.wait($.Dialog.isOpen() ? false : Kinds, `Updating list of ${kinds}`, true);
-			$.API.get(`/episode/${EpID}/posts`, {section:kinds}, $.mkAjaxHandler(function(){
+			$.API.get(`/show/${showId}/posts`, {section:kinds}, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let $newChildren = $(this.render).filter('section').children();
@@ -259,7 +259,7 @@
 
 					const data = {
 						deviation,
-						epid: EpID,
+						epid: showId,
 					};
 					$.API.post('/post/reservation',data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
@@ -391,8 +391,7 @@
 
 			let data = $form.mkData({
 				kind: kind,
-				episode: EPISODE,
-				season: SEASON,
+				show_id: showId,
 				image_url: $formImgInput.data('prev-url'),
 			});
 
@@ -514,9 +513,9 @@
 			const el = entry.target;
 			synopsisIO.unobserve(el);
 
-			const epID = el.dataset.id;
+			const id = el.dataset.id;
 
-			$.API.get(`/episode/${epID}/synopsis`,$.mkAjaxHandler(function(){
+			$.API.get(`/show/${id}/synopsis`,$.mkAjaxHandler(function(){
 				const $section = $(el).closest('section');
 				if (!this.status){
 					$section.remove();
@@ -535,8 +534,6 @@
 	$('.post-image-promise').each((_, el) => screencapIO.observe(el));
 	$('.user-avatar-promise').each((_, el) => avatarIO.observe(el));
 	$('.synopsis-promise').each((_, el) => synopsisIO.observe(el));
-
-	$('.synopsis-image').fluidboxThis();
 
 	if (window.linkedPostURL)
 		history.replaceState({}, null, window.linkedPostURL);
@@ -670,7 +667,7 @@
 				if (typeof $embedWrap === 'undefined'){
 					$.Dialog.wait($showPlayers.text());
 
-					$.API.get(`/episode/${EpID}/video-embeds`, $.mkAjaxHandler(function(){
+					$.API.get(`/show/${showId}/video-embeds`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.parts === 2){
@@ -712,7 +709,7 @@
 
 					$.Dialog.wait(false, 'Sending report');
 
-					$.API.post(`/episode/${EpID}/broken-videos`, $.mkAjaxHandler(function(){
+					$.API.post(`/show/${showId}/broken-videos`, $.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (typeof this.epsection !== 'undefined'){
