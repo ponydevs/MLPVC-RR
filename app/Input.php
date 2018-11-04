@@ -3,7 +3,7 @@
 namespace App;
 
 use App\CoreUtils;
-use App\Models\Episode;
+use App\Models\Show;
 
 class Input {
 	private $_type, $_source, $_key, $_initValue, $_origValue, $_value, $_respond = true, $_validator, $_range, $_silentFail, $_noLog;
@@ -202,7 +202,7 @@ class Input {
 					return $code;
 			break;
 			case 'epid':
-				$this->_origValue = Episode::parseID($this->_origValue);
+				$this->_origValue = Show::parseID($this->_origValue);
 				if (empty($this->_origValue))
 					return self::ERROR_INVALID;
 			break;

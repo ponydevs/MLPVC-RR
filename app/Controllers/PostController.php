@@ -6,7 +6,7 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
 use App\DeviantArt;
-use App\Episodes;
+use App\ShowHelper;
 use App\HTTP;
 use App\ImageProvider;
 use App\Input;
@@ -336,9 +336,9 @@ class PostController extends Controller {
 				$Post->preview = $Image->preview;
 				$Post->fullsize = $Image->fullsize;
 
-				$season = Episodes::validateSeason(Episodes::ALLOW_MOVIES);
-				$episode = Episodes::validateEpisode();
-				$epdata = Episodes::getActual($season, $episode, Episodes::ALLOW_MOVIES);
+				$season = ShowHelper::validateSeason(ShowHelper::ALLOW_MOVIES);
+				$episode = ShowHelper::validateEpisode();
+				$epdata = ShowHelper::getActual($season, $episode, ShowHelper::ALLOW_MOVIES);
 				if (empty($epdata))
 					Response::fail("The specified episode (S{$season}E$episode) does not exist");
 				$Post->season = $epdata->season;
@@ -374,8 +374,7 @@ class PostController extends Controller {
 					CoreUtils::socketEvent('post-add',[
 						'id' => $Post->id,
 						'type' => $Post->kind,
-						'season' => (int)$Post->season,
-						'episode' => (int)$Post->episode,
+						'show_id' => $Post->show_id,
 					]);
 				}
 				catch (\Exception $e){
@@ -515,14 +514,14 @@ class PostController extends Controller {
 		if (empty($this->post) || $this->post->broken)
 			Response::fail("The post you were linked to has either been deleted or didn't exist in the first place. Sorry.".CoreUtils::responseSmiley(':\\'));
 
-		if (isset($_REQUEST['SEASON'], $_REQUEST['EPISODE']) && $this->post->ep->season === (int)$_REQUEST['SEASON'] && $this->post->ep->episode === (int)$_REQUEST['EPISODE'])
+		if (isset($_REQUEST['SEASON'], $_REQUEST['EPISODE']) && $this->post->show->season === (int)$_REQUEST['SEASON'] && $this->post->show->episode === (int)$_REQUEST['EPISODE'])
 			Response::done([
 				'refresh' => $this->post->kind,
 			]);
 
 		Response::done([
 			'castle' => [
-				'name' => $this->post->ep->formatTitle(),
+				'name' => $this->post->show->formatTitle(),
 				'url' => $this->post->toURL(),
 			],
 		]);
@@ -623,8 +622,7 @@ class PostController extends Controller {
 			Response::dbError();
 
 		Logs::logAction('req_delete', [
-			'season' =>       $this->post->season,
-			'episode' =>      $this->post->episode,
+			'show_id' =>      $this->post->show_id,
 			'id' =>           $this->post->id,
 			'old_id' =>       $this->post->old_id,
 			'label' =>        $this->post->label,
@@ -841,7 +839,7 @@ class PostController extends Controller {
 				Input::ERROR_INVALID => 'Episode identifier (@value) is invalid',
 			]
 		]))->out();
-		$epdata = Episodes::getActual($epdata['season'], $epdata['episode']);
+		$epdata = ShowHelper::getActual($epdata['season'], $epdata['episode']);
 		if (empty($epdata))
 			Response::fail('The specified episode does not exist');
 		$insert['season'] = $epdata->season;
@@ -900,11 +898,11 @@ class PostController extends Controller {
 		if (empty($LinkedPost))
 			CoreUtils::notFound();
 
-		$Episode = Episodes::getActual($LinkedPost->season, $LinkedPost->episode, Episodes::ALLOW_MOVIES);
+		$Episode = ShowHelper::getActual($LinkedPost->season, $LinkedPost->episode, ShowHelper::ALLOW_MOVIES);
 		if (empty($Episode))
 			CoreUtils::notFound();
 
-		Episodes::loadPage($Episode, $LinkedPost);
+		ShowHelper::loadPage($Episode, $LinkedPost);
 	}
 
 	public function suggestRequest(){

@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 class EpisodeTest extends TestCase {
 	public function testGetID(){
 		// Single-part test
-		$Episode = new \App\Models\Episode([
+		$Episode = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
 		]);
@@ -16,7 +16,7 @@ class EpisodeTest extends TestCase {
 		self::assertEquals('S01 E01', $result);
 
 		// Two-parter test
-		$Episode = new \App\Models\Episode([
+		$Episode = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
 			'twoparter' => true,
@@ -28,7 +28,7 @@ class EpisodeTest extends TestCase {
 		self::assertEquals('S01 E01-02', $result);
 
 		// Movie test
-		$Movie = new \App\Models\Episode([
+		$Movie = new \App\Models\Show([
 			'season' => 0,
 			'episode' => 1,
 			'twoparter' => true,
@@ -39,7 +39,7 @@ class EpisodeTest extends TestCase {
 	}
 
 	public function testMovieSafeTitle(){
-		$Movie = new \App\Models\Episode([
+		$Movie = new \App\Models\Show([
 			'season' => 0,
 			'episode' => 1,
 			'title' => "A#bc-d'?e",
@@ -49,19 +49,19 @@ class EpisodeTest extends TestCase {
 	}
 
 	public function testIs(){
-		$EpisodeOne = new \App\Models\Episode([
+		$EpisodeOne = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
 		]);
-		$EpisodeTwo = new \App\Models\Episode([
+		$EpisodeTwo = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 5,
 		]);
-		$EpisodeThree = new \App\Models\Episode([
+		$EpisodeThree = new \App\Models\Show([
 			'season' => 5,
 			'episode' => 1,
 		]);
-		$EpisodeFour = new \App\Models\Episode([
+		$EpisodeFour = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
 		]);
@@ -77,7 +77,7 @@ class EpisodeTest extends TestCase {
 
 	public function testAddAiringData(){
 		$airs = '2016-01-10T00:00:00Z';
-		$Episode = new \App\Models\Episode([
+		$Episode = new \App\Models\Show([
 			'airs' => $airs,
 		]);
 
@@ -102,7 +102,7 @@ class EpisodeTest extends TestCase {
 		self::assertTrue($aired, "Episode should be 'aired' 30 minutes after airs");
 
 
-		$Episode = new \App\Models\Episode([
+		$Episode = new \App\Models\Show([
 			'airs' => $airs,
 			'twoparter' => true,
 		]);
@@ -114,7 +114,7 @@ class EpisodeTest extends TestCase {
 		$aired = $Episode->hasAired($now);
 		self::assertTrue($aired, "Two-parter episode should be 'aired' 60 minutes after airs");
 
-		$Movie = new \App\Models\Episode([
+		$Movie = new \App\Models\Show([
 			'season' => 0,
 			'airs' => $airs,
 		]);
@@ -141,7 +141,7 @@ class EpisodeTest extends TestCase {
 	}
 
 	public function testFormatTitle(){
-		$Episode = new \App\Models\Episode([
+		$Episode = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
 			'title' => 'Yarr harr<',
@@ -153,14 +153,14 @@ class EpisodeTest extends TestCase {
 	}
 
 	public function testFormatURL(){
-		$Episode = new \App\Models\Episode([
+		$Episode = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
 		]);
 		$result = $Episode->toURL();
 		self::assertEquals('/episode/S1E1', $result);
 
-		$Episode = new \App\Models\Episode([
+		$Episode = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
 			'twoparter' => true,
@@ -168,7 +168,7 @@ class EpisodeTest extends TestCase {
 		$result = $Episode->toURL();
 		self::assertEquals('/episode/S1E1-2', $result);
 
-		$Movie = new \App\Models\Episode([
+		$Movie = new \App\Models\Show([
 			'season' => 0,
 			'episode' => 1,
 		]);
@@ -180,7 +180,7 @@ class EpisodeTest extends TestCase {
 	}
 
 	public function testFormatScore(){
-		$Episode = new \App\Models\Episode();
+		$Episode = new \App\Models\Show();
 		$Episode->score = 3.2;
 		self::assertEquals('3.2', $Episode->score);
 		$Episode->score = 1;

@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Models\Episode;
+use App\Models\Show;
 use App\Models\Notification;
 use App\Models\PCGSlotHistory;
 use App\Models\Post;
@@ -15,21 +15,20 @@ class Posts {
 	 * Retrieves requests & reservations for the episode specified
 	 * Optionally lists broken posts
 	 *
-	 * @param Episode $Episode
-	 * @param int     $only
-	 * @param bool    $showBroken
+	 * @param int  $show_id
+	 * @param int  $only
+	 * @param bool $showBroken
 	 *
 	 * @return Post[]|Post[][]
 	 */
-	public static function get(Episode $Episode, int $only = null, bool $showBroken = false){
+	public static function get(int $show_id, int $only = null, bool $showBroken = false){
 		$return = [];
 		if ($only !== ONLY_RESERVATIONS){
 			// If we don't want reservations only, grab requests
 			$return[] = Post::find('all', [
 				'conditions'=> [
-					'requested_by IS NOT NULL AND season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
-					$Episode->season,
-					$Episode->episode
+					'requested_by IS NOT NULL AND show_id = ?'.($showBroken === false?' AND broken IS NOT true':''),
+					$show_id
 				],
 				'order' => 'finished_at asc, requested_at asc',
 			]);
@@ -38,9 +37,8 @@ class Posts {
 			// If we don't want requests only, grab reservations
 			$return[] = Post::find('all', [
 				'conditions'=> [
-					'requested_by IS NULL AND season = ? AND episode = ?'.($showBroken === false?' AND broken IS NOT true':''),
-					$Episode->season,
-					$Episode->episode
+					'requested_by IS NULL AND show_id = ?'.($showBroken === false?' AND broken IS NOT true':''),
+					$show_id
 				],
 				'order' => 'finished_at asc, reserved_at asc',
 			]);;
@@ -163,7 +161,7 @@ class Posts {
 			if ($Image->preview !== null){
 				$already_used = Post::find_by_preview($Image->preview);
 				if (!empty($already_used))
-					Response::fail("This exact image has already been used for a {$already_used->toAnchor($kind,null,true)} under {$already_used->ep->toAnchor()}");
+					Response::fail("This exact image has already been used for a {$already_used->toAnchor($kind,null,true)} under {$already_used->show->toAnchor()}");
 			}
 		}
 
@@ -190,7 +188,7 @@ class Posts {
 
 				$already_used = Post::find_by_deviation_id($Image->id);
 				if (!empty($already_used))
-					Response::fail("This exact deviation has already been marked as the finished version of  a {$already_used->toAnchor($already_used->kind,null,true)} under {$already_used->ep->toAnchor()}");
+					Response::fail("This exact deviation has already been marked as the finished version of  a {$already_used->toAnchor($already_used->kind,null,true)} under {$already_used->show->toAnchor()}");
 			}
 
 			$return = ['deviation_id' => $Image->id];

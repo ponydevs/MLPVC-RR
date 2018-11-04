@@ -111,6 +111,10 @@ $router->map('GET', '/@[un:name]/[cg]/point-history/[i]?', 'PersonalGuideControl
 # ManifestController
 $router->map('GET', '/manifest', 'ManifestController#json');
 
+
+// TODO Rename /episode/* API routes to /show/*
+// TODO Update JS calling these endpoints all over the codebase
+
 // Proper REST API endpoints (sort of)
 // Allowing all request methods lets us reply with HTTP 405 to unsupported methods at the controller level
 \define('API_PATH', '/api/private');
@@ -147,14 +151,14 @@ $api_endpoint('/cg/tag/[i:id]/synonym',              'TagController#synonymApi')
 $api_endpoint('/cg/colorgroup/[i:id]?',              'ColorGroupController#api');
 $api_endpoint('/da-auth/status',                     'AuthController#sessionStatus');
 $api_endpoint('/da-auth/sign-out',                   'AuthController#signOut');
-$api_endpoint('/episode/[epid:id]?',                 'EpisodeController#api');
-$api_endpoint('/episode/[epid:id]/posts',            'EpisodeController#postList');
-$api_endpoint('/episode/[epid:id]/vote',             'EpisodeController#voteApi');
-$api_endpoint('/episode/[epid:id]/video-embeds',     'EpisodeController#videoEmbeds');
-$api_endpoint('/episode/[epid:id]/video-data',       'EpisodeController#videoDataApi');
-$api_endpoint('/episode/[epid:id]/guide-relations',  'EpisodeController#guideRelationsApi');
-$api_endpoint('/episode/[epid:id]/broken-videos',    'EpisodeController#brokenVideos');
-$api_endpoint('/episode/[epid:id]/synopsis',         'EpisodeController#synopsis');
+$api_endpoint('/episode/[i:id]?',                    'EpisodeController#api');
+$api_endpoint('/episode/[i:id]/posts',               'EpisodeController#postList');
+$api_endpoint('/episode/[i:id]/vote',                'EpisodeController#voteApi');
+$api_endpoint('/episode/[i:id]/video-embeds',        'EpisodeController#videoEmbeds');
+$api_endpoint('/episode/[i:id]/video-data',          'EpisodeController#videoDataApi');
+$api_endpoint('/episode/[i:id]/guide-relations',     'EpisodeController#guideRelationsApi');
+$api_endpoint('/episode/[i:id]/broken-videos',       'EpisodeController#brokenVideos');
+$api_endpoint('/episode/[i:id]/synopsis',            'EpisodeController#synopsis');
 $api_endpoint('/episode/next',                       'EpisodeController#next');
 $api_endpoint('/episode/prefill',                    'EpisodeController#prefill');
 $api_endpoint('/event/[i:id]?',                      'EventController#api');

@@ -6,7 +6,7 @@ use ActiveRecord\ConnectionManager;
 use ActiveRecord\DateTime;
 use ActiveRecord\SQLBuilder;
 use App\Models\Cacheable;
-use App\Models\Episode;
+use App\Models\Show;
 use App\Models\Event;
 use App\Models\FailsafeUser;
 use App\Models\Notice;
@@ -340,8 +340,8 @@ class CoreUtils {
 	 */
 	public static function getSidebarUpcoming($wrap = WRAP){
 		$HTML = [];
-		/** @var $UpcomingEpisodes Episode[] */
-		$UpcomingEpisodes = Episode::find('all', ['conditions' => "airs > NOW() AND airs < NOW() + INTERVAL '6 MONTH'", 'order' => 'airs asc']);
+		/** @var $UpcomingEpisodes Show[] */
+		$UpcomingEpisodes = Show::find('all', ['conditions' => "airs > NOW() AND airs < NOW() + INTERVAL '6 MONTH'", 'order' => 'airs asc']);
 		$i = 0;
 		if (!empty($UpcomingEpisodes)){
 			foreach ($UpcomingEpisodes as $i => $Episode){
@@ -354,7 +354,7 @@ class CoreUtils {
 					? $Episode->title
 					: (
 					Regexes::$ep_title_prefix->match($Episode->title)
-						? Episodes::shortenTitlePrefix($Episode->title)
+						? ShowHelper::shortenTitlePrefix($Episode->title)
 						: "Movie: {$Episode->title}"
 					);
 

@@ -26,7 +26,7 @@
 					<th>Title & Air Date</th>
 				</tr>
 			</thead>
-			<tbody>{% include 'show/_table_body.html.twig' with { episodes: episodes, are_movies: false } %}</tbody>
+			<tbody>{% include 'show/_table_body.html.twig' with { shows: episodes, are_movies: false } %}</tbody>
 		</table>
 {% endif %}
 {{ episodes_pagination }}
@@ -47,7 +47,7 @@
 					<th>Title &amp; Air Date</th>
 				</tr>
 			</thead>
-			<tbody>{% include 'show/_table_body.html.twig' with { episodes: movies, are_movies: true } %}</tbody>
+			<tbody>{% include 'show/_table_body.html.twig' with { shows: movies, are_movies: true } %}</tbody>
 		</table>
 {% endif %}
 {{ movies_pagination }}

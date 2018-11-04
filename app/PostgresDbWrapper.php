@@ -3,35 +3,13 @@
 namespace App;
 
 use ActiveRecord\Model;
-use App\Models\Episode;
+use App\Models\Show;
 
 class PostgresDbWrapper extends \SeinopSys\PostgresDb {
 	public static function withConnection(\PDO $PDO):PostgresDbWrapper {
 		$instance = new self();
 		$instance->setConnection($PDO);
 		return $instance;
-	}
-
-	/**
-	 * Execute where method with the specified episode and season numbers
-	 *
-	 * @param int|Episode $s Season, or array with keys season & episode
-	 * @param int|null    $e Episode, optional if $s is and instance of Episode
-	 *
-	 * @return self
-	 */
-	public function whereEp($s, $e = null):self {
-		if ($e === null){
-			if (!$s instanceof Episode)
-				throw new \InvalidArgumentException(__METHOD__.' expects parameter 1 to be an instance of '.Episode::class.' (because parameter 2 is null), '.\gettype($s).' given');
-			parent::where('season', $s->season);
-			parent::where('episode', $s->episode);
-		}
-		else {
-			parent::where('season', $s);
-			parent::where('episode', $e);
-		}
-		return $this;
 	}
 
 	/**

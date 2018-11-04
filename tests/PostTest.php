@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Episode;
+use App\Models\Show;
 use App\Models\Post;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -43,7 +43,7 @@ class PostTest extends TestCase {
 	}
 
 	public function testToLink(){
-		$episode = new Episode([
+		$episode = new Show([
 			'season' => 1,
 			'episode' => 1,
 		]);
@@ -67,15 +67,15 @@ class PostTest extends TestCase {
 	}
 
 	public function testToAnchor(){
-		$episode = new Episode([
+		$episode = new Show([
+			'id' => 1,
 			'season' => 1,
 			'episode' => 1,
 		]);
 		$request = new Post([
 			'id' => 1,
 			'requested_by' => VALID_UUID,
-			'season' => $episode->season,
-			'episode' => $episode->episode,
+			'show_id' => $episode->id,
 		]);
 		$result = $request->toAnchor(null,$episode);
 		self::assertEquals("<a href='/episode/S1E1#post-1' >S1E1</a>", $result);

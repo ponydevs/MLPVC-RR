@@ -25,6 +25,7 @@ use App\UserPrefs;
  * @property string   $type
  * @property int      $season
  * @property int      $episode
+ * @property int      $show_id
  * @property string   $preview
  * @property string   $fullsize
  * @property string   $label
@@ -41,7 +42,7 @@ use App\UserPrefs;
  * @property DateTime $posted_at      (Via magic method)
  * @property string   $posted_by      (Via magic method)
  * @property User     $poster         (Via magic method)
- * @property Episode  $ep             (Via magic method)
+ * @property Show     $show           (Via magic method)
  * @property string   $kind           (Via magic method)
  * @property bool     $finished       (Via magic method)
  * @property Log      $approval_entry (Via magic method)
@@ -55,6 +56,7 @@ class Post extends NSModel implements Linkable {
 	public static $belongs_to = [
 		['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
 		['requester', 'class' => 'User', 'foreign_key' => 'requested_by'],
+		['show'],
 	];
 
 	public static $before_create = ['add_post_time'];
@@ -130,10 +132,6 @@ class Post extends NSModel implements Linkable {
 		return $this->is_request ? 'request' : 'reservation';
 	}
 
-	public function get_ep():?Episode {
-		return Episode::find_by_season_and_episode($this->season, $this->episode);
-	}
-
 	public const ORDER_BY_POSTED_AT = 'CASE WHEN requested_by IS NOT NULL THEN requested_at ELSE reserved_at END';
 	public const CONTESTABLE = "<strong class='color-blue contest-note' title=\"Because this request was reserved more than 3 weeks ago it's now available for other members to reserve\"><span class='typcn typcn-info-large'></span> Can be contested</strong>";
 	public const REQUEST_TYPES = [
@@ -165,9 +163,9 @@ class Post extends NSModel implements Linkable {
 		return $this->kind.'-'.$this->old_id;
 	}
 
-	public function toURL(Episode $Episode = null):string {
+	public function toURL(Show $Episode = null):string {
 		if (empty($Episode))
-			$Episode = $this->ep;
+			$Episode = $this->show;
 		return $Episode->toURL().'#'.$this->getIdString();
 	}
 
@@ -178,10 +176,10 @@ class Post extends NSModel implements Linkable {
 		return "<a class='post-link with-preview' href='{$this->toURL()}'><img src='{$this->preview}' alt='$alt'><span>$slabel</span></a>";
 	}
 
-	public function toAnchor(string $label = null, Episode $Episode = null, $newtab = false):string {
+	public function toAnchor(string $label = null, Show $Episode = null, $newtab = false):string {
 		if ($Episode === null)
-			$Episode = $this->ep;
-		/** @var $Episode Episode */
+			$Episode = $this->show;
+		/** @var $Episode Show */
 		$link = $this->toURL($Episode);
 		if (empty($label))
 			$label = $Episode->getID();

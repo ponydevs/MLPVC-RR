@@ -108,7 +108,7 @@
 					$post.reloadLi();
 			}));
 			this.conn.on('post-add', wsdecoder(data => {
-				if (!data.id || window.EPISODE !== data.episode || window.SEASON !== data.season)
+				if (!data.id || window.SHOW_ID !== data.show_id)
 					return;
 
 				if ($(`.posts #post-${data.id}`).length > 0)
