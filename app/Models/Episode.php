@@ -104,8 +104,8 @@ class Episode extends NSModel implements Linkable {
 			$this->rel_appearances = DB::$instance->setModel(Appearance::class)->query(
 				'SELECT p.* FROM tagged t
 				LEFT JOIN appearances p ON t.appearance_id = p.id
-				WHERE t.tag_id IN ('.implode(',', $tag_ids).') AND p.ishuman = ?
-				ORDER BY p.label', [$this->is_movie]);
+				WHERE t.tag_id IN ('.implode(',', $tag_ids).')
+				ORDER BY p.label');
 		}
 		else $this->rel_appearances = [];
 

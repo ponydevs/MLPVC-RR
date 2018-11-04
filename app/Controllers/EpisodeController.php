@@ -508,10 +508,9 @@ class EpisodeController extends Controller {
 
 				/** @var $appearances Appearance[] */
 				$appearances = DB::$instance->disableAutoClass()
-					->where('ishuman', $this->episode->is_movie)
 					->where('id', 0, '!=')
 					->orderBy('label')
-					->get('appearances', null, 'id,label');
+					->get('appearances', null, 'id,label,ishuman');
 
 				$sorted = [
 					'unlinked' => [],
