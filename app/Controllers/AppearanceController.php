@@ -203,7 +203,7 @@ class AppearanceController extends ColorGuideController {
 					if ($this->_personalGuide)
 						Response::fail('You already have an appearance with the same name in your Personal Color Guide');
 
-					Response::fail("An appearance <a href='{$dupe->toURL()}' target='_blank'>already esists</a> in the ".($this->_EQG?'EQG':'Pony').' guide with this exact name. Consider adding an identifier in backets or choosing a different name.');
+					Response::fail("An appearance <a href='{$dupe->toURL()}' target='_blank'>already exists</a> in the ".($this->_EQG?'EQG':'Pony').' guide with this exact name. Consider adding an identifier in brackets or choosing a different name.');
 				}
 				if ($this->creating || $label !== $this->appearance->label)
 					$data['label'] = $label;

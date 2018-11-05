@@ -943,15 +943,13 @@
 			}
 		}
 		renderColorInputs(){
-			let $colors = this.$form.children('.clrs');
+			let $colors = this.getCleanClrsDiv();
 
-			$colors.empty();
 			$.each(this.colorValues, (_, color) => {
 				$colors.append(this.makeColorDiv(color));
 			});
 
-			this.destroySortable();
-			this.sortable = new Sortable($colors.get(0), {
+			$colors.sortable({
 				handle: ".move",
 				ghostClass: "moving",
 				scroll: false,
@@ -1023,16 +1021,15 @@
 					editorContent.push(out);
 				});
 
-				//this.destroySortable();
-				$colors.unbind().hide().text(editorContent.join('\n') + '\n');
+				this.destroySortable();
 
 				// Create editor
 				const mode = 'colorguide';
-				$colors.show();
 				this.editor = ace.edit($colors[0]);
 				let session = $.aceInit(this.editor);
 				session.setTabSize(8);
 				session.setMode(mode);
+				this.editor.setValue(editorContent.join('\n') + '\n', -1);
 				this.editor.navigateFileEnd();
 				this.editor.focus();
 				this.mode = 'text';
@@ -1101,10 +1098,16 @@
 			return this.$form;
 		}
 		destroySortable(){
-			if (typeof this.sortable !== 'undefined'){
-				this.sortable.destroy();
-				this.sortable = undefined;
-			}
+			this.getClrsDiv().sortable('destory');
+		}
+		getClrsDiv(){
+			return this.$form.find('.clrs');
+		}
+		getCleanClrsDiv(){
+			let $colors = $.mk('div').attr('class','clrs');
+
+			this.getClrsDiv().replaceWith($colors);
+			return $colors;
 		}
 		loadColorSelectFor($this, appearance_id, appearance_name){
 			const
