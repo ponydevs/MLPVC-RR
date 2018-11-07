@@ -1,2 +1,11 @@
-User-agent: *
-Disallow:
+User-Agent: *
+Disallow: /cg/v/*.png$
+Disallow: /cg/v/*.png?*$
+Disallow: /cg/v/*.svg$
+Disallow: /cg/v/*.svg?*$
+Disallow: /cg/v/*.json$
+Disallow: /cg/v/*.json?*$
+Disallow: /cg/v/*.gpl$
+Disallow: /cg/v/*.gpl?*$
+Disallow: /cg/cutiemark/*.svg$
+Disallow: /cg/cutiemark/*.svg?*$
