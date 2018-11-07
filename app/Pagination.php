@@ -106,7 +106,7 @@ class Pagination {
 
 	private function _makeLink($i){
 		$href = new NSUriBuilder($this->base_path);
-		$href->append_query_raw($this->getPageQueryString($i));
+		$href->append_query_raw($this->getPageQueryString($i, false));
 		$get = $_GET;
 		if (isset($get["{$this->query_prefix}page"]))
 			unset($get["{$this->query_prefix}page"]);
@@ -232,20 +232,25 @@ class Pagination {
 	/**
 	 * Returns the raw query string parameter for the page
 	 *
-	 * @param int|null $page Page number, or current page if not specified
+	 * @param int|null $page                Page number, or current page if not specified
+	 * @param bool     $force_fixpath_empty Force an "empty" value so fixPath knows to remove the parameter
 	 *
 	 * @return string
 	 */
-	public function getPageQueryString($page = null):string {
+	public function getPageQueryString($page = null, bool $force_fixpath_empty = true):string {
 		$pagenum = $page ?? $this->page;
-		if ($pagenum === 1)
-			$pagenum = CoreUtils::FIXPATH_EMPTY;
+		if ($pagenum === 1){
+			if (!$force_fixpath_empty)
+				return '';
+			$pagenum = '§';
+		}
+
 		return "{$this->query_prefix}page=$pagenum";
 	}
 
-	public function toURI():NSUriBuilder {
+	public function toURI(bool $force_fixpath_empty = true):NSUriBuilder {
 		$uri = new NSUriBuilder($this->base_path);
-		$uri->append_query_raw($this->getPageQueryString());
+		$uri->append_query_raw($this->getPageQueryString(null, $force_fixpath_empty));
 		return $uri;
 	}
 

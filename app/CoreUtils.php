@@ -24,31 +24,36 @@ use enshrined\svgSanitize\Sanitizer;
 use Monolog\Logger;
 
 class CoreUtils {
-	public const
-		FIXPATH_EMPTY = '§';
+	public const FIXPATH_EMPTY = [
+		'§' => true,
+		'#' => true,
+	];
+
 	/**
 	 * Forces an URL rewrite to the specified path
 	 *
-	 * @param string $fix_uri URL to forcibly redirect to
+	 * @param string     $fix_uri       URL to forcibly redirect to
+	 * @param null|array $remove_params URL parameters to remove
 	 */
-	public static function fixPath(string $fix_uri){
+	public static function fixPath(string $fix_uri, ?array $remove_params = null):void {
 		$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
 		$path = $_split[0];
 		$query = empty($_split[1]) ? '' : "?{$_split[1]}";
 
 		$_split = explode('?', $fix_uri, 2);
 		$fix_path = $_split[0];
-		$fix_query = self::mergeQuery($query, empty($_split[1]) ? '' : "?{$_split[1]}");
+		$fix_query = self::mergeQuery($query, empty($_split[1]) ? '' : "?{$_split[1]}", $remove_params);
 		self::appendFragment($fix_uri, $fix_query);
 
 		if ($path !== $fix_path || $query !== $fix_query)
 			HTTP::tempRedirect("$fix_path$fix_query");
 	}
 
-	public static function mergeQuery(string $query, string $fix_query):string {
+	public static function mergeQuery(string $query, string $fix_query, ?array $remove_params = null):string {
 		if (empty($fix_query))
 			return $query;
 
+		$to_remove = $remove_params !== null ? array_flip($remove_params) : [];
 		$query_assoc = self::queryStringAssoc($query);
 		$fix_query_assoc = self::queryStringAssoc($fix_query);
 		$merged = $query_assoc;
@@ -56,7 +61,7 @@ class CoreUtils {
 			$merged[$key] = $item;
 		$fix_query_arr = [];
 		foreach ($merged as $key => $item){
-			if ($item === null || $item === self::FIXPATH_EMPTY)
+			if ($item === null || isset($to_remove[$key]) || isset(self::FIXPATH_EMPTY[$item]))
 				continue;
 
 			$fix_query_arr[] = rtrim(http_build_query([$key => $item ?? '']), '=');
@@ -71,7 +76,9 @@ class CoreUtils {
 			return;
 
 		strtok($fix_uri, '#');
-		$fix_query .= '#'.strtok('#');
+		$fragment = strtok('#');
+		if (!empty($fragment))
+			$fix_query = rtrim($fix_query, '#')."#$fragment";
 	}
 
 	/**

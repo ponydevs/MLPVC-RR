@@ -139,32 +139,33 @@ class AdminController extends Controller {
 		}
 
 		$title = '';
-		$whereArgs = [];
+		$where_args = [];
 		$q = [];
+		$remove_params = [];
 		if ($type !== null){
-			$whereArgs[] = ['reftype', $type];
+			$where_args[] = ['reftype', $type];
 			$q[] = "type=$type";
 			$title .= Logs::LOG_DESCRIPTION[$type].' entries ';
 		}
 		else if (isset($q))
-			$q[] = 'type='.CoreUtils::FIXPATH_EMPTY;
+			$remove_params[] = 'type';
 		if (isset($initiator)){
 			$_params = $initiator === 0 ? ['"initiator" IS NULL'] : ['initiator', $initiator];
-			$whereArgs[] = $_params;
+			$where_args[] = $_params;
 			if (isset($by)){
 				$q[] = "by=$by";
 				$title .= ($type === null?'Entries ':'')."by $by ";
 			}
 		}
 		else if (isset($ip)){
-			$whereArgs[] = ['ip', \in_array($ip, Logs::LOCALHOST_IPS, true) ? Logs::LOCALHOST_IPS : $ip];
+			$where_args[] = ['ip', \in_array($ip, Logs::LOCALHOST_IPS, true) ? Logs::LOCALHOST_IPS : $ip];
 			$q[] = "by=$ip";
 			$title .= ($type === null?'Entries ':'')."from $ip ";
 		}
-		else $q[] = 'by='.CoreUtils::FIXPATH_EMPTY;
+		else $remove_params[] = 'by';
 
-		foreach ($whereArgs as $arg)
-			DB::$instance->where($arg[0], $arg[1] ?? \PostgresDb::DBNULL);
+		foreach ($where_args as $arg)
+			DB::$instance->where($arg[0], $arg[1] ?? \SeinopSys\PostgresDb::DBNULL);
 		$pagination = new Pagination('/admin/logs', 25, DB::$instance->count('log'));
 		$heading = 'Global logs';
 		if (!empty($title))
@@ -175,9 +176,9 @@ class AdminController extends Controller {
 		if (!empty($q))
 			foreach ($q as $item)
 				$path->append_query_raw($item);
-		CoreUtils::fixPath($path);
+		CoreUtils::fixPath($path, $remove_params);
 
-		foreach ($whereArgs as $arg)
+		foreach ($where_args as $arg)
 			DB::$instance->where(...$arg);
 		$log_items = DB::$instance
 			->setModel(Log::class)
@@ -443,7 +444,7 @@ class AdminController extends Controller {
 		Response::done();
 	}
 
-	private function _setupPcgAppearances():\PostgresDb {
+	private function _setupPcgAppearances():\SeinopSys\PostgresDb {
 		return DB::$instance->where('owner_id IS NOT NULL');
 	}
 

@@ -80,7 +80,8 @@ class PaginationTest extends TestCase {
 	public function testToURI(){
 		$_GET['page'] = 1;
 		$p = new Pagination('/test', 10, 30);
-		$this->assertEquals('/test?page='.urlencode(\App\CoreUtils::FIXPATH_EMPTY), (string) $p->toURI());
+		$this->assertEquals('/test?page=%C2%A7', (string) $p->toURI());
+		$this->assertEquals('/test', (string) $p->toURI(false));
 
 		$_GET['page'] = 2;
 		$_GET['eppage'] = 3;

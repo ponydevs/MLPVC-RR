@@ -364,8 +364,11 @@ class ColorGuideController extends Controller {
 		}
 
 		$path = $pagination->toURI();
-		$path->append_query_param('q', !empty($search_query) ? $search_query : CoreUtils::FIXPATH_EMPTY);
-		CoreUtils::fixPath($path);
+		$remove_params = null;
+		if (!empty($search_query))
+			$path->append_query_param('q', $search_query);
+		else $remove_params = ['q'];
+		CoreUtils::fixPath($path, $remove_params);
 		$heading = ($this->_EQG?'EQG':'Pony').' Color Guide';
 		$title .= "Page {$pagination->getPage()} - $heading";
 

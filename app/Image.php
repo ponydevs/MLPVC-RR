@@ -329,26 +329,33 @@ class Image {
 
 	/**
 	 * @param resource|string $data
-	 * @param string $path
-	 * @param string $relpath
-	 * @param callable $write_callback
-	 * @param string $content_type
+	 * @param string          $file_path
+	 * @param string          $relative_path
+	 * @param callable        $write_callback
+	 * @param string          $content_type
 	 */
-	private static function _output($data, $path, $relpath, $write_callback, $content_type):void {
+	private static function _output($data, $file_path, $relative_path, $write_callback, $content_type):void {
 		if ($data !== null){
-			CoreUtils::createFoldersFor($path);
-			$write_callback($path, $data);
-			if (file_exists($path))
-				File::chmod($path);
+			CoreUtils::createFoldersFor($file_path);
+			$write_callback($file_path, $data);
+			if (file_exists($file_path))
+				File::chmod($file_path);
 		}
 
-		$filePortion = strtok($relpath,'?');
-		$fpl = mb_strlen($filePortion);
-		$params = (mb_strlen($relpath) > $fpl ? '&'.mb_substr($relpath, $fpl+1) : '')
-		          .'&token='.(!empty($_GET['token']) ? $_GET['token'] : CoreUtils::FIXPATH_EMPTY);
-		CoreUtils::fixPath("$filePortion?t=".filemtime($path).$params);
+		$file_portion = strtok($relative_path,'?');
+		$query_string = strtok('?');
+		$path_build = new NSUriBuilder($file_portion);
+		if (!empty($query_string))
+			$path_build->append_query_raw($query_string);
+		$remove_params = null;
+		if (!empty($_GET['token']))
+			$path_build->append_query_param('token', $_GET['token']);
+		else $remove_params = ['token'];
+		$path_build->append_query_param('t', filemtime($file_path));
+
+		CoreUtils::fixPath($path_build, $remove_params);
 		header("Content-Type: image/$content_type");
-		readfile($path);
+		readfile($file_path);
 		exit;
 	}
 
