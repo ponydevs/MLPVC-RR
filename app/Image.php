@@ -116,7 +116,7 @@ class Image {
 	 * @param resource    $image
 	 * @param int         $x
 	 * @param int         $y
-	 * @param mixed       $size
+	 * @param int|int[]   $size
 	 * @param string|null $fill
 	 * @param string|int  $outline
 	 */
@@ -131,12 +131,10 @@ class Image {
 		}
 
 		if (\is_array($size)){
-			/** @var $size int[] */
 			$x2 = $x + $size[0];
 			$y2 = $y + $size[1];
 		}
 		else {
-			/** @var $size int */
 			$x2 = $x + $size;
 			$y2 = $y + $size;
 		}
@@ -192,54 +190,50 @@ class Image {
 	/**
 	 * Writes on an image
 	 *
-	 * @param resource   $image
-	 * @param string     $text
-	 * @param int        $x
-	 * @param int        $fontsize
-	 * @param int        $fontcolor
-	 * @param array|null $origin
-	 * @param string     $FontFile
-	 * @param array      $box
-	 * @param int        $yOffset
-	 *
-	 * @return array
+	 * @param resource        $image
+	 * @param string|string[] $text
+	 * @param int             $x
+	 * @param int             $font_size
+	 * @param int             $font_color
+	 * @param array|null      $origin
+	 * @param string          $font_file
+	 * @param array           $box
+	 * @param int             $y_offset
 	 */
-	public static function writeOn($image, $text, $x, $fontsize, $fontcolor, &$origin, $FontFile, $box = null, $yOffset = 0):array {
-		if (\is_string($fontcolor))
-			$fontcolor = imagecolorallocate($image, 0, 0, 0);
-
+	public static function writeOn($image, $text, $x, $font_size, $font_color, &$origin, $font_file, $box = null, $y_offset = 0) {
+		$line_count = \is_array($text) ? \count($text) : 1;
+		$line_padding_bottom = 2;
 		if (empty($box)){
-			$box = self::saneGetTTFBox($fontsize, $FontFile, $text);
+			$box = self::saneGetTTFBox($font_size, $font_file, $text);
 			$origin['y'] += $box['height'];
 			$y = $origin['y'] - $box['bottom right']['y'];
 		}
 		else $y = $origin['y'] + $box['height'] - $box['bottom right']['y'];
 
-		imagettftext($image, $fontsize, 0, $x, $y + $yOffset, $fontcolor, $FontFile, $text);
+		if ($line_count === 1){
+			imagettftext($image, $font_size, 0, $x, $y + $y_offset, $font_color, $font_file, $text);
+		}
+		else {
+			$y += $y_offset;
+			foreach ($text as $line){
+				imagettftext($image, $font_size, 0, $x, $y, $font_color, $font_file, $line);
 
-		return [$x, $y];
+				$line_box = self::lineSaneGetTTFBox($font_size, $font_file, $line);
+				$y += $line_box['height'] + $line_padding_bottom;
+			}
+		}
 	}
 
 
 	/**
-	 * imagettfbbox wrapper with sane output
-	 *
-	 * @param int    $fontsize
-	 * @param string $fontfile
-	 * @param string $text
+	 * @param int    $font_size
+	 * @param string $font_file
+	 * @param string $line
 	 *
 	 * @return array
 	 */
-	public static function saneGetTTFBox($fontsize, $fontfile, $text):array {
-		/*
-		    imagettfbbox returns (x,y):
-		    6,7--4,5
-		     |    |
-		     |    |
-		    0,1--2,3
-		*/
-		$box = imagettfbbox($fontsize, 0, $fontfile, $text);
-
+	public static function lineSaneGetTTFBox($font_size, $font_file, $line):array {
+		$box = imagettfbbox($font_size, 0, $font_file, $line);
 		$return =  [
 			'bottom left' => ['x' => $box[0], 'y' => $box[1]],
 			'bottom right' => ['x' => $box[2], 'y' => $box[3]],
@@ -250,6 +244,50 @@ class Image {
 		$return['height'] = abs($return['bottom right']['y'] - $return['top left']['y']);
 
 		return $return;
+	}
+
+	/**
+	 * imagettfbbox wrapper with sane output
+	 * -------------------------------------
+	 * imagettfbbox returns (x,y):
+	 * 6,7--4,5
+	 *  |    |
+	 *  |    |
+	 * 0,1--2,3
+	 *
+	 * @param int             $font_size
+	 * @param string          $font_file
+	 * @param string|string[] $text
+	 *
+	 * @return array
+	 */
+	public static function saneGetTTFBox($font_size, $font_file, $text):array {
+		if (!\is_array($text)){
+			$first_line = $text;
+			$text = [];
+		}
+		else $first_line = array_splice($text, 0, 1)[0];
+
+		$box = self::lineSaneGetTTFBox($font_size, $font_file, $first_line);
+		if (!empty($text)) {
+			foreach ($text as $line){
+				$line_box = self::lineSaneGetTTFBox($font_size, $font_file, $line);
+				$lines[] = [$line_box, $font_size];
+				// Nudge height down by the line height
+				$box['height'] += $line_box['height'];
+				$box['bottom left']['y'] += $line_box['height'];
+				$box['bottom right']['y'] += $line_box['height'];
+				// Nudge width out further right if line exceeds current
+				if ($line_box['width'] > $box['width'])
+					$box['width'] = $line_box['width'];
+				if ($line_box['top right']['x'] > $box['top right']['x']){
+					$box['top right']['x'] = $line_box['top right']['x'];
+					$box['bottom right']['x'] = $line_box['bottom right']['x'];
+				}
+			}
+		}
+
+		return $box;
 	}
 
 	/**

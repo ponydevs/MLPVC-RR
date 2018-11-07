@@ -426,149 +426,167 @@ HTML;
 	 *
 	 * @throws \Exception
 	 */
-	public static function renderAppearancePNG($CGPath, $Appearance){
-		$OutputPath = $Appearance->getPaletteFilePath();
-		$FileRelPath = "$CGPath/v/{$Appearance->id}p.png";
-		CoreUtils::fixPath($FileRelPath);
-		if (file_exists($OutputPath))
-			Image::outputPNG(null,$OutputPath,$FileRelPath);
+	public static function renderAppearancePNG($CGPath, Appearance $Appearance):void {
+		$output_path = $Appearance->getPaletteFilePath();
+		$file_relative_path = "$CGPath/v/{$Appearance->id}p.png";
+		CoreUtils::fixPath($file_relative_path);
+		if (file_exists($output_path))
+			Image::outputPNG(null, $output_path, $file_relative_path);
 
-		$OutHeight = 0;
-		$SpriteWidth = $SpriteHeight = 0;
-		$SpriteRightMargin = 10;
-		$ColorCircleSize = 17;
-		$ColorCircleRMargin = 5;
-		$ColorNameFontSize = 12;
-		$FontFile = APPATH.'font/Celestia Medium Redux.ttf';
-		//$PixelatedFontFile = APPATH.'font/Volter (Goldfish).ttf';
-		$PixelatedFontFile = $FontFile;
-		if (!file_exists($FontFile))
+		$output_height = 0;
+		$sprite_width = 0;
+		$sprite_height = 0;
+		$sprite_right_margin = 10;
+		$color_circle_size = 17;
+		$color_circle_right_margin = 5;
+		$color_name_font_size = 12;
+		$regular_font_file = APPATH.'font/Celestia Medium Redux.ttf';
+		$pixelated_font_file = APPATH.'font/PixelOperator.ttf';
+		if (!file_exists($regular_font_file))
 			throw new \RuntimeException('Font file missing');
-		$Name = $Appearance->label;
-		$NameVerticalMargin = 5;
-		$NameFontSize = 22;
-		$TextMargin = 10;
-		$ColorsOutputted = 0;
-		$SplitTreshold = 12;
-		$ColumnRightMargin = 20;
+		if (!file_exists($pixelated_font_file))
+			throw new \RuntimeException('Font file missing');
+		$name = $Appearance->label;
+		$name_vertical_margin = 5;
+		$name_font_size = 22;
+		$text_margin = 10;
+		$output_color_count = 0;
+		$split_threshold = 12;
+		$column_right_margin = 20;
 
 		// Detect if sprite exists and adjust image size & define starting positions
-		$SpritePath = SPRITE_PATH."{$Appearance->id}.png";
-		$SpriteExists = file_exists($SpritePath);
-		if ($SpriteExists){
-			/** @var $SpriteSize int[]|false */
-			$SpriteSize = getimagesize($SpritePath);
-			if ($SpriteSize === false)
-				throw new \RuntimeException("The sprite image located at $SpritePath could not be loaded by getimagesize");
+		$sprite_path = SPRITE_PATH."{$Appearance->id}.png";
+		$sprite_exists = file_exists($sprite_path);
+		if ($sprite_exists){
+			/** @var $sprite_size int[]|false */
+			$sprite_size = getimagesize($sprite_path);
+			if ($sprite_size === false)
+				throw new \RuntimeException("The sprite image located at $sprite_path could not be loaded by getimagesize");
 
-			$Sprite = imagecreatefrompng($SpritePath);
+			$sprite_image = imagecreatefrompng($sprite_path);
 			/** @var $SpriteSize array */
-			$SpriteHeight = $SpriteSize[HEIGHT];
-			$SpriteWidth = $SpriteSize[WIDTH];
-			$SpriteRealWidth = $SpriteWidth + $SpriteRightMargin;
+			$sprite_height = $sprite_size[HEIGHT];
+			$sprite_width = $sprite_size[WIDTH];
+			$sprite_outer_width = $sprite_width + $sprite_right_margin;
 
-			$OutHeight = $SpriteHeight;
+			$output_height = $sprite_height;
 		}
-		else $SpriteRealWidth = 0;
+		else $sprite_outer_width = 0;
 		$origin = [
-			'x' => $SpriteExists ? $SpriteRealWidth : $TextMargin,
+			'x' => $sprite_exists ? $sprite_outer_width : $text_margin,
 			'y' => 0,
 		];
 
 		// Get color groups & calculate the space they take up
-		$ColorGroups = $Appearance->color_groups;
-		$CGFontSize = (int)round($NameFontSize/1.25);
-		$CGVerticalMargin = $NameVerticalMargin;
-		$GroupLabelBox = Image::saneGetTTFBox($CGFontSize, $FontFile, 'ABCDEFGIJKLMOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz');
-		$ColorNameBox = Image::saneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, 'AGIJKFagijkf');
+		$color_groups = $Appearance->color_groups;
+		$cg_font_size = (int)round($name_font_size * 0.75);
+		$cg_vertical_margin = $name_vertical_margin;
+		/** @noinspection SpellCheckingInspection */
+		$test_string = 'ABCDEFGIJKLMOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz/()}{@&#><';
+		$group_label_box = Image::saneGetTTFBox($cg_font_size, $regular_font_file, $test_string);
+		$color_name_box = Image::saneGetTTFBox($color_name_font_size, $regular_font_file, $test_string);
 
 		// Get export time & size
-		$ExportTS = 'Generated at: '.Time::format(time(), Time::FORMAT_FULL);
-		$ExportFontSize = (int)round($CGFontSize/1.5);
-		$ExportBox = Image::saneGetTTFBox($ExportFontSize, $FontFile, $ExportTS);
+		$export_ts = [
+			'Generated at: '.Time::format(time(), Time::FORMAT_FULL),
+			'Source: '.rtrim(ABSPATH, '/').$Appearance->toURL(),
+		];
+		$export_font_size = (int)round($cg_font_size * 0.7);
+		$export_box = Image::saneGetTTFBox($export_font_size, $pixelated_font_file, $export_ts);
+
+		// Get re-post warning
+		$repost_warning = [
+			'Please do not re-post this image on other sites to avoid spreading a',
+			'particular version around that could become out of date in the future.',
+		];
+		$repost_font_size = (int)round($cg_font_size * 0.6);
+		$repost_box = Image::saneGetTTFBox($repost_font_size, $pixelated_font_file, $repost_warning);
 
 		// Check how long & tall appearance name is, and set image width
-		$NameBox = Image::saneGetTTFBox($NameFontSize, $FontFile, $Name);
-		$OutWidth = $origin['x'] + max($NameBox['width'], $ExportBox['width']) + $TextMargin;
+		$name_box = Image::saneGetTTFBox($name_font_size, $regular_font_file, $name);
+		$output_width = $origin['x'] + max($name_box['width'], $export_box['width'], $repost_box['width']) + $text_margin;
 
 		// Set image height
-		$OutHeight = max($origin['y'] + (($NameVerticalMargin*4) + $NameBox['height'] + $ExportBox['height']), $OutHeight);
+		$output_height = max($origin['y'] + (($name_vertical_margin * 4) + $name_box['height'] + $export_box['height'] + $repost_box['height']), $output_height);
 
 		// Create base image
-		$BaseImage = Image::createTransparent($OutWidth, $OutHeight);
-		$BLACK = imagecolorallocate($BaseImage, 0, 0, 0);
+		$base_image = Image::createTransparent($output_width, $output_height);
+		$c_black = imagecolorallocate($base_image, 0, 0, 0);
+		$c_dark_red = imagecolorallocate($base_image, 127, 0, 0);
 
 		// If sprite exists, output it on base image
-		if ($SpriteExists)
-			Image::copyExact($BaseImage, $Sprite, 0, 0, $SpriteWidth, $SpriteHeight);
+		if ($sprite_exists)
+			Image::copyExact($base_image, $sprite_image, 0, 0, $sprite_width, $sprite_height);
 
 		// Output appearance name
-		$origin['y'] += $NameVerticalMargin*2;
-		Image::writeOn($BaseImage, $Name, $origin['x'], $NameFontSize, $BLACK, $origin, $FontFile);
-		$origin['y'] += $NameVerticalMargin;
+		$origin['y'] += $name_vertical_margin * 2;
+		Image::writeOn($base_image, $name, $origin['x'], $name_font_size, $c_black, $origin, $regular_font_file);
+		$origin['y'] += $name_vertical_margin;
 
 		// Output generation time
-		Image::writeOn($BaseImage, $ExportTS, $origin['x'], $ExportFontSize, $BLACK, $origin, $FontFile);
-		$origin['y'] += $NameVerticalMargin;
+		Image::writeOn($base_image, $export_ts, $origin['x'], $export_font_size, $c_black, $origin, $pixelated_font_file);
+		$origin['y'] += $name_vertical_margin;
 
-		if (!empty($ColorGroups)){
-			$LargestX = 0;
-			$AllColors = self::getColorsForEach($ColorGroups);
-			foreach ($ColorGroups as $cg){
-				$CGLabelBox = Image::saneGetTTFBox($CGFontSize, $FontFile, $cg->label);
-				Image::calcRedraw($OutWidth, $OutHeight, $CGLabelBox['width']+$TextMargin, $GroupLabelBox['height']+$NameVerticalMargin+$CGVerticalMargin, $BaseImage, $origin);
-				Image::writeOn($BaseImage, $cg->label, $origin['x'], $CGFontSize, $BLACK, $origin, $FontFile, $GroupLabelBox);
-				$origin['y'] += $GroupLabelBox['height']+$CGVerticalMargin;
+		// Output re-post warning
+		Image::writeOn($base_image, $repost_warning, $origin['x'], $repost_font_size, $c_dark_red, $origin, $pixelated_font_file);
+		$origin['y'] += $name_vertical_margin * 2;
 
-				if ($CGLabelBox['width'] > $LargestX){
-					$LargestX = $CGLabelBox['width'];
+		if (!empty($color_groups)){
+			$cg_start_y = $origin['y'];
+			$cg_largest_x = 0;
+			$all_colors = self::getColorsForEach($color_groups);
+			foreach ($color_groups as $cg){
+				$cg_label_box = Image::saneGetTTFBox($cg_font_size, $regular_font_file, $cg->label);
+				Image::calcRedraw($output_width, $output_height, $cg_label_box['width'] + $text_margin, $group_label_box['height'] + $name_vertical_margin + $cg_vertical_margin, $base_image, $origin);
+				Image::writeOn($base_image, $cg->label, $origin['x'], $cg_font_size, $c_black, $origin, $regular_font_file, $group_label_box);
+				$origin['y'] += $group_label_box['height'] + $cg_vertical_margin;
+
+				if ($cg_label_box['width'] > $cg_largest_x){
+					$cg_largest_x = $cg_label_box['width'];
 				}
 
-				if (!empty($AllColors[$cg->id]))
-					foreach ($AllColors[$cg->id] as $c){
-						$ColorNameLeftOffset = $ColorCircleSize + $ColorCircleRMargin;
-						$CNBox = Image::saneGetTTFBox($ColorNameFontSize, $PixelatedFontFile, $c->label);
+				if (!empty($all_colors[$cg->id])){
+					$y_offset = -1;
+					foreach ($all_colors[$cg->id] as $c){
+						$color_name_left_offset = $color_circle_size + $color_circle_right_margin;
+						$color_name_box = Image::saneGetTTFBox($color_name_font_size, $regular_font_file, $c->label);
 
-						$WidthIncrease = $ColorNameLeftOffset + $CNBox['width'] + $TextMargin;
-						$HeightIncrease = max($ColorCircleSize, $CNBox['height']) + $CGVerticalMargin;
-						Image::calcRedraw($OutWidth, $OutHeight, $WidthIncrease, $HeightIncrease, $BaseImage, $origin);
+						$width_increase = $color_name_left_offset + $color_name_box['width'] + $text_margin;
+						$height_increase = max($color_circle_size, $color_name_box['height']) + $cg_vertical_margin;
+						Image::calcRedraw($output_width, $output_height, $width_increase, $height_increase, $base_image, $origin);
 
-						Image::drawCircle($BaseImage, $origin['x'], $origin['y'], [$ColorCircleSize,$ColorCircleSize], $c->hex, $BLACK);
+						Image::drawCircle($base_image, $origin['x'], $origin['y'], [$color_circle_size, $color_circle_size], $c->hex, $c_black);
 
-						$yOffset = 2;
-						Image::writeOn($BaseImage, $c->label, $origin['x'] + $ColorNameLeftOffset, $ColorNameFontSize, $BLACK, $origin, $PixelatedFontFile, $ColorNameBox, $yOffset);
-						$origin['y'] += $HeightIncrease;
+						Image::writeOn($base_image, $c->label, $origin['x'] + $color_name_left_offset, $color_name_font_size, $c_black, $origin, $regular_font_file, $color_name_box, $y_offset);
+						$origin['y'] += $height_increase;
 
-						$ColorsOutputted++;
+						$output_color_count++;
 
-						$TotalWidth = $ColorNameLeftOffset+$CNBox['width'];
-						if ($TotalWidth > $LargestX){
-							$LargestX = $TotalWidth;
+						$total_width = $color_name_left_offset + $color_name_box['width'];
+						if ($total_width > $cg_largest_x){
+							$cg_largest_x = $total_width;
 						}
-					};
-
-				if ($ColorsOutputted > $SplitTreshold){
-					Image::calcRedraw($OutWidth, $OutHeight, 0, $NameVerticalMargin, $BaseImage, $origin);
-					$origin['y'] =
-						($NameVerticalMargin * 4)
-						+ Image::saneGetTTFBox($NameFontSize, $FontFile, $Name)['height']
-						+ Image::saneGetTTFBox($ExportFontSize, $FontFile, $ExportTS)['height'];
-
-					$origin['x'] += $LargestX+$ColumnRightMargin;
-					$ColorsOutputted = 0;
-					$LargestX = 0;
+					}
 				}
-				else $origin['y'] += $NameVerticalMargin;
-			};
+
+				if ($output_color_count > $split_threshold){
+					Image::calcRedraw($output_width, $output_height, 0, $name_vertical_margin, $base_image, $origin);
+					$origin['y'] = $cg_start_y;
+					$origin['x'] += $cg_largest_x + $column_right_margin;
+					$output_color_count = 0;
+					$cg_largest_x = 0;
+				}
+				else $origin['y'] += $name_vertical_margin;
+			}
 		}
 
-		$FinalBase = Image::createWhiteBG($OutWidth, $OutHeight);
-		Image::drawSquare($FinalBase, 0, 0, [$OutWidth, $OutHeight], null, $BLACK);
-		Image::copyExact($FinalBase, $BaseImage, 0, 0, $OutWidth, $OutHeight);
+		$final_base = Image::createWhiteBG($output_width, $output_height);
+		Image::drawSquare($final_base, 0, 0, [$output_width, $output_height], null, $c_black);
+		Image::copyExact($final_base, $base_image, 0, 0, $output_width, $output_height);
 
-		if (!CoreUtils::createFoldersFor($OutputPath))
+		if (!CoreUtils::createFoldersFor($output_path))
 			Response::fail('Failed to create render directory');
-		Image::outputPNG($FinalBase, $OutputPath, $FileRelPath);
+		Image::outputPNG($final_base, $output_path, $file_relative_path);
 	}
 
 	public const CMDIR_SVG_PATH = FSPATH.'cg_render/appearance/#/cmdir-@.svg';
