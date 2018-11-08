@@ -7,6 +7,10 @@ use App\CoreUtils;
 
 $prefix = basename(__FILE__).':';
 $keys = array_slice($argv, 1);
+if (empty($keys)){
+	echo "$prefix Please specify the keys to clear as arguments\n";
+	exit;
+}
 $num = \App\RedisHelper::del($keys) ?? 0;
 echo "$prefix ".CoreUtils::makePlural('key',$num,PREPEND_NUMBER)." deleted successfully\n";
 
