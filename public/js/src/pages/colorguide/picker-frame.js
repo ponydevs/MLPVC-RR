@@ -245,10 +245,11 @@
 
 	const
 		availableSettings = {
-			'pickingAreaSize': 25,
-			'pickerWidth': '85%',
-			'sidebarColorFormat': 'hex',
-			'levelsDialogEnabled': false,
+			pickingAreaSize: 25,
+			pickerWidth: '85%',
+			sidebarColorFormat: 'hex',
+			levelsDialogEnabled: false,
+			copyHash: true,
 		},
 		settingsLSKey = 'picker_settings';
 	class PersistentSettings {
@@ -1152,9 +1153,19 @@
 			this._$areaImageCounter = $.mk('span');
 			this._$averageColor = $.mk('span').attr('class','average text');
 			this._$copyColorBtn = $.mk('button').attr({'class':'fa fa-clipboard','data-info':'Copy average color to clipboard'}).on('click',e => {
-				const color = this._$averageColor.children().eq(0).text();
+				let color = this._$averageColor.children().eq(0).text();
+
+				const copyHash = this.shouldCopyHash();
+				if (!copyHash)
+					color = color.replace(/^#/,'');
 
 				$.copy(color, e);
+			});
+			this._$hashToggleBtn = $.mk('button').attr({'class':'fa fa-hashtag','data-info':'Toggle whether the hash symbol is copied with the color code'}).on('click',e => {
+				const copyHash = !this.shouldCopyHash();
+
+				PersistentSettings.getInstance().set('copyHash', copyHash);
+				$(e.target)[copyHash ? 'removeClass' : 'addClass']('tool-disabled');
 			});
 			this._$averageColorRgb = $.mk('span').attr('class','average text rgb');
 			this._$actionsBottomLeft = $.mk('div').attr('class','actions actions-bl').append(
@@ -1621,13 +1632,16 @@
 			this._$averageColor.empty();
 			if (pixels.length){
 				const averageColor = $.RGBAColor.fromRGB(PickingArea.averageColor(pixels));
+				const $hashToggleButton = this._$hashToggleBtn.clone(true,true);
+				if (!this.shouldCopyHash())
+					$hashToggleButton.addClass('tool-disabled');
 				this._$averageColor.append(
 					$.mk('span').attr('class','color').css({
 						backgroundColor: averageColor.toString(),
 						color: averageColor.isLight() ? 'black' : 'white',
 					}).text(averageColor.toHex()),
-					this._$copyColorBtn.clone(true,true)
-
+					this._$copyColorBtn.clone(true,true),
+					$hashToggleButton
 				);
 				this._$averageColorRgb.html(averageColor.toRGB());
 			}
@@ -2015,6 +2029,10 @@
 				this._$handTool.removeClass('selected');
 			this[`_$${tool}Tool`].addClass('selected');
 			this._activeTool = Tools[tool];
+		}
+
+		shouldCopyHash(){
+			return PersistentSettings.getInstance().get('copyHash');
 		}
 	}
 

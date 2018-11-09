@@ -854,6 +854,10 @@ body {
 
 			button {
 				margin: 0 0 0 5px !important;
+
+				&.tool-disabled {
+					color: rgba(white, .3);
+				}
 			}
 		}
 	}
