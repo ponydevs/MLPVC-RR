@@ -47,7 +47,7 @@ class EventController extends Controller {
 		$event_type = Event::EVENT_TYPES[$this->event->type];
 
 		CoreUtils::fixPath($this->event->toURL());
-		$js = ['jquery.fluidbox',true];
+		$js = [true];
 		if (Permission::sufficient('staff'))
 			$js[] = 'pages/event/list-manage';
 

@@ -248,7 +248,7 @@ class AdminController extends Controller {
 			'heading' => $heading,
 			'title' => "$heading - Admin Area",
 			'view' => [true],
-			'js' => ['Sortable',true],
+			'js' => ['lib/Sortable',true],
 			'css' => [true],
 		]);
 	}

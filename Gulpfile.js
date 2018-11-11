@@ -36,10 +36,13 @@
 		}
 	}
 
-	const appendMinSuffix = () => rename(path => { path.extname = `.min${path.extname}` });
+	const appendMinSuffix = (regex = false) => rename((path) => {
+		if (!regex || !regex.test(path.basename))
+			path.extname = `.min${path.extname}`
+	});
 
 	let SASSL = new Logger('scss'),
-		SASSWatchArray = ['public/scss/src/*.scss', 'public/scss/src/**/*.scss'];
+		SASSWatchArray = ['assets/scss/*.scss', 'assets/scss/**/*.scss'];
 	gulp.task('scss', () => {
 		return gulp.src(SASSWatchArray)
 			.pipe(plumber(function(err) {
@@ -58,15 +61,15 @@
 				compatibility: '-units.pc,-units.pt'
 			}))
 			.pipe(appendMinSuffix())
-			.pipe(gulp.dest('public/scss/min'));
+			.pipe(gulp.dest('public/css'));
 	});
 
 	let JSL = new Logger('js'),
 		JSWatchArray = [
-			'public/js/src/*.js',
-			'public/js/src/**/*.js',
-			'public/js/src/*.jsx',
-			'public/js/src/**/*.jsx'
+			'assets/js/*.js',
+			'assets/js/**/*.js',
+			'assets/js/*.jsx',
+			'assets/js/**/*.jsx'
 		];
 	gulp.task('js', () => {
 		return gulp.src(JSWatchArray)
@@ -99,8 +102,8 @@
 					},
 				},
 			}))
-			.pipe(appendMinSuffix())
-			.pipe(gulp.dest('public/js/min'));
+			.pipe(appendMinSuffix(/^mode-colorguide$/))
+			.pipe(gulp.dest('public/js'));
 	});
 
 	gulp.task('default', gulp.parallel('js', 'scss'));
