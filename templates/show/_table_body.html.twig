@@ -8,9 +8,8 @@
 <tr class='empty align-center'><td colspan='3'><em>There are no {{ are_movies ? 'movies' ? 'episodes' }} to display</em></td></tr>
 {% else %}
 {% for show in shows %}
-	{% set is_movie = show.get_is_movie %}
 <tr data-id='{{ show.id }}' data-type='{{ show.type }}'>
-	{% if not is_movie %}
+	{% if show.type == 'episode' %}
 	<td class='season' rowspan='2'>{{ show.season }}</td>
 	<td class='episode' rowspan='2'>{{ show.episode }}{% if show.twoparter %}-{{ show.episode + 1 }}{% endif %}</td>
 	{% else %}
@@ -21,12 +20,11 @@
 		<span class="typcn typcn-home" title="Currently visible on the homepage"></span>
 		{% endif %}
 		{% if not show.get_aired %}
-		<span class="typcn typcn-chart-pie" title="{{ is_movie ? 'Movie' : 'Episode' }} didn't air yet, voting disabled"></span>
+		<span class="typcn typcn-chart-pie" title="{{ constant('App\\ShowHelper::VALID_TYPES')[show.type] }} didn't air yet, voting disabled"></span>
 		{% endif %}
 		<a href="{{ show.toURL }}">{{ show.title | escape }}</a>
 		{% if is_staff %}
 		<span class='admin-controls'>
-			{# TODO Make this .edit-show #}
 			<button class='edit-show typcn typcn-pencil blue' title='Edit {{ show.type }}'></button>
 			<button class='delete-show typcn typcn-times red' title='Delete {{ show.type }}'></button>
 		</span>

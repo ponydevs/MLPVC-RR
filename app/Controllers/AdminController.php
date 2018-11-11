@@ -529,7 +529,7 @@ class AdminController extends Controller {
 					],
 				]))->out();
 				CoreUtils::checkStringValidity($message_html, INVERSE_PRINTABLE_ASCII_PATTERN, 'Message');
-				$this->_notice->message_html = $message_html;
+				$this->_notice->message_html = CoreUtils::sanitizeHtml($message_html);
 
 				$hide_after = (new Input('hide_after', 'timestamp', [
 					Input::IN_RANGE => [time(), null],

@@ -208,6 +208,7 @@ class CoreUtils {
 		'inert',
 		'dialog',
 		'global',
+		'react-components',
 		'websocket',
 	];
 
@@ -260,7 +261,6 @@ class CoreUtils {
 		self::_checkAssets($options, $scope['css'], 'scss/min', 'css', $view);
 		$scope['js'] = isset($options['default-js']) && $options['default-js'] === false ? [] : self::DEFAULT_JS;
 		self::_checkAssets($options, $scope['js'], 'js/min', 'js', $view);
-		$scope['local_jquery'] = self::cachedAssetLink('jquery-3.3.1','js/min','js');
 		$scope['server_name'] = $_SERVER['SERVER_NAME'];
 
 		// OpenGraph values
@@ -350,7 +350,7 @@ class CoreUtils {
 				$day = date('j', $airtime);
 				$time = self::_eventTimeTag($airtime, $i);
 
-				$title = !$Episode->is_movie
+				$title = $Episode->is_episode
 					? $Episode->title
 					: (
 					Regexes::$ep_title_prefix->match($Episode->title)
@@ -358,7 +358,7 @@ class CoreUtils {
 						: self::capitalize($Episode->type).': '.$Episode->title
 					);
 
-				$type = $Episode->is_movie ? 'movie' : 'episode';
+				$type = $Episode->is_episode ? 'episode' : 'movie';
 				$HTML[] = [
 					$airtime, "<li><div class='calendar'><span class='top $type'>$month</span><span class='bottom'>$day</span></div>".
 					"<div class='meta'><span class='title'><a href='{$Episode->toURL()}'>$title</a></span><span class='time'>Airs $time</span></div></li>"

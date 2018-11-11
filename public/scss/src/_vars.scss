@@ -22,6 +22,9 @@ $monospace: 'Consolas', monospace;
 $RegularFont: 'Arimo', sans-serif;
 $AvatarSize: 50px;
 
+$ButtonPadding: 3px;
+$ButtonBorderRadius: 3px;
+
 //noinspection CssOptimizeSimilarProperties
 @mixin white-grid {
 	background-color: #fff;

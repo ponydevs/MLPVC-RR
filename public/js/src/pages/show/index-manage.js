@@ -2,8 +2,7 @@
 	'use strict';
 
 	let $tables = $('#content').find('table'),
-		SEASON = window.SEASON,
-		EPISODE = window.EPISODE;
+		SHOW_TYPES = window.SHOW_TYPES;
 	/*!
 	 * Timezone data string taken from:
 	 * http://momentjs.com/downloads/moment-timezone-with-data.js
@@ -20,6 +19,13 @@
 	let EP_TITLE_REGEX = window.EP_TITLE_REGEX;
 
 	function EpisodeForm(id){
+		const typeOptions = [];
+		$.each(SHOW_TYPES, (type, name) => {
+			if (type === 'episode')
+				return '';
+
+			typeOptions.push(`<option value="${type}">${name}</option>`);
+		});
 		let $form = $.mk('form').attr('id', id).append(
 			`<div class="label episode-only">
 				<span>Season, Episode & Overall #</span>
@@ -39,12 +45,7 @@
 				<select name="type" required>
 					<option value="" hidden selected>(choose one)</option>
 					<optgroup label="Available types">
-						${window.SHOW_TYPES.map(type => {
-							if (type === 'episode')
-								return '';
-								
-							return `<option value="${type}">${$.capitalize(type)}</option>`;
-						}).join('')}
+						${typeOptions.join('')}
 					</optgroup>
 				</select>
 			</div>
@@ -172,33 +173,35 @@
 				? window.SHOW_ID
 				: $this.closest('tr').attr('data-id');
 
-		$.Dialog.wait(`Editing show #${id}`);
+		$.Dialog.wait(`Editing show entry #${id}`);
 
 		const endpoint = `/show/${id}`;
 		$.API.get(endpoint, $.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false,this.message);
 
-			const movie = this.ep.season === null;
+			const { show } = this;
+
+			const isEpisode = show.season !== null;
 
 			let $EditEpForm = $EditEpFormTemplate.clone(true, true);
-			$EditEpForm.find(movie ? '.episode-only' : '.movie-only').remove();
+			$EditEpForm.find(isEpisode ? '.movie-only' : '.episode-only').remove();
 
-			if (!movie)
-				$EditEpForm.find('input[name=twoparter]').prop('checked',!!this.ep.twoparter);
-			delete this.ep.twoparter;
+			if (isEpisode)
+				$EditEpForm.find('input[name=twoparter]').prop('checked',!!show.twoparter);
+			delete show.twoparter;
 
-			let d = moment(this.ep.airs);
-			this.ep.airdate = $.momentToYMD(d);
-			this.ep.airtime = $.momentToHM(d);
+			let d = moment(show.airs);
+			show.airdate = $.momentToYMD(d);
+			show.airtime = $.momentToHM(d);
 
-			const notes = this.ep.notes;
-			delete this.ep.notes;
+			const notes = show.notes;
+			delete show.notes;
 
-			$.each(this.ep,function(k,v){
+			$.each(show,function(k,v){
 				$EditEpForm.find(`:input[name=${k}]`).val(v);
 			});
 
-			$.Dialog.request(false, $EditEpForm,'Save', function($form){
+			$.Dialog.request(`Editing ${show.type} #${show.id}`, $EditEpForm,'Save', function($form){
 				let session;
 				try {
 					const mode = 'html';

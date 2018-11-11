@@ -44,14 +44,16 @@ class PostTest extends TestCase {
 
 	public function testToLink(){
 		$episode = new Show([
+			'id' => 1,
 			'season' => 1,
 			'episode' => 1,
+			'type' => 'episode',
 		]);
+
 		$request = new Post([
 			'id' => 1,
 			'requested_by' => VALID_UUID,
-			'season' => $episode->season,
-			'episode' => $episode->episode,
+			'show_id' => $episode->id,
 		]);
 		$result = $request->toURL($episode);
 		self::assertEquals('/episode/S1E1#post-1', $result);
@@ -59,8 +61,7 @@ class PostTest extends TestCase {
 		$reservation = new Post([
 			'id' => 1,
 			'reserved_by' => VALID_UUID,
-			'season' => $episode->season,
-			'episode' => $episode->episode,
+			'show_id' => $episode->id,
 		]);
 		$result = $reservation->toURL($episode);
 		self::assertEquals('/episode/S1E1#post-1', $result);
@@ -71,6 +72,7 @@ class PostTest extends TestCase {
 			'id' => 1,
 			'season' => 1,
 			'episode' => 1,
+			'type' => 'episode',
 		]);
 		$request = new Post([
 			'id' => 1,

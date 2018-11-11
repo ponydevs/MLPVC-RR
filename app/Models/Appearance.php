@@ -331,28 +331,20 @@ HTML;
 	}
 
 	/**
-	 * Returns the HTML of the "Linked to from # episodes" section of appearance pages
+	 * Returns the HTML of the "Featured in" section of appearance pages
 	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function getRelatedShowsHTML(){
+	public function getRelatedShowsHTML():string {
 		$related_shows = $this->related_shows;
-		if (empty($related_shows))
+		$is_staff = Permission::sufficient('staff');
+		if (empty($related_shows) && !$is_staff)
 			return '';
 
-		$list = [];
-		foreach ($related_shows as $show){
-			$list[] = $show->toAnchor($show->formatTitle());
-		}
-		$list = implode(', ',$list);
-
-		return <<<HTML
-	<section id="ep-appearances">
-		<h2><span class='typcn typcn-video'></span>Featured in</h2>
-		<p>$list</p>
-	</section>
-HTML;
+		return Twig::$env->render('appearances/_featured_in.html.twig', [
+			'related_shows' => $related_shows,
+		]);
 	}
 
 	public function verifyToken(?string $token = null){

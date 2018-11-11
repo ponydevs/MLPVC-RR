@@ -66,7 +66,7 @@ class ShowController extends Controller {
 			);
 			$settings['import']['export'] = [
 				'EP_TITLE_REGEX' => Regexes::$ep_title,
-				'SHOW_TYPES' => array_keys(ShowHelper::VALID_TYPES),
+				'SHOW_TYPES' => ShowHelper::VALID_TYPES,
 			];
 		}
 		CoreUtils::loadPage(__METHOD__, $settings);
@@ -142,7 +142,7 @@ class ShowController extends Controller {
 		switch ($this->action){
 			case 'GET':
 				Response::done([
-					'ep' => $this->show->to_array(),
+					'show' => $this->show->to_array(),
 				]);
 			break;
 			case 'POST':
@@ -151,12 +151,10 @@ class ShowController extends Controller {
 				if ($this->creating){
 					$update['type'] = ShowHelper::validateType();
 					$update['posted_by'] = Auth::$user->id;
-					$is_movie = $update['type'] === 'movie';
 					$is_episode = $update['type'] === 'episode';
 				}
 				else {
-					$is_movie = $this->show->is_movie;
-					$is_episode = !$this->show->is_movie;
+					$is_episode = !$this->show->is_episode;
 				}
 				$what = $is_episode ? 'Episode' : 'Movie';
 
@@ -334,7 +332,7 @@ class ShowController extends Controller {
 
 				$user_vote = $this->show->getVoteOf(Auth::$user);
 				if (!empty($user_vote))
-					Response::fail('You already voted for this '.($this->show->is_movie ? 'movie' : 'episode'));
+					Response::fail("You already voted for this {$this->show->type}");
 
 				$vote_value = (new Input('vote', 'int', [
 					Input::IN_RANGE => [1, 5],
@@ -466,22 +464,22 @@ class ShowController extends Controller {
 			case 'GET':
 				$columns = ['id','label','ishuman'];
 
-				$linked = [];
-				$linked_ids = [0];
+				$linked_ids = [];
 				foreach ($this->show->related_appearances as $p){
 					$linked_ids[] = $p->id;
-					$linked[] = $p->to_array([ 'only' => $columns ]);
 				}
 
 				/** @var $appearances Appearance[] */
-				$unlinked = DB::$instance->disableAutoClass()
-					->where('id', $linked_ids, '!=')
+				$entries = DB::$instance->disableAutoClass()
+					->where('id', 0, '!=')
+					->where('owner_id IS NULL')
 					->orderBy('label')
 					->get('appearances', null, $columns);
 
 				Response::done([
-					'unlinked' => $unlinked,
-					'linked' => $linked,
+					'groups' => CGUtils::GUIDE_MAP,
+					'entries' => $entries,
+					'linkedIds' => $linked_ids,
 				]);
 			break;
 			case 'PUT':
@@ -493,13 +491,16 @@ class ShowController extends Controller {
 						Input::ERROR_INVALID => 'Appearance ID list is invalid',
 					],
 				]))->out();
+				if (empty($appearance_ids))
+					$appearance_ids = [];
 
 				$existing_relation_ids = array_map(function($p){ return $p->id; }, $this->show->related_appearances);
 
+
 				$added = array_diff($appearance_ids, $existing_relation_ids);
 				if (!empty($added)){
-				foreach ($added as $appearance_id)
-					ShowAppearance::makeRelation($this->show->id, $appearance_id);
+					foreach ($added as $appearance_id)
+						ShowAppearance::makeRelation($this->show->id, $appearance_id);
 				}
 
 				$removed = array_diff($existing_relation_ids, $appearance_ids);
@@ -534,7 +535,7 @@ class ShowController extends Controller {
 		}
 
 		if ($removed === 0){
-			Response::success('No broken videos found under this '.($this->show->is_movie ? 'movie' : 'episode').'.');
+			Response::success("No broken videos found under this {$this->show->type}.");
 
 			return;
 		}

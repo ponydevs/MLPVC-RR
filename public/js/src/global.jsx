@@ -55,7 +55,7 @@
 
 		return {top:top, left:left};
 	};
-	$.PopupOpenCenter = (url, title, w, h) => {
+	$.popupOpenCenter = (url, title, w, h) => {
 		let calcPos = popupCalcCenter(w,h),
 			newWindow = window.open(url,title,`scrollbars=yes,width=${w},height=${h},top=${calcPos.top},left=${calcPos.left}`);
 
@@ -64,7 +64,7 @@
 
 		return newWindow;
 	};
-	$.PopupMoveCenter = (popup, w, h) => {
+	$.popupMoveCenter = (popup, w, h) => {
 		let calcpos = popupCalcCenter(w,h);
 		popup.resizeTo(w,h);
 		popup.moveTo(calcpos.left,calcpos.top);
@@ -211,7 +211,7 @@
 				$calendar.children('.top').text(d.format('MMM'));
 				$calendar.children('.bottom').text(d.format('D'));
 			});
-			Time.Update();
+			Time.update();
 
 			$lis.find('.title').simplemarquee({
 			    speed: 25,
@@ -488,7 +488,7 @@
 			$.Navigation.reload(true);
 		};
 		try {
-			popup = $.PopupOpenCenter('/da-auth/begin','login','450','580');
+			popup = $.popupOpenCenter('/da-auth/begin','login','450','580');
 			opened = new Date();
 		}catch(e){}
 		// http://stackoverflow.com/a/25643792

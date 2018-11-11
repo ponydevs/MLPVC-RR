@@ -1,0 +1,68 @@
+{
+	"parser": "babel-eslint",
+	"env": {
+		"browser": true,
+		"jquery": true,
+		"es6": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended"
+	],
+	"plugins": [
+		"react"
+	],
+	"parserOptions": {
+		"sourceType": "script",
+        "ecmaVersion": 6,
+		"ecmaFeatures": {
+			"jsx": true
+		}
+	},
+	"rules": {
+		"camelcase": 0,
+		"curly": 0,
+		"wrap-iife": [
+			2,
+			"any"
+		],
+		"linebreak-style": 2,
+		"comma-style": [
+			2,
+			"last"
+		],
+		"new-cap": 2,
+		"strict": [
+			2,
+			"function"
+		],
+		"no-undef": 2,
+		"no-unused-vars": 0,
+		"no-console": "warn",
+		"react/prop-types": 0
+	},
+	"globals": {
+		"$w": true,
+		"$d": true,
+		"$body": true,
+		"$head": true,
+		"$navbar": true,
+		"$header": true,
+		"$sidebar": true,
+		"$sbToggle": true,
+		"$main": true,
+		"$content": true,
+		"$footer": true,
+		"ace": true,
+		"IntersectionObserver": true,
+		"Key": true,
+		"mk": true,
+		"moment": true,
+		"noUiSlider": true,
+		"saveAs": true,
+		"Sortable": true,
+		"Time": true,
+		"React": true,
+		"ReactDOM": true
+	}
+}

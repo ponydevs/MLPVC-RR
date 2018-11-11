@@ -133,13 +133,13 @@
 			constructor(message, element){
 				super(message);
 
-		        this.name = 'DateFormatError';
+				this.name = 'DateFormatError';
 				this.element = element;
 			}
 		}
 
 		class Time {
-			static Update(){
+			static update(){
 				// TODO Rework dyntime
 				$('time[datetime]:not(.nodt)').addClass('dynt').each(function(){
 					let $this = $(this),
@@ -218,8 +218,8 @@
 		};
 		window.Time = Time;
 
-		Time.Update();
-		setInterval(Time.Update, 10e3);
+		Time.update();
+		setInterval(Time.update, 10e3);
 	})(jQuery);
 
 	// Make the first letter of the first or all word(s) uppercase

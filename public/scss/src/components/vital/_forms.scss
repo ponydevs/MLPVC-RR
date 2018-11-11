@@ -153,16 +153,41 @@ input[type=checkbox] {
 			.input-group-3 { @include input-group(3) }
 
 			.split-select-wrap {
-				display: block;
+				display: flex;
+				flex-flow: row wrap;
 				overflow: hidden;
+				align-items: center;
 
 				$ButtonsWidth: 40px;
-				> * {
-					display: inline-block;
-					vertical-align: middle;
+
+				.filter-input {
+					flex: 0 0 100%;
+					display: flex;
+					flex-flow: row nowrap;
+					justify-content: stretch;
+					margin-bottom: 10px;
+
+					> * {
+					font-size: 1.2rem;
+						display: block;
+					}
+
+					input {
+						flex: 1 1 100%;
+						box-sizing: border-box;
+						border-top-left-radius: $ButtonBorderRadius;
+						border-bottom-left-radius: $ButtonBorderRadius;
+					}
+					button {
+						flex: 0 0 auto;
+						margin: 0;
+						border-top-left-radius: 0;
+						border-bottom-left-radius: 0;
+					}
 				}
 
 				.buttons {
+					flex: 0 0 auto;
 					width: $ButtonsWidth;
 					padding: 5px;
 					box-sizing: border-box;
@@ -176,7 +201,7 @@ input[type=checkbox] {
 				}
 
 				.split-select {
-					width: calc((100% - #{$ButtonsWidth}) / 2);
+					flex: 1 0 calc((100% - #{$ButtonsWidth}) / 2);
 
 					select {
 						display: block;

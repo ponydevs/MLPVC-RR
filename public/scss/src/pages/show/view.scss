@@ -200,10 +200,10 @@
 
 			.synopsis-promise {
 				margin: 0 auto;
-				@include loading-indicator(192px, 'wedges');
+				@include loading-indicator(192px, 'roll');
 
 				&.twoparter {
-					@include loading-indicator(373px, 'wedges', 0.3);
+					@include loading-indicator(373px, 'roll', 0.3);
 				}
 			}
 

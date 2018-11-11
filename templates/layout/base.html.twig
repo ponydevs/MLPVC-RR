@@ -81,7 +81,8 @@
 		{% include 'layout/_footer.html.twig' %}
 	</footer>
 
-{% include 'layout/_jquery.html.twig' %}
+{% include 'layout/libs/_jquery.html.twig' %}
+{% include 'layout/libs/_react.html.twig' %}
 <script nonce="{{ constant('CSP_NONCE') }}">$.API = { API_PATH: "{{ constant('API_PATH') }}" }</script>
 <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
 {% if server_name is defined %}

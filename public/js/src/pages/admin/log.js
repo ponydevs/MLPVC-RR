@@ -59,7 +59,7 @@
 					});
 
 					$dataDiv.insertAfter($this).slideDown();
-					Time.Update();
+					Time.update();
 					$this.addClass('typcn-minus color-darkblue');
 				})).always(function(){
 					requesting = false;

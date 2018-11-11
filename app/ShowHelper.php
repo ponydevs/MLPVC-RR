@@ -16,10 +16,10 @@ class ShowHelper {
 	];
 	public const VALID_TYPES = [
 		#----------# - max length
-		'movie'      => true,
-		'short'      => true,
-		'episode'    => true,
-		'special'    => true,
+		'episode'    => 'Episode',
+		'movie'      => 'Movie',
+		'short'      => 'Short',
+		'special'    => 'Special',
 	];
 
 	/**

@@ -217,7 +217,8 @@ body.dialog-open {
 			margin-top: 9px;
 		}
 
-		&:not([class]) > .notice {
+		&:not([class]) > .notice,
+		form:first-child + .notice:last-child {
 			margin-top: 10px;
 			border-width: 2px;
 			font-size: 1em;

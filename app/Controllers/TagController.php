@@ -151,7 +151,7 @@ class TagController extends ColorGuideController {
 				Response::done($this->tag->to_array());
 			break;
 			case 'DELETE':
-				$AppearanceID = CGUtils::validateAppearancePageID();
+				$appearance_id = CGUtils::validateAppearancePageID();
 
 				$tid = $this->tag->synonym_of ?? $this->tag->id;
 				$Uses = Tagged::by_tag($tid);
@@ -166,15 +166,7 @@ class TagController extends ColorGuideController {
 				foreach ($Uses as $use)
 					$use->appearance->updateIndex();
 
-				if ($AppearanceID !== null && $this->tag->type === 'ep'){
-					$Appearance = Appearance::find($AppearanceID);
-					$resp = [
-						'needupdate' => true,
-						'eps' => $Appearance->getRelatedShowsHTML(),
-					];
-				}
-				else $resp = null;
-				Response::success('Tag deleted successfully', $resp);
+				Response::success('Tag deleted successfully');
 			break;
 			case 'POST':
 			case 'PUT':
@@ -211,37 +203,26 @@ class TagController extends ColorGuideController {
 					if (!$Tag->save())
 						Response::dbError();
 
-					$AppearanceID = (new Input('addto','int', [Input::IS_OPTIONAL => true]))->out();
-					if ($AppearanceID !== null){
-						if ($AppearanceID === 0)
+					$appearance_id = (new Input('addto','int', [Input::IS_OPTIONAL => true]))->out();
+					if ($appearance_id !== null){
+						if ($appearance_id === 0)
 							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance because it can't be tagged.");
 
-						$Appearance = Appearance::find($AppearanceID);
+						$Appearance = Appearance::find($appearance_id);
 						if (empty($Appearance))
-							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$AppearanceID'>#$AppearanceID</a>) because it doesn't seem to exist. Please try adding the tag manually.");
+							Response::success("The tag was created, <strong>but</strong> it could not be added to the appearance (<a href='/cg/v/$appearance_id'>#$appearance_id</a>) because it doesn't seem to exist. Please try adding the tag manually.");
 
 						$Appearance->addTag($Tag)->updateIndex();
-						$r = ['tags' => $Appearance->getTagsHTML(NOWRAP)];
-						if ($this->_appearancePage){
-							$r['needupdate'] = true;
-							$r['eps'] = $Appearance->getRelatedShowsHTML();
-						}
-						Response::done($r);
+						Response::done(['tags' => $Appearance->getTagsHTML(NOWRAP)]);
 					}
 				}
 				else {
 					$this->tag->update_attributes($data);
 					$data = $this->tag->to_array();
-					$AppearanceID = !empty($this->_appearancePage) ? \intval($_REQUEST['APPEARANCE_PAGE'], 10) : null;
-					$tagrelations = Tagged::by_tag($this->tag->id);
-					foreach ($tagrelations as $tagged){
+					$appearance_id = !empty($this->_appearancePage) ? \intval($_REQUEST['APPEARANCE_PAGE'], 10) : null;
+					$tag_relations = Tagged::by_tag($this->tag->id);
+					foreach ($tag_relations as $tagged){
 						$tagged->appearance->updateIndex();
-
-						if ($tagged->appearance_id === $AppearanceID){
-							$data['needupdate'] = true;
-							$Appearance = Appearance::find($AppearanceID);
-							$data['eps'] = $Appearance->getRelatedShowsHTML();
-						}
 					}
 				}
 
