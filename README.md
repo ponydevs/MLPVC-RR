@@ -10,7 +10,7 @@
    [jQuery](http://jquery.com/),
    [autocomplete.js](https://github.com/algolia/autocomplete.js),
    [Sortable](https://github.com/RubaXa/Sortable),
-   [Ace Editor](https://ace.c9.io/),
+   [CodeFlask](https://github.com/kazzkiq/CodeFlask/),
    [moment.js](http://momentjs.com/),
    [simplemarquee](https://github.com/IndigoUnited/jquery.simplemarquee),
    [dragscroll](https://github.com/asvd/dragscroll),

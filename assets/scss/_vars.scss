@@ -25,6 +25,14 @@ $AvatarSize: 50px;
 $ButtonPadding: 3px;
 $ButtonBorderRadius: 3px;
 
+$ValidLight: #0c0;
+$ValidDark: #070;
+$InvalidLight: #c00;
+$InvalidDark: #700;
+$Border: #888;
+$Background: #EFEFEF;
+$BackgroundLight: #F6F6F6;
+
 //noinspection CssOptimizeSimilarProperties
 @mixin white-grid {
 	background-color: #fff;
