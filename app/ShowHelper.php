@@ -123,7 +123,6 @@ class ShowHelper {
 
 		$js = ['jquery.fluidbox', true, 'pages/show/manage'];
 		if (Permission::sufficient('staff')){
-			$js[] = 'moment-timezone';
 			$js[] = 'pages/show/index-manage';
 		}
 

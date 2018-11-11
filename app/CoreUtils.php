@@ -198,7 +198,6 @@ class CoreUtils {
 	public const DEFAULT_CSS = ['theme'];
 	public const DEFAULT_JS = [
 		'datastore',
-		'moment',
 		'jquery.ba-throttle-debounce',
 		'jquery.fluidbox',
 		'jquery.swipe',
@@ -463,7 +462,7 @@ class CoreUtils {
 	 */
 	private static function _formatFilePath(string &$item, string $relpath, string $type){
 		$pathStart = APPATH.$relpath;
-		$item .= ".$type";
+		$item .= ".min.$type";
 		if (!file_exists("$pathStart/$item"))
 			throw new \RuntimeException("File /$relpath/$item does not exist");
 		$item = "/$relpath/$item?".filemtime("$pathStart/$item");
