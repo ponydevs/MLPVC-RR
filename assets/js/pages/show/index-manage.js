@@ -78,8 +78,8 @@
 				<p>Specify the <span class="episode-only">episode</span><span class="movie-only">movie</span>'s air date and time in <strong>your computer's timezone</strong>.</p>
 			</div>
 			<div class="label">
-				<span>Notes (optional, 1000 chars. max)</span>
-				<div class="ace_editor"></div>
+				<span>Notes (optional, raw HTML, 1000 chars. max)</span>
+				<div class="code-editor"></div>
 			</div>`
 		);
 
@@ -131,24 +131,15 @@
 			);
 
 		$.Dialog.request($(this).text(), $AddEpForm,'Add', function($form){
-			let session;
-			try {
-				const mode = 'html';
-				let div = $form.find('.ace_editor').get(0),
-					editor = ace.edit(div);
-				session = $.aceInit(editor, mode);
-				session.setMode(mode);
-				session.setUseWrapMode(true);
-			}
-			catch(e){ console.error(e) }
+			let flask = $.codeFlask($form.find('.code-editor').get(0), 'markup');
 
 			$form.on('submit', function(e){
 				e.preventDefault();
 				let airdate = $form.find('input[name=airdate]').disable().val(),
 					airtime = $form.find('input[name=airtime]').disable().val(),
 					airs = $.mkMoment(airdate, airtime).toISOString(),
-					data = $(this).mkData({airs:airs});
-				data.notes = session.getValue();
+					data = $(this).mkData({ airs });
+				data.notes = flask.getCode();
 
 				const what = is_episode ? 'episode' : 'show entry';
 				$.Dialog.wait(false, `Adding ${what} to database`);
@@ -202,19 +193,10 @@
 			});
 
 			$.Dialog.request(`Editing ${show.type} #${show.id}`, $EditEpForm,'Save', function($form){
-				let session;
-				try {
-					const mode = 'html';
-					let div = $form.find('.ace_editor').get(0),
-						editor = ace.edit(div);
-					session = $.aceInit(editor, mode);
-					session.setMode(mode);
-					session.setUseWrapMode(true);
+				let flask = $.codeFlask($form.find('.code-editor').get(0), 'markup');
 
-					if (notes)
-						session.setValue(notes);
-				}
-				catch(e){ console.error(e) }
+				if (notes)
+					flask.updateCode(notes);
 
 				$form.on('submit', function(e){
 					e.preventDefault();
@@ -224,7 +206,7 @@
 					delete data.airdate;
 					delete data.airtime;
 					data.airs = d.toISOString();
-					data.notes = session.getValue();
+					data.notes = flask.getCode();
 
 					$.Dialog.wait(false, 'Saving changes');
 

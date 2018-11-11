@@ -73,20 +73,10 @@
 			else $ponyLabel = $this.siblings().first();
 
 			$.Dialog.request(title,$PonyEditorFormTemplate.clone(true,true),'Save', function($form){
-				let appearanceID, session;
+				let appearanceID, flask = $.codeFlask($form.find('.ace_editor').get(0), 'html');
 
-				try {
-					const mode = 'html';
-					let div = $form.find('.ace_editor').get(0),
-						editor = ace.edit(div);
-					session = $.aceInit(editor, mode);
-					session.setMode(mode);
-					session.setUseWrapMode(true);
-
-					if (editing && data.notes)
-						session.setValue(data.notes);
-				}
-				catch(e){ console.error(e) }
+				if (editing && data.notes)
+					flask.updateCode(data.notes);
 
 				if (editing){
 					appearanceID = data.appearanceID;
@@ -180,7 +170,7 @@
 					e.preventDefault();
 
 					let data = $form.mkData();
-					data.notes = session.getValue();
+					data.notes = flask.getCode();
 					$.Dialog.wait(false, 'Saving changes');
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
@@ -552,10 +542,8 @@
 				catch (error){
 					if (!(error instanceof ColorTextParseError))
 						throw error;
-					this.editor.gotoLine(error.lineNumber);
-					this.editor.navigateLineEnd();
 					$.Dialog.fail(false, error.message);
-					this.editor.focus();
+					this.flask.elTextarea.focus();
 					$btn.enable();
 					return;
 				}
@@ -621,10 +609,8 @@
 				catch (error){
 					if (!(error instanceof ColorTextParseError))
 						throw error;
-					this.editor.gotoLine(error.lineNumber);
-					this.editor.navigateLineEnd();
 					$.Dialog.fail(false, error.message);
-					this.editor.focus();
+					this.flask.elTextarea.focus();
 					return;
 				}
 
@@ -776,19 +762,8 @@
 				$div.find('.clri').focus();
 			}
 			else {
-				this.editor.clearSelection();
-				this.editor.navigateLineEnd();
-				let curpos = this.editor.getCursorPosition(),
-					trow = curpos.row+1,
-					emptyLine = curpos.column === 0,
-					copyHashEnabled = window.copyHashEnabled();
-
-				if (!emptyLine)
-					trow++;
-
-				this.editor.insert((!emptyLine?'\n':'')+(copyHashEnabled?'#':'')+'\t');
-				this.editor.gotoLine(trow,Number(copyHashEnabled));
-				this.editor.focus();
+				this.flask.updateCode(`${this.flask.getCode()}\n${copyHashEnabled ? '#' : ''}\t`);
+				this.flask.focus();
 			}
 		}
 		renderColorInputs(){
@@ -820,7 +795,7 @@
 						id = $clrid.length ? $clrid.text().replace('ID:','') : undefined;
 
 					switch (method){
-						case "hex":
+						case "hex": {
 							const
 								$ci = $row.children('.clri'),
 								val = $ci.val(),
@@ -833,8 +808,8 @@
 								label: $row.children('.clrl').val(),
 								deleted,
 							});
-						break;
-						case "link":
+						} break;
+						case "link": {
 							const $clc = $row.children('.clrlc');
 							data.push({
 								id,
@@ -843,7 +818,7 @@
 								linked_to: $clc.val(),
 								deleted,
 							});
-						break;
+						} break;
 					}
 				});
 				this.colorValues = data;
@@ -873,26 +848,22 @@
 				this.destroySortable();
 
 				// Create editor
-				const mode = 'colorguide';
-				this.editor = ace.edit($colors[0]);
-				let session = $.aceInit(this.editor);
-				session.setTabSize(8);
-				session.setMode(mode);
-				this.editor.setValue(editorContent.join('\n') + '\n', -1);
-				this.editor.navigateFileEnd();
-				this.editor.focus();
+				$colors.empty().addClass('code-editor');
+				this.flask = $.codeFlask($colors[0], 'colorguide');
+				this.flask.updateCode(editorContent.join('\n') + '\n');
+				$(this.flask.elTextarea).css('tab-size', '8');
+				this.flask.elTextarea.focus();
 				this.mode = 'text';
 			}
 			else {
 				// Saving
-				this.colorValues = ColorGroupEditor.parseColorsText(this.editor.getValue());
+				this.colorValues = ColorGroupEditor.parseColorsText(this.flask.getCode());
 				if (storeState)
 					return;
 
 				// Switching
-				this.editor.destroy();
-				this.editor = null;
-				$colors.attr('class','clrs');
+				this.flask = null;
+				$colors.removeClass('code-editor');
 				this.renderColorInputs();
 				this.mode = 'gui';
 			}

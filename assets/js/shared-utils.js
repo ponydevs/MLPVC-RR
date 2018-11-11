@@ -636,44 +636,33 @@
 		};
 	})(jQuery);
 
-	$.aceInit = function(editor){
-		ace.config.set('basePath', '/js/lib/ace');
-		editor.$blockScrolling = Infinity;
-		editor.setShowPrintMargin(false);
-		let session = editor.getSession();
-		session.setUseSoftTabs(false);
-		session.setOption('indentedSoftWrap', false);
-		session.setOption('useWorker', false);
-		session.on("changeAnnotation", function() {
-			let annotations = session.getAnnotations() || [],
-				i = 0,
-				len = annotations.length,
-				removed = false;
-			while (i < len){
-				if (/doctype first\. Expected/.test(annotations[i].text)){
-					annotations.splice(i, 1);
-					len--;
-					removed = true;
-				}
-				else i++;
-			}
-			if (removed)
-				session.setAnnotations(annotations);
+	Prism.languages.colorguide = {
+		'comment': /\/\/.+/,
+	};
+	$.codeFlask = function(el, language){
+		const flask = new CodeFlask(el, {
+			language,
+			defaultTheme: false,
 		});
-		return session;
+		if (language in Prism.languages)
+			flask.addLanguage(language, Prism.languages[language]);
+		return flask;
 	};
 
 	// http://stackoverflow.com/a/16270434/1344955
 	$.isInViewport = el => {
 		let rect;
 		try {
-	        rect = el.getBoundingClientRect();
-		}catch(e){ return true }
+			rect = el.getBoundingClientRect();
+		} catch (e){
+			return true;
+		}
 
-	    return rect.bottom > 0 &&
-	        rect.right > 0 &&
-	        rect.left < (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */ &&
-	        rect.top < (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */;
+		return
+			rect.bottom > 0 &&
+			rect.right > 0 &&
+			rect.left < (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */ &&
+			rect.top < (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */;
 	};
 	$.fn.isInViewport = function(){
 		return this[0] ? $.isInViewport(this[0]) : false;

@@ -140,22 +140,18 @@
 		$.API.get(`/setting/${endpoint}`,$.mkAjaxHandler(function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
-			let $EditorForm = $.mk('form', `${endpoint}-editor`).html(`<span>${text}</span>`),
+			let $EditorForm = $.mk('form', `${endpoint}-editor`),
 				value = this.value;
 
 			$.Dialog.request(false, $EditorForm, 'Save', function($form){
-				const mode = 'html';
-				let editor = ace.edit($.mk('div').appendTo($form).get(0));
-				editor.setShowPrintMargin(false);
-				let session = $.aceInit(editor, mode);
-				session.setMode(mode);
-				session.setUseWrapMode(true);
-				session.setValue(value);
+				let flask = $.codeFlask($.mk('div').attr('class','code-editor').appendTo($form).get(0), 'markup');
+
+				flask.updateCode(value);
 
 				$form.on('submit', function(e){
 					e.preventDefault();
 
-					let data = { value: session.getValue() };
+					let data = { value: flask.getCode() };
 					$.Dialog.wait(false, 'Saving');
 
 					$.API.put(`/setting/${endpoint}`, data, $.mkAjaxHandler(function(){

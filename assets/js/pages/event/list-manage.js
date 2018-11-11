@@ -29,7 +29,7 @@
 			),
 			`<div class="label">
 				<span>Description (1-3000 chars.)<br>Uses <a href="https://help.github.com/articles/basic-writing-and-formatting-syntax/" target="_blank">Markdown</a> formatting</span>
-				<div class="ace_editor"></div>
+				<div class="code-editor"></div>
 			</div>`,
 			$.mk('label').append(
 				`<span>Event type (cannot ba changed later)</span>`,
@@ -93,20 +93,10 @@
 			else $eventName = $this.siblings().first();
 
 			$.Dialog.request(title,$EventEditorFormTemplate.clone(true,true),'Save', function($form){
-				let eventID, session;
+				let eventID, flask = $.codeFlask($form.find('.code-editor').get(0), 'markdown');
 
-				try {
-					const mode = 'markdown';
-					let div = $form.find('.ace_editor').get(0),
-						editor = ace.edit(div);
-					session = $.aceInit(editor, mode);
-					session.setMode(mode);
-					session.setUseWrapMode(true);
-
-					if (editing && data.desc_src)
-						session.setValue(data.desc_src);
-				}
-				catch(e){ console.error(e) }
+				if (editing && data.desc_src)
+					flask.setCode(data.desc_src);
 
 				if (editing){
 					eventID = data.eventID;
@@ -133,7 +123,7 @@
 					e.preventDefault();
 
 					let data = $form.mkData();
-					data.description = session.getValue();
+					data.description = flask.getCode();
 					if (data.start_date && data.start_time){
 						let start = $.mkMoment(data.start_date, data.start_time);
 						data.starts_at = start.toISOString();

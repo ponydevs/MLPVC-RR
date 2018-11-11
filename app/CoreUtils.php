@@ -202,7 +202,7 @@ class CoreUtils {
 		'lib/jquery.fluidbox',
 		'lib/jquery.swipe',
 		'lib/jquery.simplemarquee',
-		'lib/ace/ace',
+		// TODO Integrate codemirror
 		'lib/inert',
 		'shared-utils',
 		'dialog',
