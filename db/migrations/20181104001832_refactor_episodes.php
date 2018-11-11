@@ -113,9 +113,11 @@ class RefactorEpisodes extends AbstractMigration {
 			->addForeignKey('show_id', 'show', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
 			->addForeignKey('appearance_id', 'appearances', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
 			->create();
-		$this->table('show_appearances')
-			->insert($show_appearances)
-			->save();
+
+		if (!empty($show_appearances))
+			$this->table('show_appearances')
+				->insert($show_appearances)
+				->save();
 
 		$this->query("DELETE FROM tags WHERE type = 'ep'");
 	}
