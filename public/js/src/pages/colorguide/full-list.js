@@ -32,19 +32,18 @@
 			const el = entry.target;
 			io.unobserve(el);
 
-			const
-				src = el.dataset.src,
-				img = new Image();
-
-			img.src = src;
+			const img = new Image();
+			img.src = el.dataset.src;
 			$(img).on('load',function(){
-				$(el).css('opacity',0).attr('src',src).removeAttr('data-src').animate({opacity:1},300);
+				if (el.classList.contains('border'))
+					img.classList.add('border');
+				$(el).replaceWith(img).css('opacity',0).animate({opacity:1},300);
 			});
 		});
 	});
 
 	function reobserve(){
-		$fullList.find('section > ul img[data-src]').each((_, el) => io.observe(el));
+		$fullList.find('section > ul .image-promise').each((_, el) => io.observe(el));
 	}
 	reobserve();
 

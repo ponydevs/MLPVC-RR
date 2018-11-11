@@ -30,9 +30,9 @@
 		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance's sprite image.</p>`
 	);
 
-	let $EpAppearances;
+	let $relatedShows;
 	if (AppearancePage)
-		$EpAppearances = $('#ep-appearances');
+		$relatedShows = $('#relatedShows');
 
 	$.fn.reorderTags = function(){
 		return this.each(function(){
@@ -58,7 +58,7 @@
 					<span>Additional notes (1000 chars. max, optional)</span>
 					<div class="ace_editor"></div>
 				</div>
-				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide?'you':'admins'} can see added colors)</label>`
+				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide?'you and staff':'staff'} can see added colors)</label>`
 			),
 		mkPonyEditor = function($this, title, data){
 			let editing = !!data,
@@ -153,152 +153,6 @@
 											});
 										});
 									});
-								}),
-							PersonalGuide ? undefined : $.mk('button')
-								.attr('class', 'darkblue typcn typcn-pencil')
-								.text('Relations')
-								.on('click', function(e){
-									e.preventDefault();
-
-									$.Dialog.close();
-									$.Dialog.wait('Appearance relation editor', 'Retrieving relations from server');
-
-									let $cgRelations = $content.find('section.related');
-									$.API.get(`/cg/appearance/${appearanceID}/relations`,$.mkAjaxHandler(function(){
-										if (!this.status) return $.Dialog.fail(false, this.message);
-
-										let data = this,
-											$GuideRelationEditorForm = $.mk('form').attr('id','guide-relation-editor'),
-											$selectLinked = $.mk('select').attr({name:'listed',multiple:true}),
-											$selectUnlinked = $.mk('select').attr('multiple', true);
-
-										if (data.linked && data.linked.length)
-											$.each(data.linked,function(_, el){
-												let $option = $.mk('option').attr('value', el.id).text(el.label);
-												if (el.mutual)
-													$option.attr('data-mutual', true).text('(M) '+$option.text());
-												$selectLinked.append($option);
-											});
-										if (data.unlinked && data.unlinked.length)
-											$.each(data.unlinked,function(_, el){
-												$selectUnlinked.append($.mk('option').attr('value', el.id).text(el.label));
-											});
-
-										let $mutualness = $.mk('div').attr('class','mutual-fieldset-wrap').html(
-											`<fieldset>
-												<legend data-placeholder="Relation type"></legend>
-												<div class="radio-group">
-													<label><input type="radio" class="mutual-checkbox" name="mutual" value="1" required disabled><span>Mutual</span></label>
-													<label><input type="radio" class="mutual-checkbox" name="mutual" value="0" required disabled><span>One way</span></label>
-												</div>
-												<div class="notice"></div>
-											</fieldset>`),
-											$mutualNotice = $mutualness.find('.notice'),
-											$mutualLegend = $mutualness.find('legend'),
-											mutualTextRegex = /^\(M\) /;
-
-										$mutualness.find('input').on('change click',function(){
-											let $this = $(this);
-											if ($this.hasAttr('disabled'))
-												return;
-
-											let $selected = $selectLinked.children(':selected'),
-												mutual = $this.is(':checked') && $this.attr('value') === '1',
-												hasDataAttr = $selected.hasAttr('data-mutual');
-											if (mutual){
-												if (!hasDataAttr)
-													$selected.attr('data-mutual', true).text('(M) '+$selected.text());
-											}
-											else if (hasDataAttr)
-												$selected.removeAttr('data-mutual').text($selected.text().replace(mutualTextRegex,''));
-										});
-
-										$selectLinked.on('change',function(){
-											let $selected = $selectLinked.children(':selected');
-											if ($selected.length === 1){
-												$mutualness.find('input').enable();
-												$mutualNotice.hide();
-												$mutualLegend.text('Relation to '+($selected.text().replace(mutualTextRegex,'')));
-												$mutualness.find(`input[value="${$selected.hasAttr('data-mutual')?'1':'0'}"]`).prop('checked', true);
-											}
-											else {
-												$mutualness.find('input').disable();
-												$mutualLegend.empty();
-												if ($selected.length > 1)
-													$mutualNotice.attr('class','notice fail').text('Multiple appearances are selected').show();
-												else $mutualNotice.attr('class','notice info').text('Select a relation on the left to change the type').show();
-											}
-										}).triggerHandler('change');
-
-										$GuideRelationEditorForm.append(
-											$.mk('div').attr('class','split-select-wrap').append(
-												$.mk('div').attr('class','split-select').append("<span>Linked</span>",$selectLinked),
-												$.mk('div').attr('class','buttons').append(
-													$.mk('button').attr({'class':'typcn typcn-chevron-left green',title:'Link selected'}).on('click', function(e){
-														e.preventDefault();
-
-														$selectLinked.append($selectUnlinked.children(':selected').prop('selected', false)).children().sort(function(a,b){
-															return a.innerHTML.localeCompare(b.innerHTML);
-														}).appendTo($selectLinked);
-													}),
-													$.mk('button').attr({'class':'typcn typcn-chevron-right red',title:'Unlink selected'}).on('click', function(e){
-														e.preventDefault();
-
-														$selectUnlinked.append($selectLinked.children(':selected').prop('selected', false)).children().sort(function(a,b){
-															return a.innerHTML.localeCompare(b.innerHTML);
-														}).appendTo($selectUnlinked);
-														if ($selectLinked.children().length === 0){
-															$mutualness.find('input').disable();
-															$mutualLegend.empty();
-															$mutualness.find('.notice').show();
-														}
-													})
-												),
-												$.mk('div').attr('class','split-select').append("<span>Available</span>",$selectUnlinked)
-											),
-											$mutualness
-										);
-
-										$.Dialog.request(false,$GuideRelationEditorForm,'Save', function($form){
-											$form.on('submit', function(e){
-												e.preventDefault();
-
-												let ids = [],
-													mutuals = [];
-												$selectLinked.children().each(function(_, el){
-													let $el = $(el),
-														val = $el.attr('value');
-													ids.push(val);
-													if ($el.hasAttr('data-mutual'))
-														mutuals.push(val);
-												});
-												$.Dialog.wait(false, 'Saving changes');
-
-												let data = {
-													ids: ids.join(','),
-													mutuals: mutuals.join(','),
-												};
-												if (AppearancePage)
-													data.APPEARANCE_PAGE = true;
-												$.API.put(`/cg/appearance/${appearanceID}/relations`,data,$.mkAjaxHandler(function(){
-													if (!this.status) return $.Dialog.fail(false, this.message);
-
-													if (this.section){
-														if (!$cgRelations.length)
-															$cgRelations = $.mk('section')
-																.addClass('related')
-																.appendTo($content.children().last());
-														$cgRelations.html($(this.section).filter('section').html());
-													}
-													else if ($cgRelations.length){
-														$cgRelations.remove();
-														$cgRelations = {length:0};
-													}
-													$.Dialog.close();
-												}));
-											});
-										});
-									}));
 								}),
 							$.mk('button')
 								.attr({
@@ -516,11 +370,6 @@
 					if (this.tags){
 						$tagsDiv.html(this.tags);
 						ctxmenus();
-					}
-					if (this.needupdate === true){
-						let $eps = $(this.eps);
-						$EpAppearances.replaceWith($eps);
-						$EpAppearances = $eps;
 					}
 					TagAutocompleteCache.clear();
 					$.Dialog.close();
@@ -825,7 +674,7 @@
 
 						ctxmenus();
 						if (this.update || this.changes)
-							Time.Update();
+							Time.update();
 						if (AppearancePage && this.cm_list)
 							$('#pony-cm-list').html(this.cm_list);
 						$.Dialog.close();
@@ -1819,11 +1668,6 @@
 										this.className += ` typ-${data.type}`;
 								});
 
-								if (AppearancePage && data.needupdate){
-									let $newEpSection = $(data.eps);
-									$EpAppearances.replaceWith($newEpSection);
-									$EpAppearances = $newEpSection;
-								}
 								$.Dialog.close();
 							}));
 						});
@@ -1848,11 +1692,6 @@
 
 						$.API.delete(`/cg/tag/${tagID}`,data,$.mkAjaxHandler(function(){
 							if (this.status){
-								if (this.needupdate === true){
-									let $eps = $(this.eps);
-									$EpAppearances.replaceWith($eps);
-									$EpAppearances = $eps;
-								}
 								let $affected = $('.id-' + tagID);
 								$affected.remove();
 								TagAutocompleteCache.clear();
@@ -2171,6 +2010,197 @@
 				else $.Dialog.fail(title, this.message);
 			}));
 		});
+	});
+	$('.section-container').on('click','.edit-show-relations', function(){
+		let $this = $(this),
+			$li = $this.closest('[id^=p]'),
+			appearanceID = $li.attr('id').substring(1),
+			ponyName = !AppearancePage
+				? $this.parent().text().trim()
+				: $content.children('h1').text(),
+			title = `Edit show relations for ${ponyName}`;
+
+		$.Dialog.wait(title, 'Retrieving relations from server');
+
+		const endpoint = `/cg/appearance/${appearanceID}/guide-relations`;
+		$.API.get(endpoint, $.mkAjaxHandler(response => {
+			if (!response.status) return $.Dialog.fail(false, response.message);
+
+			const { SplitSelector } = window.reactComponents;
+			let data = {
+				...response,
+				endpoint,
+				formId: 'show-relation-editor',
+				valueKey: 'id',
+				displayKey: 'label',
+				findGroup: el => el.type,
+				onSuccess(data){
+					let $relatedShows = $('#related-shows');
+					if (data.section){
+						if (!$relatedShows.length)
+							$(data.section).insertAfter($('#tags'));
+						else $relatedShows.replaceWith(data.section);
+					}
+					else if ($relatedShows.length)
+						$relatedShows.remove();
+					$.Dialog.close();
+				},
+			};
+			$.Dialog.request(false, <SplitSelector {...data} />, 'Save');
+		}));
+	}).on('click', '.edit-appearance-relations', function() {
+		let $this = $(this),
+			$li = $this.closest('[id^=p]'),
+			appearanceID = $li.attr('id').substring(1),
+			ponyName = !AppearancePage
+				? $this.parent().text().trim()
+				: $content.children('h1').text(),
+			title = `Edit appearance relations for ${ponyName}`;
+
+		$.Dialog.wait(title, 'Retrieving relations from the server');
+
+		let $cgRelations = $content.find('section.related');
+		$.API.get(`/cg/appearance/${appearanceID}/relations`, $.mkAjaxHandler(function() {
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			let data = this,
+				$GuideRelationEditorForm = $.mk('form').attr('id', 'guide-relation-editor'),
+				$selectLinked = $.mk('select').attr({ name: 'listed', multiple: true }),
+				$selectUnlinked = $.mk('select').attr('multiple', true);
+
+			if (data.linked && data.linked.length)
+				$.each(data.linked, function(_, el) {
+					let $option = $.mk('option').attr('value', el.id).text(el.label);
+					if (el.mutual)
+						$option.attr('data-mutual', true).text('(M) ' + $option.text());
+					$selectLinked.append($option);
+				});
+			if (data.unlinked && data.unlinked.length)
+				$.each(data.unlinked, function(_, el) {
+					$selectUnlinked.append($.mk('option').attr('value', el.id).text(el.label));
+				});
+
+			let $mutualness = $.mk('div').attr('class', 'mutual-fieldset-wrap').html(
+				`<fieldset>
+					<legend data-placeholder="Relation type"></legend>
+					<div class="radio-group">
+						<label><input type="radio" class="mutual-checkbox" name="mutual" value="1" required disabled><span>Mutual</span></label>
+						<label><input type="radio" class="mutual-checkbox" name="mutual" value="0" required disabled><span>One way</span></label>
+					</div>
+					<div class="notice"></div>
+				</fieldset>`),
+				$mutualNotice = $mutualness.find('.notice'),
+				$mutualLegend = $mutualness.find('legend'),
+				mutualTextRegex = /^\(M\) /;
+
+			$mutualness.find('input').on('change click', function() {
+				let $this = $(this);
+				if ($this.hasAttr('disabled'))
+					return;
+
+				let $selected = $selectLinked.children(':selected'),
+					mutual = $this.is(':checked') && $this.attr('value') === '1',
+					hasDataAttr = $selected.hasAttr('data-mutual');
+				if (mutual){
+					if (!hasDataAttr)
+						$selected.attr('data-mutual', true).text('(M) ' + $selected.text());
+				}
+				else if (hasDataAttr)
+					$selected.removeAttr('data-mutual').text($selected.text().replace(mutualTextRegex, ''));
+			});
+
+			$selectLinked.on('change', function() {
+				let $selected = $selectLinked.children(':selected');
+				if ($selected.length === 1){
+					$mutualness.find('input').enable();
+					$mutualNotice.hide();
+					$mutualLegend.text('Relation to ' + ($selected.text().replace(mutualTextRegex, '')));
+					$mutualness.find(`input[value="${$selected.hasAttr('data-mutual') ? '1' : '0'}"]`).prop('checked', true);
+				}
+				else {
+					$mutualness.find('input').disable();
+					$mutualLegend.empty();
+					if ($selected.length > 1)
+						$mutualNotice.attr('class', 'notice fail').text('Multiple appearances are selected').show();
+					else $mutualNotice.attr('class', 'notice info').text('Select a relation on the left to change the type').show();
+				}
+			}).triggerHandler('change');
+
+			$GuideRelationEditorForm.append(
+				$.mk('div').attr('class', 'split-select-wrap').append(
+					$.mk('div').attr('class', 'split-select').append("<span>Linked</span>", $selectLinked),
+					$.mk('div').attr('class', 'buttons').append(
+						$.mk('button').attr({
+							'class': 'typcn typcn-chevron-left green',
+							title: 'Link selected'
+						}).on('click', function(e) {
+							e.preventDefault();
+
+							$selectLinked.append($selectUnlinked.children(':selected').prop('selected', false)).children().sort(function(a, b) {
+								return a.innerHTML.localeCompare(b.innerHTML);
+							}).appendTo($selectLinked);
+						}),
+						$.mk('button').attr({
+							'class': 'typcn typcn-chevron-right red',
+							title: 'Unlink selected'
+						}).on('click', function(e) {
+							e.preventDefault();
+
+							$selectUnlinked.append($selectLinked.children(':selected').prop('selected', false)).children().sort(function(a, b) {
+								return a.innerHTML.localeCompare(b.innerHTML);
+							}).appendTo($selectUnlinked);
+							if ($selectLinked.children().length === 0){
+								$mutualness.find('input').disable();
+								$mutualLegend.empty();
+								$mutualness.find('.notice').show();
+							}
+						})
+					),
+					$.mk('div').attr('class', 'split-select').append("<span>Available</span>", $selectUnlinked)
+				),
+				$mutualness
+			);
+
+			$.Dialog.request(false, $GuideRelationEditorForm, 'Save', function($form) {
+				$form.on('submit', function(e) {
+					e.preventDefault();
+
+					let ids = [],
+						mutuals = [];
+					$selectLinked.children().each(function(_, el) {
+						let $el = $(el),
+							val = $el.attr('value');
+						ids.push(val);
+						if ($el.hasAttr('data-mutual'))
+							mutuals.push(val);
+					});
+					$.Dialog.wait(false, 'Saving changes');
+
+					let data = {
+						ids: ids.join(','),
+						mutuals: mutuals.join(','),
+					};
+					if (AppearancePage)
+						data.APPEARANCE_PAGE = true;
+					$.API.put(`/cg/appearance/${appearanceID}/relations`, data, $.mkAjaxHandler(function() {
+						if (!this.status) return $.Dialog.fail(false, this.message);
+
+						if (this.section){
+							if (!$cgRelations.length)
+								$cgRelations = $.mk('section')
+									.addClass('related')
+									.appendTo($content.children().last());
+							$cgRelations.html($(this.section).filter('section').html());
+						}
+						else if ($cgRelations.length){
+							$cgRelations.remove();
+							$cgRelations = { length: 0 };
+						}
+						$.Dialog.close();
+					}));
+				});
+			});
+		}));
 	});
 
 	ctxmenus();

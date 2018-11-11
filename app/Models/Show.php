@@ -30,7 +30,6 @@ use App\VideoProvider;
  * @property string           $notes
  * @property DateTime         $synopsis_last_checked
  * @property bool             $is_episode            (Via magic method)
- * @property bool             $is_movie              (Via magic method)
  * @property bool             $displayed             (Via magic method)
  * @property bool             $aired                 (Via magic method)
  * @property DateTime         $willair               (Via magic method)
@@ -60,19 +59,11 @@ class Show extends NSModel implements Linkable {
 	];
 
 	public function get_is_episode():bool {
-		return $this->season !== null;
+		return $this->type === 'episode';
 	}
 	/** For Twig */
 	public function getIs_episode():bool {
 		return $this->is_episode;
-	}
-
-	public function get_is_movie():bool {
-		return $this->season === null;
-	}
-	/** For Twig */
-	public function getIs_movie():bool {
-		return $this->is_movie;
 	}
 
 	private function _normalizeScore($value):string {
@@ -160,7 +151,7 @@ class Show extends NSModel implements Linkable {
 	 */
 	public function getID(array $o = []):string {
 		if (!$this->is_episode)
-			return CoreUtils::capitalize($this->type).' #'.$this->id;
+			return CoreUtils::capitalize($this->type).'#'.$this->id;
 
 		$episode = $this->episode;
 		$season = $this->season;
@@ -202,6 +193,9 @@ class Show extends NSModel implements Linkable {
 		return $this->id === $ep->id;
 	}
 
+	/**
+	 * @var Show
+	 */
 	private $latest_episode;
 	public function isLatest():bool {
 		if ($this->latest_episode === null)
@@ -223,8 +217,11 @@ class Show extends NSModel implements Linkable {
 	 * @return int The timestamp after which the episode is considered to have aired & voting can be enabled
 	 */
 	public function willHaveAiredBy():int {
-		$airtime = strtotime($this->airs);
-		return strtotime('+'.($this->is_movie?'2 hours':((!$this->twoparter?30:60).' minutes')), $airtime);
+		$airtime = $this->airs->getTimestamp();
+		if ($this->is_episode)
+			$add_minutes = $this->twoparter ? 60 : 30;
+		else $add_minutes = 120;
+		return strtotime("+{$add_minutes} minutes", $airtime);
 	}
 
 	/**
@@ -258,14 +255,14 @@ class Show extends NSModel implements Linkable {
 			else return $arr;
 		}
 
-		if ($this->is_movie)
+		if (!$this->is_episode)
 			return $this->title;
 
 		return $this->getID(['pad' => true]).': '.$this->title;
 	}
 
 	public function toURL():string {
-		if (!$this->is_movie)
+		if ($this->is_episode)
 			return '/episode/'.$this->getID();
 		return "/{$this->type}/{$this->id}".(!empty($this->title)?'-'.$this->safeTitle():'');
 	}
@@ -334,11 +331,11 @@ class Show extends NSModel implements Linkable {
 	 * @return Show|null
 	 */
 	private function _getAdjacent($dir):?Show {
-		$is = $this->is_movie ? '=' : '!=';
-		$col = $this->is_movie ? 'episode' : 'no';
-		return Show::find('first', [
+		$is = $this->is_episode ? '=' : '!=';
+		$col = $this->is_episode ? 'no' : 'episode';
+		return self::find('first', [
 			'conditions' => [
-				"season $is 0 AND $col $dir ?",
+				"type $is 'episode' AND $col $dir ?",
 				$this->{$col}
 			],
 			'order' => "$col ".($dir === self::NEXT ? 'asc' : 'desc'),
@@ -363,44 +360,6 @@ class Show extends NSModel implements Linkable {
 	public function getNext():?Show {
 		return $this->_getAdjacent(self::NEXT);
 	}
-
-	/**
-	 * Get a list of IDs for tags related to the episode
-	 *
-	 * @deprecated Use show_appearances relations
-	 *
-	 * @return int[]
-	 */
-	public function getTagIDs():array {
-		if ($this->is_movie){
-			$MovieTagIDs = [];
-			/** @var $MovieTag Tag */
-			$MovieTag = DB::$instance->where('name',"movie{$this->episode}")->where('type','ep')->getOne('tags','id');
-			if (!empty($MovieTag->id))
-				$MovieTagIDs[] = $MovieTag->id;
-			return $MovieTagIDs;
-		}
-
-		$sn = CoreUtils::pad($this->season);
-		$en = CoreUtils::pad($this->episode);
-		$tag_ids = [];
-		/** @var $tag_pt1 array */
-		$tag_pt1 = DB::$instance->disableAutoClass()->where('name',"s{$sn}e{$en}")->where('type','ep')->getOne('tags','id');
-		if (!empty($tag_pt1))
-			$tag_ids[] = $tag_pt1['id'];
-		if ($this->twoparter){
-			$next_en = CoreUtils::pad($this->episode+1);
-			/** @var $tag_pt2 array */
-			$tag_pt2 = DB::$instance
-				->where('name', ["s{$sn}e{$next_en}", "s{$sn}e{$en}-{$next_en}"])
-				->where('type', 'ep')
-				->get('tags', null, 'id');
-			foreach ($tag_pt2 as $t)
-				$tag_ids[] = $t['id'];
-		}
-		return $tag_ids;
-	}
-
 
 	/**
 	 * Get a user's vote for this episode

@@ -96,102 +96,34 @@
 		}));
 	});
 
-	let $cgRelations = $content.children('section.appearances');
 	$('#cg-relations').on('click',function(){
 		$.Dialog.wait('Guide relation editor', 'Retrieving relations from server');
 
 		const endpoint = `/show/${showId}/guide-relations`;
-		$.API.get(endpoint, $.mkAjaxHandler(function(){
-			if (!this.status) return $.Dialog.fail(false, this.message);
+		$.API.get(endpoint, $.mkAjaxHandler(response => {
+			if (!response.status) return $.Dialog.fail(false, response.message);
 
-			// TODO Make an equivalent form for appearance pages
-			let data = this,
-				$GuideRelationEditorForm = $.mk('form').attr('id','guide-relation-editor'),
-				$selectLinked = $.mk('select').attr({name:'listed',multiple:true}),
-				$selectUnlinked = $.mk('select').attr('multiple', true),
-				linkedGroups = {
-					pony: $.mk('optgroup').attr('label','Pony').appendTo($selectLinked),
-					eqg:  $.mk('optgroup').attr('label','EQG').appendTo($selectLinked),
+			const { SplitSelector } = window.reactComponents;
+			let data = {
+				...response,
+				endpoint,
+				formId: 'guide-relation-editor',
+				valueKey: 'id',
+				displayKey: 'label',
+				findGroup: el => el.ishuman ? 'eqg' : 'pony',
+				onSuccess(data){
+					let $cgRelations = $content.children('section.appearances');
+					if (data.section){
+						if (!$cgRelations.length)
+							$(data.section).insertBefore($content.children('.admin'));
+						else $cgRelations.replaceWith(data.section);
+					}
+					else if ($cgRelations.length)
+						$cgRelations.remove();
+					$.Dialog.close();
 				},
-				unlinkedGroups = {
-					pony: $.mk('optgroup').attr('label','Pony').appendTo($selectUnlinked),
-					eqg:  $.mk('optgroup').attr('label','EQG').appendTo($selectUnlinked),
-				},
-				resortGroupChilds = side => {
-					['eqg','pony'].forEach(group => {
-						side[group].children().sort(function(a,b){
-							return a.innerHTML.localeCompare(b.innerHTML);
-						}).appendTo(side[group]);
-					});
-				};
-
-			if (data.linked && data.linked.length)
-				$.each(data.linked,function(_, el){
-					const group = el.ishuman ? 'eqg' : 'pony';
-					linkedGroups[group].append($.mk('option').attr({ value: el.id }).text(el.label));
-				});
-			if (data.unlinked && data.unlinked.length)
-				$.each(data.unlinked,function(_, el){
-					const group = el.ishuman ? 'eqg' : 'pony';
-					unlinkedGroups[group].append($.mk('option').attr({ value: el.id }).text(el.label));
-				});
-
-			$GuideRelationEditorForm.append(
-				$.mk('div').attr('class','split-select-wrap').append(
-					$.mk('div').attr('class','split-select').append("<span>Linked</span>",$selectLinked),
-					$.mk('div').attr('class','buttons').append(
-						$.mk('button').attr({'class':'typcn typcn-chevron-left green',title:'Link selected'}).on('click', function(e){
-							e.preventDefault();
-
-							const $selectedToBeLinked = $selectUnlinked.find(':selected');
-							$selectedToBeLinked.prop('selected', false).each((_, el) => {
-								const group = el.parentNode.label.toLowerCase();
-								linkedGroups[group].append(el);
-							});
-							resortGroupChilds(linkedGroups);
-						}),
-						$.mk('button').attr({'class':'typcn typcn-chevron-right red',title:'Unlink selected'}).on('click', function(e){
-							e.preventDefault();
-
-							const $selectedToBeUnlinked = $selectLinked.find(':selected');
-							$selectedToBeUnlinked.prop('selected', false).each((_, el) => {
-								const group = el.parentNode.label.toLowerCase();
-								unlinkedGroups[group].append(el);
-							});
-							resortGroupChilds(unlinkedGroups);
-						})
-					),
-					$.mk('div').attr('class','split-select').append("<span>Available</span>",$selectUnlinked)
-				)
-			);
-
-			$.Dialog.request(false,$GuideRelationEditorForm,'Save', function($form){
-				$form.on('submit', function(e){
-					e.preventDefault();
-
-					const ids = [];
-					$selectLinked.find('option').each(function(_, el){ ids.push(el.value) });
-
-					$.Dialog.wait(false, 'Saving changes');
-
-					$.API.put(endpoint, { ids: ids.join(',') }, $.mkAjaxHandler(function() {
-						if (!this.status) return $.Dialog.fail(false, this.message);
-
-						if (this.section){
-							if (!$cgRelations.length)
-								$cgRelations = $.mk('section')
-									.addClass('appearances')
-									.insertBefore($content.children('.admin'));
-							$cgRelations.html($(this.section).filter('section').html());
-						}
-						else if ($cgRelations.length){
-							$cgRelations.remove();
-							$cgRelations = {length:0};
-						}
-						$.Dialog.close();
-					}));
-				});
-			});
+			};
+			$.Dialog.request(false, <SplitSelector {...data} />, 'Save');
 		}));
 	});
 
@@ -213,12 +145,12 @@
 
 			$.Dialog.request(false, $EditorForm, 'Save', function($form){
 				const mode = 'html';
-			    let editor = ace.edit($.mk('div').appendTo($form).get(0));
+				let editor = ace.edit($.mk('div').appendTo($form).get(0));
 				editor.setShowPrintMargin(false);
-			    let session = $.aceInit(editor, mode);
-			    session.setMode(mode);
-			    session.setUseWrapMode(true);
-			    session.setValue(value);
+				let session = $.aceInit(editor, mode);
+				session.setMode(mode);
+				session.setUseWrapMode(true);
+				session.setValue(value);
 
 				$form.on('submit', function(e){
 					e.preventDefault();
@@ -259,7 +191,7 @@
 						if ($li.hasClass('highlight'))
 							$newli.addClass('highlight');
 						$li.replaceWith($newli);
-						Time.Update();
+						Time.update();
 						$newli.rebindFluidbox();
 					}
 					$.Dialog.close();
@@ -782,7 +714,7 @@
 							if ($li.hasClass('highlight'))
 								$newli.addClass('highlight');
 							$li.replaceWith($newli);
-							Time.Update();
+							Time.update();
 							$newli.rebindFluidbox();
 						}
 						else $li.reloadLi();
@@ -830,7 +762,7 @@
 					if ($li.hasClass('highlight'))
 						$newli.addClass('highlight');
 					$li.replaceWith($newli);
-					Time.Update();
+					Time.update();
 					$newli.rebindFluidbox();
 				}
 

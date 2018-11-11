@@ -5,118 +5,129 @@ use PHPUnit\Framework\TestCase;
 class EpisodeTest extends TestCase {
 	public function testGetID(){
 		// Single-part test
-		$Episode = new \App\Models\Show([
+		$episode = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
+			'type' => 'episode',
 		]);
-		self::assertFalse($Episode->twoparter);
-		$result = $Episode->getID();
+		self::assertFalse($episode->twoparter);
+		$result = $episode->getID();
 		self::assertEquals('S1E1', $result);
-		$result = $Episode->getID(['pad' => true]);
+		$result = $episode->getID(['pad' => true]);
 		self::assertEquals('S01 E01', $result);
 
 		// Two-parter test
-		$Episode = new \App\Models\Show([
+		$episode = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
 			'twoparter' => true,
+			'type' => 'episode',
 		]);
-		self::assertTrue($Episode->twoparter);
-		$result = $Episode->getID();
+		self::assertTrue($episode->twoparter);
+		$result = $episode->getID();
 		self::assertEquals('S1E1-2', $result);
-		$result = $Episode->getID(['pad' => true]);
+		$result = $episode->getID(['pad' => true]);
 		self::assertEquals('S01 E01-02', $result);
 
 		// Movie test
-		$Movie = new \App\Models\Show([
-			'season' => 0,
-			'episode' => 1,
+		$movie = new \App\Models\Show([
+			'id' => 1,
+			'no' => 1,
 			'twoparter' => true,
+			'type' => 'movie',
 		]);
-		$result = $Movie->getID();
+		$result = $movie->getID();
 		self::assertEquals('Movie#1', $result);
 		self::assertNotEquals('Movie#1-2', $result);
 	}
 
 	public function testMovieSafeTitle(){
-		$Movie = new \App\Models\Show([
-			'season' => 0,
-			'episode' => 1,
+		$movie = new \App\Models\Show([
 			'title' => "A#bc-d'?e",
 		]);
-		$result = $Movie->safeTitle();
+		$result = $movie->safeTitle();
 		self::assertEquals('A-bc-d-e', $result);
 	}
 
 	public function testIs(){
-		$EpisodeOne = new \App\Models\Show([
+		$episode_one = new \App\Models\Show([
+			'id' => 1,
 			'season' => 1,
 			'episode' => 1,
+			'type' => 'episode',
 		]);
-		$EpisodeTwo = new \App\Models\Show([
+		$episode_two = new \App\Models\Show([
+			'id' => 2,
 			'season' => 1,
 			'episode' => 5,
+			'type' => 'episode',
 		]);
-		$EpisodeThree = new \App\Models\Show([
+		$episode_three = new \App\Models\Show([
+			'id' => 3,
 			'season' => 5,
 			'episode' => 1,
+			'type' => 'episode',
 		]);
-		$EpisodeFour = new \App\Models\Show([
+		$episode_four = new \App\Models\Show([
+			'id' => 1,
 			'season' => 1,
 			'episode' => 1,
+			'type' => 'episode',
 		]);
-		$result = $EpisodeOne->is($EpisodeTwo);
+		$result = $episode_one->is($episode_two);
 		self::assertFalse($result);
-		$result = $EpisodeOne->is($EpisodeThree);
+		$result = $episode_one->is($episode_three);
 		self::assertFalse($result);
-		$result = $EpisodeOne->is($EpisodeFour);
+		$result = $episode_one->is($episode_four);
 		self::assertTrue($result);
-		$result = $EpisodeTwo->is($EpisodeThree);
+		$result = $episode_two->is($episode_three);
 		self::assertFalse($result);
 	}
 
 	public function testAddAiringData(){
 		$airs = '2016-01-10T00:00:00Z';
-		$Episode = new \App\Models\Show([
+		$episode = new \App\Models\Show([
 			'airs' => $airs,
+			'type' => 'episode',
 		]);
 
 		$now = strtotime('2016-01-09T00:00:00Z');
-		$willairts = $Episode->willHaveAiredBy();
-		$displayed = $Episode->isDisplayed($now);
+		$willairts = $episode->willHaveAiredBy();
+		$displayed = $episode->isDisplayed($now);
 		self::assertEquals($willairts, strtotime('+30 minutes', strtotime($airs)), "Episode should be 'aired' 30 minutes after 'airs'");
 		self::assertFalse($displayed);
 
 		$now = strtotime('2016-01-09T00:00:01Z');
-		$displayed = $Episode->isDisplayed($now);
-		$aired = $Episode->hasAired($now);
+		$displayed = $episode->isDisplayed($now);
+		$aired = $episode->hasAired($now);
 		self::assertTrue($displayed);
 		self::assertFalse($aired);
 
 		$now = strtotime('2016-01-10T00:00:01Z');
-		$aired = $Episode->hasAired($now);
+		$aired = $episode->hasAired($now);
 		self::assertFalse($aired, "Episode should not be immediately 'aired' after airs");
 
 		$now = strtotime('2016-01-10T00:30:01Z');
-		$aired = $Episode->hasAired($now);
+		$aired = $episode->hasAired($now);
 		self::assertTrue($aired, "Episode should be 'aired' 30 minutes after airs");
 
 
-		$Episode = new \App\Models\Show([
+		$episode = new \App\Models\Show([
 			'airs' => $airs,
 			'twoparter' => true,
+			'type' => 'episode',
 		]);
 
-		$willairts = $Episode->willHaveAiredBy();
+		$willairts = $episode->willHaveAiredBy();
 		self::assertEquals($willairts, strtotime('+60 minutes', strtotime($airs)), "Two-parter episode should be 'aired' 60 minutes after 'airs'");
 
 		$now = strtotime('2016-01-10T01:00:01Z');
-		$aired = $Episode->hasAired($now);
+		$aired = $episode->hasAired($now);
 		self::assertTrue($aired, "Two-parter episode should be 'aired' 60 minutes after airs");
 
 		$Movie = new \App\Models\Show([
-			'season' => 0,
 			'airs' => $airs,
+			'type' => 'movie',
 		]);
 
 		$now = strtotime('2016-01-09T00:00:00Z');
@@ -145,6 +156,7 @@ class EpisodeTest extends TestCase {
 			'season' => 1,
 			'episode' => 1,
 			'title' => 'Yarr harr<',
+			'type' => 'episode',
 		]);
 		$result = $Episode->formatTitle();
 		self::assertEquals('S01 E01: Yarr harr<', $result);
@@ -153,29 +165,31 @@ class EpisodeTest extends TestCase {
 	}
 
 	public function testFormatURL(){
-		$Episode = new \App\Models\Show([
+		$episode = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
+			'type' => 'episode',
 		]);
-		$result = $Episode->toURL();
+		$result = $episode->toURL();
 		self::assertEquals('/episode/S1E1', $result);
 
-		$Episode = new \App\Models\Show([
+		$episode = new \App\Models\Show([
 			'season' => 1,
 			'episode' => 1,
 			'twoparter' => true,
+			'type' => 'episode',
 		]);
-		$result = $Episode->toURL();
+		$result = $episode->toURL();
 		self::assertEquals('/episode/S1E1-2', $result);
 
-		$Movie = new \App\Models\Show([
-			'season' => 0,
-			'episode' => 1,
+		$movie = new \App\Models\Show([
+			'id' => 1,
+			'type' => 'movie',
 		]);
-		$result = $Movie->toURL();
+		$result = $movie->toURL();
 		self::assertEquals('/movie/1', $result);
-		$Movie->title = 'Yarr  @@@ harr';
-		$result = $Movie->toURL();
+		$movie->title = 'Yarr  @@@ harr';
+		$result = $movie->toURL();
 		self::assertEquals('/movie/1-Yarr-harr', $result);
 	}
 

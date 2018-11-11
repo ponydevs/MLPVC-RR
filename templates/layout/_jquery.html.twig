@@ -1,5 +1,0 @@
-{# @controller \app\CoreUtils::loadPage #}
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-{% if local_jquery is defined %}
-<script nonce="{{ constant('CSP_NONCE') }}">window.jQuery || document.write('<script src="{{ local_jquery }}"><\/script>');</script>
-{% endif %}

@@ -1,4 +1,3 @@
-$btnpadding: 3px;
 button, .btn, input[type=button], .inline-btn {
 	position: relative;
 	display: inline-block;
@@ -7,12 +6,11 @@ button, .btn, input[type=button], .inline-btn {
 	margin-right: $hmargin;
 	$border: 2px;
 	border: $border solid transparent;
-	border-radius: 3px;
-	padding-left: $btnpadding;
-	padding-right: $btnpadding;
+	border-radius: $ButtonBorderRadius;
+	padding-left: $ButtonPadding;
+	padding-right: $ButtonPadding;
 	text-decoration: none;
 	user-select: none;
-	opacity: .85;
 	cursor: pointer;
 	box-sizing: border-box;
 	transform-origin: 50% 50%;
@@ -27,6 +25,7 @@ button, .btn, input[type=button], .inline-btn {
 	&:hover, &:focus { opacity: 1 }
 	&:focus { border-color: rgba(black, .3) }
 	&:active { transform: scale(.98) }
+	&:not([disabled]){ opacity: .85 }
 }
 button, .btn, input[type=button] {
 	$vmargin: 5px;
@@ -34,8 +33,8 @@ button, .btn, input[type=button] {
 	margin-bottom: $vmargin;
 	color: #fff;
 	background-color: #777;
-	padding-top: $btnpadding;
-	padding-bottom: $btnpadding;
+	padding-top: $ButtonPadding;
+	padding-bottom: $ButtonPadding;
 	font-family: $RegularFont;
 	$fontsize: 17px;
 	font-size: $fontsize;

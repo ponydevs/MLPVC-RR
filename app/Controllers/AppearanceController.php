@@ -24,6 +24,8 @@ use App\Models\Logs\MajorChange;
 use App\Models\Notification;
 use App\Models\PCGSlotHistory;
 use App\Models\RelatedAppearance;
+use App\Models\Show;
+use App\Models\ShowAppearance;
 use App\Models\Tag;
 use App\Models\TagChange;
 use App\Models\Tagged;
@@ -34,6 +36,7 @@ use App\Permission;
 use App\Regexes;
 use App\RegExp;
 use App\Response;
+use App\ShowHelper;
 use App\UploadedFile;
 use App\UserPrefs;
 use App\Appearances;
@@ -1040,5 +1043,70 @@ class AppearanceController extends ColorGuideController {
 			Response::success('One or more color issues were found.');
 
 		Response::success("There doesn't seem to be seem to be any color issues.");
+	}
+
+	public function guideRelationsApi($params):void {
+		if (Permission::insufficient('staff'))
+			Response::fail();
+
+		$this->load_appearance($params);
+
+		switch ($this->action){
+			case 'GET':
+				$linked_ids = [];
+				foreach ($this->appearance->related_shows as $s){
+					$linked_ids[] = $s->id;
+				}
+
+				/** @var $raw_entries Show[] */
+				$raw_entries = DB::$instance
+					->orderBy('season','DESC')
+					->orderBy('episode','DESC')
+					->orderBy('no','DESC')
+					->get('show');
+				$entries = [];
+				foreach ($raw_entries as $entry){
+					$entries[] = [
+						'id' => $entry->id,
+						'label' => $entry->formatTitle(),
+						'type' => $entry->type,
+					];
+				}
+
+				Response::done([
+					'groups' => ShowHelper::VALID_TYPES,
+					'entries' => $entries,
+					'linkedIds' => $linked_ids,
+				]);
+			break;
+			case 'PUT':
+				/** @var $show_ids int[] */
+				$show_ids = (new Input('ids', 'int[]', [
+					Input::IS_OPTIONAL => true,
+					Input::CUSTOM_ERROR_MESSAGES => [
+						Input::ERROR_MISSING => 'Missing appearance ID list',
+						Input::ERROR_INVALID => 'Appearance ID list is invalid',
+					],
+				]))->out();
+
+				$existing_relation_ids = array_map(function($p){ return $p->id; }, $this->appearance->related_shows);
+
+				$added = array_diff($show_ids, $existing_relation_ids);
+				if (!empty($added)){
+				foreach ($added as $show_id)
+					ShowAppearance::makeRelation($show_id, $this->appearance->id);
+				}
+
+				$removed = array_diff($existing_relation_ids, $show_ids);
+				if (!empty($removed))
+					DB::$instance->where('appearance_id', $this->appearance->id)->where('show_id', $removed)->delete(ShowAppearance::$table_name);
+
+				$this->appearance->reload();
+
+				Response::done(['section' => $this->appearance->getRelatedShowsHTML()]);
+			break;
+			default:
+				CoreUtils::notAllowed();
+		}
 	}
 }

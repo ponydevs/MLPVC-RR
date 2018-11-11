@@ -111,7 +111,6 @@ $router->map('GET', '/@[un:name]/[cg]/point-history/[i]?', 'PersonalGuideControl
 $router->map('GET', '/manifest', 'ManifestController#json');
 
 
-// TODO Rename /episode/* API routes to /show/*
 // TODO Update JS calling these endpoints all over the codebase
 
 // Proper REST API endpoints (sort of)
@@ -139,6 +138,7 @@ $api_endpoint('/cg/appearance/[i:id]/template',      'AppearanceController#apply
 $api_endpoint('/cg/appearance/[i:id]/sanitize-svg',  'AppearanceController#sanitizeSvg');
 $api_endpoint('/cg/appearance/[i:id]/selective',     'AppearanceController#selectiveClear');
 $api_endpoint('/cg/appearance/[i:id]/link-targets',  'AppearanceController#linkTargets');
+$api_endpoint('/cg/appearance/[i:id]/guide-relations', 'AppearanceController#guideRelationsApi');
 $api_endpoint('/cg/sprite-color-checkup',            'ColorGuideController#spriteColorCheckup');
 $api_endpoint('/cg/full/reorder',                    'ColorGuideController#reorderFullList');
 $api_endpoint('/cg/export',                          'ColorGuideController#export');

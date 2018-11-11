@@ -72,7 +72,7 @@
 				else $.API.get('/notif',$.mkAjaxHandler(data => {
 					$notifCnt.text(cnt);
 					$notifSbList.html(data.list);
-					Time.Update();
+					Time.update();
 					this.bindMarkRead();
 					$notifSb.stop().slideDown();
 				}));
@@ -121,7 +121,7 @@
 					let $newli = $(resp.li);
 					$(resp.section).append($newli);
 					$newli.rebindFluidbox();
-					Time.Update();
+					Time.update();
 					$newli.rebindHandlers(true).parent().reorderPosts();
 					console.log(`[WS] Post added (id=${data.id}) to container ${this.section}`);
 				}));

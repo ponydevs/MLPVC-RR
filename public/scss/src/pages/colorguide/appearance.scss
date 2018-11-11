@@ -2,7 +2,7 @@
 @import "../../vars";
 
 // Mobile-only
-@media all and (max-width: $Breakpoint){
+@media all and (max-width: $Breakpoint) {
 	#pony-cm-list {
 		display: flex;
 		flex-flow: row wrap;
@@ -21,7 +21,7 @@
 	}
 }
 // Desktop-only
-@media all and (min-width: $Breakpoint){
+@media all and (min-width: $Breakpoint) {
 	.pony-cm .preview { @include pony-cm-image }
 
 	#pony-cm-list {
@@ -84,6 +84,14 @@
 		}
 	}
 
+	#related-shows p:empty {
+		&:before {
+			content: "This appearance has no relatons to any show entries.";
+			font-style: italic;
+			opacity: .6;
+		}
+	}
+
 	#notes {
 		font-size: 1.1em;
 		background: papayawhip;
@@ -98,7 +106,7 @@
 	}
 
 	.approved-cutie-mark {
-		&:not(:last-child){
+		&:not(:last-child) {
 			margin-bottom: 10px;
 		}
 
@@ -120,6 +128,16 @@
 
 	.related ul {
 		@extend %appearance-ul;
+
+		&:empty {
+			display: block;
+
+			&:before {
+				content: "This appearance has no relatons to any other appearances.";
+				font-style: italic;
+				opacity: .6;
+			}
+		}
 	}
 }
 

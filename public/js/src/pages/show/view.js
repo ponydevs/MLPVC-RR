@@ -196,7 +196,7 @@
 				$section.empty().append($newChildren).rebindHandlers();
 				$section.find('.post-form').formBind();
 				$section.find('h2 > button').enable();
-				Time.Update();
+				Time.update();
 				window._HighlightHash();
 				if (typeof callback === 'function')
 					callback();
@@ -575,7 +575,7 @@
 				$newli.addClass('highlight');
 			$li.replaceWith($newli);
 			$newli.rebindFluidbox();
-			Time.Update();
+			Time.update();
 			$newli.rebindHandlers(true);
 			if (!$newli.parent().is(this.section))
 				$newli.appendTo(this.section);

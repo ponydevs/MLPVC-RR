@@ -40,8 +40,8 @@ class CGUtils {
 	];
 
 	public const GUIDE_MAP = [
-		'eqg' => 'EQG',
 		'pony' => 'Pony',
+		'eqg' => 'EQG',
 	];
 
 	/**
@@ -139,8 +139,8 @@ class CGUtils {
 		if ($previews){
 			$preview_url = $appearance->getPreviewURL();
 			$preview = $appearance->getSpriteURL(Appearance::SPRITE_SIZES['SOURCE'], $preview_url);
-			$class = $preview_url === $preview ? 'class="border"' : '';
-			$preview = "<img data-src='$preview' src='/img/loading-wedges.svg' alt='' $class>";
+			$class = $preview_url === $preview ? ' border' : '';
+			$preview = "<span class='image-promise$class' data-src='$preview'></span>";
 			$charTags = DB::$instance->query(
 				"SELECT t.name FROM tags t
 				LEFT JOIN tagged tg ON tg.tag_id = t.id OR tg.tag_id = t.synonym_of
@@ -1068,27 +1068,6 @@ GPL;
 				$value = 255;
 		}
 		return $color->toHex();
-	}
-
-	/**
-	 * Turns tag names into more readable text, e.g. "sNeM" into "S0N E0M" and "movie#N" into "Movie #N"
-	 *
-	 * @param string      $tag_name
-	 * @param string|null $type
-	 *
-	 * @return string
-	 */
-	public static function expandEpisodeTagName(string $tag_name, ?string &$type = null):string {
-		if (preg_match(Regexes::$episode_id, $tag_name, $_match)){
-			$type = 'episode';
-			return 'S'.CoreUtils::pad($_match[1]).' E'.CoreUtils::pad($_match[2]);
-		}
-		if (preg_match(Regexes::$movie_id, $tag_name, $_match)){
-			$type = 'movie';
-			return 'Movie #'.$_match[1];
-		}
-
-		return $tag_name;
 	}
 
 	/**

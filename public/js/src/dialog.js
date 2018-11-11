@@ -1,6 +1,7 @@
 (function ($, undefined) {
 	'use strict';
-	let colors = {
+	const
+		colors = {
 			fail: 'red',
 			success: 'green',
 			wait: 'blue',
@@ -37,7 +38,8 @@
 			segway: 'A previous action requires reloading the current page. Press reload once you\'re ready.',
 		},
 		reloadAction = () => { $.Navigation.reload(true) },
-		closeAction = () => { $.Dialog.close() };
+		closeAction = () => { $.Dialog.close() },
+		reactMountedClass = 'react-mounted';
 
 	class DialogButton {
 		constructor(label, options){
@@ -66,7 +68,7 @@
 			this.$dialogScroll = $('#dialogScroll');
 			this.$dialogButtons = $('#dialogButtons');
 			this._open = this.$dialogContent.length ? {} : undefined;
-			this._CloseButton = new DialogButton('Close', { action: closeAction });
+			this._closeButton = new DialogButton('Close', { action: closeAction });
 			this._$focusedElement = undefined;
 		}
 
@@ -80,13 +82,19 @@
 				options.content = defaultContent[options.type];
 			let params = $.extend({
 				content: defaultContent[options.type],
-			},options);
+			}, options);
 			params.color =  colors[options.type];
 
 			let append = Boolean(this._open),
-				$contentAdd = $.mk('div').append(params.content),
+				$contentAdd = $.mk('div'),
 				appendingToRequest = append && this._open.type === 'request' && ['fail','wait'].includes(params.type) && !params.forceNew,
 				$requestContentDiv;
+
+			if (React.isValidElement(params.content)){
+				$contentAdd.addClass(reactMountedClass);
+				ReactDOM.render(params.content, $contentAdd[0]);
+			}
+			else $contentAdd.append(params.content);
 
 			if (params.color.length)
 				$contentAdd.addClass(params.color);
@@ -202,7 +210,7 @@
 			if (!window.withinMobileBreakpoint())
 				this._setFocus();
 			$w.trigger('dialog-opened');
-			Time.Update();
+			Time.update();
 
 			$.callCallback(params.callback, [$requestContentDiv]);
 			if (append){
@@ -232,7 +240,7 @@
 				type: 'fail',
 				title,
 				content,
-				buttons: [this._CloseButton],
+				buttons: [this._closeButton],
 				forceNew
 			});
 		}
@@ -250,7 +258,7 @@
 				type: 'success',
 				title,
 				content,
-				buttons: (closeBtn ? [this._CloseButton] : undefined),
+				buttons: (closeBtn ? [this._closeButton] : undefined),
 				callback,
 			});
 		}
@@ -290,6 +298,8 @@
 				formId;
 			if (content instanceof $)
 				formId = content.attr('id');
+			else if (React.isValidElement(content))
+				formId = content.props.formId;
 			else if (typeof content === 'string'){
 				let match = content.match(/<form\sid=["']([^"']+)["']/);
 				if (match)
@@ -334,7 +344,7 @@
 					action: () => { handlerFunc(true) }
 				}),
 				new DialogButton(btnTextArray[1], {
-					action: () => { handlerFunc(false); this._CloseButton.action() }
+					action: () => { handlerFunc(false); this._closeButton.action() }
 				})
 			];
 			this._display({
@@ -357,7 +367,7 @@
 				type: 'info',
 				title,
 				content,
-				buttons: [this._CloseButton],
+				buttons: [this._closeButton],
 				callback,
 			});
 		}
@@ -422,6 +432,9 @@
 				return $.callCallback(callback, false);
 
 			this.$dialogOverlay.siblings().prop('inert', false);
+			this.$dialogContent.children(`.${reactMountedClass}`).each((_, el) => {
+				ReactDOM.unmountComponentAtNode(el);
+			});
 			this.$dialogOverlay.remove();
 			this._open = undefined;
 			this._restoreFocus();

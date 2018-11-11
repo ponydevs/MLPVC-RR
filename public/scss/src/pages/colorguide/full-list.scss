@@ -54,6 +54,11 @@
 
 			&.justify {
 				justify-content: space-between;
+
+				&:after {
+					content: '';
+					flex: auto;
+				}
 			}
 
 			li {
@@ -75,14 +80,18 @@
 
 					&:not(:last-child) a { margin-right: .8em }
 
-					img {
+					img, .image-promise {
 						height: 100px;
 						display: block;
 						margin: 0 auto 10px;
+					}
 
-						&.border {
-							border: 1px solid;
-						}
+					.image-promise {
+						@include loading-indicator(100px, 'roll', .25);
+					}
+
+					img.border {
+						border: 1px solid;
 					}
 
 					.name {

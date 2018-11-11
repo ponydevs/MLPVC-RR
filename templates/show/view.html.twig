@@ -40,7 +40,7 @@
 				<h1>{{ heading | escape }}</h1>
 				<p>Vector Requests & Reservations</p>
 {% if permission('staff') %}
-				<p class="added-by"><em>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} added by {{ poster.toAnchor }} {{ time_tag(current_episode.posted) }}</em></p>
+				<p class="added-by"><em>{{ constant('App\\ShowHelper::VALID_TYPES')[current_episode.type] }} added by {{ poster.toAnchor }} {{ time_tag(current_episode.posted) }}</em></p>
 {% endif %}
 			</div>
 		</div>
@@ -110,7 +110,7 @@
 {% block widgets %}
 {% if current_episode is defined and current_episode is not empty %}
 <section id="voting">
-	<h2>{{ current_episode.get_is_movie ? 'Movie' : 'Episode' }} rating</h2>
+	<h2>{{ constant('App\\ShowHelper::VALID_TYPES')[current_episode.type] }} rating</h2>
 	{% include "show/_sidebar_voting.html.twig" with { current_episode: current_episode, signed_in: signed_in } only %}
 </section>
 {% endif %}

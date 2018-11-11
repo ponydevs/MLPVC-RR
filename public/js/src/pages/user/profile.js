@@ -39,7 +39,7 @@
 						$(this).remove();
 						if (pendingRes){
 							$pendingRes.html($(pendingRes).children());
-							Time.Update();
+							Time.update();
 						}
 					});
 					$.Dialog.close();
@@ -65,7 +65,7 @@
 						})
 					)
 				);
-			$.Dialog.request(`Update image of post #${id}`,$ImgUpdateForm,'Update', function($form){
+			$.Dialog.request(`Update image of post #${id}`,$ImgUpdateForm,'update', function($form){
 				$form.on('submit', function(e){
 					e.preventDefault();
 

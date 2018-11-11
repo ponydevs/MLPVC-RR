@@ -1,5 +1,7 @@
 <?php
 
+define('PRODUCTION', false);
+
 // Database Access Info \\
 define('DB_HOST', 'localhost');
 define('DB_USER', 'mlpvc-rr');
