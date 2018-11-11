@@ -122,7 +122,7 @@ class UserController extends Controller {
 			'title' => $error === null ? ($same_user?'Your':CoreUtils::posess($user->name)).' '.($same_user || $can_edit?'account':'profile') : 'Account',
 			'noindex' => true,
 			'css' => [true],
-			'js' => ['jquery.fluidbox',true],
+			'js' => [true],
 			'og' => [
 				'image' => !empty($user) ? $user->avatar_url : null,
 				'description' => !empty($user) ? CoreUtils::posess($user->name)." profile on the MLP-VectorClub's website" : null,

@@ -121,7 +121,7 @@ class ShowHelper {
 		if (!$linked_post)
 			CoreUtils::fixPath($current_episode->toURL());
 
-		$js = ['jquery.fluidbox', true, 'pages/show/manage'];
+		$js = [true, 'pages/show/manage'];
 		if (Permission::sufficient('staff')){
 			$js[] = 'pages/show/index-manage';
 		}

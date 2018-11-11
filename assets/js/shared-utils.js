@@ -637,12 +637,13 @@
 	})(jQuery);
 
 	$.aceInit = function(editor){
+		ace.config.set('basePath', '/js/lib/ace');
 		editor.$blockScrolling = Infinity;
 		editor.setShowPrintMargin(false);
 		let session = editor.getSession();
 		session.setUseSoftTabs(false);
 		session.setOption('indentedSoftWrap', false);
-		session.setOption('useWorker', true);
+		session.setOption('useWorker', false);
 		session.on("changeAnnotation", function() {
 			let annotations = session.getAnnotations() || [],
 				i = 0,

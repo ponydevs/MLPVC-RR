@@ -131,9 +131,9 @@ class ColorGuideController extends Controller {
 
 	protected const GUIDE_MANAGE_JS = [
 		'jquery.uploadzone',
-		'jquery.autocomplete',
+		'lib/jquery.autocomplete',
 		'jquery.ponycolorpalette',
-		'Sortable',
+		'lib/Sortable',
 		'pages/colorguide/tag-list',
 		'pages/colorguide/manage',
 	];
@@ -180,7 +180,7 @@ class ColorGuideController extends Controller {
 
 		$js = [];
 		if ($is_staff)
-			$js[] = 'Sortable';
+			$js[] = 'lib/Sortable';
 		$js[] = true;
 
 		$import = [
@@ -446,7 +446,7 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Blending Reverser',
 			'css' => [true],
-			'js' => ['nouislider', 'Blob', 'canvas-toBlob', 'FileSaver', true],
+			'js' => ['lib/nouislider', 'lib/Blob', 'lib/canvas-toBlob', 'lib/FileSaver', true],
 			'import' => [
 				'nav_blendingrev' => true,
 				'hex_color_regex' => Regexes::$hex_color,
@@ -470,14 +470,14 @@ class ColorGuideController extends Controller {
 			'css' => [true],
 			'default-js' => false,
 			'js' => [
-				'jquery.ba-throttle-debounce',
+				'lib/jquery.ba-throttle-debounce',
 				'shared-utils',
 				'dialog',
-				'md5',
-				'dragscroll',
-				'canvas.hdr',
-				'nouislider',
-				'paste',
+				'lib/md5',
+				'lib/dragscroll',
+				'lib/canvas.hdr',
+				'lib/nouislider',
+				'lib/paste',
 				true,
 			],
 		]);

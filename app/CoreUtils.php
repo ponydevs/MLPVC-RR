@@ -198,13 +198,13 @@ class CoreUtils {
 	public const DEFAULT_CSS = ['theme'];
 	public const DEFAULT_JS = [
 		'datastore',
-		'jquery.ba-throttle-debounce',
-		'jquery.fluidbox',
-		'jquery.swipe',
-		'jquery.simplemarquee',
-		'ace/ace',
+		'lib/jquery.ba-throttle-debounce',
+		'lib/jquery.fluidbox',
+		'lib/jquery.swipe',
+		'lib/jquery.simplemarquee',
+		'lib/ace/ace',
+		'lib/inert',
 		'shared-utils',
-		'inert',
 		'dialog',
 		'global',
 		'react-components',
@@ -257,9 +257,9 @@ class CoreUtils {
 
 		// Assets
 		$scope['css'] = isset($options['default-css']) && $options['default-css'] === false ? [] : self::DEFAULT_CSS;
-		self::_checkAssets($options, $scope['css'], 'scss/min', 'css', $view);
+		self::_checkAssets($options, $scope['css'], 'css', $view);
 		$scope['js'] = isset($options['default-js']) && $options['default-js'] === false ? [] : self::DEFAULT_JS;
-		self::_checkAssets($options, $scope['js'], 'js/min', 'js', $view);
+		self::_checkAssets($options, $scope['js'], 'js', $view);
 		$scope['server_name'] = $_SERVER['SERVER_NAME'];
 
 		// OpenGraph values
@@ -426,13 +426,12 @@ class CoreUtils {
 	 *
 	 * @param array    $options    Options array
 	 * @param string[] $customType Array of partial file names
-	 * @param string   $relpath    Relative file path without the leading slash
 	 * @param string   $ext        The literal strings 'css' or 'js'
 	 * @param View     $view       The view class that enables the true shortcut
 	 *
 	 * @throws \Exception
 	 */
-	private static function _checkAssets(array $options, &$customType, string $relpath, string $ext, View $view){
+	private static function _checkAssets(array $options, &$customType, string $ext, View $view){
 		if (isset($options[$ext])){
 			if (!\is_array($options[$ext]))
 				throw new \RuntimeException("\$options[$ext] must be an array");
@@ -442,7 +441,7 @@ class CoreUtils {
 		foreach ($customType as $i => &$item){
 			if ($item === true)
 				$item = "pages/{$view->name}";
-			self::_formatFilePath($item, $relpath, $ext);
+			self::_formatFilePath($item, $ext, "min.$ext");
 		}
 	}
 
@@ -462,7 +461,7 @@ class CoreUtils {
 	 */
 	private static function _formatFilePath(string &$item, string $relpath, string $type){
 		$pathStart = APPATH.$relpath;
-		$item .= ".min.$type";
+		$item .= ".$type";
 		if (!file_exists("$pathStart/$item"))
 			throw new \RuntimeException("File /$relpath/$item does not exist");
 		$item = "/$relpath/$item?".filemtime("$pathStart/$item");

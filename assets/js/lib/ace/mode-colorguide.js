@@ -1,4 +1,3 @@
-/* global ace */
 ace.define("ace/mode/colorguide", ["require", "exports", "ace/lib/oop"], (require, exports, oop) => {
 	"use strict";
 
