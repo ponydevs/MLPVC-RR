@@ -7,8 +7,8 @@ class RefactorEpisodes extends AbstractMigration {
 		# <Preparations>
 		// Remove old primary key relations
 		$this->query('ALTER TABLE posts DROP CONSTRAINT posts_season_episode_fkey');
-		$this->query('ALTER TABLE episode_votes DROP CONSTRAINT episode_votes_season_episode');
-		$this->query('ALTER TABLE episode_videos DROP CONSTRAINT episode_videos_season_episode');
+		$this->query('ALTER TABLE episode_votes DROP CONSTRAINT episode_votes_season_episode_fkey');
+		$this->query('ALTER TABLE episode_videos DROP CONSTRAINT episode_videos_season_episode_fkey');
 
 		// Drop tables that are just not cool
 		$this->query('DROP TABLE log__episode_modify');

@@ -14,6 +14,7 @@
 		uglify = require('gulp-uglify'),
 		babel = require('gulp-babel'),
 		cached = require('gulp-cached'),
+		rename = require('gulp-rename'),
 		workingDir = __dirname;
 
 	class Logger {
@@ -35,6 +36,8 @@
 		}
 	}
 
+	const appendMinSuffix = () => rename(path => { path.extname = `.min${path.extname}` });
+
 	let SASSL = new Logger('scss'),
 		SASSWatchArray = ['public/scss/src/*.scss', 'public/scss/src/**/*.scss'];
 	gulp.task('scss', () => {
@@ -54,6 +57,7 @@
 				processImport: false,
 				compatibility: '-units.pc,-units.pt'
 			}))
+			.pipe(appendMinSuffix())
 			.pipe(gulp.dest('public/scss/min'));
 	});
 
@@ -95,6 +99,7 @@
 					},
 				},
 			}))
+			.pipe(appendMinSuffix())
 			.pipe(gulp.dest('public/js/min'));
 	});
 

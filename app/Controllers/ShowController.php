@@ -60,10 +60,7 @@ class ShowController extends Controller {
 			],
 		];
 		if (Permission::sufficient('staff')){
-			$settings['js'] = array_merge(
-				$settings['js'],
-				['moment-timezone', 'pages/show/index-manage']
-			);
+			$settings['js'][] =  'pages/show/index-manage';
 			$settings['import']['export'] = [
 				'EP_TITLE_REGEX' => Regexes::$ep_title,
 				'SHOW_TYPES' => ShowHelper::VALID_TYPES,
