@@ -530,10 +530,10 @@ SQL
 			->addForeignKey('user_id', 'users', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 			->update();
 		$this->tables['episode_videos']
-			->addForeignKey(['season','episode'], 'episodes', ['season','episode'], ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+			->addForeignKey(['season','episode'], 'episodes', ['season','episode'], ['delete' => 'CASCADE', 'update' => 'CASCADE', 'constraint' => 'episode_videos_season_episode'])
 			->update();
 		$this->tables['episode_votes']
-			->addForeignKey(['season','episode'], 'episodes', ['season','episode'], ['delete' => 'CASCADE',  'update' => 'CASCADE'])
+			->addForeignKey(['season','episode'], 'episodes', ['season','episode'], ['delete' => 'CASCADE',  'update' => 'CASCADE', 'constraint' => 'episode_votes_season_episode'])
 			->addForeignKey('user_id',            'users',    'id',                 ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 			->update();
 		$this->tables['episodes']->addForeignKey('posted_by', 'users', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
