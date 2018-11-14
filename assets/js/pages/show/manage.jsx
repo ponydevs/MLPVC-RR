@@ -144,14 +144,16 @@
 				value = this.value;
 
 			$.Dialog.request(false, $EditorForm, 'Save', function($form){
-				let flask = $.codeFlask($.mk('div').attr('class','code-editor').appendTo($form).get(0), 'markup');
-
-				flask.updateCode(value);
+				const dataEditor = $.renderCodeMirror({
+					$el: $.mk('div').attr('class','code-editor').appendTo($form),
+					mode: 'html',
+					value,
+				});
 
 				$form.on('submit', function(e){
 					e.preventDefault();
 
-					let data = { value: flask.getCode() };
+					let data = { value: dataEditor.getValue() };
 					$.Dialog.wait(false, 'Saving');
 
 					$.API.put(`/setting/${endpoint}`, data, $.mkAjaxHandler(function(){

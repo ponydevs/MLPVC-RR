@@ -149,11 +149,12 @@ class ShowController extends Controller {
 					$update['type'] = ShowHelper::validateType();
 					$update['posted_by'] = Auth::$user->id;
 					$is_episode = $update['type'] === 'episode';
+					$what = CoreUtils::capitalize($update['type']);
 				}
 				else {
-					$is_episode = !$this->show->is_episode;
+					$is_episode = $this->show->is_episode;
+					$what = CoreUtils::capitalize($this->show->type);
 				}
-				$what = $is_episode ? 'Episode' : 'Movie';
 
 				if ($is_episode){
 					$update['season'] = ShowHelper::validateSeason(ShowHelper::ALLOW_MOVIES);

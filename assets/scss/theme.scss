@@ -1,13 +1,13 @@
 @import "../../node_modules/normalize.css/normalize.css";
 @import "vars";
 @import "shared-utils";
-@import "components/vital/ace-editor";
 @import "components/vital/buttons";
 @import "components/vital/dialog";
 @import "components/vital/fonts";
 @import "components/vital/forms";
 @import "components/vital/notices";
 @import "components/vital/section";
+@import "components/vital/codemirror";
 @import "vendor/typicons";
 // Mobile-only Styles
 @media all and (max-width: $Breakpoint) {
@@ -253,38 +253,6 @@
 	@include sidebar-open {
 		#sidebar { left: 0 !important }
 	}
-}
-// Global Stuff
-.hidden, datalist, template, .datastore { display: none !important }
-.faded { opacity: .6 !important }
-.unreadable { font-size: 0 }
-.star-info {
-	cursor: help;
-	color: black;
-	transform: rotate(5deg);
-	font-weight: bold;
-}
-.responsive-table {
-	overflow-x: auto;
-}
-:focus { outline: 0 }
-a > img { border: 0 }
-.cursor-help, time[datetime][title] { cursor: help }
-small { font-size: .75em }
-strong.typcn:before, span.typcn:not(:empty):before, em.typcn:before,
-button:not(:empty):before, .btn:not(:empty):before {
-	margin-right: 0.3125em;
-}
-img.avatar {
-	width: $AvatarSize;
-	height: $AvatarSize;
-}
-.resp-embed-wrap { @extend %resp-embed-wrap }
-.responsive-embed { @extend %responsive-embed }
-.xdebug-error {
- &, & * {
-  font-size: 18px !important;
- }
 }
 // Page layout
 body {
@@ -627,7 +595,7 @@ header, #sidebar .mobile-nav {
 			display: flex;
 			flex-flow: column nowrap;
 			justify-content: space-around;
-			align-items: left;
+			align-items: flex-start;
 			max-width: calc(100% - 50px - 4px - 10px);
 
 			.user-name {

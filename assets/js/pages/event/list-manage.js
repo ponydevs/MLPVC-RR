@@ -93,10 +93,11 @@
 			else $eventName = $this.siblings().first();
 
 			$.Dialog.request(title,$EventEditorFormTemplate.clone(true,true),'Save', function($form){
-				let eventID, flask = $.codeFlask($form.find('.code-editor').get(0), 'markdown');
-
-				if (editing && data.desc_src)
-					flask.setCode(data.desc_src);
+				let eventID;
+				const descriptionEditor = $.renderCodeMirror({
+					$el: $form.find('.code-editor'),
+					mode: 'markdown',
+				});
 
 				if (editing){
 					eventID = data.eventID;
@@ -117,13 +118,15 @@
 						$form.find('input[name="end_time"]').val($.momentToHM(ends));
 					}
 
+					if (data.desc_src)
+						descriptionEditor.setValue(data.desc_src);
 				}
 
 				$form.on('submit',function(e){
 					e.preventDefault();
 
 					let data = $form.mkData();
-					data.description = flask.getCode();
+					data.description = descriptionEditor.getValue();
 					if (data.start_date && data.start_time){
 						let start = $.mkMoment(data.start_date, data.start_time);
 						data.starts_at = start.toISOString();
@@ -147,7 +150,7 @@
 								$eventName.text(data.name);
 								if (data.newurl)
 									$eventName.attr('href',(_, oldhref) => {
-										return oldhref.replace(/\/[^\/]+$/, '/'+data.newurl);
+										return oldhref.replace(/\/[^/]+$/, '/'+data.newurl);
 									});
 								$.Dialog.close();
 							}

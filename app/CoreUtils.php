@@ -202,7 +202,12 @@ class CoreUtils {
 		'lib/jquery.fluidbox',
 		'lib/jquery.swipe',
 		'lib/jquery.simplemarquee',
-		// TODO Integrate codemirror
+		'lib/codemirror',
+		'lib/codemirror/addon/mode/simple',
+		'lib/codemirror/addon/selection/active-line',
+		'lib/codemirror/mode/xml',
+		'lib/codemirror/mode/markdown',
+		'lib/codemirror/mode/colorguide',
 		'lib/inert',
 		'shared-utils',
 		'dialog',
@@ -393,6 +398,7 @@ class CoreUtils {
 		});
 		foreach ($HTML as &$v)
 			$v = $v[1];
+		unset($v);
 		$HTML = implode('', $HTML);
 
 		return $wrap ? "<section id='upcoming'><h2>Happening soon</h2><ul>$HTML</ul></section>" : $HTML;

@@ -38,7 +38,7 @@
 		],
 		"no-undef": 2,
 		"no-unused-vars": 0,
-		"no-console": "warn",
+		"no-console": 0,
 		"react/prop-types": 0
 	},
 	"globals": {
@@ -54,13 +54,12 @@
 		"$content": true,
 		"$footer": true,
 		"ace": true,
-		"CodeFlask": true,
+		"CodeMirror": true,
 		"IntersectionObserver": true,
 		"Key": true,
 		"mk": true,
 		"moment": true,
 		"noUiSlider": true,
-		"Prism": true,
 		"saveAs": true,
 		"Sortable": true,
 		"Time": true,

@@ -40,7 +40,7 @@ use App\VideoProvider;
  * @property ShowVideo[]      $videos                (Via relations)
  * @property User             $poster                (Via relations)
  * @method static Show find_by_season_and_episode(int $season, int $episode)
- * @method static Show find(int $show_id)
+ * @method static Show|Show[] find(...$params)
  */
 class Show extends NSModel implements Linkable {
 	public static $table_name = 'show';

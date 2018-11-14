@@ -2,7 +2,7 @@
 	'use strict';
 
 	let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups, HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN,
-		isWebkit = 'WebkitAppearance' in document.documentElement.style, EQG = window.EQG, EQGRq = EQG?'?eqg':'',
+		isWebkit = 'WebkitAppearance' in document.documentElement.style, EQG = window.EQG,
 		PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN,
 		AppearancePage = !!window.AppearancePage, PersonalGuide = window.PersonalGuide,
 		PGRq = PersonalGuide ? `/@${PersonalGuide}` : '',
@@ -27,12 +27,8 @@
 		(PersonalGuide?`<div class="notice info"><label>About sprites</label><p>Sprites are small, pixelated images showcasing all of the colors a given character has. They are most useful if they contain a full body image of your character with any difficult details highlighted. You can use it together with the notes, adding explanations about anything that might be confusing.</p><p>Sprites have a height limit of 300px, a width limit between 300 and 700 pixels, and are expected to be PNG files with a transparent background.</p><p>We provide templates that fit these guidelines for anyone to use through the <a class="sprite-template-gen">Template Generator</a>. If you decide to use this generator, you must add at least the mane and tail before uploading the sprite to the site.</p><p class="color-red">The staff reserves the right to remove any sprites that do not follow these guidelines.</p></div>`:'')+
 		`<p class="align-center"><a class="upload-link">Click here to upload a file</a> (max. ${window.MAX_SIZE}) or enter a URL below.</p>
 		<label><input type="text" name="image_url" placeholder="External image URL" required></label>
-		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it\'ll be downloaded to the server and set as this appearance's sprite image.</p>`
+		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it'll be downloaded to the server and set as this appearance's sprite image.</p>`
 	);
-
-	let $relatedShows;
-	if (AppearancePage)
-		$relatedShows = $('#relatedShows');
 
 	$.fn.reorderTags = function(){
 		return this.each(function(){
@@ -56,7 +52,7 @@
 				</label>
 				<div class="label">
 					<span>Additional notes (1000 chars. max, optional)</span>
-					<div class="ace_editor"></div>
+					<div class="code-editor"></div>
 				</div>
 				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide?'you and staff':'staff'} can see added colors)</label>`
 			),
@@ -73,10 +69,14 @@
 			else $ponyLabel = $this.siblings().first();
 
 			$.Dialog.request(title,$PonyEditorFormTemplate.clone(true,true),'Save', function($form){
-				let appearanceID, flask = $.codeFlask($form.find('.ace_editor').get(0), 'html');
+				let appearanceID;
+				const notesEditor = $.renderCodeMirror({
+					$el: $form.find('.code-editor'),
+					mode: 'html',
+				});
 
 				if (editing && data.notes)
-					flask.updateCode(data.notes);
+					notesEditor.setValue(data.notes);
 
 				if (editing){
 					appearanceID = data.appearanceID;
@@ -170,7 +170,7 @@
 					e.preventDefault();
 
 					let data = $form.mkData();
-					data.notes = flask.getCode();
+					data.notes = notesEditor.getValue();
 					$.Dialog.wait(false, 'Saving changes');
 					if (AppearancePage)
 						data.APPEARANCE_PAGE = true;
@@ -258,7 +258,7 @@
 					tagID = tag.id;
 
 				$.Dialog.close(() => {
-					window.CGTagEditing(tagName, tagID, 'synon', function(action){
+					window.cgTagEditing(tagName, tagID, 'synon', function(action){
 						let $affected = $('.tag.id-'+tagID), target;
 
 						if ($affected.length)
@@ -315,11 +315,12 @@
 
 	const TagAutocompleteCache = new KeyValueCache();
 
-	function createTagSpan(){
-		return
+	function createTagSpan(data){
+		return (
 			$(`<span class="tag id-${data.id}${data.type?` typ-${data.type}`:''}${data.synonym_of?' synonym':''}" data-syn-of="${data.synonym_of}">`)
 				.attr('title', data.title)
-				.text(data.name);
+				.text(data.name)
+		);
 	}
 
 	function createNewTag($tag, name, typehint){
@@ -542,8 +543,7 @@
 				catch (error){
 					if (!(error instanceof ColorTextParseError))
 						throw error;
-					$.Dialog.fail(false, error.message);
-					this.flask.elTextarea.focus();
+					this.handleError(error);
 					$btn.enable();
 					return;
 				}
@@ -609,8 +609,7 @@
 				catch (error){
 					if (!(error instanceof ColorTextParseError))
 						throw error;
-					$.Dialog.fail(false, error.message);
-					this.flask.elTextarea.focus();
+					this.handleError(error);
 					return;
 				}
 
@@ -683,6 +682,12 @@
 			if (valid)
 				$cp.removeClass('invalid').css('background-color', color.replace(HEX_COLOR_PATTERN, '#$1'));
 			else $cp.addClass('invalid').css('background-color','');
+		}
+		handleError(error){
+			this.editor.setCursor(error.lineNumber);
+			this.editor.execCommand('goLineEnd');
+			$.Dialog.fail(false, error.message);
+			this.editor.focus();
 		}
 		expandColorInput(e){
 			const input = e.target;
@@ -762,8 +767,19 @@
 				$div.find('.clri').focus();
 			}
 			else {
-				this.flask.updateCode(`${this.flask.getCode()}\n${copyHashEnabled ? '#' : ''}\t`);
-				this.flask.focus();
+				this.editor.execCommand('singleSelection');
+				this.editor.execCommand('goLineEnd');
+				let { line } = this.editor.getCursor(),
+					targetRow = line,
+					emptyLine = this.editor.getLine(line).length === 0,
+					copyHashEnabled = window.copyHashEnabled();
+
+				if (!emptyLine)
+					targetRow++;
+
+				this.editor.replaceSelection(`${!emptyLine?'\n':''}${copyHashEnabled?'#':''}\t`);
+				this.editor.setCursor(targetRow, copyHashEnabled ? 1 : 0);
+				this.editor.focus();
 			}
 		}
 		renderColorInputs(){
@@ -848,24 +864,26 @@
 				this.destroySortable();
 
 				// Create editor
-				$colors.empty().addClass('code-editor');
-				this.flask = $.codeFlask($colors[0], 'colorguide');
-				this.flask.updateCode(editorContent.join('\n') + '\n');
-				$(this.flask.elTextarea).css('tab-size', '8');
-				this.flask.elTextarea.focus();
+				this.editor = $.renderCodeMirror({
+					$el: this.getCleanClrsDiv(),
+					mode: 'colorguide',
+					value: editorContent.join('\n') + '\n',
+					tabSize: 10,
+				});
+				this.editor.execCommand('goDocEnd');
+				this.editor.focus();
 				this.mode = 'text';
 			}
 			else {
 				// Saving
-				this.colorValues = ColorGroupEditor.parseColorsText(this.flask.getCode());
+				this.colorValues = ColorGroupEditor.parseColorsText(this.editor.getValue());
 				if (storeState)
 					return;
 
 				// Switching
-				this.flask = null;
-				$colors.removeClass('code-editor');
 				this.renderColorInputs();
 				this.mode = 'gui';
+				this.editor = null;
 			}
 		}
 		static parseColorsText(text){
@@ -1089,6 +1107,7 @@
 			return this.$form;
 		}
 		updateRange(range){
+			// eslint-disable-next-line new-cap
 			const event = $.Event('change');
 			event.target = range;
 			this.$form.trigger(event);
@@ -1576,7 +1595,7 @@
 						generate();
 					}
 				}).on('error',function(){
-					console.log('Loaded %d out of %d before erroring',loaded,templateImages.length);
+					console.info('Loaded %d out of %d before erroring',loaded,templateImages.length);
 					$.Dialog.fail(false, 'Some images failed to load, please try <a class="sprite-template-gen">re-opening this form</a>, and if this issue persists, please <a class="send-feedback">let us know</a>.');
 				});
 			});

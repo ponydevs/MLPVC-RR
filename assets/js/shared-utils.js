@@ -56,18 +56,18 @@
 			let val;
 			try {
 				val = this.store.getItem(key);
-			}catch(e){}
+			} catch(e){ /* ignore */ }
 			return typeof val === 'undefined' ? null : val;
 		}
 		set(key, value){
 			try {
 				this.store.setItem(key, value);
-			}catch(e){}
+			} catch(e){ /* ignore */ }
 		}
 		remove(key){
 			try {
 				this.store.removeItem(key);
-			}catch(e){}
+			} catch(e){ /* ignore */ }
 		}
 	}
 
@@ -85,7 +85,7 @@
 	// Globalize common elements
 	window.$w = $(window);
 	window.$d = $(document);
-	window.CommonElements = function(){
+	window.defineCommonElements = function(){
 		window.$header = $('header');
 		window.$sbToggle = $('.sidebar-toggle');
 		window.$main = $('#main');
@@ -96,7 +96,7 @@
 		window.$head = $('head');
 		window.$navbar = $header.find('nav');
 	};
-	window.CommonElements();
+	window.defineCommonElements();
 
 	// Common key codes for easy reference
 	window.Key = {
@@ -123,7 +123,7 @@
 	$.isKey = function(Key, e){
 		return e.keyCode === Key;
 	};
-	
+
 	// Time class
 	(function($){
 		let dateFormat = { order: 'Do MMMM YYYY, H:mm:ss' };
@@ -150,14 +150,14 @@
 					if (!Timestamp.isValid())
 						throw new DateFormatError('Invalid date format: "'+date+'"', this);
 
-					let Now = moment(),
+					let now = moment(),
 						showDayOfWeek = !$this.attr('data-noweekday'),
-						timeAgoStr = Timestamp.from(Now),
+						timeAgoStr = Timestamp.from(now),
 						$elapsedHolder = $this.parent().children('.dynt-el'),
 						updateHandler = $this.data('dyntime-beforeupdate');
 
 					if (typeof updateHandler === 'function'){
-						let result = updateHandler(Time.Difference(Now.toDate(), Timestamp.toDate()));
+						let result = updateHandler(Time.difference(now.toDate(), Timestamp.toDate()));
 						if (result === false) return;
 					}
 
@@ -169,7 +169,7 @@
 				});
 			}
 
-			static Difference(now, timestamp) {
+			static difference(now, timestamp) {
 				let subtract = (now.getTime() - timestamp.getTime())/1000,
 					d = {
 						past: subtract > 0,
@@ -400,8 +400,7 @@
 		else {
 			try {
 				resp = JSON.parse(xhr.responseText).message;
-			}
-			catch(err){}
+			} catch(e){ /* ignore */ }
 		}
 		$.Dialog.fail(false, resp);
 	};
@@ -500,7 +499,7 @@
 
 		try {
 			success = document.execCommand('copy');
-		} catch(err){}
+		} catch(e){ /* ignore */ }
 
 		setTimeout(function(){
 			$helper.remove();
@@ -566,7 +565,7 @@
 		}
 	};
 
-	$.escapeRegex = pattern => pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+	$.escapeRegex = pattern => pattern.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 
 	$.fn.toggleHtml = function(contentArray){
 		return this.html(contentArray[$.clampCycle(contentArray.indexOf(this.html())+1, 0, contentArray.length-1)]);
@@ -636,17 +635,41 @@
 		};
 	})(jQuery);
 
-	Prism.languages.colorguide = {
-		'comment': /\/\/.+/,
+	const codeMirrorDefaults = {
+		lineNumbers: true,
+		lineSeparator: '\n',
+		tabSize: 4,
+		indentWithTabs: true,
+		lineWrapping: true,
+		styleActiveLine: true,
+		styleActiveSelected: true,
+		theme: 'custom',
 	};
-	$.codeFlask = function(el, language){
-		const flask = new CodeFlask(el, {
-			language,
-			defaultTheme: false,
+	const codeMirrorModeOptions = {
+		html: {
+			name: 'xml',
+			htmlMode: true,
+		},
+		markdown: {
+			name: 'markdown',
+			highlightFormatting: true,
+			fencedCodeBlockHighlighting: true,
+		},
+		colorguide: {
+			name: 'colorguide',
+		},
+	};
+	$.renderCodeMirror = ({ $el, mode, ...options }) => {
+		if (options.value === null)
+			delete options.value;
+		// eslint-disable-next-line new-cap
+		const instance =  CodeMirror($el.get(0), {
+			...codeMirrorDefaults,
+			mode: codeMirrorModeOptions[mode],
+			...options,
 		});
-		if (language in Prism.languages)
-			flask.addLanguage(language, Prism.languages[language]);
-		return flask;
+		$el.children().addClass(`mode-${mode}`);
+		return instance;
 	};
 
 	// http://stackoverflow.com/a/16270434/1344955
@@ -658,11 +681,12 @@
 			return true;
 		}
 
-		return
+		return (
 			rect.bottom > 0 &&
 			rect.right > 0 &&
 			rect.left < (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */ &&
-			rect.top < (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */;
+			rect.top < (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */
+		);
 	};
 	$.fn.isInViewport = function(){
 		return this[0] ? $.isInViewport(this[0]) : false;
@@ -692,7 +716,7 @@
 	$.randomString = () => parseInt(Math.random().toFixed(20).replace(/[.,]/,''), 10).toString(36);
 
 	$.hrefToPath = href => href.replace(/^.*?[\w\d]\//,'/');
-	
+
 	(function(){
 		const PATTERNS = [
 			/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i,
@@ -796,7 +820,7 @@
 			}
 			round(copy = false){
 				if (copy){
-					return new $.RGBAColor.fromRGB(this).round();
+					return $.RGBAColor.fromRGB(this).round();
 				}
 				else {
 					this.red = Math.round(this.red);
@@ -830,7 +854,7 @@
 			/**
 			 * @param {string} color
 			 *
-			 * @return {self|null}
+			 * @return {RGBAColor|null}
 			 */
 			static parse(color){
 				let output = null;
@@ -854,7 +878,7 @@
 			/**
 			 * @param {Object} color
 			 *
-			 * @return {self|null}
+			 * @return {RGBAColor|null}
 			 */
 			static fromRGB(color){
 				return new $.RGBAColor((color.r || color.red), (color.g || color.green), (color.b || color.blue), (color.a || color.alpha || 1));
