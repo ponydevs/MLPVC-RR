@@ -225,7 +225,7 @@ body.dialog-open {
 			font-weight: bold;
 		}
 
-		pre:not(.codeflask__pre) {
+		pre:not(.CodeMirror-line) {
 			max-width: 100%;
 			display: block;
 			overflow: auto;
@@ -282,31 +282,8 @@ body.dialog-open {
 	}
 
 	.code-editor {
-		position: relative;
 		width: 100%;
-		height: 200px;
-		overflow: hidden;
-		border: 1px solid $Border;
-		background-color: lighten($Background, 10);
-
-		textarea {
-			color: transparent;
-
-			$bg: rgba(#86aaff, .3);
-			&::selection {
-			  color: transparent;
-			  background: $bg;
-			}
-			&::-moz-selection {
-			  color: transparent;
-			  background: $bg;
-			}
-		}
-
-		textarea, pre {
-			white-space: pre-wrap;
-			font-family: $monospace;
-		}
+		text-align: left;
 	}
 
 	/* Colors */

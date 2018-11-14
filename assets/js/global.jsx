@@ -100,7 +100,7 @@
 						return;
 					$.Dialog.fail(false, origNotice);
 				}
-			}catch(e){}
+			} catch(e){ /* ignore */ }
 		}, 500);
 	});
 
@@ -135,7 +135,7 @@
 			$body[close ? 'removeClass' : 'addClass']('sidebar-open');
 			try {
 				$.LocalStorage[close ? 'set' : 'remove']('sidebar-closed', 'true');
-			}catch(_){}
+			} catch(e){ /* ignore */ }
 			triggerResize();
 		});
 	})();
@@ -155,7 +155,7 @@
 				if (cdExists){
 					now = new Date();
 					airs = new Date($cd.attr('datetime'));
-					diff = Time.Difference(now, airs);
+					diff = Time.difference(now, airs);
 				}
 				if (!cdExists || diff.past){
 					clearCD();
@@ -214,11 +214,11 @@
 			Time.update();
 
 			$lis.find('.title').simplemarquee({
-			    speed: 25,
-			    cycles: Infinity,
-			    space: 25,
-			    handleHover: false,
-			    delayBetweenCycles: 0,
+				speed: 25,
+				cycles: Infinity,
+				space: 25,
+				handleHover: false,
+				delayBetweenCycles: 0,
 			}).addClass('marquee');
 		};
 		window.setUpcomingCountdown();
@@ -417,8 +417,8 @@
 
 				$header.css('top',
 					scrollTop > lastScrollTop
-					 ? Math.max(-headerHeight,headerTop-(scrollTop-lastScrollTop))
-					 : Math.min(0,headerTop+(lastScrollTop-scrollTop))
+					? Math.max(-headerHeight, headerTop - (scrollTop - lastScrollTop))
+					: Math.min(0, headerTop + (lastScrollTop - scrollTop))
 				);
 
 				lastScrollTop = scrollTop;
@@ -490,7 +490,7 @@
 		try {
 			popup = $.popupOpenCenter('/da-auth/begin','login','450','580');
 			opened = new Date();
-		}catch(e){}
+		} catch(e){ /* ignore */ }
 		// http://stackoverflow.com/a/25643792
 		let onWindowClosed = function(){
 				opened = null;
@@ -518,7 +518,7 @@
 					clearInterval(closeCheck);
 					onWindowClosed();
 				}
-			}catch(e){}
+			} catch(e){ /* ignore */ }
 		}, 500);
 		$w.on('beforeunload', function(){
 			success = true;

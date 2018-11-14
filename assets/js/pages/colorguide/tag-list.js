@@ -30,7 +30,7 @@
 				else $.Dialog.close();
 			});
 		};
-	window.CGTagEditing = function(tagName, tagID, action, $tr){
+	window.cgTagEditing = function(tagName, tagID, action, $tr){
 		switch (action){
 			case "delete":
 				$.Dialog.confirm(`Deleting the ${tagName} tag`,"Deleting this tag will also remove it from every appearance where it's been used.<br>Are you sure?",['Delete it','Nope'], function(sure){
@@ -49,7 +49,7 @@
 				$.API.get('/cg/tags',{not:tagID,action:action},$.mkAjaxHandler(function(){
 					if (!this.length){
 						if (this.undo)
-							return window.CGTagEditing.call(this, tagName, tagID, 'unsynon', $tr);
+							return window.cgTagEditing.call(this, tagName, tagID, 'unsynon', $tr);
 
 						return $.Dialog.fail(false, this.message);
 					}
@@ -95,7 +95,7 @@
 					});
 				}));
 			break;
-			case "unsynon":
+			case "unsynon": {
 				let message = this.message;
 				$.Dialog.close(function(){
 					$.Dialog.confirm(`Remove synonym from ${tagName}`, message, ['Yes, continue…','Cancel'], function(sure){
@@ -122,7 +122,7 @@
 						});
 					});
 				});
-			break;
+			} break;
 			case "refresh":
 				$.Dialog.wait(`Refresh use count of ${tagName}`, 'Updating use count');
 
@@ -139,7 +139,7 @@
 			tagID = parseInt($tr.children().first().text().trim(), 10),
 			action = this.className.split(' ').pop();
 
-		window.CGTagEditing(tagName, tagID, action, $tr);
+		window.cgTagEditing(tagName, tagID, action, $tr);
 	});
 	$('.refresh-all').on('click',function(){
 		let tagIDs = [],

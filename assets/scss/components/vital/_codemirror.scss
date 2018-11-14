@@ -1,0 +1,115 @@
+@import '../../vendor/codemirror';
+.CodeMirror.cm-s-custom {
+	color: #000;
+	height: 180px;
+	border: 1px solid $Border;
+	background-color: lighten($Background, 10);
+	text-align: left !important;
+	font-family: $monospace !important;
+	font-size: 14px !important;
+
+	@media all and (max-width: $Breakpoint) {
+		width: 100%;
+	}
+	@media all and (min-width: $Breakpoint) {
+		min-width: 450px;
+	}
+
+	.CodeMirror-cursor {
+		border-left-width: 2px;
+	}
+	.CodeMirror-gutters {
+		background: #ebebeb;
+		color: #333;
+		overflow: hidden;
+		border-color: transparent;
+	}
+	.CodeMirror-activeline-gutter .CodeMirror-gutter-elt {
+		background-color: #dcdcdc;
+	}
+	.CodeMirror-selected {
+		background: rgb(181, 213, 255);
+	}
+	.CodeMirror-activeline-background {
+		background: rgba(0, 0, 0, 0.05);
+	}
+
+	// Markdown
+	&.mode-markdown {
+		.cm-header {
+			font-weight: bold;
+		}
+		.cm-link {
+			color: #00f;
+			text-decoration: none;
+		}
+		.cm-string.cm-url {
+			color: #00f;
+			&:not(.cm-formatting-link-string) {
+				text-decoration: underline;
+			}
+		}
+		.cm-hr {
+			text-decoration: line-through;
+			color: #aaa;
+		}
+		.cm-formatting.cm-formatting-list {
+			font-weight: bold;
+
+			&.cm-formatting-list-ol {
+				color: #07f;
+			}
+			&.cm-formatting-list-ul {
+				color: #490;
+			}
+		}
+	}
+
+	// HTML
+	&.mode-html, &.mode-markdown {
+		.cm-comment {
+			color: #080;
+		}
+		.cm-tag {
+			color: #00f;
+		}
+		.cm-attribute {
+			color: #f00;
+		}
+		.cm-string {
+			color: #8000ff;
+		}
+		.cm-atom {
+			color: #000;
+			background-color: rgba(255, 255, 0, .2);
+			font-style: italic;
+		}
+	}
+
+	// Color Guide
+	&.mode-colorguide {
+		.cm-comment {
+			color: rgba(black, .8);
+		}
+		.cm-identifier {
+			font-weight: bold;
+		}
+		.cm-hex {
+			color: $NDarkBlue;
+		}
+		.cm-colorlink {
+			color: $NBlue;
+		}
+		.cm-colorname {
+			color: $NGreen;
+		}
+		.cm-colorid_start, .cm-colorid {
+			color: $DefaultUIColor;
+			font-style: italic;
+		}
+		.cm-invalid {
+			background-color: rgba($NRed, .1);
+			color: $NRed;
+		}
+	}
+}

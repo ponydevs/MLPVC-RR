@@ -24,6 +24,7 @@
 			if (type === 'episode')
 				return '';
 
+
 			typeOptions.push(`<option value="${type}">${name}</option>`);
 		});
 		let $form = $.mk('form').attr('id', id).append(
@@ -131,7 +132,10 @@
 			);
 
 		$.Dialog.request($(this).text(), $AddEpForm,'Add', function($form){
-			let flask = $.codeFlask($form.find('.code-editor').get(0), 'markup');
+			let notesEditor = $.renderCodeMirror({
+				$el: $form.find('.code-editor'),
+				mode: 'html',
+			});
 
 			$form.on('submit', function(e){
 				e.preventDefault();
@@ -139,7 +143,7 @@
 					airtime = $form.find('input[name=airtime]').disable().val(),
 					airs = $.mkMoment(airdate, airtime).toISOString(),
 					data = $(this).mkData({ airs });
-				data.notes = flask.getCode();
+				data.notes = notesEditor.getValue();
 
 				const what = is_episode ? 'episode' : 'show entry';
 				$.Dialog.wait(false, `Adding ${what} to database`);
@@ -193,10 +197,11 @@
 			});
 
 			$.Dialog.request(`Editing ${show.type} #${show.id}`, $EditEpForm,'Save', function($form){
-				let flask = $.codeFlask($form.find('.code-editor').get(0), 'markup');
-
-				if (notes)
-					flask.updateCode(notes);
+				let notesEditor = $.renderCodeMirror({
+					$el: $form.find('.code-editor'),
+					mode: 'html',
+					value: notes,
+				});
 
 				$form.on('submit', function(e){
 					e.preventDefault();
@@ -206,7 +211,7 @@
 					delete data.airdate;
 					delete data.airtime;
 					data.airs = d.toISOString();
-					data.notes = flask.getCode();
+					data.notes = notesEditor.getValue();
 
 					$.Dialog.wait(false, 'Saving changes');
 

@@ -80,7 +80,7 @@
 			<button id="cg-relations" class="typcn typcn-pencil large darkblue">Guide relations</button>
 		</p>
 	</section>
-	{{ export_vars({ 'SHOW_TYPES': constant('App\\ShowHelper::VALID_TYPES') | keys }) }}
+	{{ export_vars({ 'SHOW_TYPES': constant('App\\ShowHelper::VALID_TYPES') }) }}
 	{% endif %}
 	{% include 'show/_reservations.html.twig' with { 'arranged': current_episode.reservations, lazyload: true } %}
 	{% include 'show/_requests.html.twig' with { 'arranged': current_episode.requests, lazyload: true } %}
