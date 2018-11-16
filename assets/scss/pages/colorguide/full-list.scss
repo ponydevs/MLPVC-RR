@@ -15,19 +15,22 @@
 		text-align: center;
 	}
 
-	$fontsize: 20px;
-
 	&.sorting {
 		section > ul {
 			font-size: 0;
 
-			li > a {
-				font-size: $fontsize;
-				cursor: move;
+			li {
+				&.draggable-source--is-dragging {
+					opacity: 0;
+				}
+				&.draggable-mirror {
+					background-color: #fff;
+				}
 
-				border-color: initial;
-
-				&.moving { text-shadow: 0 0 5px currentColor, 0 0 10px currentColor }
+				> a {
+					cursor: move;
+					border-color: initial;
+				}
 			}
 		}
 	}
@@ -44,7 +47,6 @@
 
 		ul {
 			$spacing: 6px;
-			font-size: $fontsize;
 			list-style: none;
 			padding: 0;
 			margin: 0 0 0 #{-$spacing};
@@ -77,6 +79,7 @@
 					flex-flow: column nowrap;
 					align-items: center;
 					justify-content: space-around;
+					font-size: 1.25rem;
 
 					&:not(:last-child) a { margin-right: .8em }
 

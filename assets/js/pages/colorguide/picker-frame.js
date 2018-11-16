@@ -1,5 +1,4 @@
 /* Color Picker | by @SeinopSys + Trildar & Masem | for gh:ponydevs/MLPVC-RR */
-/* global CryptoJS,noUiSlider,HDR2D_BLEND_SRC */
 (function($, undefined){
 	'use strict';
 
@@ -16,8 +15,15 @@
 		picker: undefined,
 		settings: undefined,
 	};
-	const LEVEL_FULL_RANGE = () => ({ low: 0, high: 255 });
-	const NOOP = function(){};
+	const getLevelFullRange = () => ({ low: 0, high: 255 });
+	const noop = () => {};
+	const normalizeTouchEvent = e => {
+		if (e.pageY == null)
+			e.pageY = e.touches[0].pageY;
+		if (e.pageX == null)
+			e.pageX = e.touches[0].pageX;
+		return e;
+	};
 
 	const
 		Tools = {
@@ -31,13 +37,6 @@
 			step: 1.1,
 		},
 		clearCanvas = ctx => { ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height) },
-		// https://stackoverflow.com/a/6860916/1344955
-		S4 = function() {
-			// jshint -W016
-	        //noinspection NonShortCircuitBooleanExpressionJS
-			return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-	    },
-		guid = () => (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4()),
 		isMac = typeof window.navigator.userAgent === 'string' && /(macos|iphone|os ?x|ip[ao]d)/i.test(window.navigator.userAgent);
 
 
@@ -58,6 +57,7 @@
 	}
 
 	class ImageDataHelper {
+		// noinspection JSValidateJSDoc
 		/**
 		 * Extracts the pixel data from an ImageData object into a more easy-to-use format
 		 * A filter function can be specified which is passed the x and y coordinates
@@ -90,7 +90,7 @@
 
 	class PickingArea {
 		constructor(boundingRect){
-			this.id = guid();
+			this.id = cuid();
 			this.boundingRect =  boundingRect;
 			this._tab = undefined;
 		}
@@ -260,7 +260,7 @@
 			try {
 				storedSettings = JSON.parse($.LocalStorage.get(settingsLSKey));
 			}
-			catch(_){}
+			catch(e){ /* ignore */ }
 			if (storedSettings)
 				$.each(availableSettings,k => {
 					if (typeof storedSettings[k] !== 'undefined' && storedSettings[k] !== this._settings[k])
@@ -299,7 +299,7 @@
 	class Menubar {
 		constructor(){
 			this._$menubar = $('#menubar');
-			this._$menubar.children().children('a.dropdown').on('click',e => {
+			this._$menubar.children().children('a.dropdown').on('click', e => {
 				e.preventDefault();
 				e.stopPropagation();
 
@@ -421,11 +421,8 @@
 				callback(false);
 				return;
 			}
-	        const reader = new FileReader();
-	        reader.onload = () => {
-				ColorPicker.getInstance().openImage(reader.result, file.name, callback);
-	        };
-	        reader.readAsDataURL(file);
+			const src = URL.createObjectURL(file);
+			ColorPicker.getInstance().openImage(src, file.name, callback);
 		}
 		askLevelsToggle(levelsEnabled = PersistentSettings.getInstance().get('levelsDialogEnabled')){
 			const theEnd = 'will <strong>reload</strong> the picker causing you to <strong>lose</strong> any opened images and picking areas.';
@@ -524,7 +521,7 @@
 			const formData = $form.mkData();
 			$preview.html($.mk('div').css('background-color',`rgba(${formData.red},${formData.green},${formData.blue},${Math.round(formData.opacity/100)})`));
 		},
-		areaColorFormInputChange = function(e){
+		areaColorFormInputChange = e => {
 			const $form = $(e.target).closest('form');
 
 			areaColorFormUpdatePreview($form);
@@ -626,6 +623,7 @@
 		setImage(src, callback){
 			const imgElement = new Image();
 			$(imgElement).attr('src', src).on('load',() => {
+				this._imgdata.src = src;
 				this._imgdata.size = {
 					width: imgElement.width,
 					height: imgElement.height,
@@ -729,7 +727,7 @@
 			area.belongsToTab(this);
 			this._pickingAreas[ix] = area;
 		}
-		/** @return {$.RGBAColor|string} */
+		/** @return {RGBAColor|string} */
 		loadPickingAreaColor(){
 			return this._pickingAreaColor || 'rgba(255,0,255,.5)';
 		}
@@ -742,9 +740,12 @@
 			ColorPicker.getInstance().redrawPickingAreas();
 		}
 		drawImage(){
-			ColorPicker.getInstance().getImageCanvasCtx().drawImage(this._canvas, 0, 0, this._imgdata.size.width, this._imgdata.size.height, 0, 0, this._imgdata.size.width, this._imgdata.size.height);
+			const { width, height } = this._imgdata.size;
+			ColorPicker.getInstance().getImageCanvasCtx().drawImage(this._canvas, 0, 0, width, height, 0, 0, width, height);
 		}
 		close(){
+			if (this._imgdata.src)
+				URL.revokeObjectURL(this._imgdata.src);
 			Tabbar.getInstance().closeTab(this);
 		}
 	}
@@ -891,7 +892,7 @@
 				left: NaN,
 			};
 			this._zoomlevel = 1;
-			this._levels = LEVEL_FULL_RANGE();
+			this._levels = getLevelFullRange();
 			this._moveMode = false;
 
 			this._$picker = $('#picker');
@@ -1031,9 +1032,9 @@
 
 				$.clearFocus();
 				this.updateZoomLevelInputs();
-			}).on('mousedown',() => {
+			}).on('mousedown touchstart',() => {
 				this._$zoomperc.data('mousedown', true);
-			}).on('mouseup',() => {
+			}).on('mouseup touchend',() => {
 				this._$zoomperc.data('mousedown', false);
 			}).on('click',() => {
 				if (this._$zoomperc.data('focused') !== true){
@@ -1070,7 +1071,7 @@
 					this._$zoomorig,
 					this._$zoomperc
 				)
-			).on('mousedown',e => {
+			).on('mousedown touchstart',e => {
 				e.stopPropagation();
 				this._$zoomperc.triggerHandler('blur');
 			});
@@ -1089,9 +1090,9 @@
 				const px = parseInt(this._$pickingSize.text().trim());
 				this.setPickingSize(!isNaN(px) ? px : undefined);
 				$.clearFocus();
-			}).on('mousedown',() => {
+			}).on('mousedown touchstart',() => {
 				this._$pickingSize.data('mousedown', true);
-			}).on('mouseup',() => {
+			}).on('mouseup touchend',() => {
 				this._$pickingSize.data('mousedown', false);
 			}).on('click',() => {
 				if (this._$pickingSize.data('focused') !== true){
@@ -1110,7 +1111,7 @@
 			});
 			this._pickingSizeDecreaseInterval = undefined;
 			this._pickingSizeIncreaseInterval = undefined;
-			this._$decreasePickingSize = $.mk('button').attr({'class':'fa fa-minus-circle','data-info':'Decrease picking area size (Down Arrow)'}).on('mousedown',e => {
+			this._$decreasePickingSize = $.mk('button').attr({'class':'fa fa-minus-circle','data-info':'Decrease picking area size (Down Arrow)'}).on('mousedown touchstart',e => {
 				e.preventDefault();
 
 				if (typeof this._pickingSizeIncreaseInterval !== 'undefined'){
@@ -1122,14 +1123,14 @@
 				this._pickingSizeDecreaseInterval = setInterval(() => {
 					this.decreasePickingSize(square, false);
 				},150);
-			}).on('mouseup mouseleave',() => {
+			}).on('mouseup mouseleave touchend',() => {
 				if (typeof this._pickingSizeDecreaseInterval === 'undefined')
 					return;
 
 				clearInterval(this._pickingSizeDecreaseInterval);
 				this._pickingSizeDecreaseInterval = undefined;
 			});
-			this._$increasePickingSize = $.mk('button').attr({'class':'fa fa-plus-circle','data-info':'Increase picking area size (Up Arrow)'}).on('mousedown',e => {
+			this._$increasePickingSize = $.mk('button').attr({'class':'fa fa-plus-circle','data-info':'Increase picking area size (Up Arrow)'}).on('mousedown touchstart',e => {
 				e.preventDefault();
 
 				if (typeof this._pickingSizeDecreaseInterval !== 'undefined'){
@@ -1141,7 +1142,7 @@
 				this._pickingSizeIncreaseInterval = setInterval(() => {
 					this.increasePickingSize(square, false);
 				},150);
-			}).on('mouseup mouseleave',() => {
+			}).on('mouseup mouseleave touchend',() => {
 				if (typeof this._pickingSizeIncreaseInterval === 'undefined')
 					return;
 
@@ -1187,13 +1188,13 @@
 					this._$averageColor,
 					this._$averageColorRgb
 				)
-			).on('mousedown',e => {
+			).on('mousedown touchstart',e => {
 				e.stopPropagation();
 				this._$zoomperc.triggerHandler('blur');
 			});
 			this._$areasList = $.mk('ul');
 			let areaListResizing = false;
-			this._$listResizeHandle = $.mk('div').attr('class','resize-handle').on('mousedown',() => {
+			this._$listResizeHandle = $.mk('div').attr('class','resize-handle').on('mousedown touchstart',() => {
 				areaListResizing = true;
 				$body.addClass('area-list-resizing');
 			});
@@ -1356,9 +1357,11 @@
 
 			let initial,
 				initialMouse;
-			$body.on('mousemove', $.throttle(50,e => {
+			$body.on('mousemove touchmove', $.throttle(50, ev => {
+				const e = normalizeTouchEvent(ev);
+
 				if (areaListResizing){
-					const listSize = Math.max(e.pageX-2,0)/$body.width();
+					const listSize = Math.max(e.pageX-2,0) / $body.width();
 					this.setPickerWidth($.roundTo(listSize*100,2));
 					return;
 				}
@@ -1383,10 +1386,10 @@
 					this.updateZoomLevelInputs();
 				}
 			}));
-			this._$mouseOverlay.on('mousemove',e => {
+			this._$mouseOverlay.on('mousemove touchmove',e => {
 				this.updateMousePosition(e);
 				this.drawPickerCursor(!e.altKey);
-			}).on('mousedown',e => {
+			}).on('mousedown touchstart',e => {
 				if (!Tabbar.getInstance().getActiveTab() || $.Dialog.isOpen())
 					return;
 
@@ -1436,11 +1439,14 @@
 				this.updateMousePosition(e);
 			});
 
-			$body.on('mousedown',e => {
+			$body.on('mousedown touchstart', ev => {
+				const e = normalizeTouchEvent(ev);
+
 				if (!Tabbar.getInstance().getActiveTab() || !$(e.target).is(this._$imageOverlay) || !this._$imageOverlay.hasClass('draggable'))
 					return;
 
-				e.preventDefault();
+				if (!e.passive)
+					e.preventDefault();
 				this._$imageOverlay.addClass('dragging');
 				initial = this.getImagePosition();
 				initialMouse = {
@@ -1448,8 +1454,9 @@
 					left: e.pageX,
 				};
 			});
-			$body.on('mouseup mouseleave blur',e => {
-				if (areaListResizing && e.type === 'mouseup'){
+			$body.on('mouseup mouseleave touchend blur',e => {
+				const isMouseUp = e.type === 'mouseup' || e.type === 'touchend';
+				if (areaListResizing && isMouseUp){
 					areaListResizing = false;
 					this.storeSidebarWidth();
 					$body.removeClass('area-list-resizing');
@@ -1457,7 +1464,7 @@
 				if (!Tabbar.getInstance().getActiveTab())
 					return;
 
-				if (e.type === 'mouseup'){
+				if (isMouseUp){
 					initial = undefined;
 					initialMouse = undefined;
 					this._$imageOverlay.removeClass('dragging');
@@ -1630,6 +1637,7 @@
 			this._$areaImageCounter.text(imgCount+' image'+(imgCount!==1?'s':''));
 
 			this._$averageColor.empty();
+			this._$averageColorRgb.empty();
 			if (pixels.length){
 				const averageColor = $.RGBAColor.fromRGB(PickingArea.averageColor(pixels));
 				const $hashToggleButton = this._$hashToggleBtn.clone(true,true);
@@ -1718,7 +1726,9 @@
 			this._$zoomout.prop('disabled', this._zoomlevel <= Zoom.min);
 			this._$zoomin.prop('disabled', this._zoomlevel >= Zoom.max);
 		}
-		updateMousePosition(e){
+		updateMousePosition(ev){
+			const e = normalizeTouchEvent(ev);
+
 			const imgPos = this.getImagePosition();
 			this._mouseImagePos.top  = Math.floor((e.pageY - imgPos.top ) / this._zoomlevel);
 			this._mouseImagePos.left = Math.floor((e.pageX - imgPos.left) / this._zoomlevel);
@@ -1742,7 +1752,7 @@
 				}
 			}
 		}
-		setLevels(range = LEVEL_FULL_RANGE(), updateCanvas = true){
+		setLevels(range = getLevelFullRange(), updateCanvas = true){
 			const activeTab = Tabbar.getInstance().getActiveTab();
 			if (!activeTab)
 				return;
@@ -1889,7 +1899,7 @@
 			if (levelsEnabled)
 				this.getImageCanvasCtx().initialize();
 		}
-		openImage(src, fName, callback = NOOP){
+		openImage(src, fName, callback = noop){
 			if (this._$picker.hasClass('loading'))
 				throw new Error('The picker is already loading another image');
 
@@ -1898,7 +1908,7 @@
 
 			// Check if we already have the same image open
 			const
-				hash = CryptoJS.MD5(src).toString(),
+				hash = md5(src).toString(),
 				openTabs = Tabbar.getInstance().getTabs();
 			let matchingTab;
 			$.each(openTabs,(i,tab) => {
@@ -2042,7 +2052,7 @@
 	Tabbar.getInstance();
 	ColorPicker.getInstance();
 
-	$body.on('keydown',function(e){
+	$body.on('keydown', e => {
 		const tagName = e.target.tagName.toLowerCase();
 		if ((tagName === 'input' && e.target.type !== 'file') || tagName === 'textarea' || e.target.getAttribute('contenteditable') !== null)
 			return;
@@ -2113,7 +2123,7 @@
 
 		e.preventDefault();
 	});
-	$body.on('keyup',function(e){
+	$body.on('keyup', e => {
 		const tagName = e.target.tagName.toLowerCase();
 		if ((tagName === 'input' && e.target.type !== 'file') || tagName === 'textarea' || e.target.getAttribute('contenteditable') !== null)
 			return;
@@ -2166,10 +2176,10 @@
 		Statusbar.getInstance().setInfo($(this).attr('data-info'));
 	}).on('mouseleave','[data-info]',function(){
 		Statusbar.getInstance().setInfo();
-	}).on('dragover dragend',function(e){
+	}).on('dragover dragend', e => {
 		e.stopPropagation();
 		e.preventDefault();
-	}).on('drop',function(e){
+	}).on('drop', e => {
 		e.preventDefault();
 
 		const files = e.originalEvent.dataTransfer.files;

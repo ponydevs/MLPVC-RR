@@ -61,8 +61,7 @@ class PersonalGuideController extends ColorGuideController {
 			],
 		];
 		if ($owner_or_staff){
-			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
-			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
+			self::_appendManageAssets($settings);
 			$settings['import']['hex_color_regex'] = Regexes::$hex_color;
 		}
 		CoreUtils::loadPage('UserController::colorguide', $settings);

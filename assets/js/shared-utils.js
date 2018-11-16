@@ -672,6 +672,20 @@
 		return instance;
 	};
 
+	// Sortable shortcut
+	const sortableDataKey = 'sortable';
+	$.fn.sortable = function(options = null){
+		if (options === null)
+			return this.data(sortableDataKey);
+		else if (options === 'destroy'){
+			this.data(sortableDataKey).destroy();
+			this.removeData(sortableDataKey);
+		}
+
+		// eslint-disable-next-line new-cap
+		this.data(sortableDataKey, new Sortable.default(this.get(0), options))
+	};
+
 	// http://stackoverflow.com/a/16270434/1344955
 	$.isInViewport = el => {
 		let rect;
@@ -684,8 +698,8 @@
 		return (
 			rect.bottom > 0 &&
 			rect.right > 0 &&
-			rect.left < (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */ &&
-			rect.top < (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */
+			rect.left < $w.width() &&
+			rect.top < $w.height()
 		);
 	};
 	$.fn.isInViewport = function(){

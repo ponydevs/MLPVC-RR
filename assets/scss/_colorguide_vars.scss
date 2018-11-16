@@ -58,10 +58,14 @@ $TCharacter: adjust_hue($_TBase, 240);
 	justify-content: flex-start;
 	width: 100%;
 	overflow: hidden;
+	background: #fff;
 
-	&.moving {
-		box-shadow: 0 0 10px #000;
-		background: #fff;
+	&.draggable-source--is-dragging {
+		opacity: 0;
+	}
+	&.draggable-mirror {
+		width: 400px;
+		max-width: 100%;
 	}
 
 	$height: 31px;

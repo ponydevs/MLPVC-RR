@@ -131,15 +131,22 @@ class ColorGuideController extends Controller {
 
 	protected const GUIDE_MANAGE_JS = [
 		'jquery.uploadzone',
-		'lib/jquery.autocomplete',
 		'jquery.ponycolorpalette',
-		'lib/Sortable',
 		'pages/colorguide/tag-list',
 		'pages/colorguide/manage',
 	];
 	protected const GUIDE_MANAGE_CSS = [
 		'pages/colorguide/manage',
 	];
+	protected const GUIDE_MANAGE_LIBS = [
+		'autocomplete',
+		'sortable',
+	];
+	protected static function _appendManageAssets(&$settings):void {
+		$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
+		$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
+		$settings['libs'] = isset($settings['libs']) ? array_merge($settings['libs'], self::GUIDE_MANAGE_LIBS) : self::GUIDE_MANAGE_LIBS;
+	}
 
 	public const FULL_LIST_ORDER = [
 		'label' => 'alphabetically',
@@ -178,10 +185,9 @@ class ColorGuideController extends Controller {
 
 		$is_staff = Permission::sufficient('staff');
 
-		$js = [];
+		$libs = [];
 		if ($is_staff)
-			$js[] = 'lib/Sortable';
-		$js[] = true;
+			$libs[] = 'sortable';
 
 		$import = [
 			'eqg' => $eqg,
@@ -197,7 +203,8 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Full List - '.($this->_EQG?'EQG':'Pony').' Color Guide',
 			'css' => [true],
-			'js' => $js,
+			'libs' => $libs,
+			'js' => [true],
 			'import' => $import,
 		]);
 	}
@@ -393,8 +400,7 @@ class ColorGuideController extends Controller {
 			],
 		];
 		if (Permission::sufficient('staff')){
-			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
-			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
+			self::_appendManageAssets($settings);
 			$settings['import']['max_upload_size'] = CoreUtils::getMaxUploadSize();
 			$settings['import']['hex_color_regex'] = Regexes::$hex_color;
 		}
@@ -445,8 +451,14 @@ class ColorGuideController extends Controller {
 
 		CoreUtils::loadPage(__METHOD__, [
 			'title' => 'Blending Reverser',
+			'libs' => [
+				'no-ui-slider',
+				'blob',
+				'canvas-to-blob',
+				'file-saver',
+			],
 			'css' => [true],
-			'js' => ['lib/nouislider', 'lib/Blob', 'lib/canvas-toBlob', 'lib/FileSaver', true],
+			'js' => [true],
 			'import' => [
 				'nav_blendingrev' => true,
 				'hex_color_regex' => Regexes::$hex_color,
@@ -467,17 +479,21 @@ class ColorGuideController extends Controller {
 		CoreUtils::loadPage(__METHOD__, [
 			'noindex' => true,
 			'title' => 'Color Picker',
+			'libs' => [
+				'ba-throttle-debounce',
+				'md5',
+				'dragscroll',
+				'no-ui-slider',
+				'paste',
+				'cuid',
+				'font-awesome',
+			],
 			'css' => [true],
 			'default-js' => false,
 			'js' => [
-				'lib/jquery.ba-throttle-debounce',
 				'shared-utils',
 				'dialog',
-				'lib/md5',
-				'lib/dragscroll',
 				'lib/canvas.hdr',
-				'lib/nouislider',
-				'lib/paste',
 				true,
 			],
 		]);

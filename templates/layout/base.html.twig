@@ -81,18 +81,6 @@
 		{% include 'layout/_footer.html.twig' %}
 	</footer>
 
-{% include 'layout/libs/_jquery.html.twig' %}
-{% include 'layout/libs/_react.html.twig' %}
-{% include 'layout/libs/_moment.html.twig' %}
-<script nonce="{{ constant('CSP_NONCE') }}">$.API = { API_PATH: "{{ constant('API_PATH') }}" }</script>
-<script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
-{% if server_name is defined %}
-<script src="https://{{ constant('WS_SERVER_HOST') }}/socket.io/socket.io.js" id="wss"></script>
-{% endif %}
-{{  export_vars({
-	'PRINTABLE_ASCII_PATTERN': constant('PRINTABLE_ASCII_PATTERN'),
-	'signedIn': signed_in,
-}) -}}
 {% include 'layout/_scripts.html.twig' %}
 </body>
 </html>

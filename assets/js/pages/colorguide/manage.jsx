@@ -789,12 +789,7 @@
 				$colors.append(this.makeColorDiv(color));
 			});
 
-			$colors.sortable({
-				handle: ".move",
-				ghostClass: "moving",
-				scroll: false,
-				animation: 150,
-			});
+			$colors.sortable({ draggable: '.clr', handle: ".move" });
 		}
 		saveColorInputs(storeState){
 			let $colors = this.$form.children('.clrs');
@@ -936,7 +931,8 @@
 			return this.$form;
 		}
 		destroySortable(){
-			this.getClrsDiv().sortable('destory');
+			const $colors = this.getClrsDiv();
+			$colors.sortable('destroy');
 		}
 		getClrsDiv(){
 			return this.$form.find('.clrs');
@@ -1737,11 +1733,7 @@
 							)
 						);
 
-						Sortable.create($cgs.get(0), {
-							ghostClass: "moving",
-							scroll: false,
-							animation: 150,
-						});
+						$cgs.sortable({ draggable: 'li' });
 
 						$.Dialog.request(title, $CGReorderForm, 'Save', function($form){
 							$form.on('submit', function(e){

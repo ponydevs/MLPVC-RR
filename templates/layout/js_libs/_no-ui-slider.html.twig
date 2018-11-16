@@ -1,0 +1,5 @@
+{% if constant('PRODUCTION') %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.js" integrity="sha256-V76+FCDgnqVqafUQ74coiR7qA3Gd6ZlVuFgdwcGCGlc=" crossorigin="anonymous"></script>
+{% else %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.js" integrity="sha256-rmqXGwuw+Kd8k/5UFp7Z72cXjxmzGGL36Q58+Ir9MNQ=" crossorigin="anonymous"></script>
+{% endif %}

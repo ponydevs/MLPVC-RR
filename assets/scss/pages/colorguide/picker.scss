@@ -5,7 +5,16 @@ html, body {
 }
 #main {
 	height: calc(100% - #{$HeaderHeight + $FooterHeight});
-	padding-bottom: $MainMargin;
+	padding-top: 0;
+	padding-right: 0;
+	padding-bottom: 0;
+
+	@media all and (min-width: $SidebarBreakpoint){
+		padding-left: $SidebarWidth;
+	}
+	@media all and (max-width: $SidebarBreakpoint){
+		padding-left: 0;
+	}
 }
 #content {
 	border: 0;
@@ -25,7 +34,11 @@ html, body {
 	left: 0;
 	height: 100%;
 	width: 100%;
-	border: 1px solid #000;
-	background: #000;
+	background: $PickerUIBackground;
 	box-sizing: border-box;
+	border: 0;
+
+	@media all and (min-width: $SidebarBreakpoint) {
+		border-left: 1px solid $PickerUIBorders;
+	}
 }

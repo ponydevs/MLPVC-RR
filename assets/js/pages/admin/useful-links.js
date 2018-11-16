@@ -100,11 +100,9 @@
 		if (!$ReorderBtn.hasClass('typcn-tick')){
 			$ReorderBtn.removeClass('typcn-arrow-unsorted darkblue').addClass('typcn-tick green').html('Save');
 			$uflol.addClass('sorting').children().find('.buttons').append('<span class="btn darkblue typcn typcn-arrow-move"></span>');
-			Sortable.create($uflol.get(0), {
-			    ghostClass: "moving",
-			    scroll: true,
-			    animation: 150,
-			    handle: '.typcn-arrow-move',
+			$uflol.sortable({
+				draggable: 'li',
+				handle: '.typcn-arrow-move',
 			});
 		}
 		else {

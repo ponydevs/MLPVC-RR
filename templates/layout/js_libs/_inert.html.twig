@@ -1,0 +1,5 @@
+{% if constant('PRODUCTION') %}
+<script src="https://cdn.jsdelivr.net/npm/inert-polyfill@0.2.5/inert-polyfill.min.js" integrity="sha256-Eyd34WbRWISxSokarNMU5jEfiZNTno6r8zrbV/CFHrE=" crossorigin="anonymous"></script>
+{% else %}
+<script src="https://cdn.jsdelivr.net/npm/inert-polyfill@0.2.5/inert-polyfill.js" integrity="sha256-b6YSdK5Dmp+rPU8bV3a+897wPsqjEP3YDGxT82LnkZQ=" crossorigin="anonymous"></script>
+{% endif %}

@@ -8,8 +8,9 @@
    [Font Awesome](http://fontawesome.io/),
    [loading.io](http://loading.io/),
    [jQuery](http://jquery.com/),
+   [ReactJS](https://reactjs.org/),
+   [Fluidbox](http://terrymun.github.io/Fluidbox/),
    [autocomplete.js](https://github.com/algolia/autocomplete.js),
-   [Sortable](https://github.com/RubaXa/Sortable),
    [CodeMirror](https://github.com/codemirror/CodeMirror/),
    [moment.js](http://momentjs.com/),
    [simplemarquee](https://github.com/IndigoUnited/jquery.simplemarquee),
@@ -17,7 +18,10 @@
    [canvas.hdr.js](https://github.com/brianreavis/canvas.hdr.js),
    [noUiSlider](https://github.com/leongersen/noUiSlider),
    [FileSaver.js](https://github.com/eligrey/FileSaver.js),
-   [paste.js](https://github.com/layerssss/paste.js)
+   [paste.js](https://github.com/layerssss/paste.js),
+   [Draggable](https://github.com/Shopify/Draggable),
+   [cuid](https://github.com/ericelliott/cuid),
+   [Polyfill.io](https://polyfill.io)
  - Back-end:
    [moment.php](https://github.com/fightbulc/moment.php),
    [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class),
