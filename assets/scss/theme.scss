@@ -8,7 +8,6 @@
 @import "components/vital/notices";
 @import "components/vital/section";
 @import "components/vital/codemirror";
-@import "vendor/typicons";
 // Mobile-only Styles
 @media all and (max-width: $Breakpoint) {
 	.desktop-only { display: none !important }
@@ -77,7 +76,7 @@
 	}
 	#sidebar {
 		height: calc(100% - 50px);
-		background: rgba(black, .95) !important;
+		background: $SidebarBackgroundMobile !important;
 		padding-top: 0 !important;
 
 		> .mobile-nav {
@@ -498,8 +497,8 @@ header, #sidebar .mobile-nav {
 	width: $SidebarWidth;
 	max-width: 100%;
 	box-sizing: border-box;
-	color: #fff;
-	background: #181818;
+	color: $SidebarForeground;
+	background: $SidebarBackground;
 	padding: 10px;
 	text-align: center;
 	overflow: auto;

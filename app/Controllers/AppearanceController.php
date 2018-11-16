@@ -92,8 +92,7 @@ class AppearanceController extends ColorGuideController {
 			$settings['og']['description'] = "Colors$cmv for \"{$this->appearance->label}\" from ".CoreUtils::posess($this->owner->name)." Personal Color Guide on the the MLP-VectorClub's website";
 		}
 		if ($this->ownerIsCurrentUser || Permission::sufficient('staff')){
-			$settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
-			$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
+			self::_appendManageAssets($settings);
 			$settings['import']['exports'] = [
 				'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
 				'TAG_NAME_REGEX' => Regexes::$tag_name,

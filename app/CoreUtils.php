@@ -198,22 +198,25 @@ class CoreUtils {
 	public const DEFAULT_CSS = ['theme'];
 	public const DEFAULT_JS = [
 		'datastore',
-		'lib/jquery.ba-throttle-debounce',
-		'lib/jquery.fluidbox',
 		'lib/jquery.swipe',
 		'lib/jquery.simplemarquee',
-		'lib/codemirror',
-		'lib/codemirror/addon/mode/simple',
-		'lib/codemirror/addon/selection/active-line',
-		'lib/codemirror/mode/xml',
-		'lib/codemirror/mode/markdown',
-		'lib/codemirror/mode/colorguide',
-		'lib/inert',
+		'lib/codemirror-modes/colorguide',
 		'shared-utils',
 		'dialog',
 		'global',
 		'react-components',
 		'websocket',
+	];
+	public const DEFAULT_LIBS = [
+		'polyfill-io',
+		'jquery',
+		'moment',
+		'react',
+		'codemirror',
+		'ba-throttle-debounce',
+		'fluidbox',
+		'inert',
+		'typicons',
 	];
 
 	/**
@@ -249,6 +252,7 @@ class CoreUtils {
 		// Variables
 		$scope = $options['import'] ?? [];
 		$fatal_error_page = isset($scope['fatal_error_page']);
+		$scope['server_name'] = $_SERVER['SERVER_NAME'];
 		$minimal = !empty($options['minimal']);
 
 		// Add auth data
@@ -261,11 +265,15 @@ class CoreUtils {
 		$scope['robots'] = !isset($options['noindex']) || $options['noindex'] === false;
 
 		// Assets
-		$scope['css'] = isset($options['default-css']) && $options['default-css'] === false ? [] : self::DEFAULT_CSS;
+		$scope['default_css'] = !isset($options['default-css']) || $options['default-css'] === true;
+		$scope['default_js'] = !isset($options['default-js']) || $options['default-js'] === true;
+		$scope['css'] = $scope['default_css'] ? self::DEFAULT_CSS : [];
+		$scope['js'] = $scope['default_js'] ? self::DEFAULT_JS : [];
 		self::_checkAssets($options, $scope['css'], 'css', $view);
-		$scope['js'] = isset($options['default-js']) && $options['default-js'] === false ? [] : self::DEFAULT_JS;
 		self::_checkAssets($options, $scope['js'], 'js', $view);
-		$scope['server_name'] = $_SERVER['SERVER_NAME'];
+
+		// Libs
+		LibHelper::process($scope, $options, self::DEFAULT_LIBS);
 
 		// OpenGraph values
 		$scope['og'] = self::processOpenGraph($options, [

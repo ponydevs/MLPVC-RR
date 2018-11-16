@@ -13,6 +13,9 @@ $ContentBG: rgba(255,255,255,.75);
 	color: #fff;
 	box-sizing: border-box;
 }
+$SidebarForeground: #fff;
+$SidebarBackground: #181818;
+$SidebarBackgroundMobile: rgba(black, .95);
 $SidebarWidth: 330px;
 $MainMargin: 8px;
 $DeviationBorder: #71a972;
@@ -32,6 +35,17 @@ $InvalidDark: #700;
 $Border: #888;
 $Background: #EFEFEF;
 $BackgroundLight: #F6F6F6;
+
+$PickerUIColor: silver;
+$PickerUIBorders: rgba(gray, .5);
+$PickerUIBackground: #333;
+$PickerEditorBG: #191919;
+$PickerMenubarHeight: 28px + 1px;
+$PickerTabbarHeight: 28px + 1px;
+$PickerTabTopMargin: 2px;
+$PickerTabBorder: 1px;
+$PickerTabInactiveTopOffset: 2px;
+$PickerStatusbarHeight: 29px + 1px;
 
 //noinspection CssOptimizeSimilarProperties
 @mixin white-grid {

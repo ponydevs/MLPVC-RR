@@ -47,7 +47,7 @@
 	}
 	reobserve();
 
-	if (typeof window.Sortable === 'function'){
+	if (window.Sortable){
 		$fullList.on('click','.sort-alpha',function(){
 			let $section = $(this).closest('section'),
 				$ul = $section.children('ul');
@@ -65,10 +65,7 @@
 						let $li = $(this);
 						$li.data('orig-index', $li.index());
 					}).children().moveAttr('href','data-href');
-					$names.data('sortable-instance', new Sortable($names.get(0), {
-					    ghostClass: "moving",
-					    animation: 300,
-					}));
+					$names.sortable({ draggable: 'li' });
 				});
 				$('.sort-alpha').add($ReorderCancelBtn).removeClass('hidden');
 			}
@@ -108,8 +105,7 @@
 					b = $(b).data('orig-index');
 					return a > b ? 1 : (a < b ? -1 : 0);
 				}).appendTo($names).removeData('orig-index').children().moveAttr('data-href', 'href');
-				$names.data('sortable-instance').destroy();
-				$names.removeData('sortable-instance');
+				$names.sortable('destroy');
 			});
 			$('.sort-alpha').add($ReorderCancelBtn).addClass('hidden');
 		});

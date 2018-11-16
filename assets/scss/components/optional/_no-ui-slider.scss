@@ -1,0 +1,10 @@
+// Default overrides
+.noUi-handle {
+	border-color: grey;
+	&:before, &:after {
+		background: grey;
+	}
+}
+.noUi-connect {
+	background: #357;
+}

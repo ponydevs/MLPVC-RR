@@ -1,5 +1,7 @@
 <?php
 
+// TODO Replace this with a .env file before merging
+
 define('PRODUCTION', false);
 
 // Database Access Info \\
