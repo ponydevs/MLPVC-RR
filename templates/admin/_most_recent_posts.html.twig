@@ -5,7 +5,7 @@
 <ul>
 {% endif %}
 {% for post in recent_posts %}
-	{{ post.li(false, false, true) }}
+	{{ post.li(true, false, true) }}
 {% endfor %}
 {% if wrap is not defined or wrap %}
 </ul>
