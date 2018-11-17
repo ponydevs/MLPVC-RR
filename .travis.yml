@@ -4,7 +4,7 @@ php:
 before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
-  - cp ./setup/conf.php ./config/conf.php
+  - cp .env.example .env
   - composer install
 services:
   - postgresql
