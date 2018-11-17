@@ -5,9 +5,7 @@
   "homepage": "https://mlpvector.club",
   "dependencies": {
     "glob": "^7.1.2",
-    "svgo": "^1.0.0"
-  },
-  "devDependencies": {
+    "svgo": "^1.0.0",
     "acorn": "^6.0.4",
     "babel-core": "^6.26.0",
     "babel-eslint": "^10.0.1",
