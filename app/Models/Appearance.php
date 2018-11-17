@@ -216,7 +216,7 @@ class Appearance extends NSModel implements Linkable {
 			return (
 				!empty($Appearance)
 				? "<a href='/cg/v/{$Appearance->id}'>{$Appearance->label}</a>".(!empty($a[2])?CoreUtils::posess($Appearance->label, true):'')
-				: "$a[0]"
+				: (string) $a[0]
 			);
 		},$notes);
 		return nl2br(str_replace('\#', '#', $notes));
@@ -883,7 +883,8 @@ HTML;
 			Response::fail('File could not be deleted');
 		}
 		$this->clearRenderedImages();
-		Appearances::clearSpriteColorIssueNotifications($this->appearance->id, 'del', null);
+		if ($this->owner_id === null)
+			Appearances::clearSpriteColorIssueNotifications($this->id, 'del', null);
 	}
 
 	public static function checkCreatePermission(User $user, bool $personal){
