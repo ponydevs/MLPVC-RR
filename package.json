@@ -34,5 +34,9 @@
   "private": true,
   "engines": {
     "yarn": "YARN NO LONGER USED - use npm instead."
+  },
+  "scripts": {
+    "build": "gulp default",
+    "watch": "gulp watch"
   }
 }
