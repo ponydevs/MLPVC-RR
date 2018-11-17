@@ -24,6 +24,6 @@ function monolog_setup(){
 	$handler->registerExceptionHandler();
 	$handler->registerFatalHandler();
 }
-if (CoreUtils::env('DISABLE_MONOLOG') !== 'true')
+if (!CoreUtils::env('DISABLE_MONOLOG'))
 	monolog_setup();
 else ini_set('error_log', FULL_LOG_PATH);

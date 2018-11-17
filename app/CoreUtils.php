@@ -1299,7 +1299,7 @@ class CoreUtils {
 			return;
 		}
 
-		if (getenv('DISABLE_MONOLOG') === 'true'){
+		if (self::env('DISABLE_MONOLOG')){
 			/** @noinspection ForgottenDebugOutputInspection */
 			error_log($message);
 			return;
