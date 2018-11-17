@@ -4,9 +4,10 @@
 !/public/.well-known/assetlinks.json
 !/public/.well-known/apple-app-site-association
 
-# DO NOT COMMIT conf.php unles sit's the example one
+# Ignore configuration files
 conf.php
 !/setup/conf.php
+.env
 
 *.log
 /node_modules
