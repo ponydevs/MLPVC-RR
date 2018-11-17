@@ -65,11 +65,11 @@ Setting `max_execution_time` to `30` *(seconds)* or below is recommended for dev
 
 #### App-specific config file
 
-You'll need to copy the `setup/conf.php` file into the `includes` directory and change the empty values to whatever your environment uses. Most values are self-explanatory, but you should find explanations for some of them in this document.
+You'll need to copy the `.env.example` file to the root directory and change the empty values to whatever your environment uses. Most values are self-explanatory, but you should find explanations for some of them in this document.
 
 ##### OAuth credentials
 
-You will need to add OAuth application keys for the following services to your `conf.php` file:
+You will need to add OAuth application keys for the following services to your `.env` file:
 
  - [DeviantArt](https://www.deviantart.com/developers/register):  `DA_CLIENT`, `DA_SECRET`
  - [Discord](https://discordapp.com/developers/applications/me): `DISCORD_CLIENT`, `DISCORD_SECRET`
@@ -121,7 +121,7 @@ $ openssl dhparam -out dhparam.pem 4096
 
 ### Importing the database schema
 
-In order to allow changes to the database schema without having to make modifications by hand, the site makes use of [Phinx](https://phinx.org/), a PHP migration manager. All the code necessary to set up the tables and to stay up to date with the latest changes is provided in the form of migrations. Simply run one of the command below, and assuming you've properly set up your `conf.php` file the migrations should run without any issues.
+In order to allow changes to the database schema without having to make modifications by hand, the site makes use of [Phinx](https://phinx.org/), a PHP migration manager. All the code necessary to set up the tables and to stay up to date with the latest changes is provided in the form of migrations. Simply run one of the command below, and assuming you've properly set up your `.env` file the migrations should run without any issues.
 
 ```
 $ wtf db migrate
