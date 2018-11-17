@@ -37,14 +37,16 @@ function fatal_error(string $cause, ?Throwable $e = null){
 	$scope = [
 		'err_cause' => $cause,
 		'breadcrumbs' => $bc,
+		'default_js' => true,
 		'css' => \App\CoreUtils::DEFAULT_CSS,
 		'js' => \App\CoreUtils::DEFAULT_JS,
 	];
+	\App\LibHelper::process($scope, [], \App\CoreUtils::DEFAULT_LIBS);
 	foreach ($scope['css'] as &$css)
-		$css = \App\CoreUtils::cachedAssetLink($css, 'scss/min', 'css');
+		$css = \App\CoreUtils::cachedAssetLink($css, 'css', 'min.css');
 	unset($css);
 	foreach ($scope['js'] as &$js)
-		$js = \App\CoreUtils::cachedAssetLink($js, 'js/min', 'js');
+		$js = \App\CoreUtils::cachedAssetLink($js, 'js', 'min.js');
 	unset($js);
 	echo \App\Twig::$env->render('error/fatal.html.twig', $scope);
 	die();
