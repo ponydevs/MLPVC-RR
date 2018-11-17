@@ -1,6 +1,7 @@
 (function ($, undefined) {
 	'use strict';
 	const
+		reactAvailable = 'React' in window && 'ReactDOM' in window,
 		colors = {
 			fail: 'red',
 			success: 'green',
@@ -90,7 +91,7 @@
 				appendingToRequest = append && this._open.type === 'request' && ['fail','wait'].includes(params.type) && !params.forceNew,
 				$requestContentDiv;
 
-			if (React.isValidElement(params.content)){
+			if (reactAvailable && React.isValidElement(params.content)){
 				$contentAdd.addClass(reactMountedClass);
 				ReactDOM.render(params.content, $contentAdd[0]);
 			}
@@ -298,7 +299,7 @@
 				formId;
 			if (content instanceof $)
 				formId = content.attr('id');
-			else if (React.isValidElement(content))
+			else if (reactAvailable && React.isValidElement(content))
 				formId = content.props.formId;
 			else if (typeof content === 'string'){
 				let match = content.match(/<form\sid=["']([^"']+)["']/);
@@ -432,9 +433,10 @@
 				return $.callCallback(callback, false);
 
 			this.$dialogOverlay.siblings().prop('inert', false);
-			this.$dialogContent.children(`.${reactMountedClass}`).each((_, el) => {
-				ReactDOM.unmountComponentAtNode(el);
-			});
+			if (reactAvailable)
+				this.$dialogContent.children(`.${reactMountedClass}`).each((_, el) => {
+					ReactDOM.unmountComponentAtNode(el);
+				});
 			this.$dialogOverlay.remove();
 			this._open = undefined;
 			this._restoreFocus();
