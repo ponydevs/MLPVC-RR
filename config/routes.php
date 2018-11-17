@@ -110,9 +110,6 @@ $router->map('GET', '/@[un:name]/[cg]/point-history/[i]?', 'PersonalGuideControl
 # ManifestController
 $router->map('GET', '/manifest', 'ManifestController#json');
 
-
-// TODO Update JS calling these endpoints all over the codebase
-
 // Proper REST API endpoints (sort of)
 // Allowing all request methods lets us reply with HTTP 405 to unsupported methods at the controller level
 \define('API_PATH', '/api/private');
