@@ -25,7 +25,7 @@
  - Back-end:
    [moment.php](https://github.com/fightbulc/moment.php),
    [PostgresDb](https://github.com/SeinopSys/PHP-PostgreSQL-Database-Class),
-   [Browser.php](https://github.com/cbschuld/Browser.php) *(custom version)*,
+   [WhichBrowser](https://github.com/WhichBrowser/Parser-PHP),
    [HTML Purifier](http://htmlpurifier.org/),
    [socket.io](http://socket.io),
    [Elephant.io](https://github.com/wisembly/elephant.io),

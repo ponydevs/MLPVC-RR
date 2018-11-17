@@ -934,16 +934,15 @@ class CoreUtils {
 	 */
 	public static function detectBrowser($user_agent = null){
 		$return = ['user_agent' => !empty($user_agent) ? $user_agent : ($_SERVER['HTTP_USER_AGENT'] ?? '')];
-		$browser = new Browser($return['user_agent']);
-		$name = $browser->getBrowser();
-		if ($name !== Browser::BROWSER_UNKNOWN){
-			$return['browser_name'] = $name;
+		/** @noinspection PhpComposerExtensionStubsInspection */
+		$result = new \WhichBrowser\Parser($return['user_agent']);
+		if ($result->browser->name){
+			$return['browser_name'] = $result->browser->name;
 
-			$ver = $browser->getVersion();
-			if ($ver !== Browser::VERSION_UNKNOWN)
-				$return['browser_ver'] = $ver;
+			if ($result->browser->version)
+				$return['browser_ver'] = $result->browser->version->value;
 		}
-		$return['platform'] = $browser->getPlatform();
+		$return['platform'] = $result->os->toString();
 		return $return;
 	}
 
