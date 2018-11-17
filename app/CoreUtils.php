@@ -252,7 +252,7 @@ class CoreUtils {
 		// Variables
 		$scope = $options['import'] ?? [];
 		$fatal_error_page = isset($scope['fatal_error_page']);
-		$scope['ws_server_host'] = $_ENV['WS_SERVER_HOST'];
+		$scope['ws_server_host'] = self::env('WS_SERVER_HOST');
 		$minimal = !empty($options['minimal']);
 
 		// Add auth data
@@ -791,7 +791,7 @@ class CoreUtils {
 	 */
 	public static function getFooterGitInfo(bool $wrap = WRAP, bool $reload_warning = false):string {
 		$commit_info = RedisHelper::get('commit_info');
-		if ($commit_info === null || $_ENV['PRODUCTION'] === 'false'){
+		if ($commit_info === null || !self::env('PRODUCTION')){
 			$commit_info = rtrim(shell_exec('git log -1 --date=short  --pretty="format:%h;%ci"'));
 			RedisHelper::set('commit_info', $commit_info);
 		}
@@ -1055,15 +1055,15 @@ class CoreUtils {
 	}
 
 	public static function socketEvent(string $event, array $data = [], string $origin = ORIGIN){
-		$elephant = new \ElephantIO\Client(new SocketIOEngine("https://{$_ENV['WS_SERVER_HOST']}", [
+		$elephant = new \ElephantIO\Client(new SocketIOEngine("https://".self::env('WS_SERVER_HOST'), [
 			'context' => [
 				'http' => [
 					'header' => [
-						'Cookie: access='.urlencode($_ENV['WS_SERVER_KEY']),
+						'Cookie: access='.urlencode(self::env('WS_SERVER_KEY')),
 						"Origin: $origin",
 					],
 				],
-				'ssl' => [ 'verify_peer' => $_ENV['SOCKET_SSL_VERIFY_PEER'] ],
+				'ssl' => [ 'verify_peer' => self::env('SOCKET_SSL_VERIFY_PEER') ],
 			],
 		]));
 
@@ -1299,7 +1299,7 @@ class CoreUtils {
 			return;
 		}
 
-		if (\defined('DISABLE_MONOLOG')){
+		if (getenv('DISABLE_MONOLOG') === 'true'){
 			/** @noinspection ForgottenDebugOutputInspection */
 			error_log($message);
 			return;
@@ -1388,5 +1388,17 @@ class CoreUtils {
 				return true;
 		}
 		return false;
+	}
+
+	public static function env(string $variable){
+		$value = \getenv($variable);
+		switch ($value){
+			case 'true':
+				return true;
+			case 'false':
+				return false;
+			default:
+				return $value;
+		}
 	}
 }

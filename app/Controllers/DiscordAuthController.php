@@ -49,8 +49,8 @@ class DiscordAuthController extends Controller {
 
 	public static function getProvider():Discord {
 		return new Discord([
-			'clientId' => $_ENV['DISCORD_CLIENT'],
-			'clientSecret' => $_ENV['DISCORD_SECRET'],
+			'clientId' => CoreUtils::env('DISCORD_CLIENT'),
+			'clientSecret' => CoreUtils::env('DISCORD_SECRET'),
 			'redirectUri' => ABSPATH.'discord-connect/end',
 		]);
 	}

@@ -5,6 +5,7 @@ namespace App\Models;
 use ActiveRecord\DateTime;
 use App\Auth;
 use App\Controllers\DiscordAuthController;
+use App\CoreUtils;
 use App\RegExp;
 use App\Response;
 use App\Time;
@@ -68,9 +69,12 @@ class DiscordMember extends AbstractUser {
 	}
 
 	public function checkServerMembership(){
-		$discordApi = new DiscordClient(['token' => $_ENV['DISCORD_BOT_TOKEN']]);
+		$discordApi = new DiscordClient([ 'token' => CoreUtils::env('DISCORD_BOT_TOKEN') ]);
 		try {
-			$member = $discordApi->guild->getGuildMember(['guild.id' => (int)$_ENV['DISCORD_SERVER_ID'], 'user.id' => $this->id]);
+			$member = $discordApi->guild->getGuildMember([
+				'guild.id' => (int)CoreUtils::env('DISCORD_SERVER_ID'),
+				'user.id' => $this->id,
+			]);
 		}
 		catch (CommandClientException $e){
 			if ($e->getResponse()->getStatusCode() !== 404)

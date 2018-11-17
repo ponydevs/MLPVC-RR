@@ -50,7 +50,7 @@ class ShowVideo extends NSModel {
 			case 'yt':
 				$client = new \Google_Client();
 				$client->setApplicationName(GITHUB_URL);
-				$client->setDeveloperKey($_ENV['GOOGLE_API_KEY']);
+				$client->setDeveloperKey(CoreUtils::env('GOOGLE_API_KEY'));
 				$service = new \Google_Service_YouTube($client);
 				$details = $service->videos->listVideos('contentDetails', [ 'id' => $this->id ]);
 

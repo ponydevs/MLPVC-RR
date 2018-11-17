@@ -1,5 +1,6 @@
 <?php
 
+use App\CoreUtils;
 use App\RegExp;
 use App\Regexes;
 
@@ -34,7 +35,7 @@ require __DIR__.'/init/env.php';
 define('ONLY_REQUESTS', 1); // Posts::Get
 define('ONLY_RESERVATIONS', 2); // Posts::Get
 # string
-define('FULL_LOG_PATH', PROJPATH."logs/{$_ENV['LOG_PATH']}");
+define('FULL_LOG_PATH', PROJPATH.'logs/'.CoreUtils::env('LOG_PATH'));
 define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
 define('SPRITE_PATH', FSPATH.'sprites/');
 define('GDPR_IP_PLACEHOLDER', '127.168.80.82');
