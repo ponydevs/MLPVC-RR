@@ -936,10 +936,10 @@ class CoreUtils {
 		$return = ['user_agent' => !empty($user_agent) ? $user_agent : ($_SERVER['HTTP_USER_AGENT'] ?? '')];
 		/** @noinspection PhpComposerExtensionStubsInspection */
 		$result = new \WhichBrowser\Parser($return['user_agent']);
-		if ($result->browser->name){
+		if (!empty($result->browser->name)){
 			$return['browser_name'] = $result->browser->name;
 
-			if ($result->browser->version)
+			if (!empty($result->browser->version))
 				$return['browser_ver'] = $result->browser->version->value;
 		}
 		$return['platform'] = $result->os->toString();
