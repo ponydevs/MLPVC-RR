@@ -47,7 +47,8 @@
 		"ramsey/uuid": "^3.7",
 		"twig/twig": "^2.0",
 		"php-tmdb/api": "~2.1",
-		"symfony/dotenv": "^4.1"
+		"symfony/dotenv": "^4.1",
+		"whichbrowser/parser": "^2.0"
 	},
 	"require-dev": {
 		"roave/security-advisories": "dev-master",

@@ -1,7 +1,8 @@
 <?php
 
 require __DIR__.'/../vendor/autoload.php';
-require __DIR__.'/../config/conf.php';
+require __DIR__.'/../config/init/minimal.php';
+require __DIR__.'/../config/init/db_class.php';
 
 use App\Models\Appearance;
 use App\RegExp;
