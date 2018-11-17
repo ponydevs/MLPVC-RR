@@ -26,7 +26,7 @@ class DiscordAuthController extends Controller {
 
 	public function __construct(){
 		if (isset($_POST['key'])){
-			if (!hash_equals(WS_SERVER_KEY, $_POST['key']))
+			if (!hash_equals(CoreUtils::env('WS_SERVER_KEY'), $_POST['key']))
 				CoreUtils::noPerm();
 		}
 		else {
@@ -177,7 +177,7 @@ class DiscordAuthController extends Controller {
 		if ($_SERVER['REMOTE_ADDR'] !== '127.0.0.1')
 			CoreUtils::notFound();
 
-		if (!hash_equals(WS_SERVER_KEY, $_POST['key']))
+		if (!hash_equals(CoreUtils::env('WS_SERVER_KEY'), $_POST['key']))
 			CoreUtils::noPerm();
 
 		$discordUser = DiscordMember::find($params['id']);
