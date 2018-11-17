@@ -12,6 +12,8 @@ conf.php
 *.log
 /node_modules
 /public/*.html
+/public/js
+/public/css
 /public/dist/mlpvc-colorguide.json
 /fs
 /setup/*.pg.sql
