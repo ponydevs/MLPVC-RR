@@ -9,8 +9,8 @@ function monolog_setup(){
 	$formatter = new LineFormatter(LineFormatter::SIMPLE_FORMAT, LineFormatter::SIMPLE_DATE);
 	$formatter->includeStacktraces();
 
-	if (!defined('LOG_PATH'))
-		throw new RuntimeException('The LOG_PATH constant is not defined, please add it to your conf.php file');
+	if (empty($_ENV['LOG_PATH']))
+		throw new RuntimeException('The LOG_PATH environment variable is not defined, please add it to your conf.php file');
 
 	$stream = new StreamHandler(FULL_LOG_PATH);
 	$stream->setFormatter($formatter);
@@ -23,6 +23,6 @@ function monolog_setup(){
 	$handler->registerExceptionHandler();
 	$handler->registerFatalHandler();
 }
-if (!defined('DISABLE_MONOLOG'))
+if (getenv('DISABLE_MONOLOG') !== 'true')
 	monolog_setup();
 else ini_set('error_log', FULL_LOG_PATH);

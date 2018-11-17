@@ -16,15 +16,15 @@ class TMDBHelper {
 	private static $client;
 
 	public static function apiKeyConfigured():bool {
-		return \defined('TMDB_API_KEY') && !empty(TMDB_API_KEY);
+		return !empty($_ENV['TMDB_API_KEY']);
 	}
 
-	public static function getClient():?\Tmdb\Client {
+	public static function getClient():\Tmdb\Client {
 		if (!self::apiKeyConfigured())
-			return null;
+			throw new \RuntimeException(__METHOD__.' called without a configured TMDb API key');
 
 		if (self::$client === null){
-			$token = new \Tmdb\ApiToken(TMDB_API_KEY);
+			$token = new \Tmdb\ApiToken($_ENV['TMDB_API_KEY']);
 			$cache_handler = new RedisCache();
 			$cache_handler->setRedis(RedisHelper::getInstance());
 

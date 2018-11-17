@@ -6,10 +6,24 @@ require __DIR__.'/init/kint.php';
 require __DIR__.'/init/monolog.php';
 require __DIR__.'/init/twig.php';
 
-if (defined('CSP_ENABLED') && CSP_ENABLED === true){
-	header('Content-Security-Policy: '.CSP_HEADER);
-	header('X-Content-Security-Policy: '.CSP_HEADER);
-	header('X-WebKit-CSP: '.CSP_HEADER);
+if ($_ENV['CSP_ENABLED'] === 'true'){
+	$csp_header = implode(';', [
+		"default-src {$_ENV['CSP_DEFAULT_SRC']}",
+		"script-src {$_ENV['CSP_SCRIPT_SRC']} {$_ENV['WS_SERVER_HOST']} 'nonce-".CSP_NONCE."'",
+		"object-src {$_ENV['CSP_OBJECT_SRC']}",
+		"style-src {$_ENV['CSP_STYLE_SRC']}",
+		"img-src {$_ENV['CSP_IMG_SRC']}",
+		"manifest-src {$_ENV['CSP_MANIFEST_SRC']}",
+		"media-src {$_ENV['CSP_MEDIA_SRC']}",
+		"frame-src {$_ENV['CSP_FRAME_SRC']}",
+		"font-src {$_ENV['CSP_FONT_SRC']}",
+		"connect-src 'self' {$_ENV['WS_SERVER_HOST']} wss://{$_ENV['WS_SERVER_HOST']}",
+		"report-uri {$_ENV['CSP_CONNECT_SRC']}",
+	]);
+	header("Content-Security-Policy: $csp_header");
+	header("X-Content-Security-Policy: $csp_header");
+	header("X-WebKit-CSP: $csp_header");
+	unset($csp_header);
 }
 
 use App\About;
@@ -37,7 +51,7 @@ function fatal_error(string $cause, ?Throwable $e = null){
 }
 
 // Maintenance mode \\
-if (defined('MAINTENANCE_START'))
+if (isset($_ENV['MAINTENANCE_START']))
 	fatal_error('maintenance');
 
 // Database connection & Required Functionality Checking \\

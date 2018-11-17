@@ -2,6 +2,7 @@
 
 use App\RegExp;
 use App\Regexes;
+use Symfony\Component\Dotenv\Dotenv;
 
 // Configuration \\
 define('HTTPS', !empty($_SERVER['HTTPS']));
@@ -20,23 +21,26 @@ define('GITHUB_URL','https://github.com/'.GITHUB_PROJECT_NAME);
 define('SITE_TITLE', 'MLP Vector Club');
 define('SVGO_BINARY',PROJPATH.'node_modules/svgo/bin/svgo');
 define('DISCORD_INVITE_LINK', 'https://discord.gg/hrffb8k');
+define('CSP_NONCE', base64_encode(random_bytes(16)));
 
 // Set new file & folder permissions
 define('FILE_PERM', 0660);
 define('FOLDER_PERM', 0770);
 umask(0007);
 
-// Load private configuration \\
-if (!file_exists(CONFPATH.'conf.php'))
-	die('conf.php is missing from '.CONFPATH);
-require CONFPATH.'conf.php';
+// Load environment variables \\
+$env_path = PROJPATH.'.env';
+if (!file_exists($env_path))
+	die("Environment file not found at $env_path");
+$env = new Dotenv();
+$env->load($env_path);
 
 // Some constants \\
 # integer
 define('ONLY_REQUESTS', 1); // Posts::Get
 define('ONLY_RESERVATIONS', 2); // Posts::Get
 # string
-define('FULL_LOG_PATH', PROJPATH.'logs/'.LOG_PATH);
+define('FULL_LOG_PATH', PROJPATH."logs/{$_ENV['LOG_PATH']}");
 define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
 define('SPRITE_PATH', FSPATH.'sprites/');
 define('GDPR_IP_PLACEHOLDER', '127.168.80.82');

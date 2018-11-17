@@ -1,4 +1,4 @@
-{% if constant('PRODUCTION') %}
+{% if env('PRODUCTION') %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/draggable/1.0.0-beta.8/draggable.bundle.min.js" integrity="sha256-xSqkYy5UepcP5GhtrxlNpnjnk6B6B91aKQ6P2Vni9SY=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/draggable/1.0.0-beta.8/sortable.min.js" integrity="sha256-Mug4sDJiQMh/WOkn2JXmr04y5/5cgYkRr1LcZZSJoHo=" crossorigin="anonymous"></script>
 {% else %}

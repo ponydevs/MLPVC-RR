@@ -1,4 +1,4 @@
-{% if constant('PRODUCTION') %}
+{% if env('PRODUCTION') %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.32.0/autocomplete.jquery.min.js" integrity="sha256-cMer/0/n978dEFJ3b4TVi0+rLAkghHCnZvU0jG+SZXU=" crossorigin="anonymous"></script>
 {% else %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.32.0/autocomplete.jquery.js" integrity="sha256-2sCDhdkBwask9bH12UCfb1GMtM/K6WqkVCNq4GZjk/s=" crossorigin="anonymous"></script>

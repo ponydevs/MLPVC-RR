@@ -252,7 +252,7 @@ class CoreUtils {
 		// Variables
 		$scope = $options['import'] ?? [];
 		$fatal_error_page = isset($scope['fatal_error_page']);
-		$scope['server_name'] = $_SERVER['SERVER_NAME'];
+		$scope['ws_server_host'] = $_ENV['WS_SERVER_HOST'];
 		$minimal = !empty($options['minimal']);
 
 		// Add auth data
@@ -1056,15 +1056,15 @@ class CoreUtils {
 	}
 
 	public static function socketEvent(string $event, array $data = [], string $origin = ORIGIN){
-		$elephant = new \ElephantIO\Client(new SocketIOEngine('https://'.WS_SERVER_HOST, [
+		$elephant = new \ElephantIO\Client(new SocketIOEngine("https://{$_ENV['WS_SERVER_HOST']}", [
 			'context' => [
 				'http' => [
 					'header' => [
-						'Cookie: access='.urlencode(WS_SERVER_KEY),
+						'Cookie: access='.urlencode($_ENV['WS_SERVER_KEY']),
 						"Origin: $origin",
 					],
 				],
-				'ssl' => \defined('SOCKET_SSL_CTX') ? SOCKET_SSL_CTX : [],
+				'ssl' => [ 'verify_peer' => $_ENV['SOCKET_SSL_VERIFY_PEER'] ],
 			],
 		]));
 

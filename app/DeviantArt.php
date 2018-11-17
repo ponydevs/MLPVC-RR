@@ -33,8 +33,8 @@ class DeviantArt {
 			return self::$_OAuthProviderInstance;
 
 		return self::$_OAuthProviderInstance = new DeviantArtProvider([
-			'clientId' => DA_CLIENT,
-			'clientSecret' => DA_SECRET,
+			'clientId' => $_ENV['DA_CLIENT'],
+			'clientSecret' => $_ENV['DA_SECRET'],
 			'redirectUri' => OAUTH_REDIRECT_URI,
 		]);
 	}

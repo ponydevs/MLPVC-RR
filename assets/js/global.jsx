@@ -3,6 +3,9 @@
 	"use strict";
 
 	let fluidboxThisAction = (jQueryObject) => {
+		const href = jQueryObject.attr('href');
+		if (href)
+			jQueryObject.attr('href', href.replace(/\+/g, '%20'));
 		jQueryObject.fluidbox({
 			immediateOpen: true,
 			loader: true,
