@@ -10,7 +10,7 @@ function monolog_setup(){
 	$formatter->includeStacktraces();
 
 	if (empty($_ENV['LOG_PATH']))
-		throw new RuntimeException('The LOG_PATH environment variable is not defined, please add it to your conf.php file');
+		throw new RuntimeException('The LOG_PATH environment variable is not defined, please add it to your .env file');
 
 	$stream = new StreamHandler(FULL_LOG_PATH);
 	$stream->setFormatter($formatter);
