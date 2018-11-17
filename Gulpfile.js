@@ -15,11 +15,12 @@
 		babel = require('gulp-babel'),
 		cached = require('gulp-cached'),
 		rename = require('gulp-rename'),
+		del = require('del'),
 		workingDir = __dirname;
 
 	class Logger {
 		constructor(prompt) {
-			this.prefix = '[' + chalk.blue(prompt) + '] ';
+			this.prefix = `[${chalk.blue(prompt)}] `;
 		}
 
 		log(message) {
@@ -40,6 +41,8 @@
 		if (!regex || !regex.test(path.basename))
 			path.extname = `.min${path.extname}`
 	});
+
+	const clean = () => del(['public/js', 'public/css']);
 
 	let SASSL = new Logger('scss'),
 		SASSWatchArray = ['assets/scss/*.scss', 'assets/scss/**/*.scss'];
@@ -106,7 +109,7 @@
 			.pipe(gulp.dest('public/js'));
 	});
 
-	gulp.task('default', gulp.parallel('js', 'scss'));
+	gulp.task('default', gulp.series(clean, gulp.parallel('js', 'scss')));
 
 	gulp.task('watch', gulp.series('default', done => {
 		gulp.watch(JSWatchArray, { debounceDelay: 2000 }, gulp.series('js'));
