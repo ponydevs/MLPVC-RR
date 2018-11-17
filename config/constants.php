@@ -2,7 +2,6 @@
 
 use App\RegExp;
 use App\Regexes;
-use Symfony\Component\Dotenv\Dotenv;
 
 // Configuration \\
 define('HTTPS', !empty($_SERVER['HTTPS']));
@@ -27,13 +26,6 @@ define('CSP_NONCE', base64_encode(random_bytes(16)));
 define('FILE_PERM', 0660);
 define('FOLDER_PERM', 0770);
 umask(0007);
-
-// Load environment variables \\
-$env_path = PROJPATH.'.env';
-if (!file_exists($env_path))
-	die("Environment file not found at $env_path");
-$env = new Dotenv();
-$env->load($env_path);
 
 // Some constants \\
 # integer

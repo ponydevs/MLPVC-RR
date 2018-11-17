@@ -1,6 +1,7 @@
 <?php
 
-require __DIR__.'/config/conf.php';
+define('PROJPATH', dirname(__FILE__, 1).DIRECTORY_SEPARATOR);
+require __DIR__.'/config/init/env.php';
 
 return [
 	'paths' => [
