@@ -16,7 +16,10 @@
 		cached = require('gulp-cached'),
 		rename = require('gulp-rename'),
 		del = require('del'),
+		fs = require('fs'),
 		workingDir = __dirname;
+
+	require('dotenv').load();
 
 	class Logger {
 		constructor(prompt) {
@@ -43,6 +46,21 @@
 	});
 
 	const clean = () => del(['public/js', 'public/css']);
+
+	const lockfilePath = process.env.NPM_BUILD_LOCK_FILE_PATH;
+	const lock = done => {
+		fs.closeSync(fs.openSync(lockfilePath, 'a'));
+		done();
+	};
+	const unlock = () => del([lockfilePath]);
+
+	const createWatchers = done => {
+		gulp.watch(JSWatchArray, { debounceDelay: 2000 }, gulp.series('js'));
+		JSL.log('File watcher active');
+		gulp.watch(SASSWatchArray, { debounceDelay: 2000 }, gulp.series('scss'));
+		SASSL.log('File watcher active');
+		done();
+	};
 
 	let SASSL = new Logger('scss'),
 		SASSWatchArray = ['assets/scss/*.scss', 'assets/scss/**/*.scss'];
@@ -109,14 +127,8 @@
 			.pipe(gulp.dest('public/js'));
 	});
 
-	gulp.task('default', gulp.series(clean, gulp.parallel('js', 'scss')));
+	gulp.task('default', gulp.series(lock, clean, gulp.parallel('js', 'scss'), unlock));
 
-	gulp.task('watch', gulp.series('default', done => {
-		gulp.watch(JSWatchArray, { debounceDelay: 2000 }, gulp.series('js'));
-		JSL.log('File watcher active');
-		gulp.watch(SASSWatchArray, { debounceDelay: 2000 }, gulp.series('scss'));
-		SASSL.log('File watcher active');
-		done();
-	}));
+	gulp.task('watch', gulp.series('default', createWatchers));
 
 })();

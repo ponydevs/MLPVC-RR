@@ -9,12 +9,7 @@ define('HTTPS', !empty($_SERVER['HTTPS']));
 define('ORIGIN',(HTTPS?'https':'http').'://'.($_SERVER['SERVER_NAME']??'localhost'));
 define('WS_LOCAL_ORIGIN', 'http://localhost');
 define('ABSPATH',ORIGIN.'/');
-/** @noinspection RealpathInSteamContextInspection */
-define('PROJPATH', dirname(__FILE__, 2).DIRECTORY_SEPARATOR);
-define('APPATH',  PROJPATH.'public/');
-define('FSPATH',  PROJPATH.'fs/');
-define('INCPATH', PROJPATH.'includes/');
-define('CONFPATH', PROJPATH.'config/');
+require __DIR__.'/init/path-constants.php';
 define('POST_REQUEST', ($_SERVER['REQUEST_METHOD']??'GET') === 'POST');
 define('GITHUB_PROJECT_NAME','ponydevs/MLPVC-RR');
 define('GITHUB_URL','https://github.com/'.GITHUB_PROJECT_NAME);

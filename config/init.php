@@ -29,6 +29,13 @@ if (CoreUtils::env('CSP_ENABLED')){
 	unset($csp_header);
 }
 
+// Wait a bit if assets are still compiling
+$lock_sleep = 1000e3;
+while (file_exists(PROJPATH.$_ENV['NPM_BUILD_LOCK_FILE_PATH'])){
+	usleep($lock_sleep);
+	$lock_sleep *= 1.5;
+}
+
 function fatal_error(string $cause, ?Throwable $e = null){
 	\App\HTTP::statusCode(503);
 	if ($e !== null)
