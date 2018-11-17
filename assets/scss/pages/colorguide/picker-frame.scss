@@ -193,8 +193,10 @@ body {
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
 		justify-content: space-between;
-		align-items: center;
-		height: $PickerTabbarHeight - $PickerTabTopMargin - ($PickerTabBorder*2);
+		align-items: baseline;
+		$height: $PickerTabbarHeight - $PickerTabTopMargin - ($PickerTabBorder*2);
+		height: $height;
+		line-height: $height;
 		margin-top: $PickerTabTopMargin;
 		max-width: 20%;
 		font-size: 16px;

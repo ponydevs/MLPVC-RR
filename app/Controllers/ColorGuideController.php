@@ -480,6 +480,7 @@ class ColorGuideController extends Controller {
 			'noindex' => true,
 			'title' => 'Color Picker',
 			'libs' => [
+				'jquery',
 				'ba-throttle-debounce',
 				'md5',
 				'dragscroll',
@@ -490,6 +491,7 @@ class ColorGuideController extends Controller {
 			],
 			'css' => [true],
 			'default-js' => false,
+			'default-libs' => false,
 			'js' => [
 				'shared-utils',
 				'dialog',
