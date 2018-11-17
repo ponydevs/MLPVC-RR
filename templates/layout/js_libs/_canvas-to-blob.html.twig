@@ -1,4 +1,4 @@
-{% if constant('PRODUCTION') %}
+{% if env('PRODUCTION') %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js" integrity="sha256-CeBz6ph2imsCxljJfaQYaMRiRYRtW/TP5kH7REY3qvQ=" crossorigin="anonymous"></script>
 {% else %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.js" integrity="sha256-LiwhOpedCnXmq5YIsXd03WliXi0VqHmv8cJJLt1mBxQ=" crossorigin="anonymous"></script>

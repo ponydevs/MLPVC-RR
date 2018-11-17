@@ -1,4 +1,4 @@
-{% if constant('PRODUCTION') %}
+{% if env('PRODUCTION') %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.css" integrity="sha256-MyPOSprr9/vRwXTYc0saw86ylzGM2HVRKWUfHIFta74=" crossorigin="anonymous" />
 {% else %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.css" integrity="sha256-LOSlzQ0ahSVmcRw1bhplbbGFiBEwxaJUK6GSYX3xU94=" crossorigin="anonymous" />

@@ -124,7 +124,7 @@
 				{% if discord_membership.isLinked -%}
 					{% set you = same_user ? 'you' : 'they' %}
 					{% if discord_membership.isServerMember %}
-					and {{ you }}'ve joined our <a href='https://discordapp.com/channels/{{ constant('DISCORD_SERVER_ID') }}'>Discord server</a>.
+					and {{ you }}'ve joined our <a href='https://discordapp.com/channels/{{ env('DISCORD_SERVER_ID') }}'>Discord server</a>.
 					{% else %}
 					but {{ you }} haven't joined our <a href='{{ constant('DISCORD_INVITE_LINK') }}'>Discord server</a> yet.
 					{% endif %}
@@ -180,6 +180,7 @@
 	</div>
 	{% endif %}
 {% endif %}
+</div>
 
 {% if export_roles is defined %}
 {{ export_vars({ 'ROLES': export_roles }) }}

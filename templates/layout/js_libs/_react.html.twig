@@ -1,4 +1,4 @@
-{% if constant('PRODUCTION') %}
+{% if env('PRODUCTION') %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.6.1/umd/react.production.min.js" integrity="sha256-RVzHuqdnrlXGn844dxjufcr9/IbQupyEtfNoTYV1RsE=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.6.1/umd/react-dom.production.min.js" integrity="sha256-XD41AuG+xTsNpa/Ch8WzDM6iCtl7MMJSx6N9v3zPRX8=" crossorigin="anonymous"></script>
 {% else %}
