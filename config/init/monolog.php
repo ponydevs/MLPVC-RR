@@ -1,5 +1,6 @@
 <?php
 
+use App\CoreUtils;
 use App\UsefulLogger as Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
@@ -9,7 +10,7 @@ function monolog_setup(){
 	$formatter = new LineFormatter(LineFormatter::SIMPLE_FORMAT, LineFormatter::SIMPLE_DATE);
 	$formatter->includeStacktraces();
 
-	if (empty($_ENV['LOG_PATH']))
+	if (empty(CoreUtils::env('LOG_PATH')))
 		throw new RuntimeException('The LOG_PATH environment variable is not defined, please add it to your .env file');
 
 	$stream = new StreamHandler(FULL_LOG_PATH);
@@ -23,6 +24,6 @@ function monolog_setup(){
 	$handler->registerExceptionHandler();
 	$handler->registerFatalHandler();
 }
-if (getenv('DISABLE_MONOLOG') !== 'true')
+if (CoreUtils::env('DISABLE_MONOLOG') !== 'true')
 	monolog_setup();
 else ini_set('error_log', FULL_LOG_PATH);

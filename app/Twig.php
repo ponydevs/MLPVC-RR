@@ -23,14 +23,7 @@ class Twig {
 		self::$env->addFunction(new \Twig_SimpleFunction('cached_asset_link', '\App\CoreUtils::cachedAssetLink'));
 		self::$env->addFunction(new \Twig_SimpleFunction('cutoff', '\App\CoreUtils::cutoff'));
 		self::$env->addFunction(new \Twig_SimpleFunction('sd', '\sd'));
-		self::$env->addFunction(new \Twig_SimpleFunction('env', function(string $variable){
-			$value = \getenv($variable);
-			switch ($value){
-				case 'true': return true;
-				case 'false': return false;
-				default: return $value;
-			}
-		}));
+		self::$env->addFunction(new \Twig_SimpleFunction('env', '\App\CoreUtils::env'));
 		self::$env->addFunction(new \Twig_SimpleFunction('setting_form', function (...$args){
 			return (new UserSettingForm(...$args))->render();
 		}));

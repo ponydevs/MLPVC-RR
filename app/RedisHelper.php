@@ -15,9 +15,10 @@ class RedisHelper {
 			return self::$instance;
 
 		self::$instance = new Redis();
-		self::$connected = self::$instance->connect($_ENV['REDIS_HOST'], $_ENV['REDIS_PORT']);
+		[ $host, $port ] = [ CoreUtils::env('REDIS_HOST'), CoreUtils::env('REDIS_PORT') ];
+		self::$connected = self::$instance->connect($host, $port);
 		if (!self::$connected)
-			CoreUtils::error_log("Could not connect to Redis server on {$_ENV['REDIS_HOST']}:{$_ENV['REDIS_PORT']}");
+			CoreUtils::error_log("Could not connect to Redis server on $host:$port");
 	}
 
 	public static function getInstance():?Redis {
