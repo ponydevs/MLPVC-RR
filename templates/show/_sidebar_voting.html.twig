@@ -9,7 +9,7 @@
 	{% set score_percent = (((score/5)*1000) | round)/10 -%}
 	{% set has_score = score is not empty and score != 0 %}
 	<p>{% if has_score -%}
-			This {{ thing }} is rated {{ score }}/5 (<a class='detail'>Details</a>)
+			This {{ thing }} is rated {{ score }}/5 <a class='typcn typcn-chart-pie detail' title='Details'></a>
 		{%- else -%}
 			Nopony voted yet.
 		{%- endif %}</p>

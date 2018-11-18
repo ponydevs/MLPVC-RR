@@ -17,7 +17,7 @@
 			<div class="synopsis-content{% if synopsis.image %} has-image{% endif %}">
 				{% if synopsis.image %}
 				<a class="synopsis-image" href="{{ synopsis.image | replace({'w300': 'original'}) }}">
-					<img src="{{ synopsis.image }}">
+					<img src="{{ synopsis.image }}" alt="{{ current_episode.title }} synopsis backdrop">
 				</a>
 				{% endif %}
 				<div class="synopsis-text">
@@ -32,7 +32,14 @@
 			</div>
 			{% endfor %}
 
-			<p class="synopsis-disclaimer">Don't want to see this? You can disable it in <a href="/u/#settings">your settings</a> ({{ constant('App\\UserSettingForm::INPUT_MAP').p_hidesynopses.options.desc }}). &bull; {{ constant('App\\TMDBHelper::REQUIRED_MESSAGE') }}</p>
+			{% spaceless %}
+			<div class="synopsis-disclaimer">
+				{% if signed_in %}
+				<p>Don't want to see this? You can disable it in <a href="/u/#settings">your settings</a> ({{ constant('App\\UserSettingForm::INPUT_MAP').p_hidesynopses.options.desc }}).</p>
+				{% endif %}
+				<p>{{ constant('App\\TMDBHelper::REQUIRED_MESSAGE') }}</p>
+			</div>
+			{% endspaceless %}
 		{% endif %}
 
 

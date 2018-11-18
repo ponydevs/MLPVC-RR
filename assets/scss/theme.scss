@@ -227,7 +227,22 @@
 // Sidebar always visible
 @media all and (min-width: $SidebarBreakpoint){
 	#sidebar { left: 0 !important }
-	#main { padding-left: $SidebarWidth + $MainMargin }
+	#main {
+		padding-left: $SidebarWidth + $MainMargin;
+
+		&:before {
+			content: "";
+			display: block;
+			position: absolute;
+			top: 0;
+			left: $SidebarWidth;
+			$size: 8px;
+			width: $size;
+			height: $size;
+			background: url('/img/sidebar-corner.svg') no-repeat top left;
+			background-size: $size * 2;
+		}
+	}
 	#above-content { padding-left: $SidebarWidth }
 
 	header nav ul {
@@ -397,7 +412,7 @@ header, #sidebar .mobile-nav {
 }
 // Page layout - Breadcrumbs
 #breadcrumbs {
-	background: lighten($HeaderFooterBG, 20);
+	background: $SidebarBackground;
 	width: 100%;
 	box-sizing: border-box;
 	color: #fff;
@@ -497,12 +512,18 @@ header, #sidebar .mobile-nav {
 	width: $SidebarWidth;
 	max-width: 100%;
 	box-sizing: border-box;
-	color: $SidebarForeground;
+	color: $SidebarContentColor;
 	background: $SidebarBackground;
 	padding: 10px;
 	text-align: center;
 	overflow: auto;
 	will-change: left, width;
+
+	button:not(:hover):not(:active) {
+		border-color: $SidebarContentBorder !important;
+		background-color: $SidebarContentBackground !important;
+		color: $SidebarContentColor !important;
+	}
 
 	&::-webkit-scrollbar {
 		width: 10px;
@@ -629,18 +650,18 @@ header, #sidebar .mobile-nav {
 			margin: 0;
 
 			a {
-				display: inline-block;
+				display: inline;
 				line-height: .9em;
-				color: #fff;
+				color: $SidebarContentColor;
 				text-decoration: none;
-				border-bottom: 1px solid rgba(white, .5);
+				border-bottom: 1px solid rgba(white, .4);
 				transition: border-bottom-color .1s;
 				cursor: pointer;
 
 				&:hover, &:focus {
-					border-bottom-color: rgba(white, .7);
+					border-bottom-color: rgba(white, .55);
 				}
-				&:active { border-bottom-color: white }
+				&:active { border-bottom-color: $SidebarContentColor }
 			}
 		}
 
@@ -820,9 +841,9 @@ header, #sidebar .mobile-nav {
 	}
 
 	> section.welcome .links, > .logged-in {
-		color: rgba(white, .6);
-		background-color: rgba(white, .1);
-		border: 1px solid rgba(white, .3);
+		color: $SidebarContentColor;
+		background-color: $SidebarContentBackground;
+		border: 1px solid $SidebarContentBorder;
 	}
 }
 .avatar-wrap {

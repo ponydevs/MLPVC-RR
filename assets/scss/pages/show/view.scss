@@ -200,10 +200,10 @@
 
 			.synopsis-promise {
 				margin: 0 auto;
-				@include loading-indicator(192px, 'roll');
+				@include loading-indicator(218px, 'roll');
 
 				&.twoparter {
-					@include loading-indicator(373px, 'roll', 0.3);
+					@include loading-indicator(399px, 'roll', 0.3);
 				}
 			}
 
@@ -267,13 +267,20 @@
 			}
 
 			.synopsis-disclaimer {
-				font-size: .7em;
-				color: rgba(black, .5);
+				font-size: .8em;
+				color: rgba(black, .6);
 				background: #fff;
 				padding: 2px;
 				user-select: none;
 				display: inline-block;
-				margin: 5px 0 0;
+
+				p {
+					margin: 0;
+
+					&:not(:last-child) {
+						margin-bottom: 5px;
+					}
+				}
 			}
 		}
 		&.episode {
@@ -445,8 +452,8 @@
 	max-width: 250px;
 	margin: 5px 0 0;
 	padding: 4px;
-	background: #333;
-	border: 1px solid #000;
+	background: rgba(white, .1);
+	border: 1px solid rgba(white, .3);
 	border-radius: 5px;
 }
 

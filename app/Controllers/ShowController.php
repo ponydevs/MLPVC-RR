@@ -551,6 +551,7 @@ class ShowController extends Controller {
 				'current_episode' => $this->show,
 				'wrap' => false,
 				'lazyload' => false,
+				'signed_in' => Auth::$signed_in,
 			]),
 		]);
 	}

@@ -335,11 +335,22 @@ class Image {
 	 * @param string          $content_type
 	 */
 	private static function _output($data, $file_path, $relative_path, $write_callback, $content_type):void {
+		$development = !CoreUtils::env('PRODUCTION');
+		$last_modified = filemtime($file_path);
+
 		if ($data !== null){
 			CoreUtils::createFoldersFor($file_path);
 			$write_callback($file_path, $data);
 			if (file_exists($file_path))
 				File::chmod($file_path);
+		}
+		else if ($development){
+			$since = $_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? null;
+			if ($since){
+				$since_ts = strtotime($since);
+				if ($since_ts !== false && $last_modified <= $since_ts)
+					HTTP::statusCode(304, AND_DIE);
+			}
 		}
 
 		$file_portion = strtok($relative_path,'?');
@@ -351,10 +362,14 @@ class Image {
 		if (!empty($_GET['token']))
 			$path_build->append_query_param('token', $_GET['token']);
 		else $remove_params = ['token'];
-		$path_build->append_query_param('t', filemtime($file_path));
+		$path_build->append_query_param('t', $last_modified);
 
 		CoreUtils::fixPath($path_build, $remove_params);
 		header("Content-Type: image/$content_type");
+		if ($development){
+			header('Cache-Control: public, max-age=31536000');
+			header('Last-Modified: '.gmdate('r', $last_modified));
+		}
 		readfile($file_path);
 		exit;
 	}
