@@ -10,6 +10,8 @@ conf.php
 .env
 
 *.log
+logs/*
+!logs/.gitkeep
 /node_modules
 /public/*.html
 /public/js
