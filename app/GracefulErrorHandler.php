@@ -6,6 +6,9 @@ use Monolog\ErrorHandler;
 
 class GracefulErrorHandler extends ErrorHandler {
 	private function _outputErrorPage(){
+		if (headers_sent())
+			return;
+
 		$title = '500 Internal Server Error';
 		header($_SERVER['SERVER_PROTOCOL']." $title");
 		echo <<<HTML

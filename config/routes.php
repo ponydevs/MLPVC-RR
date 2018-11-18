@@ -109,6 +109,9 @@ $router->map('GET', '/@[un:name]/[cg]/slot-history/[i]?',  'PersonalGuideControl
 $router->map('GET', '/@[un:name]/[cg]/point-history/[i]?', 'PersonalGuideController#pointHistory');
 # ManifestController
 $router->map('GET', '/manifest', 'ManifestController#json');
+# DiagnoseController
+$router->map('GET', '/diagnose/ex/[a:type]', 'DiagnoseController#exception');
+$router->map('GET', '/diagnose/lt/[i:time]', 'DiagnoseController#loadtime');
 
 // Proper REST API endpoints (sort of)
 // Allowing all request methods lets us reply with HTTP 405 to unsupported methods at the controller level
