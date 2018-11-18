@@ -90,3 +90,10 @@
 	'EventType': event.type,
 }) }}
 {% endblock %}
+
+
+{% block widgets %}
+{% if event is defined and event is not empty %}
+{% include 'layout/widgets/_live_updates.html.twig' with { 'id_what': 'entry', 'text_what': 'post scores' } only %}
+{% endif %}
+{% endblock %}

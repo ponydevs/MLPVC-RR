@@ -113,5 +113,6 @@
 	<h2>{{ constant('App\\ShowHelper::VALID_TYPES')[current_episode.type] }} rating</h2>
 	{% include "show/_sidebar_voting.html.twig" with { current_episode: current_episode, signed_in: signed_in } only %}
 </section>
+{% include 'layout/widgets/_live_updates.html.twig' with { 'id_what': 'episode', 'text_what': 'posts' } only %}
 {% endif %}
 {% endblock %}
