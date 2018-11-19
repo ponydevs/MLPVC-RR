@@ -379,6 +379,8 @@ class ColorGuideController extends Controller {
 		$heading = ($this->_EQG?'EQG':'Pony').' Color Guide';
 		$title .= "Page {$pagination->getPage()} - $heading";
 
+		if (!file_exists(CGUtils::GUIDE_EXPORT_PATH))
+			CGUtils::saveExportData();
 		$json_export_url = CoreUtils::cachedAssetLink('mlpvc-colorguide','dist','json');
 		$json_export_time = \App\Time::tag((int) explode('?',$json_export_url)[1]);
 		$universal_appearance = Appearance::find(0);

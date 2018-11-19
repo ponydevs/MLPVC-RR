@@ -758,11 +758,11 @@ XML;
 					"<rect x='0' y='0' width='2' height='2' fill='{$PreviewColors[0]->hex}'/>";
 			break;
 			case 3:
-				$SVG .= <<<XML
+				$SVG .= <<<SVG
 <rect x='0' y='0' width='2' height='2' fill='{$PreviewColors[0]['hex']}'/>
 <rect x='0' y='1' width='1' height='1' fill='{$PreviewColors[1]['hex']}'/>
 <rect x='1' y='1' width='1' height='1' fill='{$PreviewColors[2]['hex']}'/>
-XML;
+SVG;
 			break;
 			case 2:
 			case 4:
@@ -1089,7 +1089,7 @@ GPL;
 			'Tags' => [],
 		];
 
-		/** @var $Tags Tag[] */
+		/** @var $Tags \App\Models\Tag[] */
 		$Tags = DB::$instance->orderBy('id')->get('tags');
 		if (!empty($Tags)) foreach ($Tags as $t){
 			$JSON['Tags'][$t->id] = $t->to_array();
@@ -1167,5 +1167,11 @@ GPL;
 		}
 
 		return JSON::encode($JSON);
+	}
+
+	const GUIDE_EXPORT_PATH = APPATH.'dist/mlpvc-colorguide.json';
+
+	public static function saveExportData():void {
+		File::put(self::GUIDE_EXPORT_PATH, self::getExportData());
 	}
 }

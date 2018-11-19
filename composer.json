@@ -60,11 +60,6 @@
 			"App\\": "app/"
 		}
 	},
-	"scripts": {
-		"post-install-cmd": [
-			"@php scripts/export_color_guide.php"
-		]
-	},
 	"repositories": [
 		{
 			"type": "vcs",
