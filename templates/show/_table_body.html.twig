@@ -1,11 +1,11 @@
 {# @var shows \App\Models\Show[] #}
-{# @var are_movies bool #}
+{# @var are_episodes bool #}
 {% spaceless %}
 {% if is_staff is not defined %}
 	{% set is_staff = permission('staff') %}
 {% endif %}
 {% if shows is empty %}
-<tr class='empty align-center'><td colspan='3'><em>There are no {{ are_movies ? 'movies' ? 'episodes' }} to display</em></td></tr>
+<tr class='empty align-center'><td colspan='3'><em>There are no {{ are_episodes ? 'episodes' : 'entries' }} to display</em></td></tr>
 {% else %}
 {% for show in shows %}
 <tr data-id='{{ show.id }}' data-type='{{ show.type }}'>
