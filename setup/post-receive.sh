@@ -4,7 +4,7 @@ read oldrev newrev refname
 echo "Push triggered update to revision $newrev ($refname)"
 
 RUN_FOR_REF="refs/heads/master"
-if [[ "$refname" -eq  "$RUN_FOR_REF" ]]; then
+if [ "$refname" -eq  "$RUN_FOR_REF" ]; then
     GIT="env -i git"
     CMD_CD="cd $(readlink -nf "$PWD/..")"
     CMD_FETCH="$GIT fetch"
