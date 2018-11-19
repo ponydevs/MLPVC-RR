@@ -8,7 +8,7 @@
 			"email": "seinopsys@gmail.com"
 		}
 	],
-    "require": {
+	"require": {
 		"php": ">=7.2",
 		"ext-curl": "*",
 		"ext-dom": "*",
@@ -55,15 +55,20 @@
 		"phpunit/phpunit": "6.*",
 		"kint-php/kint": "^2.2"
 	},
-    "autoload": {
-        "psr-4": {
-            "App\\": "app/"
-        }
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url":  "https://github.com/SeinopSys/php-activerecord"
-        }
-    ]
+	"autoload": {
+		"psr-4": {
+			"App\\": "app/"
+		}
+	},
+	"scripts": {
+		"post-install-cmd": [
+			"@php scripts/export_color_guide.php"
+		]
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/SeinopSys/php-activerecord"
+		}
+	]
 }

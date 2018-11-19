@@ -64,16 +64,7 @@ function fatal_error(string $cause, ?Throwable $e = null){
 if (CoreUtils::env('MAINTENANCE_START'))
 	fatal_error('maintenance');
 
-// Database connection & Required Functionality Checking \\
-try {
-	$inipath = 'in/to '.php_ini_loaded_file().' then restart '.About::getServerSoftware().' and/or FPM';
-	if (About::iniGet('short_open_tag') !== true)
-		throw new RuntimeException("Short open tags (&lt;?) are disabled\nUncomment/add the line \"short_open_tag=On\" $inipath to fix");
-}
-catch (Exception $e){
-	fatal_error('config', $e);
-}
-
+// Database connection \\
 try {
 	require __DIR__.'/init/db_class.php';
 }

@@ -175,26 +175,6 @@ class CoreUtils {
 		]);
 	}
 
-	/**
-	 * Display a 503 page
-	 */
-	public static function fatalError(){
-		HTTP::statusCode(503);
-
-		if (!\defined('API_PATH'))
-			\define('API_PATH', '');
-
-		if (self::isJSONExpected())
-			Response::fail('HTTP 503: Service Temporarily Unavailable');
-
-		self::loadPage('ErrorController::fatal', [
-			'title' => '503',
-			'import' => [
-				'fatal_error_page' => true,
-			],
-		]);
-	}
-
 	public const DEFAULT_CSS = ['theme'];
 	public const DEFAULT_JS = [
 		'datastore',

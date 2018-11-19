@@ -496,11 +496,12 @@ header, #sidebar .mobile-nav {
 	}
 }
 .typcn.btn-da {
-	background-color: desaturate($DeviantArtGreen, 20) !important;
+	background-color: desaturate($DeviantArtGreen, 20);
+
 	&:before { background-image: url('/img/da-logo.svg') }
 }
 .typcn.btn-discord {
-	background-color: #7289DA !important;
+	background-color: #7289DA;
 
 	&:before { background-image: url('/img/discord-logo-white.svg') }
 }
@@ -519,10 +520,12 @@ header, #sidebar .mobile-nav {
 	overflow: auto;
 	will-change: left, width;
 
-	button:not(:hover):not(:active) {
-		border-color: $SidebarContentBorder !important;
-		background-color: $SidebarContentBackground !important;
-		color: $SidebarContentColor !important;
+	button, .btn {
+		&:not(:hover):not(:active) {
+			border-color: $SidebarContentBorder !important;
+			background-color: $SidebarContentBackground !important;
+			color: $SidebarContentColor !important;
+		}
 	}
 
 	&::-webkit-scrollbar {
