@@ -5,8 +5,11 @@ namespace App;
 use Monolog\ErrorHandler;
 
 class GracefulErrorHandler extends ErrorHandler {
+	/**
+	 * @param \Exception $e
+	 */
 	private function _outputErrorPage($e){
-		File::put(APPATH.'logs/'.((string) microtime(true)).'-error.log', var_export($e-->getTraceAsString(), true));
+		File::put(APPATH.'logs/'.((string) microtime(true)).'-error.log', var_export($e->getTraceAsString(), true));
 
 		if (headers_sent())
 			return;
