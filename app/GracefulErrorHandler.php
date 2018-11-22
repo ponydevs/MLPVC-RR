@@ -5,7 +5,9 @@ namespace App;
 use Monolog\ErrorHandler;
 
 class GracefulErrorHandler extends ErrorHandler {
-	private function _outputErrorPage(){
+	private function _outputErrorPage($e){
+		File::put(FSPATH.preg_replace('~\D~','',microtime()).'-error-dump.txt', var_export($e, true));
+
 		if (headers_sent())
 			return;
 
@@ -13,7 +15,7 @@ class GracefulErrorHandler extends ErrorHandler {
 		header($_SERVER['SERVER_PROTOCOL']." $title");
 		echo <<<HTML
 <!DOCTYPE html>
-<html><head><title>$title</title></head><style>
+<html lang="en"><head><title>$title</title></head><style>
 html, body, #wr {
 	width: 100%;
 	height: 100%;
@@ -55,7 +57,7 @@ HTML;
 	}
 
 	public function handleException($e){
-		$this->_outputErrorPage();
+		$this->_outputErrorPage($e);
 		parent::handleException($e);
 	}
 }
