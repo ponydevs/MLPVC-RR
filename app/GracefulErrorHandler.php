@@ -6,7 +6,7 @@ use Monolog\ErrorHandler;
 
 class GracefulErrorHandler extends ErrorHandler {
 	private function _outputErrorPage($e){
-		File::put(FSPATH.preg_replace('~\D~','',microtime()).'-error-dump.txt', var_export($e, true));
+		File::put(APPATH.'logs/'.((string) microtime(true)).'-error.log', var_export($e-->getTraceAsString(), true));
 
 		if (headers_sent())
 			return;

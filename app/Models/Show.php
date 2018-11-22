@@ -145,27 +145,27 @@ class Show extends NSModel implements Linkable {
 	}
 
 	/**
-	 * @param array $o
+	 * @param bool $pad
 	 *
 	 * @return string
 	 */
-	public function getID(array $o = []):string {
+	public function getID(bool $pad = false):string {
 		if (!$this->is_episode)
 			return CoreUtils::capitalize($this->type).'#'.$this->id;
 
 		$episode = $this->episode;
 		$season = $this->season;
 
-		if (empty($o['pad'])){
-			if ($this->twoparter)
-				$episode = $episode.'-'.($episode+1);
-			return "S{$season}E{$episode}";
+		if ($pad){
+			$episode = CoreUtils::pad($episode).($this->twoparter ? '-'.CoreUtils::pad($episode+1) : '');
+			$season = CoreUtils::pad($season);
+
+			return "S{$season} E{$episode}";
 		}
 
-		$episode = CoreUtils::pad($episode).($this->twoparter ? '-'.CoreUtils::pad($episode+1) : '');
-		$season = CoreUtils::pad($season);
-
-		return "S{$season} E{$episode}";
+		if ($this->twoparter)
+			$episode = $episode.'-'.($episode+1);
+		return "S{$season}E{$episode}";
 	}
 
 	/**
@@ -258,7 +258,7 @@ class Show extends NSModel implements Linkable {
 		if (!$this->is_episode)
 			return $this->title;
 
-		return $this->getID(['pad' => true]).': '.$this->title;
+		return $this->getID(true).': '.$this->title;
 	}
 
 	public function toURL():string {

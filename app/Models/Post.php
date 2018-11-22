@@ -79,6 +79,11 @@ class Post extends NSModel implements Linkable {
 		Posts::clearTransferAttempts($this, 'del');
 	}
 
+	/* For Twig */
+	public function getShow(){
+		return $this->show;
+	}
+
 	public function get_posted_at(){
 		return $this->is_request ? $this->requested_at : $this->reserved_at;
 	}
@@ -355,7 +360,7 @@ class Post extends NSModel implements Linkable {
 	 *
 	 * @return string
     */
-	public function getActionsHTML($view_only, bool $hide_reserver_status = true, bool $enablePromises):string {
+	public function getActionsHTML($view_only, bool $hide_reserver_status, bool $enablePromises):string {
 		$By = $hide_reserver_status ? null : $this->reserver;
 		$requestedByUser = $this->is_request && Auth::$signed_in && $this->requested_by === Auth::$user->id;
 		$isNotReserved = empty($By);

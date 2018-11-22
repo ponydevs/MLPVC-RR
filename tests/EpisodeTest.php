@@ -13,7 +13,7 @@ class EpisodeTest extends TestCase {
 		self::assertFalse($episode->twoparter);
 		$result = $episode->getID();
 		self::assertEquals('S1E1', $result);
-		$result = $episode->getID(['pad' => true]);
+		$result = $episode->getID(true);
 		self::assertEquals('S01 E01', $result);
 
 		// Two-parter test
@@ -26,7 +26,7 @@ class EpisodeTest extends TestCase {
 		self::assertTrue($episode->twoparter);
 		$result = $episode->getID();
 		self::assertEquals('S1E1-2', $result);
-		$result = $episode->getID(['pad' => true]);
+		$result = $episode->getID(true);
 		self::assertEquals('S01 E01-02', $result);
 
 		// Movie test
