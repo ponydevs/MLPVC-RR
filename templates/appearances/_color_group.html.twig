@@ -19,10 +19,14 @@
 	{% set colors = all_colors is defined and  all_colors[color_group.id] is defined ? all_colors[color_group.id] : color_group.colors %}
 	{% if compact %}
 		<span class="cat">{{ color_group.label | escape }}:</span>
-		{% for c in colors %}
-			{# @var c \App\Models\Color #}
-			{{ cg.color_square(c, compact) }}
-		{% endfor %}
+		{% if colors is not empty %}
+			<div class="color-list">
+			{% for c in colors %}
+				{# @var c \App\Models\Color #}
+				{{ cg.color_square(c, compact) }}
+			{% endfor %}
+			</div>
+		{% endif %}
 	{% else %}
 		<span class="cat">
 			<span>{{ color_group.label | escape }}</span>

@@ -65,6 +65,7 @@
 		"Sortable": true,
 		"Time": true,
 		"React": true,
-		"ReactDOM": true
+		"ReactDOM": true,
+		"jQuery": true
 	}
 }

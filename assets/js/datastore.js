@@ -12,7 +12,7 @@
 			let value = data[name];
 			if (typeof value === 'string' && regexRegex.test(value)){
 				const match = value.match(regexRegex);
-				value = new RegExp(match[1],match[2]);
+				value = new RegExp(match[1],match[2].replace('u',''));
 			}
 			window[name] = value;
 		}

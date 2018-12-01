@@ -2,7 +2,7 @@
 @import "../../colorguide_vars";
 @import "../../components/optional/ctxmenu";
 // Mobile-only
-@media all and (max-width: $Breakpoint){
+@media all and (max-width: $Breakpoint) {
 	.appearance-list > li {
 		display: block !important;
 		text-align: center;
@@ -10,26 +10,28 @@
 		> div {
 			&.sprite {
 				display: inline-block !important;
-				margin: 0;
+				margin-bottom: 8px;
 			}
-			&:last-child {
+			&.data {
 				max-width: 100% !important;
 				padding: 0 !important;
 				display: block !important;
 				text-align: left;
 			}
 
-			> strong {
+			.appearance-header {
 				text-align: center;
 
-				a:first-child {
+				.appearance-name {
 					display: block;
-
-					~ * { font-size: .6em }
 				}
 
-				button, .btn {
-					&:nth-child(2) { margin-left: 0 }
+				.button-block {
+					button, a {
+						&:after {
+							content: " " attr(title);
+						}
+					}
 				}
 			}
 
@@ -52,7 +54,7 @@
 				flex-wrap: wrap;
 				width: 100%;
 				border-style: solid;
-				border-color: rgba(black,.3);
+				border-color: rgba(black, .3);
 				border-width: 1px 0 0 1px;
 				margin-top: 5px;
 
@@ -64,15 +66,32 @@
 					box-sizing: border-box;
 					margin: 0;
 					border-width: 0 1px 1px 0;
+
+					.cat {
+						text-align: right;
+					}
 				}
 			}
 		}
 	}
 }
 // Desktop-only
-@media all and (min-width: $Breakpoint){
+@media all and (min-width: $Breakpoint) {
 	.appearance-list > li > div {
-		&:last-child:not(:first-child) { max-width: calc(100% - 160px) }
+		&.sprite {
+			margin-right: 10px;
+		}
+		&.data:not(:first-child) { max-width: calc(100% - 160px) }
+
+		.appearance-header {
+			display: flex;
+			flex-flow: row wrap;
+			align-items: center;
+
+			.appearance-name {
+				padding-right: .5em;
+			}
+		}
 
 		.update time { border-bottom: 1px dashed }
 	}
@@ -88,6 +107,10 @@
 	padding: 0;
 	margin: 0;
 
+	.pagination:empty + & {
+		margin-top: 8px;
+	}
+
 	.pagination + &:empty:before {
 		font-size: 1.4em;
 		font-style: italic;
@@ -99,8 +122,8 @@
 	> li {
 		padding: 10px;
 		color: #434343;
-		background-color: rgba(black,.03);
-		border: 1px solid rgba(black,.3);
+		background-color: rgba(black, .03);
+		border: 1px solid rgba(black, .3);
 		display: flex;
 		flex-flow: row nowrap;
 
@@ -111,19 +134,13 @@
 			max-width: 100%;
 		}
 		> div {
-			&:not(:last-child) { margin-right: 10px }
-
-			&:first-child img { width: 150px }
-			> strong {
-				display: block;
+			&.sprite img {
+				min-width: 150px;
+		    max-width: 100%;
+		    max-height: 150px;
+			}
+			.appearance-header .appearance-name {
 				font-size: 1.5em;
-
-				> * {
-					display: inline-block;
-					vertical-align: middle;
-				}
-
-				button, .btn { margin: 0 0 0 8px }
 			}
 			> .update {
 				margin-top: 5px;
@@ -178,7 +195,7 @@ div.tags {
 	&:not(:last-child) { margin-right: 5px }
 
 	&:not([class*=typ-]) { @include tag-style($TDefault) }
-	&.typ-cat { @include tag-style($TCategory, '\e083')	}
+	&.typ-cat { @include tag-style($TCategory, '\e083') }
 	&.typ-spec { @include tag-style($TSpecies, '\e148') }
 	&.typ-gen { @include tag-style($TGender, '\e10f') }
 	&.typ-app { @include tag-style($TClothing, '\e07e') }
@@ -205,7 +222,7 @@ div.colors-pending, ul.colors:empty:before {
 	text-align: center;
 	padding: .2em;
 	box-sizing: border-box;
-	border: 1px dashed rgba(black,.5);
+	border: 1px dashed rgba(black, .5);
 }
 div.colors-pending {
 	font-size: 1.2em;
@@ -242,6 +259,16 @@ ul.colors {
 			> :not(:last-child) {
 				margin-right: 4px;
 			}
+
+			.color-list {
+				display: flex;
+				flex-flow: row wrap;
+				align-items: flex-start;
+
+				.color {
+					margin: 2px;
+				}
+			}
 		}
 	}
 
@@ -253,7 +280,6 @@ ul.colors {
 		margin: 5px 5px 0 0;
 		font-size: 16px;
 
-		> * { vertical-align: middle }
 		.color {
 			@include colored-square(16px, 1px)
 		}
@@ -312,7 +338,7 @@ ul.colors {
 		border-color: $SearchBorder;
 
 		flex: 1 1 70%;
-    width: 70%;
+		width: 70%;
 	}
 	button {
 		vertical-align: baseline;

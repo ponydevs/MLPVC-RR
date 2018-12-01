@@ -59,8 +59,8 @@
 		],
 		function($el){ return `Color: ${$el.attr('title') || $el.next().children('.label').text()}` }
 	).on('mousedown', function(e){
-	    if (e.shiftKey)
-	        e.preventDefault();
+		if (e.shiftKey)
+			e.preventDefault();
 	});
 
 	$('.get-swatch').off('click').on('click', getSwatch);
@@ -87,7 +87,7 @@
 			appearanceID = $li.attr('id').substring(1),
 			ponyName = (
 				!AppearancePage
-				? $li.find('strong').first()
+				? $li.find('.appearance-name').first()
 				: $content.children('h1')
 			).text().trim(),
 			pressAi = navigator && navigator.userAgent && /Macintosh/i.test(navigator.userAgent)

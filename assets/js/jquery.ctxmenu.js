@@ -22,12 +22,12 @@
 		if (typeof title === 'function')
 			title = title($el);
 		if (!($el.data('ctxmenu-items') instanceof jQuery))
-			$el.data('ctxmenu-items', (new jQuery()).add($.mk('li').text(title || 'Context menu')));
+			$el.data('ctxmenu-items', $($.mk('li').text(title || 'Context menu')));
 		else if (title) $el.data('ctxmenu-items').children().first().text(title);
 
 		return $el;
 	}
-	$.ctxmenu.setTitle = function(){ return setTitle.apply(this, arguments) };
+	$.ctxmenu.setTitle = (...args) => setTitle(...args);
 
 	function addToItems(item, $el){
 		if (!item) return;
