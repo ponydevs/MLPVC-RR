@@ -666,9 +666,9 @@ class CoreUtils {
 
 		$parser = new \DOMDocument('1.0', 'UTF-8');
 		libxml_use_internal_errors(true);
-		$parser->loadXML($svg_data);
+		$parser->loadXML(self::sanitizeSvg($svg_data));
 		libxml_use_internal_errors();
-		if ($parser->documentElement === null || strtolower($parser->documentElement->nodeName) !== 'svg')
+		if ($parser->documentElement === null || strtolower($parser->documentElement->nodeName) !== 'svg' || \count($parser->documentElement->childNodes) === 0)
 			return Input::ERROR_INVALID;
 		unset($parser);
 
