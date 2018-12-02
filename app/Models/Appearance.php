@@ -297,7 +297,7 @@ class Appearance extends NSModel implements Linkable {
 	public function getUpdatesHTML($wrap = WRAP){
 		$update = MajorChange::get($this->id, null, MOST_RECENT);
 		if (!empty($update)){
-			$update = 'Last updated '.Time::tag($update->log->timestamp);
+			$update = 'Last major change '.Time::tag($update->log->timestamp);
 		}
 		else {
 			if (Permission::insufficient('staff'))
