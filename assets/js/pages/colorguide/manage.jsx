@@ -1400,7 +1400,18 @@
 			const
 				$form = $(this),
 				previewCanvas = mk('canvas'),
-				$downloadButton = $.mk('a').attr({'class':'btn typcn typcn-download',download:'sprite.png',disabled:true}).text('Download'),
+				fileName = `sprite-${appearanceID}.png`,
+				$downloadButton = $.mk('button').attr({'class':'btn typcn typcn-download',disabled:true}).text('Download').on('click', function(e){
+					e.preventDefault();
+
+					if ($downloadButton.is(':disabled'))
+						return;
+
+
+					previewCanvas.toBlob(blob => {
+						saveAs(blob, fileName);
+					});
+				}),
 				$acceptCheckbox = $.mk('input').attr({
 					type: 'checkbox',
 					name: 'accept_terms',
@@ -1504,8 +1515,6 @@
 					}
 					if (change)
 						ctx.putImageData(imageData, 0, 0);
-
-					$downloadButton.attr('href',ctx.canvas.toDataURL('image/png'));
 				},
 				colorReplaceEntry = (label, hex) => {
 					const labelInitials = (label.replace(/[^A-Z]/g,'').toLowerCase());

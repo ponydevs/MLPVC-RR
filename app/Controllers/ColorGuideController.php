@@ -141,6 +141,9 @@ class ColorGuideController extends Controller {
 	protected const GUIDE_MANAGE_LIBS = [
 		'autocomplete',
 		'sortable',
+		'blob',
+		'canvas-to-blob',
+		'file-saver'
 	];
 	protected static function _appendManageAssets(&$settings):void {
 		$settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
