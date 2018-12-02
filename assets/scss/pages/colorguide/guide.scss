@@ -319,16 +319,18 @@ ul.colors {
 		border-radius: 0;
 	}
 
+	$radius: 8px;
+
 	:first-child {
-		border-top-left-radius: 5px;
-		border-bottom-left-radius: 5px;
+		border-top-left-radius: $radius;
+		border-bottom-left-radius: $radius;
 	}
-	:last-child {
-		border-top-right-radius: 5px;
-		border-bottom-right-radius: 5px;
+	button:last-of-type {
+		border-top-right-radius: $radius;
+		border-bottom-right-radius: $radius;
 	}
 
-	$SearchBorder: #222;
+	$SearchBorder: #333;
 	input {
 		font-size: 1em;
 		line-height: .9em;
@@ -336,6 +338,8 @@ ul.colors {
 		margin: 0;
 		padding: .3em;
 		border-color: $SearchBorder;
+		background-color: $BackgroundLight;
+		box-shadow: inset 0 1px 1px 1px rgba($SearchBorder, .1);
 
 		flex: 1 1 70%;
 		width: 70%;
@@ -348,12 +352,14 @@ ul.colors {
 		border: 1px solid $SearchBorder;
 		border-left: 0;
 		transform: none !important;
+		padding-left: 7px;
+		padding-right: 7px;
 
 		&:before { line-height: 1em }
 
 		&:not(:hover) {
 			color: $SearchBorder !important;
-			background-color: #ccc !important;
+			background-color: #ddd !important;
 		}
 	}
 }
