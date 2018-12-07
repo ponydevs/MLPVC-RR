@@ -971,33 +971,33 @@ class CoreUtils {
 			$DeviationID = \intval(mb_substr($DeviationID, 1), 36);
 
 		try {
-			$DiFiRequest = HTTP::legitimateRequest("https://www.deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
+			$difi_request = HTTP::legitimateRequest("https://www.deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
 		}
 		catch (CURLRequestException $e){
 			return $e->getCode();
 		}
-		if (empty($DiFiRequest['response']))
+		if (empty($difi_request['response']))
 			return 1;
 
-		$DiFiRequest = @JSON::decode($DiFiRequest['response'], JSON::AS_OBJECT);
-		if (empty($DiFiRequest->DiFi->status))
+		$difi_request = JSON::decode($difi_request['response'], JSON::AS_OBJECT);
+		if (empty($difi_request->DiFi->status))
 			return 2;
-		if ($DiFiRequest->DiFi->status !== 'SUCCESS')
+		if ($difi_request->DiFi->status !== 'SUCCESS')
 			return 3;
-		if (empty($DiFiRequest->DiFi->response->calls))
+		if (empty($difi_request->DiFi->response->calls))
 			return 4;
-		if (empty($DiFiRequest->DiFi->response->calls[0]))
+		if (empty($difi_request->DiFi->response->calls[0]))
 			return 5;
-		if (empty($DiFiRequest->DiFi->response->calls[0]->response))
+		if (empty($difi_request->DiFi->response->calls[0]->response))
 			return 6;
-		if (empty($DiFiRequest->DiFi->response->calls[0]->response->status))
+		if (empty($difi_request->DiFi->response->calls[0]->response->status))
 			return 7;
-		if ($DiFiRequest->DiFi->response->calls[0]->response->status !== 'SUCCESS')
+		if ($difi_request->DiFi->response->calls[0]->response->status !== 'SUCCESS')
 			return 8;
-		if (empty($DiFiRequest->DiFi->response->calls[0]->response->content->html))
+		if (empty($difi_request->DiFi->response->calls[0]->response->content->html))
 			return 9;
 
-		$html = $DiFiRequest->DiFi->response->calls[0]->response->content->html;
+		$html = $difi_request->DiFi->response->calls[0]->response->content->html;
 		return self::contains($html, 'gmi-groupname="MLP-VectorClub">');
 	}
 

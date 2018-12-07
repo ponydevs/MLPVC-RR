@@ -122,7 +122,7 @@
 					$(resp.section).append($newli);
 					$newli.rebindFluidbox();
 					Time.update();
-					$newli.rebindHandlers(true).parent().reorderPosts();
+					$newli.rebindHandlers().parent().reorderPosts();
 					console.log(`[WS] Post added (id=${data.id}) to container ${this.section}`);
 				}));
 			}));

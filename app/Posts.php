@@ -41,7 +41,7 @@ class Posts {
 					$show_id
 				],
 				'order' => 'finished_at asc, reserved_at asc',
-			]);;
+			]);
 		}
 
 		return $only ? $return[0] : $return;
@@ -286,21 +286,21 @@ class Posts {
 			throw new \InvalidArgumentException("Invalid clear reason $reason");
 
 		DB::$instance->where('read_at IS NULL');
-		$TransferAttempts = self::getTransferAttempts($Post, $sent_by, 'id,data');
-		if (!empty($TransferAttempts)){
-			$SentFor = [];
-			foreach ($TransferAttempts as $n){
+		$transfer_attempts = self::getTransferAttempts($Post, $sent_by, 'id,data');
+		if (!empty($transfer_attempts)){
+			$sent_for = [];
+			foreach ($transfer_attempts as $n){
 				Notifications::safeMarkRead($n->id);
 
 				$data = JSON::decode($n->data);
-				if (!empty($SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"]))
+				if (!empty($sent_for[$data['user']][$reason]["{$data['type']}-{$data['id']}"]))
 					continue;
 
 				Notification::send($data['user'], "post-pass$reason", [
 					'id' => $data['id'],
 					'by' => Auth::$user->id,
 				]);
-				$SentFor[$data['user']][$reason]["{$data['type']}-{$data['id']}"] = true;
+				$sent_for[$data['user']][$reason]["{$data['type']}-{$data['id']}"] = true;
 			}
 		}
 	}
@@ -324,19 +324,18 @@ class Posts {
 			? self::getPostReserveButton($Request->reserver, false, true)
 			: "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
 		return <<<HTML
-<li id="request-{$Request->id}">
-	<div class="image screencap">
-		<a href="{$Request->fullsize}" target="_blank" rel="noopener">
-			<img src="{$Request->fullsize}" alt="{$escapedLabel}">
-		</a>
-	</div>
-	$label
-	<em class="post-date">Requested <a href="{$Request->toURL()}">$time_ago</a> under {$Request->toAnchor()}</em>
-	<em class="category">Category: {$cat}</em>
-	$reserve
-</li>
-HTML;
-
+			<li id="request-{$Request->id}">
+				<div class="image screencap">
+					<a href="{$Request->fullsize}" target="_blank" rel="noopener">
+						<img src="{$Request->fullsize}" alt="{$escapedLabel}">
+					</a>
+				</div>
+				$label
+				<em class="post-date">Requested <a href="{$Request->toURL()}">$time_ago</a> under {$Request->toAnchor()}</em>
+				<em class="category">Category: {$cat}</em>
+				$reserve
+			</li>
+			HTML;
 	}
 
 	/**

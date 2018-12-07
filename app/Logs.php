@@ -138,8 +138,8 @@ class Logs {
 			break;
 			case 'img_update':
 				self::_genericPostInfo($data, $details);
-				$details[] = ['Old image', "<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['oldpreview']}'></div>"];
-				$details[] = ['New image', "<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img src='{$data['newpreview']}'></div>"];
+				$details[] = ['Old image', "<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img  alt='screencap' src='{$data['oldpreview']}'></div>"];
+				$details[] = ['New image', "<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img  alt='screencap' src='{$data['newpreview']}'></div>"];
 			break;
 			case 'res_overtake':
 				self::_genericPostInfo($data, $details);
@@ -383,7 +383,7 @@ class Logs {
 		$newOld = [];
 		unset($data['entryid'], $data['target']);
 		foreach ($data as $k => $v){
-			if (\is_null($v))
+			if ($v === null)
 				continue;
 
 			$thing = mb_substr($k, 3);
@@ -441,13 +441,13 @@ class Logs {
 			$ts = Time::tag($item->timestamp, Time::TAG_EXTENDED);
 
 			$HTML .= <<<HTML
-		<tr>
-			<td class='entryid'>{$item->entryid}</td>
-			<td class='timestamp'>$ts<span class="dynt-el"></span></td>
-			<td class='ip'>$inituser<br>$ip</td>
-			<td class='reftype'>$event</td>
-		</tr>
-HTML;
+				<tr>
+					<td class='entryid'>{$item->entryid}</td>
+					<td class='timestamp'>$ts<span class="dynt-el"></span></td>
+					<td class='ip'>$inituser<br>$ip</td>
+					<td class='reftype'>$event</td>
+				</tr>
+				HTML;
 		}
 		else $HTML = '<tr><td colspan="4"><div class="notice info align-center"><label>No log items found</label></td></tr>';
 

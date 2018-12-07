@@ -34,19 +34,19 @@ class CGUtilsTest extends TestCase {
 		$file = CGUtils::generateGimpPalette('Test & test', $colors, $ts);
 
 		$expected = <<<GPL
-GIMP Palette
-Name: Test & test
-Columns: 6
-#
-# Exported at: 2018-09-10 17:19:19 GMT
-#
-  1  34 255 Mane &amp; Tail | Outline
-  0   0   0 Mane &amp; Tail | Fill
- 10 100 255 Coat | Outline
-255 255 255 Glasses | Fill (90% opacity)
- 30  30  30 Hat | Thingies (&lt;4 pieces)
-
-GPL;
+			GIMP Palette
+			Name: Test & test
+			Columns: 6
+			#
+			# Exported at: 2018-09-10 17:19:19 GMT
+			#
+			  1  34 255 Mane &amp; Tail | Outline
+			  0   0   0 Mane &amp; Tail | Fill
+			 10 100 255 Coat | Outline
+			255 255 255 Glasses | Fill (90% opacity)
+			 30  30  30 Hat | Thingies (&lt;4 pieces)
+			
+			GPL;
 
 		self::assertEquals($expected, $file);
 	}

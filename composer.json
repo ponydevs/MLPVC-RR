@@ -9,7 +9,7 @@
 		}
 	],
 	"require": {
-		"php": ">=7.2",
+		"php": ">=7.3",
 		"ext-curl": "*",
 		"ext-dom": "*",
 		"ext-gd": "*",
@@ -22,7 +22,7 @@
 		"ext-redis": "*",
 		"ext-xml": "*",
 		"ext-zlib": "*",
-		"fightbulc/moment": "^1.25.1",
+		"fightbulc/moment": "1.26.*",
 		"wisembly/elephant.io": "^3.3.0",
 		"ezyang/htmlpurifier": "^4.8",
 		"cogpowered/finediff": "0.3.*",

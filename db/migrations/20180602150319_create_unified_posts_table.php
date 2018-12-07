@@ -1,5 +1,6 @@
 <?php
 
+use App\JSON;
 use Phinx\Migration\AbstractMigration;
 
 class CreateUnifiedPostsTable extends AbstractMigration {
@@ -85,6 +86,7 @@ class CreateUnifiedPostsTable extends AbstractMigration {
 					$item[$k] = $v ? 't' : 'f';
 			}
 		}
+		unset($item);
 
 		if (!empty($data))
 			$posts_table->insert($data)->save();
@@ -104,7 +106,7 @@ class CreateUnifiedPostsTable extends AbstractMigration {
 
 		$post_notifs = $this->fetchAll("SELECT * FROM notifications WHERE type LIKE 'post-%'");
 		foreach ($post_notifs as $notif){
-			$notif_data = \App\JSON::decode($notif['data']);
+			$notif_data = JSON::decode($notif['data']);
 			$NOT = $notif_data['type'] === 'request' ? 'NOT' : '';
 			$new_post = $this->fetchRow("SELECT id FROM posts WHERE requested_by IS $NOT NULL AND old_id = {$notif_data['id']}");
 			if (empty($new_post['id']))
@@ -114,7 +116,7 @@ class CreateUnifiedPostsTable extends AbstractMigration {
 
 		$pcg_history = $this->fetchAll("SELECT * FROM pcg_slot_history WHERE change_type LIKE 'post_%'");
 		foreach ($pcg_history as $entry){
-			$change_data = \App\JSON::decode($entry['change_data']);
+			$change_data = JSON::decode($entry['change_data']);
 			$NOT = $change_data['type'] === 'request' ? 'NOT' : '';
 			$new_post = $this->fetchRow("SELECT id FROM posts WHERE requested_by IS $NOT NULL AND old_id = {$change_data['id']}");
 			if (empty($new_post['id']))

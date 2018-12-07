@@ -1,11 +1,11 @@
-(function(){
+(function($){
 	'use strict';
 
 	const
 		showId = window.SHOW_ID,
 		showType = window.SHOW_TYPE;
 
-	window._HighlightHash = function (e){
+	$.highlightHash = function (e){
 		$('.highlight').removeClass('highlight');
 
 		let $anchor = $(location.hash);
@@ -20,7 +20,7 @@
 			});
 		}, 1);
 	};
-	$w.on('hashchange', window._HighlightHash);
+	$w.on('hashchange', $.highlightHash);
 
 	let $voting = $('#voting');
 	$voting.on('click','.rate', function(e){
@@ -146,18 +146,17 @@
 	};
 	$voting.bindDetails();
 
-	$.fn.rebindFluidbox = function(){
-		$(this).find('.screencap > a:not(.fluidbox--initialized)')
-			.fluidboxThis();
-	};
-	$._getLiTypeId = function($li){
+	const getLiTypeId = function($li){
 		return {
 			id: parseInt($li.attr('id').split('-').pop(), 10),
 			type: $li.attr('data-type'),
 		};
 	};
-	$.fn.rebindHandlers = function(isLi){
-		let $collection = isLi ? this : this.find('li[id]');
+	$.fn.rebindFluidbox = function(){
+		$(this).find('.screencap > a:not(.fluidbox--initialized)')
+			.fluidboxThis();
+	};
+	$.fn.rebindHandlers = function(){
 		this.closest('section').rebindFluidbox();
 		return this;
 	};
@@ -169,7 +168,7 @@
 			const
 				$button = $(this),
 				$li = $button.closest('li'),
-				{ id } = $._getLiTypeId($li),
+				{ id } = getLiTypeId($li),
 				url = `${window.location.href.replace(/([^:/]\/).*$/,'$1')}s/${id.toString(36)}`,
 				$div = $.mk('div').attr('class','align-center').append(
 					'Use the link below to link to this post directly:',
@@ -197,7 +196,7 @@
 				$section.find('.post-form').formBind();
 				$section.find('h2 > button').enable();
 				Time.update();
-				window._HighlightHash();
+				$.highlightHash();
 				if (typeof callback === 'function')
 					callback();
 				else if (silent !== true)
@@ -446,15 +445,13 @@
 			const el = entry.target;
 			deviationIO.unobserve(el);
 
-			const
-				postID = el.dataset.postId,
-				viewonly = el.dataset.viewonly;
+			const { postId, viewonly } = el.dataset;
 
-			$.API.get(`/post/${postID}/lazyload`,{viewonly},$.mkAjaxHandler(function(){
+			$.API.get(`/post/${postId}/lazyload`,{viewonly},$.mkAjaxHandler(function(){
 				const $el = $(el);
 				if (!this.status){
 					$el.trigger('error');
-					return $.Dialog.fail(`Cannot load post ${postID}`, this.message);
+					return $.Dialog.fail(`Cannot load post ${postId}`, this.message);
 				}
 
 				$.loadImages(this.html).then(function(resp){
@@ -481,7 +478,7 @@
 			$(image).on('load', function(e){
 				$el.trigger(e).closest('.image').html($link);
 				$link.closest('li').rebindFluidbox();
-			}).on('error', function(e){
+			}).on('error', () => {
 				$el.closest('li').reloadLi();
 			});
 		});
@@ -513,7 +510,7 @@
 			const el = entry.target;
 			synopsisIO.unobserve(el);
 
-			const id = el.dataset.id;
+			const { id } = el.dataset;
 
 			$.API.get(`/show/${id}/synopsis`,$.mkAjaxHandler(function(){
 				const $section = $(el).closest('section');
@@ -601,18 +598,18 @@
 				diff = (new Date($aFinAt.attr('datetime'))).getTime() - (new Date($bFinAt.attr('datetime'))).getTime();
 			else diff = (new Date($a.find('.post-date time').attr('datetime'))).getTime() - (new Date($b.find('.post-date time').attr('datetime'))).getTime();
 			if (diff === 0)
-				return parseInt($a.attr('id').replace('/\D/g',''), 10) - parseInt($b.attr('id').replace('/\D/g',''), 10);
+				return parseInt($a.attr('id').replace(/\D/g,''), 10) - parseInt($b.attr('id').replace(/\\D/g,''), 10);
 			return diff;
 		}).appendTo($parent);
 	};
 
 	function directLinkHandler(){
-		let found = window._HighlightHash({type:'load'});
+		let found = $.highlightHash({type:'load'});
 		if (found === false && showDialog){
 			const title = 'Scroll post into view';
 			// Attempt to find the post as a last resort, it might be on a different episode page
 			const postID = location.hash.replace(/\D/g,'');
-			$.API.post(`/post/${postID}/locate`,{SEASON,EPISODE},$.mkAjaxHandler(function(){
+			$.API.post(`/post/${postID}/locate`, { show_id: showId }, $.mkAjaxHandler(function(){
 				if (!this.status) return $.Dialog.info(title, this.message);
 
 				if (this.refresh){
@@ -730,4 +727,4 @@
 	bindVideoButtons();
 
 	$.WS.recvPostUpdates(true);
-})();
+})(jQuery);

@@ -180,28 +180,29 @@
 	if (window.EventType === 'contest')
 		$.WS.recvEntryUpdates(true);
 
-	function fulfill_promise(){
-		$('.entry-deviation-promise').each(function(){
-			const $this = $(this);
-			if (!$this.isInViewport())
+
+	const entryIO = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (!entry.isIntersecting)
 				return;
 
-			const entryid = $this.attr('data-entryid');
+			const el = entry.target;
+			entryIO.unobserve(el);
+
+			const { entryid } = el.dataset;
 
 			$.API.get(`/event/entry/${entryid}/lazyload`,$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail('Failed to load preview for entry #'+entryid, this.message);
+				if (!this.status) return $.Dialog.fail(`Failed to load preview for entry #${entryid}`, this.message);
 
 				$.loadImages(this.html).then(function(resp){
-					const $parent = $this.closest('li[id]');
-					$this.replaceWith(resp.$el);
+					const $el = $(el);
+					const $parent = $el.closest('li[id]');
+					$el.replaceWith(resp.$el);
 					$parent.rebindFluidbox();
 				});
 			}));
 		});
-	}
-	window._EventScroll = $.throttle(400,function(){
-		fulfill_promise();
 	});
-	$w.on('scroll mousewheel', window._EventScroll);
-	fulfill_promise();
+
+	$('.entry-deviation-promise').each((_, el) => entryIO.observe(el));
 })();

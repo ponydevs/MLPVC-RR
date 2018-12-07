@@ -130,10 +130,10 @@ class Cutiemark extends NSModel {
 		$preview = CoreUtils::aposEncode($this->getRenderedURL());
 		$rotate = $this->rotation !== 0 ? "transform:rotate({$this->rotation}deg)" : '';
 		return <<<HTML
-<div class="preview" style="background-image:url('{$facing_svg}')">
-	<div class="img" style="background-image:url('{$preview}');$rotate"></div>
-</div>
-HTML;
+			<div class="preview" style="background-image:url('{$facing_svg}')">
+				<div class="img" style="background-image:url('{$preview}');$rotate"></div>
+			</div>
+			HTML;
 
 	}
 

@@ -75,7 +75,7 @@
 
 		isOpen(){ return typeof this._open === 'object' }
 
-		_display(options){
+		#display(options){
 			if (typeof options.type !== 'string' || typeof colors[options.type] === 'undefined')
 				throw new TypeError('Invalid dialog type: '+typeof options.type);
 
@@ -135,12 +135,12 @@
 					$ErrorNotice
 						.attr('class','notice '+noticeClasses[params.type])
 						.children('p').html(params.content).show();
-					this._controlInputs(params.type === 'wait');
+					this.#controlInputs(params.type === 'wait');
 				}
 				else {
 					this._open = params;
 					this.$dialogButtons = $('#dialogButtons').empty();
-					this._controlInputs(true);
+					this.#controlInputs(true);
 					this.$dialogContent.append($contentAdd);
 
 					if (params.buttons){
@@ -151,7 +151,7 @@
 				}
 			}
 			else {
-				this._storeFocus();
+				this.#storeFocus();
 				this._open = params;
 
 				this.$dialogOverlay = $.mk('div','dialogOverlay');
@@ -209,7 +209,7 @@
 				this.$dialogButtons.append($button);
 			});
 			if (!window.withinMobileBreakpoint())
-				this._setFocus();
+				this.#setFocus();
 			$w.trigger('dialog-opened');
 			Time.update();
 
@@ -237,7 +237,7 @@
 		 * @param {boolean}  forceNew
 		 */
 		fail(title = defaultTitles.fail, content = defaultContent.fail, forceNew = false){
-			this._display({
+			this.#display({
 				type: 'fail',
 				title,
 				content,
@@ -255,7 +255,7 @@
 		 * @param {function} callback
 		 */
 		success(title = defaultTitles.success, content = defaultContent.success, closeBtn = false, callback = undefined){
-			this._display({
+			this.#display({
 				type: 'success',
 				title,
 				content,
@@ -273,7 +273,7 @@
 		 * @param {function} callback
 		 */
 		wait(title = defaultTitles.wait, content = defaultContent.wait, forceNew = false, callback = undefined){
-			this._display({
+			this.#display({
 				type: 'wait',
 				title,
 				content: $.capitalize(content)+'&hellip;',
@@ -316,7 +316,7 @@
 			}
 			else buttons.push(new DialogButton('Close', { action: closeAction }));
 
-			this._display({
+			this.#display({
 				type: 'request',
 				title,
 				content,
@@ -348,7 +348,7 @@
 					action: () => { handlerFunc(false); this._closeButton.action() }
 				})
 			];
-			this._display({
+			this.#display({
 				type: 'confirm',
 				title,
 				content,
@@ -364,7 +364,7 @@
 		 * @param {function} callback
 		 */
 		info(title = defaultTitles.info, content = defaultContent.info, callback = undefined){
-			this._display({
+			this.#display({
 				type: 'info',
 				title,
 				content,
@@ -386,7 +386,7 @@
 				handlerFunc = btnText;
 				btnText = 'Reload';
 			}
-			this._display({
+			this.#display({
 				type: 'segway',
 				title,
 				content,
@@ -398,36 +398,35 @@
 			if ($el instanceof $)
 				this._$focusedElement = $el;
 		}
-		_storeFocus(){
+		#storeFocus(){
 			if (typeof this._$focusedElement !== 'undefined' && this._$focusedElement instanceof $)
 				return;
 			let $focus = $(':focus');
 			this._$focusedElement = $focus.length > 0 ? $focus.last() : undefined;
 		}
-		_restoreFocus(){
+		#restoreFocus(){
 			if (typeof this._$focusedElement !== 'undefined' && this._$focusedElement instanceof $){
 				this._$focusedElement.focus();
 				this._$focusedElement = undefined;
 			}
 		}
-		_setFocus(){
-			let $inputs = this.$dialogContent.find('input,select,textarea').filter(':visible'),
+		#setFocus(){
+			let $inputs1 = this.$dialogContent.find('input,select,textarea').filter(':visible'),
 				$actions = this.$dialogButtons.children();
-			if ($inputs.length > 0) $inputs.first().focus();
+			if ($inputs1.length > 0) $inputs1.first().focus();
 			else if ($actions.length > 0) $actions.first().focus();
 		}
-		_controlInputs(disable){
-			let $inputs = this.$dialogContent
+		#controlInputs(disable){
+			let $inputs2 = this.$dialogContent
 					.children(':not(#dialogButtons)')
 					.last()
 					.add(this.$dialogButtons)
 					.find('input, button, select, textarea');
 
 			if (disable)
-				$inputs.filter(':not(:disabled)').addClass('temp-disable').disable();
-			else $inputs.filter('.temp-disable').removeClass('temp-disable').enable();
+				$inputs2.filter(':not(:disabled)').addClass('temp-disable').disable();
+			else $inputs2.filter('.temp-disable').removeClass('temp-disable').enable();
 		}
-
 		close(callback){
 			if (!this.isOpen())
 				return $.callCallback(callback, false);
@@ -439,7 +438,7 @@
 				});
 			this.$dialogOverlay.remove();
 			this._open = undefined;
-			this._restoreFocus();
+			this.#restoreFocus();
 			$.callCallback(callback);
 
 			$body.removeClass('dialog-open');
@@ -452,7 +451,7 @@
 			if (typeof regexp === 'undefined' || regexp.test($notice.html())){
 				$notice.hide();
 				if ($notice.hasClass('info'))
-					this._controlInputs(false);
+					this.#controlInputs(false);
 				return true;
 			}
 			return false;

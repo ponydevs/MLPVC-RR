@@ -34,17 +34,17 @@ class Events {
 				$type = Event::EVENT_TYPES[$event->type];
 				$name = CoreUtils::escapeHTML($event->name);
 				$HTML .= <<<HTML
-<li id="event-{$event->id}">
-	<strong class="title"><a href='{$event->toURL()}' class="event-name">$name</a>$admin</strong>
-	<span class="added">Added $added_at$added_by</span>
-	<ul>
-		<li><strong>Type:</strong> {$type}</li>
-		<li><strong>Start:</strong> $start (<span class="dynt-el"></Span>)</li>
-		<li><strong>End:</strong> $end (<span class="dynt-el"></Span>)</li>
-		<li><strong>Duration:</strong> $dur</li>
-	</ul>
-</li>
-HTML;
+					<li id="event-{$event->id}">
+						<strong class="title"><a href='{$event->toURL()}' class="event-name">$name</a>$admin</strong>
+						<span class="added">Added $added_at$added_by</span>
+						<ul>
+							<li><strong>Type:</strong> {$type}</li>
+							<li><strong>Start:</strong> $start (<span class="dynt-el"></Span>)</li>
+							<li><strong>End:</strong> $end (<span class="dynt-el"></Span>)</li>
+							<li><strong>Duration:</strong> $dur</li>
+						</ul>
+					</li>
+					HTML;
 			}
 		}
 

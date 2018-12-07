@@ -21,14 +21,24 @@ class Cookie {
 	}
 
 	public static function set(string $name, string $value, int $expire = self::SESSION, bool $http_only = false, string $path = '/'):bool {
-		$success = setcookie($name, $value, $expire, $path, $_SERVER['HTTP_HOST'], HTTPS, $http_only);
+		$success = setcookie($name, $value, [
+			'expires' => $expire,
+			'path' => $path,
+			'domain' => $_SERVER['HTTP_HOST'],
+			'secure' => HTTPS,
+			'httponly' => $http_only,
+		]);
 		if ($success)
 			$_COOKIE[$name] = $value;
 		return $success;
 	}
 
 	public static function delete(string $name, bool $http_only = false, string $path = '/'):bool {
-		$success = setcookie($name, '', time() - 3600, $path, $_SERVER['HTTP_HOST']);
+		$success = setcookie($name, '', [
+			'expires' => time() - 3600,
+			'path' => $path,
+			'domain' => $_SERVER['HTTP_HOST']
+		]);
 		if ($success)
 			unset($_COOKIE[$name]);
 		return $success;

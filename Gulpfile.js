@@ -20,6 +20,7 @@
 		workingDir = __dirname;
 
 	require('dotenv').load();
+	const isProd = process.env.PRODUCTION === 'true';
 
 	class Logger {
 		constructor(prompt) {
@@ -40,10 +41,7 @@
 		}
 	}
 
-	const appendMinSuffix = (regex = false) => rename((path) => {
-		if (!regex || !regex.test(path.basename))
-			path.extname = `.min${path.extname}`
-	});
+	const appendMinSuffix = () => rename((path) => { path.extname = `.min${path.extname}` });
 
 	const clean = () => del(['public/js', 'public/css']);
 
@@ -93,7 +91,7 @@
 			'assets/js/**/*.jsx'
 		];
 	gulp.task('js', () => {
-		return gulp.src(JSWatchArray)
+		let pipe = gulp.src(JSWatchArray)
 			.pipe(cached('js', { optimizeMemory: true }))
 			.pipe(plumber(function(err) {
 				err =
@@ -101,7 +99,7 @@
 						? err.fileName.replace(workingDir, '') + '\n  line ' + (
 						err._babel === true
 							? err.loc.line
-							: err.lineNumber
+							: (err.lineNumber || '?')
 					) + ': ' + err.message.replace(/^[/\\]/, '')
 						.replace(err.fileName.replace(/\\/g, '/') + ': ', '')
 						.replace(/\(\d+(:\d+)?\)$/, '')
@@ -110,24 +108,28 @@
 				this.emit('end');
 			}))
 			.pipe(babel({
-				presets: ['env'],
+				presets: ['@babel/env', '@babel/react'],
 				plugins: [
-					'transform-react-jsx',
-					'transform-object-rest-spread'
-				],
-			}))
-			.pipe(uglify({
+					'@babel/plugin-transform-react-jsx',
+					'@babel/plugin-proposal-object-rest-spread',
+					'@babel/plugin-proposal-private-methods',
+					'@babel/plugin-proposal-class-properties',
+				]
+			}));
+		if (isProd)
+			pipe = pipe.pipe(uglify({
 				output: {
 					comments: function(_, comment) {
 						return /^!/m.test(comment.value)
 					},
 				},
-			}))
-			.pipe(appendMinSuffix(/^mode-colorguide$/))
+			}));
+		return pipe
+			.pipe(appendMinSuffix())
 			.pipe(gulp.dest('public/js'));
 	});
 
-	gulp.task('default', gulp.series(lock, clean, gulp.parallel('js', 'scss'), unlock));
+	gulp.task('default', gulp.series(lock, clean, 'js', 'scss', unlock));
 
 	gulp.task('watch', gulp.series('default', createWatchers));
 

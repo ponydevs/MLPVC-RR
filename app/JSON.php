@@ -21,14 +21,14 @@ class JSON {
 	 *
 	 * @return mixed
 	 */
-	public static function decode(string $json, bool $assoc = true, int $depth = 20, int $options = JSON_BIGINT_AS_STRING){
+	public static function decode(string $json, bool $assoc = true, int $depth = 20, int $options = JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR){
 		$decoded = json_decode($json, $assoc, $depth, $options);
 		if ($decoded === null && ($err = json_last_error()) !== JSON_ERROR_NONE)
 			throw new JSONParseException(json_last_error_msg(), $err);
 		return $decoded;
 	}
 	public static function encode($value, ?int $options = null, int $depth = 100){
-		$opt = JSON_UNESCAPED_SLASHES;
+		$opt = JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR;
 		if ($options !== null)
 			$opt |= $options;
 		return json_encode($value, $opt, $depth);

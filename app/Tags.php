@@ -150,14 +150,14 @@ class Tags {
 			$localRefresh = $t->synonym_of === null ? $refresh : '';
 
 			$HTML .= <<<HTML
-			<tr $trClass>
-				<td class="tid">{$t->id}</td>
-				<td class="name"><a href='/cg?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>$name</a></td>$utils
-				<td class="title">$title</td>
-				<td class="type">$type</td>
-				<td class="uses"><span>{$t->uses}</span>$localRefresh</td>
-			</tr>
-HTML;
+				<tr $trClass>
+					<td class="tid">{$t->id}</td>
+					<td class="name"><a href='/cg?q=$search' title='Search for $titleName'><span class="typcn typcn-zoom"></span>$name</a></td>$utils
+					<td class="title">$title</td>
+					<td class="type">$type</td>
+					<td class="uses"><span>{$t->uses}</span>$localRefresh</td>
+				</tr>
+				HTML;
 		}
 
 		return $wrap ? "<tbody>$HTML</tbody>" : $HTML;

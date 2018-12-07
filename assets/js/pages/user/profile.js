@@ -49,8 +49,7 @@
 		$pendingRes.on('click','button.fix',function(){
 			let $btn = $(this),
 				$link = $btn.next(),
-				_id = $link.prop('hash').substring(1).split('-'),
-				id = _id[1],
+				id = $link.prop('hash').substring(1).split('-').pop(),
 				$ImgUpdateForm = $.mk('form').attr('id', 'img-update-form').append(
 					$.mk('label').append(
 						$.mk('span').text('New image URL'),
@@ -312,22 +311,25 @@
 		});
 	}
 
-	const fulfillPromises = function(){
-		$('.post-deviation-promise:not(.loading)').each(function(){
-			const $this = $(this);
-			if (!$this.isInViewport())
+	const deviationIO = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (!entry.isIntersecting)
 				return;
 
-			const
-				postid = $this.attr('data-post').split('-').pop(),
-				viewonly = $this.attr('data-viewonly');
-			$this.addClass('loading');
+			const el = entry.target;
+			deviationIO.unobserve(el);
 
-			$.API.get(`/post/${postid}/lazyload`,{viewonly},$.mkAjaxHandler(function(){
-				if (!this.status) return $.Dialog.fail('Cannot load '+postid.replace('/',' #'), this.message);
+			const { postId, viewonly } = el.dataset;
+
+			$.API.get(`/post/${postId}/lazyload`, { viewonly }, $.mkAjaxHandler(({ status, message }) => {
+				const $el = $(el);
+				if (!status){
+					$el.trigger('error');
+					return $.Dialog.fail(`Cannot load post ${postId}`, message);
+				}
 
 				$.loadImages(this.html).then(function(resp){
-					const $li = $this.closest('li[id]');
+					const $li = $el.closest('li[id]');
 					$li.children('.image').replaceWith(resp.$el);
 					const title = $li.children('.image').find('img').attr('alt');
 					if (title)
@@ -335,12 +337,9 @@
 				});
 			}));
 		});
-	};
-	window._UserScroll = $.throttle(400, () => {
-		fulfillPromises();
 	});
-	$w.on('scroll mousewheel',window._UserScroll);
-	window._UserScroll();
+
+	$('.post-deviation-promise').each((_, el) => deviationIO.observe(el));
 
 	$('.awaiting-approval').on('click', 'button.check', function(e){
 		e.preventDefault();
@@ -372,7 +371,7 @@
 
 				$.Navigation.reload(true);
 			break;
-			case "p_hidediscord":
+			case "p_hidediscord": {
 				let $discordBtn = $sidebar.find('.welcome .discord-join');
 				if (to_what){
 					if ($discordBtn.length)
@@ -381,8 +380,8 @@
 				else if (!$discordBtn.length)
 					$sidebar.find('.welcome .buttons').append('<a class="btn typcn discord-join" href="http://fav.me/d9zt1wv" target="_blank">Join Discord</a>');
 				$.Dialog.close();
-			break;
-			case "p_avatarprov":
+			} break;
+			case "p_avatarprov": {
 				const forUser = {};
 				$(`.avatar-wrap:not(.provider-${to_what})`).each(function(){
 					const
@@ -409,14 +408,14 @@
 				});
 				if (!error)
 					$.Dialog.close();
-			break;
-			case "p_disable_ga":
+			} break;
+			case "p_disable_ga": {
 				if (to_what){
 					$.Dialog.wait(false, 'Performing a hard reload to remove user ID from the tracking code');
 					return window.location.reload();
 				}
 				$.Dialog.close();
-			break;
+			} break;
 			case "p_hidepcg":
 				$.Dialog.wait('Navigation','Reloading page');
 				$.Navigation.reload();

@@ -10,7 +10,7 @@ if [[ "$refname" ==  "$RUN_FOR_REF" ]]; then
     CMD_FETCH="$GIT fetch"
     CMD_COMPOSER="sudo chmod -R ug+rw vendor/ && sudo -u www-data composer install --no-dev 2>&1"
     CMD_MIGRATE="sudo -u www-data vendor/bin/phinx migrate"
-    CMD_NPM="sudo -u www-data npm install --no-save"
+    CMD_NPM="sudo -u www-data npm install --production --no-save"
     CMD_BUILD="sudo -u www-data npm run build"
     CMD_REDIS_CLEAR="sudo -u www-data php -f scripts/clear_redis_keys.php commit_info"
 

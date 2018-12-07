@@ -243,42 +243,4 @@ class Appearances {
 		foreach ($notifs as $n)
 			$n->safeMarkRead($action);
 	}
-
-	/**
-	 * @param Appearance[] $Appearances
-	 * @param bool $wrap
-	 *
-	 * @return string
-	 */
-	public static function getPCGListHTML($Appearances, bool $wrap = WRAP):string {
-		if (empty($Appearances))
-			$HTML = '<tr><td colspan="4" class="align-center"><em>No appearances to show</em></td></tr>';
-		else {
-			$HTML = '';
-			foreach ($Appearances as $appearance){
-				$applink = $appearance->toAnchorWithPreview();
-				$owner = $appearance->owner->toAnchor();
-				$created = Time::tag($appearance->list);
-				if (\count($appearance->cutiemarks) === 0)
-					$cms = '<span class="typcn typcn-times"></span>';
-				else {
-					$cms = '';
-					foreach ($appearance->cutiemarks as $cm)
-						$cms.= "<a href='{$appearance->toURL()}'>{$cm->getPreviewForAppearancePageListItem()}</a>";
-				}
-				$spriteUrl = $appearance->getSpriteURL(Appearance::SPRITE_SIZES['SOURCE']);
-				$sprite = empty($spriteUrl) ? '<span class="typcn typcn-times"></span>' : "<a href='{$appearance->toURL()}'><img src='{$spriteUrl}' alt='Sprite image'></a>";
-				$HTML .= <<<HTML
-<tr>
-	<td class="pony-link">$applink</td>
-	<td>$owner</td>
-	<td>$created</td>
-	<td class="cutiemarks">$cms</td>
-	<td class="sprite">$sprite</td>
-</tr>
-HTML;
-			}
-
-		}
-	}
 }

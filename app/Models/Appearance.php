@@ -189,7 +189,7 @@ class Appearance extends NSModel implements Linkable {
 				$img = "<div class='upload-wrap'>$img</div>";
 		}
 		else if ($canUpload)
-			$img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png'></a></div>";
+			$img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png' alt='blank pixel'></a></div>";
 		else return '';
 
 		return "<div class='sprite'>$img</div>";
@@ -323,11 +323,11 @@ class Appearance extends NSModel implements Linkable {
 			return $HTML;
 
 		return <<<HTML
-<section class="major-changes">
-	<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
-	<ul>$HTML</ul>
-</section>
-HTML;
+			<section class="major-changes">
+				<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
+				<ul>$HTML</ul>
+			</section>
+			HTML;
 	}
 
 	/**

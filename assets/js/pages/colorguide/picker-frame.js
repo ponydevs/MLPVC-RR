@@ -112,7 +112,7 @@
 			});
 			return new Pixel(Math.round(r/l), Math.round(g/l), Math.round(b/l), Math.round(a/l));
 		}
-		_getImageData(){
+		#getImageData(){
 			if (!(this._tab instanceof Tab))
 				throw new Error('Attempting to get image data without being bound to a tab');
 
@@ -125,8 +125,8 @@
 				height = Math.min(this.boundingRect.sideLength, ctx.canvas.height-y);
 			return ctx.getImageData(x, y, width, height);
 		}
-		_getPixels(filter = undefined){
-			return ImageDataHelper.getPixels(this._getImageData(), filter);
+		getPixels(filter = undefined){
+			return ImageDataHelper.getPixels(this.#getImageData(), filter);
 		}
 		static draw(area, ctx){
 			if (area instanceof SquarePickingArea){
@@ -168,7 +168,7 @@
 		}
 		/** @return {Pixel} */
 		getAverageColor(){
-			return PickingArea.averageColor(this._getPixels());
+			return PickingArea.averageColor(this.getPixels());
 		}
 		/** @return {RoundedPickingArea} */
 		toRound(){
@@ -1803,7 +1803,7 @@
 			this.updateZoomLevelInputs();
 		}
 		setZoomFit(){
-			this._fitImageHandler(size => {
+			this.#fitImageHandler(size => {
 				const
 					pickerWide = this._pickerWidth > this._pickerHeight,
 					square = size.width === size.height,
@@ -1829,13 +1829,13 @@
 			});
 		}
 		setZoomOriginal(){
-			this._fitImageHandler(size => ({
+			this.#fitImageHandler(size => ({
 				width: size.width,
 				height: size.height,
 				scale: 1,
 			}));
 		}
-		_fitImageHandler(newSizeCalculator){
+		#fitImageHandler(newSizeCalculator){
 			const activeTab = Tabbar.getInstance().getActiveTab();
 			if (!activeTab)
 				return;

@@ -903,6 +903,36 @@
 		$.RGBAColor = RGBAColor;
 	})();
 
+	(function(){
+		class DynamicCache {
+			constructor(endpoint, params = {}){
+				this._list = {};
+				this._endpoint = endpoint;
+				this._params = params;
+			}
+			read(id = 'default'){
+				return this.#loadItems(id);
+			}
+			#loadItems(id){
+				return new Promise((res, rej) => {
+					if (typeof this._list[id] !== 'undefined'){
+						res(this._list[id]);
+						return;
+					}
+
+					$.API.get(this._endpoint.replace('%d', id),this._params,$.mkAjaxHandler(data => {
+						if (!data.status) return $.Dialog.fail('Cache entry retrieval', data.message);
+
+						this._list[id] = data.list;
+						res(this._list[id]);
+					})).fail(() => rej());
+				});
+			}
+		}
+
+		Object.assign(window, { DynamicCache });
+	})();
+
 	function isFunction(obj) {
 		return typeof obj === "function" && typeof obj.nodeType !== "number";
 	}

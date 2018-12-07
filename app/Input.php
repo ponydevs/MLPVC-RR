@@ -186,8 +186,9 @@ class Input {
 			case 'json':
 				try {
 					$this->_origValue = JSON::decode($this->_origValue);
-					if (empty($this->_origValue))
-						throw new \RuntimeException(rtrim('Could not decode JSON; '.json_last_error(),'; '));
+				}
+				catch (\JsonException $e){
+					throw new \RuntimeException(rtrim('Could not decode JSON; '.$e->getMessage(),'; '));
 				}
 				catch (\Throwable $e){
 					CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());

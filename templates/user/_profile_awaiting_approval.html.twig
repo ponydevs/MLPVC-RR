@@ -38,7 +38,7 @@
 			{% for post in awaiting_approval %}
 			<li id="{{ post.idString }}">
 				<div class="image deviation">
-					<div class="post-deviation-promise image-promise" data-post="{{ post.idString }}"></div>
+					<div class="post-deviation-promise image-promise" data-post-id="{{ post.id }}" data-viewonly="true"></div>
 				</div>
 				<span class="label hidden"><a href="http://fav.me/{{ post.deviation_id }}" target="_blank" rel="noopener"></a></span>
 				<em>Posted under {{ post.toAnchor }}</em>

@@ -250,43 +250,43 @@ class Users {
 		switch ($type){
 			case 'cms-provided':
 				$TABLE = <<<HTML
-<th>Appearance</th>
-<th>Deviation</th>
-HTML;
+					<th>Appearance</th>
+					<th>Deviation</th>
+					HTML;
 			break;
 			case 'requests':
 				$TABLE = <<<HTML
-<th>Post</th>
-<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
-<th>Reserved?</th>
-<th>Finished?</th>
-<th>Approved?</th>
-HTML;
+					<th>Post</th>
+					<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+					<th>Reserved?</th>
+					<th>Finished?</th>
+					<th>Approved?</th>
+					HTML;
 			break;
 			case 'reservations':
 				$TABLE = <<<HTML
-<th>Post</th>
-<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
-<th>Finished?</th>
-<th>Approved?</th>
-HTML;
+					<th>Post</th>
+					<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+					<th>Finished?</th>
+					<th>Approved?</th>
+					HTML;
 			break;
 			case 'finished-posts':
 				$TABLE = <<<HTML
-<th>Post</th>
-<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
-<th>Reserved</th>
-<th>Deviation</th>
-<th>Approved?</th>
-HTML;
+					<th>Post</th>
+					<th>Posted <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+					<th>Reserved</th>
+					<th>Deviation</th>
+					<th>Approved?</th>
+					HTML;
 			break;
 			case 'fulfilled-requests':
 				$TABLE = <<<HTML
-<th>Post</th>
-<th>Posted</th>
-<th>Finished <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
-<th>Deviation</th>
-HTML;
+					<th>Post</th>
+					<th>Posted</th>
+					<th>Finished <span class="typcn typcn-arrow-sorted-down" title="Newest first"></span></th>
+					<th>Deviation</th>
+					HTML;
 			break;
 			default:
 				throw new \Exception(__METHOD__.": Missing table heading definitions for type $type");
@@ -302,9 +302,9 @@ HTML;
 					$deviation = $item->favme !== null ? "<div class='deviation-promise image-promise' data-favme='{$item->favme}'></div>" : self::NOPE;
 
 					$TR = <<<HTML
-<td class="pony-link">$preview</td>
-<td>$deviation</td>
-HTML;
+						<td class="pony-link">$preview</td>
+						<td>$deviation</td>
+						HTML;
 
 				break;
 				case 'requests':
@@ -320,12 +320,12 @@ HTML;
 					$finished = self::_contribItemFinished($item);
 					$approved = self::_contribItemApproved($item);
 					$TR = <<<HTML
-<td>$preview</td>
-<td>$posted</td>
-<td class="by-at">$reserved</td>
-<td>$finished</td>
-<td class="approved">$approved</td>
-HTML;
+						<td>$preview</td>
+						<td>$posted</td>
+						<td class="by-at">$reserved</td>
+						<td>$finished</td>
+						<td class="approved">$approved</td>
+						HTML;
 				break;
 				case 'reservations':
 					/** @var $item Post */
@@ -334,11 +334,11 @@ HTML;
 					$finished = self::_contribItemFinished($item);
 					$approved = self::_contribItemApproved($item);
 					$TR = <<<HTML
-<td>$preview</td>
-<td>$posted</td>
-<td>$finished</td>
-<td class="approved">$approved</td>
-HTML;
+						<td>$preview</td>
+						<td>$posted</td>
+						<td>$finished</td>
+						<td class="approved">$approved</td>
+						HTML;
 				break;
 				case 'finished-posts':
 					/** @var $item Post */
@@ -357,12 +357,12 @@ HTML;
 					$finished = self::_contribItemFinished($item);
 					$approved = self::_contribItemApproved($item);
 					$TR = <<<HTML
-<td>$preview</td>
-$posted
-$reserved
-<td>$finished</td>
-<td class="approved">$approved</td>
-HTML;
+						<td>$preview</td>
+						$posted
+						$reserved
+						<td>$finished</td>
+						<td class="approved">$approved</td>
+						HTML;
 				break;
 				case 'fulfilled-requests':
 					/** @var $item Post */
@@ -373,11 +373,11 @@ HTML;
 					$finished = $item->finished_at === null ? '<span class="typcn typcn-time missing-time" title="Time data missing"></span>' : Time::tag($item->finished_at);
 					$deviation = "<div class='deviation-promise image-promise' data-favme='{$item->deviation_id}'></div>";
 					$TR = <<<HTML
-<td>$preview</td>
-<td class='by-at'>$posted</td>
-<td>$finished</td>
-<td>$deviation</td>
-HTML;
+						<td>$preview</td>
+						<td class='by-at'>$posted</td>
+						<td>$finished</td>
+						<td>$deviation</td>
+						HTML;
 				break;
 				default:
 					$TR = '';

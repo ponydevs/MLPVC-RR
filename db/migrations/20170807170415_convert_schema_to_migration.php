@@ -485,17 +485,16 @@ class ConvertSchemaToMigration extends AbstractMigration {
 		$this->tables[$table]->create();
 
 		$this->execute(<<<SQL
-CREATE VIEW unread_notifications AS
-SELECT
-	u.name AS "user",
-	count(n.id) AS count
-FROM notifications n
-LEFT JOIN users u ON n.recipient_id = u.id
-WHERE n.read_at IS NULL
-GROUP BY u.name
-ORDER BY count(n.id) DESC;
-SQL
-		);
+			CREATE VIEW unread_notifications AS
+			SELECT
+				u.name AS "user",
+				count(n.id) AS count
+			FROM notifications n
+			LEFT JOIN users u ON n.recipient_id = u.id
+			WHERE n.read_at IS NULL
+			GROUP BY u.name
+			ORDER BY count(n.id) DESC;
+			SQL);
 
 		$table = 'useful_links';
 		$this->tables[$table] = $this->table($table)

@@ -236,11 +236,11 @@ class CGUtils {
 	}
 
 	public const CHANGES_SECTION = <<<HTML
-<section>
-	<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
-	@
-</section>
-HTML;
+		<section>
+			<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
+			@
+		</section>
+		HTML;
 
 	/**
 	 * Renders HTML of the list of changes
@@ -343,29 +343,30 @@ HTML;
 				$amount = ($entry->change_amount > 0 ? "\u{2B}$entry->change_amount" : "\u{2212}".(-$entry->change_amount));
 
 				$HTML .= <<<HTML
-	<tr class="change-$dir">
-		<td>$type</td>
-		<td>$data</td>
-		<td>$amount</td>
-		<td><span class="typcn typcn-time"></span> $when</td>
-HTML;
+					<tr class="change-$dir">
+						<td>$type</td>
+						<td>$data</td>
+						<td>$amount</td>
+						<td><span class="typcn typcn-time"></span> $when</td>
+					</tr>
+					HTML;
 			}
 		if (!$wrap)
 			return $HTML;
 
 		return <<<HTML
-<div class="responsive-table">
-<table id='history-entries'>
-	<thead>
-		<th>Reason</th>
-		<th>Details</th>
-		<th>Amount</th>
-		<th>When</th>
-	</thead>
-	<tbody>$HTML</tbody>
-</table>
-</div>
-HTML;
+			<div class="responsive-table">
+			<table id='history-entries'>
+				<thead>
+					<th>Reason</th>
+					<th>Details</th>
+					<th>Amount</th>
+					<th>When</th>
+				</thead>
+				<tbody>$HTML</tbody>
+			</table>
+			</div>
+			HTML;
 	}
 
 	/**
@@ -723,8 +724,8 @@ HTML;
 			$strokes[$hex][] = "M{$line['x']} {$line['y']} l{$line['width']} 0Z";
 		}
 		$SVG = <<<XML
-<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>
-XML;
+			<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>
+			XML;
 		foreach ($strokes as $hex => $defs){
 			$d = '';
 			foreach ($defs as $def)
@@ -759,10 +760,10 @@ XML;
 			break;
 			case 3:
 				$SVG .= <<<SVG
-<rect x='0' y='0' width='2' height='2' fill='{$PreviewColors[0]['hex']}'/>
-<rect x='0' y='1' width='1' height='1' fill='{$PreviewColors[1]['hex']}'/>
-<rect x='1' y='1' width='1' height='1' fill='{$PreviewColors[2]['hex']}'/>
-SVG;
+					<rect x='0' y='0' width='2' height='2' fill='{$PreviewColors[0]['hex']}'/>
+					<rect x='0' y='1' width='1' height='1' fill='{$PreviewColors[1]['hex']}'/>
+					<rect x='1' y='1' width='1' height='1' fill='{$PreviewColors[2]['hex']}'/>
+					SVG;
 			break;
 			case 2:
 			case 4:
@@ -821,21 +822,19 @@ SVG;
 	 * @return string
 	 */
 	public static function generateGimpPalette(string $name, array $colors, ?int $ts = null):string {
-		$file = <<<GPL
-GIMP Palette
-Name: $name
-Columns: 6
-
-GPL;
 		if ($ts === null)
 			$ts = time();
 		$export_ts = gmdate('Y-m-d H:i:s T', $ts);
-		$file .= <<<GPL
-#
-# Exported at: $export_ts
-#
 
-GPL;
+		$file = <<<GPL
+			GIMP Palette
+			Name: $name
+			Columns: 6
+			#
+			# Exported at: $export_ts
+			#
+
+			GPL;
 
 		$file .= implode("\n", array_map(function($arr){
 			$arr[0] = CoreUtils::pad($arr[0],3,' ');

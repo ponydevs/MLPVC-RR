@@ -518,7 +518,7 @@ class PostController extends Controller {
 		if (empty($this->post) || $this->post->broken)
 			Response::fail("The post you were linked to has either been deleted or didn't exist in the first place. Sorry.".CoreUtils::responseSmiley(':\\'));
 
-		if (isset($_REQUEST['SEASON'], $_REQUEST['EPISODE']) && $this->post->show->season === (int)$_REQUEST['SEASON'] && $this->post->show->episode === (int)$_REQUEST['EPISODE'])
+		if (isset($_REQUEST['show_id']) && $this->post->show->id === (int)$_REQUEST['show_id'])
 			Response::done([
 				'refresh' => $this->post->kind,
 			]);
