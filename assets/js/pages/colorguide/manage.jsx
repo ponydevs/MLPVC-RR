@@ -845,7 +845,7 @@
 						let line = [];
 						if (color.linked_to)
 							line.push('@'+color.linked_to);
-						else line.push(color.hex ? color.hex : '#');
+						else line.push(color.hex || '#');
 						line.push(color.label || '');
 						if (color.id)
 							line.push('ID:'+color.id);
@@ -910,7 +910,7 @@
 						hex: color !== null ? color.toHex() : (matches[2]?'#'+matches[2]:''),
 						label: matches[4],
 						id: matches[5],
-						linked_to: matches[3] ? matches[3] : null,
+						linked_to: matches[3] || null,
 						deleted: !!matches[1],
 					});
 					continue;

@@ -63,7 +63,7 @@
 	let SASSL = new Logger('scss'),
 		SASSWatchArray = ['assets/scss/*.scss', 'assets/scss/**/*.scss'];
 	gulp.task('scss', () => {
-		return gulp.src(SASSWatchArray)
+		let pipe = gulp.src(SASSWatchArray)
 			.pipe(plumber(function(err) {
 				SASSL.error(err.relativePath + '\n' + ' line ' + err.line + ': ' + err.messageOriginal);
 				this.emit('end');
@@ -74,11 +74,13 @@
 			}))
 			.pipe(autoprefixer({
 				browsers: ['last 2 versions', 'not ie <= 11'],
-			}))
-			.pipe(cleanCss({
+			}));
+		if (isProd)
+			pipe = pipe.pipe(cleanCss({
 				processImport: false,
 				compatibility: '-units.pc,-units.pt'
-			}))
+			}));
+		return pipe
 			.pipe(appendMinSuffix())
 			.pipe(gulp.dest('public/css'));
 	});

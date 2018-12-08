@@ -105,7 +105,7 @@
 					$form.find('input[name=name]').val(data.name);
 					$form.find('[name=type]').parent().remove();
 					$form.find('[name=entry_role]').val(data.entry_role);
-					$form.find('[name=max_entries]').val(data.max_entries ? data.max_entries : 'Unlimited');
+					$form.find('[name=max_entries]').val(data.max_entries || 'Unlimited');
 
 					if (data.starts_at){
 						let starts = moment(data.starts_at);
