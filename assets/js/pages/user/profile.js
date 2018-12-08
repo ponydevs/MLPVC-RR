@@ -321,14 +321,14 @@
 
 			const { postId, viewonly } = el.dataset;
 
-			$.API.get(`/post/${postId}/lazyload`, { viewonly }, $.mkAjaxHandler(({ status, message }) => {
+			$.API.get(`/post/${postId}/lazyload`, { viewonly }, $.mkAjaxHandler(({ status, message, html }) => {
 				const $el = $(el);
 				if (!status){
 					$el.trigger('error');
 					return $.Dialog.fail(`Cannot load post ${postId}`, message);
 				}
 
-				$.loadImages(this.html).then(function(resp){
+				$.loadImages(html).then(function(resp){
 					const $li = $el.closest('li[id]');
 					$li.children('.image').replaceWith(resp.$el);
 					const title = $li.children('.image').find('img').attr('alt');
