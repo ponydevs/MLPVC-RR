@@ -17,6 +17,7 @@
 		rename = require('gulp-rename'),
 		del = require('del'),
 		fs = require('fs'),
+		babelrc = JSON.parse(fs.readFileSync('./.babelrc', 'utf-8')),
 		workingDir = __dirname;
 
 	require('dotenv').load();
@@ -109,15 +110,7 @@
 				JSL.error(err);
 				this.emit('end');
 			}))
-			.pipe(babel({
-				presets: ['@babel/env', '@babel/react'],
-				plugins: [
-					'@babel/plugin-transform-react-jsx',
-					'@babel/plugin-proposal-object-rest-spread',
-					'@babel/plugin-proposal-private-methods',
-					'@babel/plugin-proposal-class-properties',
-				]
-			}));
+			.pipe(babel(babelrc));
 		if (isProd)
 			pipe = pipe.pipe(uglify({
 				output: {
