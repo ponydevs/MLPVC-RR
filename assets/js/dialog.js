@@ -47,16 +47,6 @@
 			this.label = label;
 			$.each(options, (k,v)=>this[k]=v);
 		}
-
-		setLabel(newLabel){
-			this.label = newLabel;
-			return this;
-		}
-
-		setFormId(formId){
-			this.formid = formId;
-			return this;
-		}
 	}
 
 	class Dialog {
@@ -194,11 +184,7 @@
 						$button.on('click', function(){
 							$requestContentDiv.find('input[type=submit]').first().trigger('click');
 						});
-						$requestContentDiv.prepend($.mk('input').attr('type','submit').hide().on('focus',e => {
-							e.preventDefault();
-
-							this.$dialogButtons.children().first().focus();
-						}));
+						$requestContentDiv.prepend($.mk('input').attr({type:'submit',tabindex:-1}).hide());
 					}
 				}
 				$button.val(obj.label).on('click', function (e) {
@@ -417,11 +403,7 @@
 			else if ($actions.length > 0) $actions.first().focus();
 		}
 		#controlInputs(disable){
-			let $inputs2 = this.$dialogContent
-					.children(':not(#dialogButtons)')
-					.last()
-					.add(this.$dialogButtons)
-					.find('input, button, select, textarea');
+			let $inputs2 = this.$dialogButtons.find(':input');
 
 			if (disable)
 				$inputs2.filter(':not(:disabled)').addClass('temp-disable').disable();

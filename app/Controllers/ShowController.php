@@ -418,7 +418,7 @@ class ShowController extends Controller {
 							->where('show_id', $this->show->id)
 							->where('provider', $provider)
 							->where('part', $part)
-							->count('episode_videos');
+							->count(ShowVideo::$table_name);
 						if ($video_count === 0){
 							if (!empty($set))
 								ShowVideo::create([
@@ -435,8 +435,8 @@ class ShowController extends Controller {
 								->where('provider', $provider)
 								->where('part', $part);
 							if (empty($set))
-								DB::$instance->delete('episode_videos');
-							else DB::$instance->update('episode_videos', [
+								DB::$instance->delete(ShowVideo::$table_name);
+							else DB::$instance->update(ShowVideo::$table_name, [
 								'id' => $set,
 								'fullep' => $fullep,
 								'modified' => date('c'),

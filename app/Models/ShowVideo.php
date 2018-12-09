@@ -24,6 +24,8 @@ use App\VideoProvider;
  * @property string   $provider_name (Via magic method)
  */
 class ShowVideo extends NSModel {
+	public static $table_name = 'show_videos';
+
 	public static $primary_key = ['show_id', 'provider', 'part'];
 
 	public static $belongs_to = [

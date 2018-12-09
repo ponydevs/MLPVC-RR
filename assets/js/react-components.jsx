@@ -2,6 +2,16 @@
 	'use strict';
 
 	class SplitSelector extends React.Component {
+		static propTypes = {
+			linkedIds: PropTypes.arrayOf(PropTypes.number),
+			endpoint: PropTypes.string,
+			formId: PropTypes.string,
+			valueKey: PropTypes.string,
+			displayKey: PropTypes.string,
+			findGroup: PropTypes.func,
+			onSuccess: PropTypes.func,
+		};
+
 		constructor(props){
 			super(props);
 
@@ -9,8 +19,6 @@
 				linkedIds: new Set(this.props.linkedIds),
 				query: '',
 			};
-
-			console.log(this.state);
 
 			this.linkedSelect = React.createRef();
 			this.unlinkedSelect = React.createRef();
