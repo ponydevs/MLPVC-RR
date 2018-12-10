@@ -146,7 +146,7 @@
 	};
 	$voting.bindDetails();
 
-	const getLiTypeId = function($li){
+	$.getLiTypeId = function($li){
 		return {
 			id: parseInt($li.attr('id').split('-').pop(), 10),
 			type: $li.attr('data-type'),
@@ -168,7 +168,7 @@
 			const
 				$button = $(this),
 				$li = $button.closest('li'),
-				{ id } = getLiTypeId($li),
+				{ id } = $.getLiTypeId($li),
 				url = `${window.location.href.replace(/([^:/]\/).*$/,'$1')}s/${id.toString(36)}`,
 				$div = $.mk('div').attr('class','align-center').append(
 					'Use the link below to link to this post directly:',
@@ -624,7 +624,7 @@
 					<div id="post-road-sign">
 						<div class="sign-wrap">
 							<div class="sign-inner">
-								<span class="sign-text"></span>
+								<span class="sign-text"/>
 								<span class="sign-arrow">\u2794</span>
 							</div>
 						</div>

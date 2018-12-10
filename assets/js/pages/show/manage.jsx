@@ -235,7 +235,7 @@
 			e.preventDefault();
 
 			const $li = $(this).closest('li');
-			const { id, type } = $._getLiTypeId($li);
+			const { id, type } = $.getLiTypeId($li);
 			reservePost($li, e.shiftKey, id, type);
 		})
 		.on('click','li[id] .edit',function(e){
@@ -244,7 +244,7 @@
 			const
 				$button = $(this),
 				$li = $button.closest('li'),
-				{ id, type } = $._getLiTypeId($li),
+				{ id, type } = $.getLiTypeId($li),
 				isRequest = type === 'requests';
 
 			$.Dialog.wait(`Editing post #${id}`, `Retrieving details`);
@@ -444,7 +444,7 @@
 			e.preventDefault();
 
 			const $li = $(this).closest('li');
-			const { id, type } = $._getLiTypeId($li);
+			const { id, type } = $.getLiTypeId($li);
 
 			$.Dialog.confirm('Cancel reservation','Are you sure you want to cancel this reservation?', function(sure){
 				if (!sure) return;
@@ -475,7 +475,7 @@
 			e.preventDefault();
 
 			const $li = $(this).closest('li');
-			const { id, type } = $._getLiTypeId($li);
+			const { id, type } = $.getLiTypeId($li);
 			const Type = $.capitalize(type);
 
 			let $FinishResForm = $.mk('form').attr('id', 'finish-res').append(
@@ -543,7 +543,7 @@
 
 			const $unFinishBtn = $(this);
 			const $li = $unFinishBtn.closest('li');
-			const { id, type } = $._getLiTypeId($li);
+			const { id, type } = $.getLiTypeId($li);
 			const deleteOnly = $unFinishBtn.hasClass('delete-only');
 			const Type = $.capitalize(type);
 
@@ -584,7 +584,7 @@
 			e.preventDefault();
 
 			const $li = $(this).closest('li');
-			const { id } = $._getLiTypeId($li);
+			const { id } = $.getLiTypeId($li);
 
 			$.Dialog.wait('Submission approval status','Checking');
 
@@ -600,7 +600,7 @@
 			e.preventDefault();
 
 			const $li = $(this).closest('li');
-			const { id } = $._getLiTypeId($li);
+			const { id } = $.getLiTypeId($li);
 
 			$.Dialog.confirm('Unlocking post','Are you sure you want to unlock this post?', function(sure){
 				if (!sure) return;
@@ -618,7 +618,7 @@
 			e.preventDefault();
 
 			const $li = $(this).closest('li');
-			const { id } = $._getLiTypeId($li);
+			const { id } = $.getLiTypeId($li);
 
 			$.Dialog.confirm(`Deleting request #${id}`, 'You are about to permanently delete this request.<br>Are you sure about this?', function(sure){
 				if (!sure) return;
@@ -643,7 +643,7 @@
 			e.preventDefault();
 
 			const $li = $(this).closest('li');
-			const { id, type } = $._getLiTypeId();
+			const { id, type } = $.getLiTypeId();
 
 			let reservedBy = $li.children('.reserver').find('.name').text();
 			$.Dialog.confirm(`Take on reservation of ${type} #${id}`,
