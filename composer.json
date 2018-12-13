@@ -22,7 +22,7 @@
 		"ext-redis": "*",
 		"ext-xml": "*",
 		"ext-zlib": "*",
-		"fightbulc/moment": "1.26.*",
+		"fightbulc/moment": "^1.28",
 		"wisembly/elephant.io": "^3.3.0",
 		"ezyang/htmlpurifier": "^4.8",
 		"cogpowered/finediff": "0.3.*",
