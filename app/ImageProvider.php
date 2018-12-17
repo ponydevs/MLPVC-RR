@@ -94,7 +94,8 @@ class ImageProvider {
 		if (empty($ctype)){
 			if (empty($url))
 				throw new \RuntimeException("Resource URL ($url) is empty, please try again.");
-			$ctype = get_headers($url, 1)['Content-Type'];
+			$headers = get_headers($url, 1);
+			$ctype = $headers['Content-Type'] ?? $headers['content-type'];
 		}
 		if (empty(self::$_allowedMimeTypes[$ctype]))
 			throw new \RuntimeException((!empty(self::$_blockedMimeTypes[$ctype])? self::$_blockedMimeTypes[$ctype].' are':"Content type \"$ctype\" is").' not allowed, please use a different image.');
