@@ -159,7 +159,9 @@ class DeviantArt {
 
 			switch ($json['type']){
 				case 'photo':
-					$insert['type'] = $json['imagetype'];
+					if (!empty($json['imagetype']))
+						$insert['type'] = $json['imagetype'];
+					else $insert['type'] = \array_slice(explode('.', $json['url']), -1)[0];
 				break;
 				case 'rich':
 					if (isset($json['html'])){

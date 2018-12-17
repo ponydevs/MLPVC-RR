@@ -297,7 +297,7 @@
 
 			$formImgCheck.removeClass('red');
 			imgCheckDisabler(true);
-			$.Dialog.wait(title,'Checking image');
+			$.Dialog.wait(title,'Checking image, this can take a bit of time');
 
 			$.API.post('/post/check-image', { image_url }, $.mkAjaxHandler(function(){
 				let data = this;
