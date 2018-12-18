@@ -128,12 +128,12 @@ class Posts {
 					Input::ERROR_INVALID => '"Posted" timestamp (@value) is invalid',
 				]
 			]))->out();
-			if (isset($posted) && $posted !== strtotime($post->posted_at))
+			if (isset($posted) && ($post === null || $posted !== strtotime($post->posted_at)))
 				CoreUtils::set($target,'posted_at',date('c', $posted));
 
 			$finished_at = self::validateFinishedAt();
 			if (isset($finished_at)){
-				if ($finished_at !== strtotime($post->finished_at))
+				if ($post !== null && $finished_at !== strtotime($post->finished_at))
 					CoreUtils::set($target,'finished_at',date('c', $finished_at));
 			}
 			else CoreUtils::set($target,'finished_at',null);
