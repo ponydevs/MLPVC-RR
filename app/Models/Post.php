@@ -323,7 +323,7 @@ class Post extends NSModel implements Linkable {
 					}
 					else $locked_at = '<em class="info-line approve-date">Approval data unavilable</em>';
 				}
-				$post_type = $this->is_request ? '<em class="info-line">Posted in the <strong>'.self::REQUEST_TYPES[$this->type].'</strong> section</em>' : '';
+				$post_type = !empty($this->type) ? '<em class="info-line">Posted in the <strong>'.self::REQUEST_TYPES[$this->type].'</strong> section</em>' : '';
 				$HTML .= $post_label.$posted_at.$post_type.$reserved_at.$finished_at.$locked_at;
 
 				if (!empty($this->fullsize))
