@@ -362,10 +362,6 @@ class PostController extends Controller {
 
 						$by_id = $PostAs->id;
 					}
-
-					$posted_at = Posts::validatePostedAt();
-					if ($posted_at !== null)
-						$post->posted_at = date('c', $posted_at);
 				}
 
 				$post->{$is_reservation ? 'reserved_by' : 'requested_by'} = $by_id;

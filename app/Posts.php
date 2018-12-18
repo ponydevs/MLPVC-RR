@@ -122,14 +122,9 @@ class Posts {
 		}
 
 		if (Permission::sufficient('developer')){
-			$posted = (new Input('posted_at','timestamp', [
-				Input::IS_OPTIONAL => true,
-				Input::CUSTOM_ERROR_MESSAGES => [
-					Input::ERROR_INVALID => '"Posted" timestamp (@value) is invalid',
-				]
-			]))->out();
-			if (isset($posted) && ($post === null || $posted !== strtotime($post->posted_at)))
-				CoreUtils::set($target,'posted_at',date('c', $posted));
+			$posted_at = self::validatePostedAt();
+			if (isset($posted_at) && ($post === null || $posted_at !== strtotime($post->posted_at)))
+				CoreUtils::set($target,'posted_at',date('c', $posted_at));
 
 			$finished_at = self::validateFinishedAt();
 			if (isset($finished_at)){
@@ -324,18 +319,18 @@ class Posts {
 			? self::getPostReserveButton($Request->reserver, false, true)
 			: "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
 		return <<<HTML
-			<li id="request-{$Request->id}">
-				<div class="image screencap">
-					<a href="{$Request->fullsize}" target="_blank" rel="noopener">
-						<img src="{$Request->fullsize}" alt="{$escapedLabel}">
-					</a>
-				</div>
-				$label
-				<em class="post-date">Requested <a href="{$Request->toURL()}">$time_ago</a> under {$Request->toAnchor()}</em>
-				<em class="category">Category: {$cat}</em>
-				$reserve
-			</li>
-			HTML;
+<li id="request-{$Request->id}">
+	<div class="image screencap">
+		<a href="{$Request->fullsize}" target="_blank" rel="noopener">
+			<img src="{$Request->fullsize}" alt="{$escapedLabel}">
+		</a>
+	</div>
+	$label
+	<em class="post-date">Requested <a href="{$Request->toURL()}">$time_ago</a> under {$Request->toAnchor()}</em>
+	<em class="category">Category: {$cat}</em>
+	$reserve
+</li>
+HTML;
 	}
 
 	/**

@@ -399,37 +399,38 @@
 					$form.on('submit', function(e){
 						e.preventDefault();
 
-						let data = { label: $label.val() };
+						let newData = { label: $label.val() };
 						if (isRequest)
-							data.type = $type.val();
+							newData.type = $type.val();
+
 						if (typeof data.posted_at === 'string'){
-							data.posted_at = new Date($posted_at.val());
-							if (isNaN(data.posted_at.getTime()))
+							newData.posted_at = new Date($posted_at.val());
+							if (isNaN(newData.posted_at.getTime()))
 								return $.Dialog.fail(false, 'Post timestamp is invalid');
-							data.posted_at = data.posted_at.toISOString();
+							newData.posted_at = newData.posted_at.toISOString();
 						}
 						if (typeof data.reserved_at === 'string'){
 							let reserved_at = $reserved_at.val();
 							if (reserved_at.length){
-								data.reserved_at = new Date(reserved_at);
-								if (isNaN(data.reserved_at.getTime()))
+								newData.reserved_at = new Date(reserved_at);
+								if (isNaN(newData.reserved_at.getTime()))
 									return $.Dialog.fail(false, '"Reserved at" timestamp is invalid');
-								data.reserved_at = data.reserved_at.toISOString();
+								newData.reserved_at = newData.reserved_at.toISOString();
 							}
 						}
 						if (typeof data.finished_at === 'string'){
 							let finished_at = $finished_at.val().trim();
 							if (finished_at.length){
-								data.finished_at = new Date(finished_at);
-								if (isNaN(data.finished_at.getTime()))
+								newData.finished_at = new Date(finished_at);
+								if (isNaN(newData.finished_at.getTime()))
 									return $.Dialog.fail(false, '"Finished at" timestamp is invalid');
-								data.finished_at = data.finished_at.toISOString();
+								newData.finished_at = newData.finished_at.toISOString();
 							}
 						}
 
 						$.Dialog.wait(false, 'Saving changes');
 
-						$.API.put(`/post/${id}`,data, $.mkAjaxHandler(function(){
+						$.API.put(`/post/${id}`,newData, $.mkAjaxHandler(function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							$li.reloadLi();
