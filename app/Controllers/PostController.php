@@ -859,8 +859,7 @@ class PostController extends Controller {
 			CoreUtils::socketEvent('post-add',[
 				'id' => $reservation->id,
 				'type' => 'reservation',
-				'season' => $insert['season'],
-				'episode' => $insert['episode'],
+				'show_id' => $insert['show_id'],
 			]);
 		}
 		catch (\Exception $e){

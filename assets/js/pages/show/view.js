@@ -258,7 +258,7 @@
 
 					const data = {
 						deviation,
-						epid: showId,
+						show_id: showId,
 					};
 					$.API.post('/post/reservation',data,$.mkAjaxHandler(function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);

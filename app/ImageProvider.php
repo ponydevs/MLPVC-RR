@@ -167,6 +167,8 @@ class ImageProvider {
 
 				try {
 					$CachedDeviation = DeviantArt::getCachedDeviation($id, $this->provider);
+					if ($CachedDeviation === null)
+						Response::fail("The specified {$this->provider} upload could not be found, please make sure the file exists.");
 
 					$isImage = $this->provider === 'sta.sh' ? isset(self::STASH_IMAGE_TYPES[$CachedDeviation->type]) : true;
 
