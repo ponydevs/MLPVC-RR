@@ -319,18 +319,18 @@ class Posts {
 			? self::getPostReserveButton($Request->reserver, false, true)
 			: "<div><a href='{$Request->toURL()}' class='btn blue typcn typcn-arrow-forward'>View on episode page</a></div>";
 		return <<<HTML
-<li id="request-{$Request->id}">
-	<div class="image screencap">
-		<a href="{$Request->fullsize}" target="_blank" rel="noopener">
-			<img src="{$Request->fullsize}" alt="{$escapedLabel}">
-		</a>
-	</div>
-	$label
-	<em class="post-date">Requested <a href="{$Request->toURL()}">$time_ago</a> under {$Request->toAnchor()}</em>
-	<em class="category">Category: {$cat}</em>
-	$reserve
-</li>
-HTML;
+			<li id="request-{$Request->id}">
+				<div class="image screencap">
+					<a href="{$Request->fullsize}" target="_blank" rel="noopener">
+						<img src="{$Request->fullsize}" alt="{$escapedLabel}">
+					</a>
+				</div>
+				$label
+				<em class="post-date">Requested <a href="{$Request->toURL()}">$time_ago</a> under {$Request->toAnchor()}</em>
+				<em class="category">Category: {$cat}</em>
+				$reserve
+			</li>
+			HTML;
 	}
 
 	/**
