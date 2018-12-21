@@ -123,8 +123,10 @@ class Posts {
 
 		if (Permission::sufficient('developer')){
 			$posted_at = self::validatePostedAt();
-			if (isset($posted_at) && ($post === null || $posted_at !== strtotime($post->posted_at)))
-				CoreUtils::set($target,'posted_at',date('c', $posted_at));
+			if (isset($posted_at) && ($post === null || $posted_at !== strtotime($post->posted_at))){
+				$posted_at_column = $request ? 'requested_at' : 'reserved_at';
+				CoreUtils::set($target,$posted_at_column,date('c', $posted_at));
+			}
 
 			$finished_at = self::validateFinishedAt();
 			if (isset($finished_at)){
