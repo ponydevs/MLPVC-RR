@@ -427,19 +427,4 @@ class Show extends NSModel implements Linkable {
 		}
 		return $synopses;
 	}
-
-	public function getCGTagName(){
-		return $this->type.$this->id;
-	}
-
-	public function getCGTag(){
-		return Tag::find_by_name($this->getCGTagName());
-	}
-
-	public function createCGTag(){
-		$tag = new Tag();
-		$tag->name = $this->getCGTagName();
-		$tag->type = 'ep';
-		return $tag->save();
-	}
 }

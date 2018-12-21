@@ -17,8 +17,6 @@ use App\Input;
 use App\Logs;
 use App\Models\Appearance;
 use App\Models\ShowVote;
-use App\Models\Tag;
-use App\Models\Tagged;
 use App\Pagination;
 use App\Permission;
 use App\Posts;
@@ -276,8 +274,6 @@ class ShowController extends Controller {
 					if (!$this->show->save())
 						Response::dbError('Show entry creation failed');
 
-					$this->show->createCGTag();
-
 					Response::done(['url' => (new Show($update))->toURL()]);
 				}
 
@@ -290,10 +286,6 @@ class ShowController extends Controller {
 			case 'DELETE':
 				if (!DB::$instance->where('id', $this->show->id)->delete(Show::$table_name))
 					Response::dbError();
-
-				$show_tag = $this->show->getCGTag();
-				if ($show_tag->uses === 0)
-					$show_tag->delete();
 
 				Response::success('Episode deleted successfully', [
 					'upcoming' => CoreUtils::getSidebarUpcoming(NOWRAP),
