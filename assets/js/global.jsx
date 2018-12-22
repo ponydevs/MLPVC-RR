@@ -581,7 +581,7 @@
 			const
 				offX = Math.abs(offset.x),
 				offY = Math.abs(offset.y),
-				minMove = Math.min($body.width()/2, 200);
+				minMove = Math.min($body.width()/3, 150);
 
 			if (direction.x !== 'left' || offX < minMove || offY > 75)
 				return;
