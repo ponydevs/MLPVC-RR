@@ -20,34 +20,34 @@ class Tags {
 	 *
 	 * @param int       $PonyID
 	 * @param array|int $limit
-	 * @param bool      $showEpTags
+	 * @param bool      $synonyms
 	 * @param bool      $exporting
 	 *
 	 * @return Tag[]
 	 */
-	public static function getFor($PonyID, $limit = null, $showEpTags = false, $exporting = false){
-		$sysonyms = $exporting || !UserPrefs::get('cg_hidesynon');
+	public static function getFor($PonyID, $limit = null, ?bool $synonyms = null, bool $exporting = false){
+		if ($synonyms === null)
+			$synonyms = $exporting || !UserPrefs::get('cg_hidesynon');
 
-		if (!$sysonyms){
+		if (!$synonyms){
 			DB::$instance->where('"synonym_of" IS NULL');
 			$join_on = 'tagged.tag_id = tags.id';
 		}
 		else $join_on = 'tagged.tag_id IN (tags.id, tags.synonym_of)';
 		DB::$instance->join('tagged',$join_on,'inner',false);
 		DB::$instance->where('tagged.appearance_id',$PonyID);
-		return self::get($limit, $showEpTags, $exporting);
+		return self::get($limit, $exporting);
 	}
 
 	/**
 	 * Retrieve set of tags for a given appearance
 	 *
 	 * @param array|int $limit
-	 * @param bool      $showEpTags
 	 * @param bool      $exporting
 	 *
 	 * @return Tag[]
 	 */
-	public static function get($limit = null, $showEpTags = false, $exporting = false){
+	public static function get($limit = null, $exporting = false){
 		if ($exporting){
 			DB::$instance->orderBy('tags.id');
 		}
@@ -56,8 +56,6 @@ class Tags {
 				->orderByLiteral('CASE WHEN tags.type IS NULL THEN 1 ELSE 0 END')
 				->orderBy('tags.type')
 				->orderBy('tags.name');
-			if (!$showEpTags)
-				DB::$instance->where("tags.type != 'ep'");
 		}
 		return DB::$instance->setModel(Tag::class)->get('tags',$limit,'tags.*');
 	}

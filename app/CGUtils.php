@@ -1150,7 +1150,7 @@ class CGUtils {
 			else $AppendAppearance['ColorGroups']['_hidden'] = true;
 
 			$AppendAppearance['TagIDs'] = [];
-			$TagIDs = Tags::getFor($p->id, null, null, true);
+			$TagIDs = Tags::getFor($p->id, null, true);
 			if (!empty($TagIDs)){
 				foreach ($TagIDs as $t)
 					$AppendAppearance['TagIDs'][] = $t->id;

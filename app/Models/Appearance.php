@@ -277,8 +277,7 @@ class Appearance extends NSModel implements Linkable {
 	 * @return string
 	 */
 	public function getTagsHTML(bool $wrap = WRAP):string {
-		$isStaff = Permission::sufficient('staff');
-		$tags = Tags::getFor($this->id, null, $isStaff);
+		$tags = Tags::getFor($this->id, null, Permission::sufficient('staff'));
 
 		$HTML = '';
 		if (!empty($tags)) foreach ($tags as $t)
@@ -796,8 +795,10 @@ class Appearance extends NSModel implements Linkable {
 		return $this->owner_id !== null && $this->private && $this->isPrivate($ignoreStaff);
 	}
 
-	public function getTagsAsText(string $separator = ', '){
-		$tags = Tags::getFor($this->id, null, Permission::sufficient('staff'));
+	public function getTagsAsText(?bool $synonyms = null, string $separator = ', '){
+		if ($synonyms === null)
+			$synonyms = Permission::sufficient('staff');
+		$tags = Tags::getFor($this->id, null, $synonyms);
 		return Tags::getList($tags, $separator);
 	}
 

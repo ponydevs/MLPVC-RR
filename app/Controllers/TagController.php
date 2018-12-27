@@ -24,7 +24,7 @@ class TagController extends ColorGuideController {
 		$heading = 'Tags';
 		$title = "Page {$pagination->getPage()} - $heading - Color Guide";
 
-		$tags = Tags::get($pagination->getLimit(), true);
+		$tags = Tags::get($pagination->getLimit());
 
 		$js = ['paginate'];
 		if (Permission::sufficient('staff'))

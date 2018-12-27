@@ -77,7 +77,7 @@ class AppearanceController extends ColorGuideController {
 				'description' => "Show accurate colors$cmv for \"{$this->appearance->label}\" from the MLP-VectorClub's Official Color Guide",
 				'tags' =>
 					($cm_count > 0 ? 'cutie mark,cm,cm vector,cutie mark vector,' : '').
-					$this->appearance->getTagsAsText(',').
+					$this->appearance->getTagsAsText(null, ',').
 					',color guide,colors,swatch file,illustrator swatches,gimp palette,inkscape swatches,png download',
 			],
 			'import' => [
@@ -324,7 +324,7 @@ class AppearanceController extends ColorGuideController {
 				if ($this->appearance->protected)
 					Response::fail('This appearance cannot be deleted');
 
-				$Tagged = Tags::getFor($this->appearance->id, null, true);
+				$tagged = Tags::getFor($this->appearance->id, null);
 
 				if (!DB::$instance->where('id', $this->appearance->id)->delete(Appearance::$table_name))
 					Response::dbError();
@@ -345,8 +345,8 @@ class AppearanceController extends ColorGuideController {
 					}
 				}
 
-				if (!empty($Tagged))
-					foreach($Tagged as $tag)
+				if (!empty($tagged))
+					foreach($tagged as $tag)
 						$tag->updateUses();
 
 				$fpath = SPRITE_PATH."{$this->appearance->id}.png";
@@ -920,7 +920,7 @@ class AppearanceController extends ColorGuideController {
 
 		switch ($this->action){
 			case 'GET':
-				Response::done([ 'tags' => $this->appearance->getTagsAsText() ]);
+				Response::done([ 'tags' => $this->appearance->getTagsAsText(false) ]);
 			break;
 			case 'PUT':
 				$orig_tags = (new Input('orig_tags','string',[
