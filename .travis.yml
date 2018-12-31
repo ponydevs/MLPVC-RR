@@ -15,4 +15,4 @@ before_script:
   - vendor/bin/phinx migrate
 dist: xenial
 addons:
-  postgresql: "9.6"
+  postgresql: "10"
