@@ -36,7 +36,7 @@ class CoreUtils {
 	 * @param null|array $remove_params URL parameters to remove
 	 */
 	public static function fixPath(string $fix_uri, ?array $remove_params = null):void {
-		$_split = explode('?', urldecode($_SERVER['REQUEST_URI']), 2);
+		$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
 		$path = $_split[0];
 		$query = empty($_split[1]) ? '' : "?{$_split[1]}";
 
@@ -64,7 +64,7 @@ class CoreUtils {
 			if ($item === null || isset($to_remove[$key]) || isset(self::FIXPATH_EMPTY[$item]))
 				continue;
 
-			$fix_query_arr[] = rtrim(http_build_query([$key => $item ?? '']), '=');
+			$fix_query_arr[] = rtrim(urlencode($key).'='.urlencode($item), '=');
 		}
 		$fix_query = empty($fix_query_arr) ? '' : '?'.implode('&', $fix_query_arr);
 
