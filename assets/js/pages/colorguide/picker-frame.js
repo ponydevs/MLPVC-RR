@@ -191,7 +191,7 @@
 		}
 		/** @return {Pixel} */
 		getAverageColor(){
-			return PickingArea.averageColor(this._getPixels( (x, y) => this.slices[y].skip < x && x < this.slices[y].skip+this.slices[y].length ));
+			return PickingArea.averageColor(this.getPixels( (x, y) => this.slices[y].skip < x && x < this.slices[y].skip+this.slices[y].length ));
 		}
 		//noinspection JSMethodCanBeStatic
 		/** @return {boolean} */
