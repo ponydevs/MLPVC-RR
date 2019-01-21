@@ -36,13 +36,13 @@ class CoreUtils {
 	 * @param null|array $remove_params URL parameters to remove
 	 */
 	public static function fixPath(string $fix_uri, ?array $remove_params = null):void {
-		$_split = explode('?', $_SERVER['REQUEST_URI'], 2);
-		$path = $_split[0];
-		$query = empty($_split[1]) ? '' : "?{$_split[1]}";
+		$split = explode('?', $_SERVER['REQUEST_URI'], 2);
+		$path = urldecode($split[0]);
+		$query = empty($split[1]) ? '' : "?{$split[1]}";
 
-		$_split = explode('?', $fix_uri, 2);
-		$fix_path = $_split[0];
-		$fix_query = self::mergeQuery($query, empty($_split[1]) ? '' : "?{$_split[1]}", $remove_params);
+		$fix_split = explode('?', $fix_uri, 2);
+		$fix_path = $fix_split[0];
+		$fix_query = self::mergeQuery($query, empty($fix_split[1]) ? '' : "?{$fix_split[1]}", $remove_params);
 		self::appendFragment($fix_uri, $fix_query);
 
 		if ($path !== $fix_path || $query !== $fix_query)

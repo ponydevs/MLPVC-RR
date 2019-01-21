@@ -9,7 +9,7 @@
 
 	// Strip &hellip; and what comes after
 	$decoded_uri = CoreUtils::trim(urldecode($_SERVER['REQUEST_URI']));
-	$request_uri = preg_replace(new RegExp('….*$'),'',$decoded_uri);
+	$request_uri = preg_replace(new RegExp('(?:….*|<)$'),'',$decoded_uri);
 	// Strip non-ascii
 	$safe_uri = preg_replace(new RegExp('[^ -~]'), '', $request_uri);
 	// Enforce URL
