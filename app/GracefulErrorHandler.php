@@ -9,7 +9,7 @@ class GracefulErrorHandler extends ErrorHandler {
 	 * @param \Exception $e
 	 */
 	private function _outputErrorPage($e){
-		File::put(PROJPATH.'logs/'.((string) microtime(true)).'-error.log', var_export($e->getTraceAsString(), true));
+		File::put(PROJPATH.'logs/'.date('c').'-error.log', $e->getMessage()."\n".$e->getTraceAsString());
 
 		if (headers_sent())
 			return;
