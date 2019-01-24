@@ -6,6 +6,7 @@ use App\CoreUtils;
 use App\DB;
 use App\JSON;
 use App\Notifications;
+use App\RegExp;
 use App\Time;
 use App\Twig;
 use ElephantIO\Exception\ServerConnectionFailureException;
