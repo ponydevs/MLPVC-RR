@@ -9,6 +9,7 @@ use App\Notifications;
 use App\RegExp;
 use App\Time;
 use App\Twig;
+use App\Users;
 use ElephantIO\Exception\ServerConnectionFailureException;
 
 /**
