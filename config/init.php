@@ -20,8 +20,8 @@ if (CoreUtils::env('CSP_ENABLED')){
 		'media-src '.CoreUtils::env('CSP_MEDIA_SRC'),
 		'frame-src '.CoreUtils::env('CSP_FRAME_SRC'),
 		'font-src '.CoreUtils::env('CSP_FONT_SRC'),
-		"connect-src 'self' ".CoreUtils::env('WS_SERVER_HOST').' wss://'.CoreUtils::env('WS_SERVER_HOST'),
-		'report-uri '.CoreUtils::env('CSP_CONNECT_SRC'),
+		'connect-src '.CoreUtils::env('CSP_CONNECT_SRC').' '.CoreUtils::env('WS_SERVER_HOST').' wss://'.CoreUtils::env('WS_SERVER_HOST'),
+		'report-uri '.CoreUtils::env('CSP_REPORT_URI'),
 	]);
 	header("Content-Security-Policy: $csp_header");
 	header("X-Content-Security-Policy: $csp_header");
