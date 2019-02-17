@@ -252,6 +252,8 @@ class ShowController extends Controller {
 				]))->out();
 				if (empty($airs))
 					Response::fail('Please specify an air date & time');
+				if ($airs < strtotime('2010-10-10T00:00:00'))
+					Response::fail('Air dates before October 10th, 2010 are invalid.');
 				$update['airs'] = date('c', strtotime('this minute', $airs));
 
 				$notes = (new Input('notes', 'text', [
@@ -274,7 +276,7 @@ class ShowController extends Controller {
 					if (!$this->show->save())
 						Response::dbError('Show entry creation failed');
 
-					Response::done(['url' => (new Show($update))->toURL()]);
+					Response::done(['url' => $this->show->toURL()]);
 				}
 
 				// Updating

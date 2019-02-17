@@ -181,7 +181,7 @@ class Show extends NSModel implements Linkable {
 	 * @return string
 	 */
 	public function safeTitle():string {
-		return (new RegExp('-{2,}'))->replace('-', (new RegExp('[^a-z]','i'))->replace('-', $this->title));
+		return CoreUtils::trim((new RegExp('-{2,}'))->replace('-', (new RegExp('[^a-z\d]','i'))->replace('-', $this->title)), false, '-');
 	}
 
 	/**

@@ -1,7 +1,7 @@
 {# @controller \App\ShowHelper::getSidebarVoting #}
 {# @var current_episode \App\Models\Show #}
 {# @var signed_in boolean #}
-{% set thing = constant('App\\ShowHelper::VALID_TYPES')[current_episode.type] %}
+{% set thing = current_episode.type %}
 {% if not current_episode.hasAired -%}
 	<p>Voting will start {{ time_tag(current_episode.get_willair) }}, after the {{ thing }} aired.</p>
 {%- else -%}
