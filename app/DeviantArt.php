@@ -161,7 +161,7 @@ class DeviantArt {
 				case 'photo':
 					if (!empty($json['imagetype']))
 						$insert['type'] = $json['imagetype'];
-					else $insert['type'] = \array_slice(explode('.', $json['url']), -1)[0];
+					else $insert['type'] = \array_slice(explode('.', strtok($json['url'], '?')), -1)[0];
 				break;
 				case 'rich':
 					if (isset($json['html'])){
@@ -278,6 +278,7 @@ class DeviantArt {
 			return null;
 		}
 
+		/** @noinspection PhpParamsInspection */
 		$userdata = $provider->getResourceOwner($accessToken)->toArray();
 
 		/** @var $User Models\User */
