@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Show;
 use Doctrine\Common\Cache\RedisCache;
+use Tmdb\Exception\TmdbApiException;
 
 class TMDBHelper {
 	public const SHOW_NAME = 'My Little Pony: Friendship Is Magic';
@@ -72,7 +73,13 @@ class TMDBHelper {
 	}
 
 	public static function getEpisode(\Tmdb\Client $client, int $season, int $episode):?array {
-		$ep_data = $client->getTvEpisodeApi()->getEpisode(self::getShowId($client), $season, $episode);
+		try {
+			$ep_data = $client->getTvEpisodeApi()->getEpisode(self::getShowId($client), $season, $episode);
+		}
+		catch (TmdbApiException $e) {
+			if ($e->getResponse()->getCode() === 404)
+				return null;
+		}
 
 		if (empty($ep_data))
 			throw new \RuntimeException("Could not find S{$season}E{$episode} on TMDB, query results:\n".var_export($ep_data, true));

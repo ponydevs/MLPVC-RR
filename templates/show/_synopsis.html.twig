@@ -13,24 +13,31 @@
 		{% if lazyload is not defined or lazyload == true %}
 		<div class="synopsis-promise{% if current_episode.twoparter %} twoparter{% endif %}" data-id="{{ current_episode.id }}"></div>
 		{% else %}
-			{% for i, synopsis in current_episode.synopses %}
-			<div class="synopsis-content{% if synopsis.image %} has-image{% endif %}">
-				{% if synopsis.image %}
-				<a class="synopsis-image" href="{{ synopsis.image | replace({'w300': 'original'}) }}">
-					<img src="{{ synopsis.image }}" alt="{{ current_episode.title }} synopsis backdrop">
-				</a>
-				{% endif %}
-				<div class="synopsis-text">
-					{% if current_episode.twoparter %}
-					<h3 class="synopsis-part-label">Part {{ i + 1 }}</h3>
+			{% set synopses = current_episode.synopses %}
+			{% if synopses is not empty %}
+				{% for i, synopsis in synopses %}
+				<div class="synopsis-content{% if synopsis.image %} has-image{% endif %}">
+					{% if synopsis.image %}
+					<a class="synopsis-image" href="{{ synopsis.image | replace({'w300': 'original'}) }}">
+						<img src="{{ synopsis.image }}" alt="{{ current_episode.title }} synopsis backdrop">
+					</a>
 					{% endif %}
-					<p class="synopsis-body">{{ synopsis.overview }}</p>
-					<p class="synopsis-link">
-						<a href='{{ synopsis.url }}'>View in database &raquo;</a>
-					</p>
+					<div class="synopsis-text">
+						{% if current_episode.twoparter %}
+						<h3 class="synopsis-part-label">Part {{ i + 1 }}</h3>
+						{% endif %}
+						<p class="synopsis-body">{{ synopsis.overview }}</p>
+						<p class="synopsis-link">
+							<a href='{{ synopsis.url }}'>View in database &raquo;</a>
+						</p>
+					</div>
 				</div>
-			</div>
-			{% endfor %}
+				{% endfor %}
+			{% else %}
+				<div class="notice info">
+					<p>No synopsis available yet.</p>
+				</div>
+			{% endif %}
 
 			{% spaceless %}
 			<div class="synopsis-disclaimer">
