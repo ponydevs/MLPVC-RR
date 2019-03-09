@@ -15,7 +15,7 @@
 	&.browser-edge#{$before} {
 		background-image: url(/img/browser/edge.png);
 	}
-	&.browser-firefox#{$before} {
+	&.browser-firefox#{$before}, &.browser-firefoxmobile#{$before} {
 		background-image: url(/img/browser/firefox.png);
 	}
 	&.browser-internetexplorer#{$before}, &.browser-iemobile#{$before} {
@@ -49,7 +49,7 @@
 @mixin if-browser-has-icon {
 	&.browser-chrome,
 	&.browser-edge,
-	&.browser-firefox,
+	&.browser-firefox, &.browser-firefoxmobile,
 	&.browser-internetexplorer, &.browser-iemobile,
 	&.browser-opera, &.browser-operamini,
 	&.browser-safari,
