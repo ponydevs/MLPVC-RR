@@ -210,7 +210,13 @@
 
 				&.local.provider-discord {
 					padding-right: 7px;
-					border-radius: $reserver-height / 2;
+					$radius: $reserver-height / 2;
+					border-radius: $radius;
+
+					.avatar {
+						border-top-right-radius: $radius;
+						border-bottom-right-radius: $radius;
+					}
 				}
 
 				> * {
