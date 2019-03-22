@@ -153,11 +153,9 @@ class Posts {
 
 		foreach (Post::KINDS as $kind){
 			/** @noinspection DisconnectedForeachInstructionInspection */
-			if ($Post !== null)
-				DB::$instance->where('id',$Post->id,'!=');
 			if ($Image->preview !== null){
 				$already_used = Post::find_by_preview($Image->preview);
-				if (!empty($already_used))
+				if (!empty($already_used) && $already_used->id !== $Post->id)
 					Response::fail("This exact image has already been used for a {$already_used->toAnchor($kind,null,true)} under {$already_used->show->toAnchor()}");
 			}
 		}
