@@ -86,7 +86,7 @@
 
 	#related-shows p:empty {
 		&:before {
-			content: "This appearance has no relatons to any show entries.";
+			content: "This appearance has no relations to any show entries.";
 			font-style: italic;
 			opacity: .6;
 		}

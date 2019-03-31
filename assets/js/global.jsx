@@ -3,7 +3,7 @@
 	"use strict";
 
 	let fluidboxThisAction = (jQueryObject) => {
-		jQueryObject.each(el => {
+		jQueryObject.each((i, el) => {
 			if (el.href)
 				el.href = el.href.replace(/\+/g, '%20')
 		});
