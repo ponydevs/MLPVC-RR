@@ -37,6 +37,7 @@ class Logs {
 		'staff_limits'         => 'Account limitation changed',
 		'pcg_gift_refund'      => 'Gifted slots refunded',
 		'failed_auth_attempts' => 'Failed authentication attempt',
+		'derpimerge'           => 'Derpibooru merge detected',
 	];
 
 	public const FORCE_INITIATOR_WEBSERVER = true;
@@ -138,8 +139,8 @@ class Logs {
 			break;
 			case 'img_update':
 				self::_genericPostInfo($data, $details);
-				$details[] = ['Old image', "<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img  alt='screencap' src='{$data['oldpreview']}'></div>"];
-				$details[] = ['New image', "<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img  alt='screencap' src='{$data['newpreview']}'></div>"];
+				$details[] = ['Old image', "<a href='{$data['oldfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img alt='screencap' src='{$data['oldpreview']}'></div>"];
+				$details[] = ['New image', "<a href='{$data['newfullsize']}' target='_blank' rel='noopener'>Full size</a><div><img alt='screencap' src='{$data['newpreview']}'></div>"];
 			break;
 			case 'res_overtake':
 				self::_genericPostInfo($data, $details);
@@ -306,6 +307,11 @@ class Logs {
 				if (!empty($data['user_agent']))
 					$details[] = ['User Agent', $data['user_agent']];
 			break;
+			case 'derpimerge':
+				self::_genericPostInfo($data, $details);
+				$details[] = ['Original image URLs', "<a href='{$data['original_fullsize']}' target='_blank' rel='noopener'>Full size</a> / <a href='{$data['original_preview']}' target='_blank' rel='noopener'>Preview</a>"];
+				$details[] = ['New image', "<a href='{$data['new_fullsize']}' target='_blank' rel='noopener'>Full size</a><div><img alt='screencap' src='{$data['new_preview']}'></div>"];
+			break;
 			default:
 				$details[] = ["<span class=\"typcn typcn-warning\"></span> Couldn't process details", 'No data processor defined for this entry type', self::KEYCOLOR_ERROR];
 				$details[] = ['Raw details', '<pre>'.var_export($data, true).'</pre>'];
@@ -316,14 +322,16 @@ class Logs {
 	}
 
 	private static function get_post(array $data):?Post {
+		if (!empty($data['post_id']))
+			return Post::find($data['post_id']);
+
 		if ($data['type'] === 'post')
 			return Post::find($data['id']);
-		else {
-			if ($data['type'] === 'request')
-				DB::$instance->where('requested_by IS NOT NULL');
-			else DB::$instance->where('requested_by IS NULL');
-			return DB::$instance->where('old_id', $data['old_id'])->getOne('posts');
-		}
+
+		if ($data['type'] === 'request')
+			DB::$instance->where('requested_by IS NOT NULL');
+		else DB::$instance->where('requested_by IS NULL');
+		return DB::$instance->where('old_id', $data['old_id'])->getOne('posts');
 	}
 
 	const REF_KEY = 'Reference';

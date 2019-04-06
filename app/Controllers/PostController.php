@@ -6,6 +6,7 @@ use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
 use App\DeviantArt;
+use App\Exceptions\UnsupportedProviderException;
 use App\Models\Show;
 use App\ShowHelper;
 use App\HTTP;
@@ -52,27 +53,58 @@ class PostController extends Controller {
 
 		$this->load_post($params, 'view');
 
-		if ($this->post->deviation_id === null && (!DeviantArt::isImageAvailable($this->post->fullsize, [404]) || !DeviantArt::isImageAvailable($this->post->preview, [404]))){
-			$update = ['broken' => 1 ];
-			if ($this->post->is_request && $this->post->reserved_by !== null){
-				$oldreserver = $this->post->reserved_by;
-				$update['reserved_by'] = null;
-			}
-			$this->post->update_attributes($update);
-			$log = [
-				'id' => $this->post->id,
-			];
-			try {
-				CoreUtils::socketEvent('post-break',$log);
-			}
-			catch (\Exception $e){
-				CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
-			}
-			$log['reserved_by'] = $oldreserver ?? $this->post->reserved_by;
-			Logs::logAction('post_break',$log);
+		if ($this->post->deviation_id === null){
+			$all_hope_is_lost = true;
+			$original_fullsize = $this->post->fullsize;
+			$original_preview = $this->post->preview;
+			$images_available = DeviantArt::isImageAvailable($original_fullsize, [404]) && DeviantArt::isImageAvailable($original_preview, [404]);
+			if (!$images_available){
+				try {
+					$fullsize_provider = ImageProvider::getProvider($original_fullsize);
+				}
+				catch (UnsupportedProviderException $e) { /* Ignore */ }
+				if ($fullsize_provider->name === 'derpibooru') {
+					// Check for merged image on Derpibooru
+					$new_source = Posts::checkImage($original_fullsize);
+					if (!empty($new_source->fullsize) && !empty($new_source->preview)) {
+						$all_hope_is_lost = false;
+						$this->post->fullsize = $new_source->fullsize;
+						$this->post->preview = $new_source->preview;
+						$this->post->save();
 
-			if (Permission::insufficient('staff'))
-				Response::done(['broken' => true]);
+						Logs::logAction('derpimerge', [
+							'post_id' => $this->post->id,
+							'original_fullsize' => $original_fullsize,
+							'original_preview' => $original_preview,
+							'new_fullsize' => $this->post->fullsize,
+							'new_preview' => $this->post->preview,
+						]);
+					}
+				}
+			}
+
+			if ($all_hope_is_lost){
+				$update = ['broken' => 1];
+				if ($this->post->is_request && $this->post->reserved_by !== null){
+					$old_reserver = $this->post->reserved_by;
+					$update['reserved_by'] = null;
+				}
+				$this->post->update_attributes($update);
+				$log = [
+					'id' => $this->post->id,
+				];
+				try {
+					CoreUtils::socketEvent('post-break',$log);
+				}
+				catch (\Exception $e){
+					CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+				}
+				$log['reserved_by'] = $old_reserver ?? $this->post->reserved_by;
+				Logs::logAction('post_break',$log);
+
+				if (Permission::insufficient('staff'))
+					Response::done(['broken' => true]);
+			}
 		}
 
 		if ($this->post->is_request && !$this->post->finished){
