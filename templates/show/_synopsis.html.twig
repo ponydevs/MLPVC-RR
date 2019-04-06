@@ -3,7 +3,7 @@
 {# @var wrap bool #}
 {# @var lazyload bool #}
 {% spaceless %}
-{% if current_episode and current_episode.is_episode and not user_pref('p_hidesynopses') %}
+{% if current_episode and current_episode.is_episode and not user_pref('ep_hidesynopses') %}
 	{% if wrap is not defined or wrap %}
 	<section class='synopsis'>
 	{% endif %}
@@ -43,7 +43,7 @@
 			{% spaceless %}
 			<div class="synopsis-disclaimer">
 				{% if signed_in %}
-				<p>Don't want to see this? You can disable it in <a href="/u/#settings">your settings</a> ({{ constant('App\\UserSettingForm::INPUT_MAP').p_hidesynopses.options.desc }}).</p>
+				<p>Don't want to see this? You can disable it in <a href="/u/#settings">your settings</a> ({{ constant('App\\UserSettingForm::INPUT_MAP').ep_hidesynopses.options.desc }}).</p>
 				{% endif %}
 				<p>{{ constant('App\\TMDBHelper::REQUIRED_MESSAGE') }}</p>
 			</div>

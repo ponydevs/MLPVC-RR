@@ -17,7 +17,7 @@ class UserPrefs extends GlobalSettings {
 		'p_hidediscord' => 0,
 		'p_hidepcg' => 0,
 		'p_homelastep' => 0,
-		'p_hidesynopses' => 0,
+		'ep_hidesynopses' => 0,
 		'ep_noappprev' => 0,
 		'ep_revstepbtn' => 0,
 		'a_pcgearn' => 1,

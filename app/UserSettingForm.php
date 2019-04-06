@@ -78,7 +78,7 @@ class UserSettingForm {
 				'desc' => 'Home page should open latest episode (instead of the color guide)',
 			]
 		],
-		'p_hidesynopses' => [
+		'ep_hidesynopses' => [
 			'type' => 'checkbox',
 			'options' => [
 				'desc' => 'Hide the synopsis section from episode pages',
