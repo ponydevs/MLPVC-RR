@@ -16,8 +16,9 @@
 			{% set synopses = current_episode.synopses %}
 			{% if synopses is not empty %}
 				{% for i, synopsis in synopses %}
-				<div class="synopsis-content{% if synopsis.image %} has-image{% endif %}">
-					{% if synopsis.image %}
+				{% set has_image = synopsis.image is defined and synopsis.image %}
+				<div class="synopsis-content{% if has_image %} has-image{% endif %}">
+					{% if has_image %}
 					<a class="synopsis-image" href="{{ synopsis.image | replace({'w300': 'original'}) }}">
 						<img src="{{ synopsis.image }}" alt="{{ current_episode.title }} synopsis backdrop">
 					</a>
