@@ -41,7 +41,14 @@
 
 
 	class Pixel {
-		constructor(r,g,b,a, overrideAlpha = false){
+		/**
+		 * @param {number} r 0-255
+		 * @param {number} g 0-255
+		 * @param {number} b 0-255
+		 * @param {number} a 0.0-1.0
+		 * @param {false|number} [overrideAlpha]
+		 */
+		constructor(r, g, b, a, overrideAlpha = false){
 			this.red = r;
 			this.green = g;
 			this.blue = b;
@@ -110,7 +117,7 @@
 				b += pixel.blue;
 				a += pixel.alpha;
 			});
-			return new Pixel(Math.round(r/l), Math.round(g/l), Math.round(b/l), Math.round(a/l));
+			return new Pixel(Math.round(r/l), Math.round(g/l), Math.round(b/l), Math.round((a/l)/255));
 		}
 		#getImageData(){
 			if (!(this._tab instanceof Tab))
