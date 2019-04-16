@@ -124,7 +124,7 @@ class DeviantArt {
 			try {
 				$json = self::oEmbed($ID, $type);
 				if (empty($json))
-					throw new \RuntimeException('oEmbed JSON data is empty');
+					throw new RuntimeException('oEmbed JSON data is empty');
 			}
 			catch (\Exception $e){
 				if ($Deviation !== null)
@@ -227,8 +227,8 @@ class DeviantArt {
 		}
 		catch (CURLRequestException $e){
 			if ($e->getCode() === 404)
-				throw new \RuntimeException('Image not found. The URL may be incorrect or the image has been deleted.', 404);
-			else throw new \RuntimeException("Image could not be retrieved; ".$e->getMessage(), $e->getCode());
+				throw new RuntimeException('Image not found. The URL may be incorrect or the image has been deleted.', 404);
+			else throw new RuntimeException("Image could not be retrieved; ".$e->getMessage(), $e->getCode());
 		}
 
 		return $data;
@@ -383,19 +383,8 @@ class DeviantArt {
 		return self::_authRequest(false, $code);
 	}
 
-	public static function isImageAvailable(string $url, array $onlyFails = []):bool {
-		if (CoreUtils::isURLAvailable($url, $onlyFails))
-			return true;
-		CoreUtils::msleep(300);
-		if (CoreUtils::isURLAvailable($url, $onlyFails))
-			return true;
-		CoreUtils::msleep(300);
-		if (CoreUtils::isURLAvailable("$url?", $onlyFails))
-			return true;
-		CoreUtils::msleep(300);
-		if (CoreUtils::isURLAvailable("$url?", $onlyFails))
-			return true;
-		return false;
+	public static function isImageAvailable(string $url, array $onlyFails = [], &$response_code = null):bool {
+		return CoreUtils::isURLAvailable($url, $onlyFails, $response_code);
 	}
 
 	/**
@@ -448,7 +437,7 @@ class DeviantArt {
 			$username = $admin->childNodes->item(1)->firstChild->textContent;
 			$role = CoreUtils::makeSingular($admin->childNodes->item(3)->textContent);
 			if (!isset($revroles[$role]))
-				throw new \RuntimeException("Role $role not reversible");
+				throw new RuntimeException("Role $role not reversible");
 			$usernames[$username] = $revroles[$role];
 		}
 

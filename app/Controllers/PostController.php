@@ -57,7 +57,13 @@ class PostController extends Controller {
 			$all_hope_is_lost = true;
 			$original_fullsize = $this->post->fullsize;
 			$original_preview = $this->post->preview;
-			$images_available = DeviantArt::isImageAvailable($original_fullsize, [404]) && DeviantArt::isImageAvailable($original_preview, [404]);
+			$response_code = null;
+			$failing_url = $original_fullsize;
+			$images_available = DeviantArt::isImageAvailable($failing_url, [404], $response_code);
+			if ($images_available) {
+				$failing_url = $original_preview;
+				$images_available = DeviantArt::isImageAvailable($failing_url, [404], $response_code);
+			}
 			if (!$images_available){
 				try {
 					$fullsize_provider = ImageProvider::getProvider($original_fullsize);
@@ -92,6 +98,8 @@ class PostController extends Controller {
 				$this->post->update_attributes($update);
 				$log = [
 					'id' => $this->post->id,
+					'response_code' => $response_code,
+					'failing_url' => $failing_url,
 				];
 				try {
 					CoreUtils::socketEvent('post-break',$log);

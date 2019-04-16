@@ -1078,11 +1078,12 @@ class CoreUtils {
 	 * Specify raw HTTP codes as integers to $onlyFail to only report failure on those codes
 	 *
 	 * @param string $url
-	 * @param array  $onlyFails
+	 * @param array  $only_fails
+	 * @param int    $response_code
 	 *
 	 * @return bool
 	 */
-	public static function isURLAvailable(string $url, array $onlyFails = []):bool {
+	public static function isURLAvailable(string $url, array $only_fails = [], &$response_code = null):bool {
 		$ch = curl_init();
 		curl_setopt_array($ch, [
 			CURLOPT_URL => $url,
@@ -1093,9 +1094,9 @@ class CoreUtils {
 			CURLOPT_HTTPGET => true,
 		]);
 		$available = curl_exec($ch) !== false;
-		$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($available === false && !empty($onlyFails))
-			$available = !\in_array($responseCode, $onlyFails, false);
+		$response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($available === false && !empty($only_fails))
+			$available = !\in_array($response_code, $only_fails, false);
 		curl_close($ch);
 
 		return $available;

@@ -283,8 +283,14 @@ class Logs {
 				}
 			break;
 			case 'post_break':
+				self::_genericPostInfo($data, $details);
+				$details[] = ['Response Code', "<code>{$data['response_code']}</code>"];
+				$escaped_url = CoreUtils::aposEncode($data['failing_url']);
+				$details[] = ['Failing URL', "<a href='$escaped_url'>$escaped_url</a>"];
+			break;
 			case 'post_fix':
 				self::_genericPostInfo($data, $details);
+			break;
 			break;
 			case 'staff_limits':
 				$details[] = ['For', User::find($data['user_id'])->toAnchor()];
