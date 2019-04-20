@@ -54,26 +54,28 @@ class PostController extends Controller {
 		$this->load_post($params, 'view');
 
 		if ($this->post->deviation_id === null){
-			$all_hope_is_lost = true;
 			$original_fullsize = $this->post->fullsize;
 			$original_preview = $this->post->preview;
 			$response_code = null;
 			$failing_url = $original_fullsize;
+
+			// See if both images are still available
 			$images_available = DeviantArt::isImageAvailable($failing_url, [404], $response_code);
 			if ($images_available) {
 				$failing_url = $original_preview;
 				$images_available = DeviantArt::isImageAvailable($failing_url, [404], $response_code);
 			}
+
+			// Check for merged image on Derpibooru
 			if (!$images_available){
 				try {
 					$fullsize_provider = ImageProvider::getProvider($original_fullsize);
 				}
 				catch (UnsupportedProviderException $e) { /* Ignore */ }
 				if ($fullsize_provider->name === 'derpibooru') {
-					// Check for merged image on Derpibooru
 					$new_source = Posts::checkImage($original_fullsize);
 					if (!empty($new_source->fullsize) && !empty($new_source->preview)) {
-						$all_hope_is_lost = false;
+						$images_available = true;
 						$this->post->fullsize = $new_source->fullsize;
 						$this->post->preview = $new_source->preview;
 						$this->post->save();
@@ -89,7 +91,8 @@ class PostController extends Controller {
 				}
 			}
 
-			if ($all_hope_is_lost){
+			// Houston we have a problem
+			if (!$images_available){
 				$update = ['broken' => 1];
 				if ($this->post->is_request && $this->post->reserved_by !== null){
 					$old_reserver = $this->post->reserved_by;
