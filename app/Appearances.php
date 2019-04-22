@@ -4,7 +4,7 @@ namespace App;
 
 use App\Models\Appearance;
 use App\Models\Notification;
-use Elasticsearch\Common\Exceptions\BadRequest400Exception;
+use Elasticsearch\Common\Exceptions\BadRequest400Exception as ElasticBadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
@@ -183,8 +183,10 @@ class Appearances {
 		]);
 		try {
 			$sad = $elasticClient->indices()->create($params);
-		} catch(BadRequest400Exception $e) {
+		} catch (ElasticBadRequest400Exception $e) {
 			Response::fail('Failed to create index:<br><pre>'.CoreUtils::escapeHTML(JSON::encode(JSON::decode($e->getMessage()), JSON_PRETTY_PRINT)).'</pre>');
+		} catch (ElasticNoNodesAvailableException $e) {
+			Response::fail('Re-index failed, ElasticSearch server is down!');
 		}
 		/** @var $appearances Appearance[] */
 		$appearances = DB::$instance->where('id != 0')->where('owner_id IS NULL')->get('appearances');
