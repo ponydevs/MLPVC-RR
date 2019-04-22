@@ -833,7 +833,7 @@ class CGUtils {
 			#
 			# Exported at: $export_ts
 			#
-
+			
 			GPL;
 
 		$file .= implode("\n", array_map(static function($arr){
