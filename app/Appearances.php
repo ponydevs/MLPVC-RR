@@ -138,17 +138,20 @@ class Appearances {
 		$params = array_merge(CGUtils::ELASTIC_BASE, [
 			'body' => [
 				'mappings' => [
-					'properties' => [
-						'label' => [
-							'type' => 'text',
-							'analyzer' => 'overkill',
-						],
-						'order' => ['type' => 'integer'],
-						'ishuman' => ['type' => 'boolean'],
-						'private' => ['type' => 'boolean'],
-						'tags' => [
-							'type' => 'text',
-							'analyzer' => 'overkill',
+					'entry' => [
+						'_all' => ['enabled' => false  ],
+						'properties' => [
+							'label' => [
+								'type' => 'text',
+								'analyzer' => 'overkill',
+							],
+							'order' => ['type' => 'integer'],
+							'ishuman' => ['type' => 'boolean'],
+							'private' => ['type' => 'boolean'],
+							'tags' => [
+								'type' => 'text',
+								'analyzer' => 'overkill',
+							],
 						],
 					],
 				],

@@ -981,7 +981,7 @@ class CGUtils {
 	 */
 	public static function searchElastic(array $body, Pagination $Pagination){
 		$params = array_merge(self::ELASTIC_BASE, $Pagination->toElastic(), [
-			'type' => '_doc',
+			'type' => 'entry',
 			'body' => $body,
 		]);
 		return CoreUtils::elasticClient()->search($params);
