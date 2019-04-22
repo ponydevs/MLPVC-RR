@@ -836,7 +836,7 @@ class CGUtils {
 
 			GPL;
 
-		$file .= implode("\n", array_map(function($arr){
+		$file .= implode("\n", array_map(static function($arr){
 			$arr[0] = CoreUtils::pad($arr[0],3,' ');
 			$arr[1] = CoreUtils::pad($arr[1],3,' ');
 			$arr[2] = CoreUtils::pad($arr[2],3,' ');
@@ -981,7 +981,7 @@ class CGUtils {
 	 */
 	public static function searchElastic(array $body, Pagination $Pagination){
 		$params = array_merge(self::ELASTIC_BASE, $Pagination->toElastic(), [
-			'type' => 'entry',
+			'type' => '_doc',
 			'body' => $body,
 		]);
 		return CoreUtils::elasticClient()->search($params);

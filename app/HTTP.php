@@ -57,7 +57,7 @@ class HTTP {
 		global $http_response_header;
 		$http_response_header = array_map('rtrim',explode("\n",$responseHeaders));
 
-		if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
+		if (preg_match(new RegExp('Content-Encoding:\s?gzip','i'), $responseHeaders))
 			$response = gzdecode($response);
 		return [
 			'responseHeaders' => $responseHeaders,
@@ -158,7 +158,7 @@ class HTTP {
 	 * @param string $url  Redirection target URL
 	 * @param int    $code HTTP status code
 	 */
-	private static function _redirect(string $url = '/', int $code):void {
+	private static function _redirect(string $url, int $code):void {
 		header("Location: $url", true, $code);
 		$urlenc = CoreUtils::aposEncode($url);
 		die("<h1>HTTP $code ".self::STATUS_CODES[$code]."</h1><p>Click <a href='$urlenc'>here</a> if you aren't redirected.</p>");

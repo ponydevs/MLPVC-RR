@@ -58,7 +58,7 @@
 		"group": ["security","sec"],
 		"name": ["gpg"],
 		"desc": "Export gpg public key to the web root",
-		"cwd": "www",
+		"cwd": "public",
 		"cmd": "gpg --armor --output pgp-key.txt --export {{.ident}}",
 		"args": [
 			{
@@ -75,7 +75,7 @@
 	{
 		"group": ["security","sec"],
 		"name": ["resign"],
-		"cwd": "www/.well-known",
+		"cwd": "public/.well-known",
 		"desc": "Re-create the security.txt file's signature after a modification",
 		"cmd": "gpg --detach-sign --armor -o security.txt.sig security.txt"
 	}

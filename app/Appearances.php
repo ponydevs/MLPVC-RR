@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Appearance;
 use App\Models\Notification;
+use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
@@ -137,20 +138,17 @@ class Appearances {
 		$params = array_merge(CGUtils::ELASTIC_BASE, [
 			'body' => [
 				'mappings' => [
-					'entry' => [
-						'_all' => ['enabled' => false  ],
-						'properties' => [
-							'label' => [
-								'type' => 'text',
-								'analyzer' => 'overkill',
-							],
-							'order' => ['type' => 'integer'],
-							'ishuman' => ['type' => 'boolean'],
-							'private' => ['type' => 'boolean'],
-							'tags' => [
-								'type' => 'text',
-								'analyzer' => 'overkill',
-							],
+					'properties' => [
+						'label' => [
+							'type' => 'text',
+							'analyzer' => 'overkill',
+						],
+						'order' => ['type' => 'integer'],
+						'ishuman' => ['type' => 'boolean'],
+						'private' => ['type' => 'boolean'],
+						'tags' => [
+							'type' => 'text',
+							'analyzer' => 'overkill',
 						],
 					],
 				],
@@ -180,12 +178,16 @@ class Appearances {
 				],
 			]
 		]);
-		$elasticClient->indices()->create(array_merge($params));
-		/** @var $Appearances Appearance[] */
-		$Appearances = DB::$instance->where('id != 0')->where('owner_id IS NULL')->get('appearances');
+		try {
+			$sad = $elasticClient->indices()->create($params);
+		} catch(BadRequest400Exception $e) {
+			Response::fail('Failed to create index:<br><pre>'.CoreUtils::escapeHTML(JSON::encode(JSON::decode($e->getMessage()), JSON_PRETTY_PRINT)).'</pre>');
+		}
+		/** @var $appearances Appearance[] */
+		$appearances = DB::$instance->where('id != 0')->where('owner_id IS NULL')->get('appearances');
 
 		$params = ['body' => []];
-		foreach ($Appearances as $i => $a){
+		foreach ($appearances as $i => $a){
 			$meta = $a->getElasticMeta();
 		    $params['body'][] = [
 		        'index' => [
@@ -198,15 +200,28 @@ class Appearances {
 		    $params['body'][] = $a->getElasticBody();
 
 		    if ($i % 100 === 0) {
-		        $elasticClient->bulk($params);
+		        self::handleBulkError($elasticClient->bulk($params));
 		        $params = ['body' => []];
 		    }
 		}
 		if (!empty($params['body'])) {
-	        $elasticClient->bulk($params);
+	        self::handleBulkError($elasticClient->bulk($params));
 		}
 
 		Response::success('Re-index completed');
+	}
+
+	private static function handleBulkError(array $bulkResult){
+		if ($bulkResult['errors'] !== true)
+			return;
+			
+		$error_messages = [];
+		foreach ($bulkResult['items'] as $item) {
+			$ix = $item['index'];
+			$error_messages[] = "#{$ix['_id']}: HTTP {$ix['status']}: {$ix['error']['type']} - {$ix['error']['reason']}";
+		}
+
+		Response::fail('Bulk index update failed, see the errors below.<br><pre>'.CoreUtils::escapeHTML(implode("\n", $error_messages)).'</pre>');
 	}
 
 	public const SPRITE_NAG_USERID = '06af57df-8755-a533-8711-c66f0875209a';

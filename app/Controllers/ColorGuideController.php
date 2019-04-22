@@ -333,7 +333,10 @@ class ColorGuideController extends Controller {
 			}
 
 			if (!empty($search)){
-				$pagination->calcMaxPages($search['hits']['total']);
+				$total_hits = $search['hits']['total'];
+				if (\is_array($total_hits) && isset($total_hits['value']))
+					$total_hits = $total_hits['value'];
+				$pagination->calcMaxPages($total_hits);
 				if (!empty($search['hits']['hits'])){
 					$ids = [];
 					/** @noinspection ForeachSourceInspection */

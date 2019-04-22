@@ -9,7 +9,7 @@
 		}
 	],
 	"require": {
-		"php": ">=7.3",
+		"php": "~7.3",
 		"ext-curl": "*",
 		"ext-dom": "*",
 		"ext-gd": "*",
@@ -27,7 +27,7 @@
 		"ezyang/htmlpurifier": "^4.8",
 		"cogpowered/finediff": "0.3.*",
 		"elasticsearch/elasticsearch": "~6.0",
-		"ongr/elasticsearch-dsl": ">=2.2",
+		"ongr/elasticsearch-dsl": "~6.0",
 		"altorouter/altorouter": "1.2.0",
 		"restcord/restcord": "^0.2.0",
 		"erusev/parsedown": "^1.6",

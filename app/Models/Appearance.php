@@ -484,7 +484,7 @@ class Appearance extends NSModel implements Linkable {
 
 	public function getElasticMeta(){
 		return array_merge(CGUtils::ELASTIC_BASE,[
-			'type' => 'entry',
+			'type' => '_doc',
 			'id' => $this->id,
 		]);
 	}

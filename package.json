@@ -4,12 +4,12 @@
 	"description": "An automated system for handling requests & reservations, made for MLP-VectorClub",
 	"homepage": "https://mlpvector.club",
 	"dependencies": {
-		"@babel/core": "^7.2.0",
+		"@babel/core": "^7.4.3",
 		"@babel/plugin-proposal-class-properties": "^7.2.1",
 		"@babel/plugin-proposal-object-rest-spread": "^7.2.0",
 		"@babel/plugin-proposal-private-methods": "^7.2.1",
 		"@babel/plugin-transform-react-jsx": "^7.2.0",
-		"@babel/preset-env": "^7.2.0",
+		"@babel/preset-env": "^7.4.3",
 		"@babel/preset-react": "^7.0.0",
 		"acorn": "^6.0.4",
 		"babel-eslint": "^10.0.1",
@@ -27,18 +27,18 @@
 		"gulp-sass": "^4.0.1",
 		"gulp-uglify": "^3.0.1",
 		"normalize-scss": "^7.0.1",
-		"svgo": "^1.0.0"
+		"svgo": "^1.2.2"
 	},
 	"devDependencies": {
-		"eslint": "^5.9.0",
-		"eslint-plugin-react": "^7.11.1",
-		"react": "16.6.1",
-		"react-dom": "16.6.1",
-		"prop-types": "15.6.2",
 		"@shopify/draggable": "1.0.0-beta.8",
 		"blueimp-md5": "2.10.0",
+		"eslint": "^5.16.0",
+		"eslint-plugin-react": "^7.11.1",
+		"fluidbox": "2.0.5",
 		"jquery": "3.3.1",
-		"fluidbox": "2.0.5"
+		"prop-types": "15.6.2",
+		"react": "16.6.1",
+		"react-dom": "16.6.1"
 	},
 	"author": "SeinopSys <seinopsys@gmail.com> (https://github.com/SeinopSys)",
 	"license": "MIT",

@@ -11,6 +11,9 @@
 {% elseif err_cause == 'maintenance' %}
 	{% set title = 'Website Maintenance' %}
 {% endif %}
+{% if title is defined %}
+	{% set og = { title: title } %}
+{% endif %}
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
