@@ -123,7 +123,15 @@ class DiscordMember extends AbstractUser {
 				return;
 
 			$provider = DiscordAuthController::getProvider();
-			$token = $provider->getAccessToken('refresh_token', [ 'refresh_token' => $this->refresh ]);
+			try {
+				$token = $provider->getAccessToken('refresh_token', [ 'refresh_token' => $this->refresh ]);
+			}
+			catch (DiscordIdentityProviderException $e){
+				if ($e->getMessage() === '{"error":"invalid_grant"}') {
+					$this->delete();
+					Response::fail('The Discord account link got severed, you will need to re-link your account.', ['segway' => true]);
+				}
+			}
 		}
 		$this->access = $token->getToken();
 		$this->refresh = $token->getRefreshToken();
