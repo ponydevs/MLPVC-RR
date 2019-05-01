@@ -14,6 +14,7 @@ use App\Response;
 use App\Time;
 use App\UserPrefs;
 use App\Users;
+use GuzzleHttp\Exception\ClientException;
 use League\OAuth2\Client\Token\AccessToken;
 use RestCord\DiscordClient;
 use Wohali\OAuth2\Client\Provider\Discord;
@@ -155,8 +156,18 @@ class DiscordAuthController extends Controller {
 					'Content-Type' => 'application/x-www-form-urlencoded',
 				]
 			]);
-			$res = $this->provider->getResponse($req);
-			if ($res->getStatusCode() !== 200){
+			$status_code = null;
+			try {
+				$res = $this->provider->getResponse($req);
+				$status_code = $res->getStatusCode();
+			}
+			catch (ClientException $e) {
+				if ((string)$e->getResponse()->getBody() === '{"error": "invalid_client"}') {
+					$status_code = 200;
+				}
+				else throw $e;
+			}
+			if ($status_code !== 200){
 				// Revoke failed
 				CoreUtils::error_log("Revoking Discord access failed for {$this->_target->name}, details:\n".JSON::encode([
 					'statusCode' => $res->getStatusCode(),

@@ -131,6 +131,7 @@ class DiscordMember extends AbstractUser {
 					$this->delete();
 					Response::fail('The Discord account link got severed, you will need to re-link your account.', ['segway' => true]);
 				}
+				else throw $e;
 			}
 		}
 		$this->access = $token->getToken();
