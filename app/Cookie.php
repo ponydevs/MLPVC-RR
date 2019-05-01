@@ -27,6 +27,7 @@ class Cookie {
 			'domain' => $_SERVER['HTTP_HOST'],
 			'secure' => HTTPS,
 			'httponly' => $http_only,
+			'samesite' => 'Lax',
 		]);
 		if ($success)
 			$_COOKIE[$name] = $value;
