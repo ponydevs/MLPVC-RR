@@ -126,6 +126,7 @@ $api_endpoint('/admin/usefullinks/reorder',          'AdminController#reorderUse
 $api_endpoint('/admin/wsdiag/hello',                 'AdminController#wshello');
 $api_endpoint('/admin/mass-approve',                 'AdminController#massApprove');
 $api_endpoint('/admin/notices/[i:id]?',              'AdminController#noticesApi');
+$api_endpoint('/cg/appearances',                     'AppearanceController#autocomplete');
 $api_endpoint('/cg/appearances/list',                'AppearanceController#listApi');
 $api_endpoint('/cg/appearance/[i:id]?',              'AppearanceController#api');
 $api_endpoint('/cg/appearance/[i:id]/colorgroups',   'AppearanceController#colorGroupsApi');

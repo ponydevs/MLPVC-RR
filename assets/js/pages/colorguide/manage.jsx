@@ -56,6 +56,71 @@
 				</div>
 				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide?'you and staff':'staff'} can see added colors)</label>`
 			),
+		ponyEditorActions = {
+			selectiveWipe: e => {
+				e.preventDefault();
+
+				// TODO Add some toggleable explanations on what each option clears exactly
+
+				const
+					ponyLabel = data.label,
+					$form = $.mk('form','selective-wipe').html(
+						`<p>Select which of the following actions to execute below.</p>
+						<label><input type="checkbox" name="wipe_cache"> Clear cached images</label>
+						<label><input type="checkbox" name="wipe_cm_tokenized"> Clear tokenized cutie mark</label>
+						<label><input type="checkbox" name="wipe_cm_source"> Clear cutie mark source file</label>
+						<label><input type="checkbox" name="wipe_sprite"> Clear sprite image</label>
+						<fieldset>
+							<legend>Color Groups</legend>
+							<div class="radio-group">
+								<label><input type="radio" name="wipe_colors" value="" checked><span>Nothing</span></label>
+								<label><input type="radio" name="wipe_colors" value="color_hex"><span>HEX values</span></label>
+								<label><input type="radio" name="wipe_colors" value="color_all"><span>Colors</span></label>
+								<label><input type="radio" name="wipe_colors" value="all"><span>Color groups</span></label>
+							</div>
+						</fieldset>
+						<label><input type="checkbox" name="wipe_notes"> Clear notes</label>
+						${PersonalGuide?'':`<label><input type="checkbox" name="wipe_tags"> Remove all tags</label>`}
+						<label><input type="checkbox" name="mkpriv"> Make private</label>
+						<label><input type="checkbox" name="reset_priv_key"> Generate new private sharing key</label>`
+					);
+				$.Dialog.close();
+				$.Dialog.request('Selectively wipe data from '+ponyLabel, $form, 'Clear data', function(){
+					$form.on('submit',function(e){
+						e.preventDefault();
+
+						let data = $form.mkData();
+						if (!data.wipe_colors)
+							delete data.wipe_colors;
+						if (Object.keys(data).length === 0)
+							return $.Dialog.fail(false, "You didn't select any data to clear");
+						$.Dialog.clearNotice(/select any data/);
+						$.Dialog.confirm(false, 'The action you are about to perform is irreversible. Are you sure you want to proceed?', ['Wipe selected data','Changed my mind'],sure => {
+							if (!sure) return;
+
+							$.Dialog.wait(false);
+							$.API.delete(`/cg/appearance/${appearanceID}/selective`,data,$.mkAjaxHandler(function(){
+								if (!this.status) return $.Dialog.fail(false, this.message);
+
+								$.Navigation.reload(true);
+							}));
+						});
+					});
+				});
+			},
+			cmEditor: e => {
+				e.preventDefault();
+
+				let ponyLabel = data.label;
+				$.Dialog.close();
+				$.Dialog.wait('Manage Cutie Mark of '+ponyLabel, 'Retrieving CM data from server');
+				$.API.get(`/cg/appearance/${appearanceID}/cutiemarks`,$.mkAjaxHandler(function(){
+					if (!this.status) return $.Dialog.fail(false, this.message);
+
+					CutieMarkEditor.factory(false, appearanceID, ponyLabel, this);
+				}));
+			},
+		},
 		mkPonyEditor = function($this, title, data){
 			let editing = !!data,
 				$li = $this.parents('[id^=p]'),
@@ -93,74 +158,13 @@
 							$.mk('button')
 								.attr('class', 'orange typcn typcn-media-eject')
 								.text('Selective wipe')
-								.on('click',function(e){
-									e.preventDefault();
-
-									// TODO Add some toggleable explanations on what each option clears exactly
-
-									const
-										ponyLabel = data.label,
-										$form = $.mk('form','selective-wipe').html(
-											`<p>Select which of the following actions to execute below.</p>
-											<label><input type="checkbox" name="wipe_cache"> Clear cached images</label>
-											<label><input type="checkbox" name="wipe_cm_tokenized"> Clear tokenized cutie mark</label>
-											<label><input type="checkbox" name="wipe_cm_source"> Clear cutie mark source file</label>
-											<label><input type="checkbox" name="wipe_sprite"> Clear sprite image</label>
-											<fieldset>
-												<legend>Color Groups</legend>
-												<div class="radio-group">
-													<label><input type="radio" name="wipe_colors" value="" checked><span>Nothing</span></label>
-													<label><input type="radio" name="wipe_colors" value="color_hex"><span>HEX values</span></label>
-													<label><input type="radio" name="wipe_colors" value="color_all"><span>Colors</span></label>
-													<label><input type="radio" name="wipe_colors" value="all"><span>Color groups</span></label>
-												</div>
-											</fieldset>
-											<label><input type="checkbox" name="wipe_notes"> Clear notes</label>
-											${PersonalGuide?'':`<label><input type="checkbox" name="wipe_tags"> Remove all tags</label>`}
-											<label><input type="checkbox" name="mkpriv"> Make private</label>
-											<label><input type="checkbox" name="reset_priv_key"> Generate new private sharing key</label>`
-										);
-									$.Dialog.close();
-									$.Dialog.request('Selectively wipe data from '+ponyLabel, $form, 'Clear data', function(){
-										$form.on('submit',function(e){
-											e.preventDefault();
-
-											let data = $form.mkData();
-											if (!data.wipe_colors)
-												delete data.wipe_colors;
-											if (Object.keys(data).length === 0)
-												return $.Dialog.fail(false, "You didn't select any data to clear");
-											$.Dialog.clearNotice(/select any data/);
-											$.Dialog.confirm(false, 'The action you are about to perform is irreversible. Are you sure you want to proceed?', ['Wipe selected data','Changed my mind'],sure => {
-												if (!sure) return;
-
-												$.Dialog.wait(false);
-												$.API.delete(`/cg/appearance/${appearanceID}/selective`,data,$.mkAjaxHandler(function(){
-													if (!this.status) return $.Dialog.fail(false, this.message);
-
-													$.Navigation.reload(true);
-												}));
-											});
-										});
-									});
-								}),
+								.on('click', ponyEditorActions.selectiveWipe),
 							$.mk('button')
 								.attr({
 									'class': 'darkblue typcn typcn-pencil cg-cm-editor',
 								})
 								.text('Cutie Mark')
-								.on('click',function(e){
-									e.preventDefault();
-
-									let ponyLabel = data.label;
-									$.Dialog.close();
-									$.Dialog.wait('Manage Cutie Mark of '+ponyLabel, 'Retrieving CM data from server');
-									$.API.get(`/cg/appearance/${appearanceID}/cutiemarks`,$.mkAjaxHandler(function(){
-										if (!this.status) return $.Dialog.fail(false, this.message);
-
-										CutieMarkEditor.factory(false, appearanceID, ponyLabel, this);
-									}));
-								})
+								.on('click', ponyEditorActions.cmEditor)
 						)
 					);
 				}
@@ -223,7 +227,7 @@
 		}));
 	});
 
-	let $EditTagFormTemplate = $.mk('form','edit-tag');
+	const $EditTagFormTemplate = $.mk('form','edit-tag');
 	$EditTagFormTemplate.append('<label><span>Tag name (3-64 chars.)</span><input type="text" name="name" required pattern="^[^-][ -~]{1,29}$" maxlength="64"></label>');
 	let _typeSelect =
 		`<div class='type-selector'>
@@ -292,28 +296,7 @@
 		)
 	);
 
-
-	class KeyValueCache {
-		constructor(){
-			this.clear();
-		}
-		set(k,v){
-			this.cache[k] = v;
-
-			return v;
-		}
-		get(k){
-			return this.cache[k];
-		}
-		has(k){
-			return this.cache.hasOwnProperty(k);
-		}
-		clear(){
-			this.cache = {};
-		}
-	}
-
-	const TagAutocompleteCache = new KeyValueCache();
+	const tagAutocompleteCache = new window.KeyValueCache();
 
 	function createTagSpan(data){
 		return (
@@ -362,7 +345,7 @@
 						$tagsDiv.html(this.tags);
 						ctxmenus();
 					}
-					TagAutocompleteCache.clear();
+					tagAutocompleteCache.clear();
 					$.Dialog.close();
 				}));
 			});
@@ -1689,7 +1672,7 @@
 							if (this.status){
 								let $affected = $('.id-' + tagID);
 								$affected.remove();
-								TagAutocompleteCache.clear();
+								tagAutocompleteCache.clear();
 								$.Dialog.close();
 							}
 							else if (this.confirm)
@@ -2196,6 +2179,8 @@
 
 	ctxmenus();
 
+	const $editTagsBtn = $('#edit-tags-btn');
+
 	class TagEditor {
 		constructor(rawTags, afterSave){
 			this.afterSave = afterSave;
@@ -2204,7 +2189,7 @@
 			this.$tagsSection = $('#tags');
 			this.$tagList = this.$tagsSection.children('.tags');
 			this.$tagList.addClass('hidden');
-			this.$editButton = $('#edit-tags-btn');
+			this.$editButton = $editTagsBtn;
 			this.$saveButton = $.mk('button').attr('class','green typcn typcn-tick').text('Save').insertAfter(this.$editButton);
 			this.$editButton.detach();
 			this.$saveButton.on('click', e => {
@@ -2274,20 +2259,32 @@
 
 			this.$editor.append(this.$tagInput, this.$textarea);
 			this.$tagInput.autocomplete(
-				{ minLength: 3 },
+				{ minLength: 1 },
 				[
 					{
 						name: 'tags',
 						display: 'name',
 						source: (s, callback) => {
-							if (TagAutocompleteCache.has(s))
-								return callback(TagAutocompleteCache.get(s));
+							if (tagAutocompleteCache.has(s))
+								return callback(tagAutocompleteCache.get(s));
 							$.API.get(`/cg/tags`, { s }, $.mkAjaxHandler(function(){
-								callback(TagAutocompleteCache.set(s, this));
+								callback(tagAutocompleteCache.set(s, this));
 							}));
 						},
 						templates: {
-							suggestion: data => `<span class="tag id-${data.tid} ${data.type} ${data.synonym_of?'synonym':'monospace'}">${data.name} <span class="uses">${data.synonym_of?`<span class="typcn typcn-flow-children"></span>${data.synonym_target}`:data.uses}</span></span>`,
+							suggestion: data => {
+								const $tag = $(`<span />`)
+									.attr('class', `tag id-${data.tid} ${data.type} ${data.synonym_of?'synonym':'monospace'}`);
+								$tag.text(`${data.name} `);
+								const $uses = $(`<span class="uses" />`);
+								if (data.synonym_of)
+									$uses
+										.text(data.synonym_target)
+										.prepend(`<span class="typcn typcn-flow-children"></span>`);
+								else $uses.text(data.uses);
+								$tag.append($uses);
+								return $tag.prop('outerHTML');
+							},
 						}
 					}
 				]
@@ -2346,11 +2343,10 @@
 			this.$saveButton.remove();
 			this.$modeButton.remove();
 			this.$discardButton.remove();
-			TagAutocompleteCache.clear();
+			tagAutocompleteCache.clear();
 		}
 	}
 
-	const $editTagsBtn = $('#edit-tags-btn');
 	$editTagsBtn.on('click',function(e){
 		e.preventDefault();
 

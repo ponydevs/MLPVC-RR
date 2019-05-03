@@ -10,6 +10,17 @@ use App\Models\Logs\MajorChange;
 use App\Models\PCGSlotGift;
 use App\Models\PCGSlotHistory;
 use App\Models\Post;
+use App\Models\Tag;
+use Elasticsearch\Common\Exceptions\BadRequest400Exception;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
+use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
+use Elasticsearch\Common\Exceptions\RuntimeException;
+use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
+use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
+use ONGR\ElasticsearchDSL\Query\Compound\FunctionScoreQuery;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
+use ONGR\ElasticsearchDSL;
 use SeinopSys\RGBAColor;
 
 class CGUtils {
@@ -49,7 +60,7 @@ class CGUtils {
 	 *
 	 * @param string|array $str
 	 */
-	public static function autocompleteRespond($str){
+	public static function autocompleteRespond($str):void {
 		header('Content-Type: application/json');
 		if (\is_array($str))
 			$str = JSON::encode($str);
@@ -66,7 +77,7 @@ class CGUtils {
 	 *
 	 * @return string
 	 */
-	public static function getFullListHTML(array $appearances, $order_by, bool $eqg, $wrap = WRAP){
+	public static function getFullListHTML(array $appearances, $order_by, bool $eqg, $wrap = WRAP):string {
 		$HTML = '';
 		if (!empty($appearances)){
 			$previews = !empty(UserPrefs::get('cg_fulllstprev'));
@@ -90,7 +101,7 @@ class CGUtils {
 				break;
 				case 'relevance':
 					$Sorted = Appearances::sort($appearances, $eqg);
-					foreach (CGUtils::GROUP_TAG_IDS_ASSOC[$eqg?'eqg':'pony'] as $Category => $CategoryName){
+					foreach (self::GROUP_TAG_IDS_ASSOC[$eqg?'eqg':'pony'] as $Category => $CategoryName){
 						if (empty($Sorted[$Category]))
 							continue;
 
@@ -120,7 +131,7 @@ class CGUtils {
 	 * @param string     $HTML
 	 * @param bool       $previews
 	 */
-	private static function _processFullListLink(Appearance $appearance, &$HTML, bool $previews){
+	private static function _processFullListLink(Appearance $appearance, &$HTML, bool $previews):void {
 		$sprite = '';
 		$url = "/cg/v/{$appearance->id}-".$appearance->getURLSafeLabel();
 		if (Permission::sufficient('staff')){
@@ -179,9 +190,9 @@ class CGUtils {
 	 * @param int[]      $min
 	 * @param int[]      $max
 	 *
-	 * @return null
+	 * @return void
 	 */
-	public static function processUploadedImage($key, $path, $allowedMimeTypes, $min = null, $max = null){
+	public static function processUploadedImage($key, $path, $allowedMimeTypes, $min = null, $max = null):void {
 		$minwidth = $min[0] ?? 1;
 		$minheight = $min[1] ?? $minwidth;
 		$maxwidth = $max[0] ?? 1000;
@@ -216,7 +227,7 @@ class CGUtils {
 	 * @param array      $min
 	 * @param array      $max
 	 */
-	public static function grabImage(string $path, $allowedMimeTypes, array $min, array $max){
+	public static function grabImage(string $path, $allowedMimeTypes, array $min, array $max):void {
 		try {
 			$Image = new ImageProvider(Posts::validateImageURL());
 		}
@@ -231,7 +242,7 @@ class CGUtils {
 		if (File::put($path, $remoteFile) === false)
 			Response::fail('Writing local image file was unsuccessful');
 
-		list($width, $height) = Image::checkType($path, $allowedMimeTypes);
+		[$width, $height] = Image::checkType($path, $allowedMimeTypes);
 		Image::checkSize($path, $width, $height, $min, $max);
 	}
 
@@ -543,50 +554,50 @@ class CGUtils {
 	public const CMDIR_SVG_PATH = FSPATH.'cg_render/appearance/#/cmdir-@.svg';
 
 	// Generate appearance facing image (CM background)
-	public static function renderCMFacingSVG($CGPath, Appearance $appearance){
+	public static function renderCMFacingSVG($CGPath, Appearance $appearance):void {
 		$facing = $_GET['facing'] ?? 'left';
 		if (!\in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
 			Response::fail('Invalid facing value specified!');
 
-		$OutputPath = str_replace(['#','@'],[$appearance->id,$facing],self::CMDIR_SVG_PATH);
-		$FileRelPath = $appearance->getFacingSVGURL($facing, false);
-		if (file_exists($OutputPath))
-			Image::outputSVG(null,$OutputPath,$FileRelPath);
+		$output_path = str_replace(['#','@'],[$appearance->id,$facing],self::CMDIR_SVG_PATH);
+		$file_rel_path = $appearance->getFacingSVGURL($facing, false);
+		if (file_exists($output_path))
+			Image::outputSVG(null,$output_path,$file_rel_path);
 
-		$ColorMapping = $appearance->getColorMapping(Appearance::DEFAULT_COLOR_MAPPING);
+		$color_mapping = $appearance->getColorMapping(Appearance::DEFAULT_COLOR_MAPPING);
 
 		$img = File::get(APPATH.'img/cm_facing/'.($facing===CM_FACING_RIGHT?'right':'left').'.svg');
 		foreach (Appearance::DEFAULT_COLOR_MAPPING as $label => $defhex)
-			$img = str_replace($label, $ColorMapping[$label] ?? $defhex, $img);
+			$img = str_replace($label, $color_mapping[$label] ?? $defhex, $img);
 
-		Image::outputSVG($img,$OutputPath,$FileRelPath);
+		Image::outputSVG($img,$output_path,$file_rel_path);
 	}
 
-	public static function renderCMSVG(Cutiemark $CutieMark, bool $output = true){
+	public static function renderCMSVG(Cutiemark $CutieMark, bool $output = true):void {
 		if (empty($CutieMark))
 			CoreUtils::notFound();
 
-		$OutputPath = $CutieMark->getRenderedFilePath();
-		$FileRelPath = $CutieMark->getRenderedRelativeURL();
-		if (file_exists($OutputPath))
-			Image::outputSVG(null,$OutputPath,$FileRelPath);
+		$output_path = $CutieMark->getRenderedFilePath();
+		$file_rel_path = $CutieMark->getRenderedRelativeURL();
+		if (file_exists($output_path))
+			Image::outputSVG(null,$output_path,$file_rel_path);
 
 		$tokenized = $CutieMark->getTokenizedFile();
 		if ($tokenized === null)
 			CoreUtils::notFound();
 		$img = self::untokenizeSvg($tokenized, $CutieMark->appearance_id);
 		if (!$output){
-			File::put($OutputPath, $img);
+			File::put($output_path, $img);
 			return;
 		}
-		Image::outputSVG($img,$OutputPath,$FileRelPath);
+		Image::outputSVG($img,$output_path,$file_rel_path);
 	}
 
-	public static function int2Hex(int $int){
+	public static function int2Hex(int $int):string {
 		return '#'.strtoupper(CoreUtils::pad(dechex($int), 6));
 	}
 
-	private static function _coordGenerator($w, $h){
+	private static function _coordGenerator($w, $h):?\Generator {
 		for ($y = 0; $y < $h; $y++){
 			for ($x = 0; $x < $w; $x++)
 				yield [$x, $y];
@@ -594,81 +605,85 @@ class CGUtils {
 	}
 
 	public static function getSpriteImageMap($AppearanceID){
-		$PNGPath = SPRITE_PATH."$AppearanceID.png";
-		$MapFile = new CachedFile(FSPATH."cg_render/appearance/$AppearanceID/linedata.json.gz", function($path) use($PNGPath) {
-			return !file_exists($path) || filemtime($path) < filemtime($PNGPath);
+		$png_path = SPRITE_PATH."$AppearanceID.png";
+		$map_file = new CachedFile(FSPATH."cg_render/appearance/$AppearanceID/linedata.json.gz", static function($path) use($png_path) {
+			return !file_exists($path) || filemtime($path) < filemtime($png_path);
 		});
-		if (!$MapFile->expired())
-			$Map = $MapFile->read();
+		if (!$map_file->expired())
+			$map = $map_file->read();
 		else {
-			if (!file_exists($PNGPath))
+			if (!file_exists($png_path))
 				Response::fail("There's no sprite image for appearance #$AppearanceID");
 
-			list($PNGWidth, $PNGHeight) = getimagesize($PNGPath);
-			$PNG = imagecreatefrompng($PNGPath);
-			imagesavealpha($PNG, true);
+			$img_size = getimagesize($png_path);
+			if ($img_size === false) {
+				throw new \RuntimeException("getimagesize failed to read sprite $png_path");
+			}
+			[$png_width, $png_height] = $img_size;
+			$png = imagecreatefrompng($png_path);
+			imagesavealpha($png, true);
 
-			$allcolors = [];
-			foreach (self::_coordGenerator($PNGWidth,$PNGHeight) as $pos){
+			$all_colors = [];
+			foreach (self::_coordGenerator($png_width,$png_height) as $pos){
 				[$x, $y] = $pos;
-				$rgb = imagecolorat($PNG, $x, $y);
-				$colors = imagecolorsforindex($PNG, $rgb);
+				$rgb = imagecolorat($png, $x, $y);
+				$colors = imagecolorsforindex($png, $rgb);
 				$hex = strtoupper('#'.CoreUtils::pad(dechex($colors['red'])).CoreUtils::pad(dechex($colors['green'])).CoreUtils::pad(dechex($colors['blue'])));
 				$opacity = $colors['alpha'] ?? 0;
 				if ($opacity === 127)
 					continue;
-				$allcolors[$hex][$opacity][] = [$x, $y];
+				$all_colors[$hex][$opacity][] = [$x, $y];
 			}
 
-			$currLine = null;
+			$current_line = null;
 			$lines = [];
-			$lastx = -2;
-			$lasty = -2;
-			$_colorsAssoc = [];
-			$colorno = 0;
-			foreach ($allcolors as $hex => $opacities){
-				if (!isset($_colorsAssoc[$hex])){
-					$_colorsAssoc[$hex] = $colorno;
-					$colorno++;
+			$last_x = -2;
+			$last_y = -2;
+			$_colors_assoc = [];
+			$color_no = 0;
+			foreach ($all_colors as $hex => $opacities){
+				if (!isset($_colors_assoc[$hex])){
+					$_colors_assoc[$hex] = $color_no;
+					$color_no++;
 				}
 				foreach ($opacities as $opacity => $coords){
 					foreach ($coords as $pos){
 						[$x, $y] = $pos;
 
-						if ($x-1 !== $lastx || $y !== $lasty){
-							if ($currLine !== null)
-								$lines[] = $currLine;
-							$currLine = [
+						if ($x-1 !== $last_x || $y !== $last_y){
+							if ($current_line !== null)
+								$lines[] = $current_line;
+							$current_line = [
 								'x' => $x,
 								'y' => $y,
 								'width' => 1,
-								'colorid' => $_colorsAssoc[$hex],
+								'colorid' => $_colors_assoc[$hex],
 								'opacity' => $opacity,
 							];
 						}
-						else $currLine['width']++;
+						else $current_line['width']++;
 
-						$lastx = $x;
-						$lasty = $y;
+						$last_x = $x;
+						$last_y = $y;
 					}
 				}
 			}
-			if ($currLine !== null)
-				$lines[] = $currLine;
+			if ($current_line !== null)
+				$lines[] = $current_line;
 
-			$Output = [
-				'width' => $PNGWidth,
-				'height' => $PNGHeight,
+			$output = [
+				'width' => $png_width,
+				'height' => $png_height,
 				'linedata' => [],
-				'colors' => array_flip($_colorsAssoc),
+				'colors' => array_flip($_colors_assoc),
 			];
 			foreach ($lines as $line)
-				$Output['linedata'][] = $line;
+				$output['linedata'][] = $line;
 
-			$Map = $Output;
-			$MapFile->update($Output);
+			$map = $output;
+			$map_file->update($output);
 		}
-		return $Map;
+		return $map;
 	}
 
 	/**
@@ -676,103 +691,103 @@ class CGUtils {
 	 * @param int      $AppearanceID
 	 * @param string|null $size
 	 */
-	public static function renderSpritePNG($CGPath, $AppearanceID, $size = null){
+	public static function renderSpritePNG($CGPath, $AppearanceID, $size = null):void {
 		if ($size !== null)
 			$size = \intval($size, 10);
 		if (!\in_array($size, Appearance::SPRITE_SIZES, true))
 			$size = 600;
 		$outsize = $size === Appearance::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
 
-		$OutputPath = FSPATH."cg_render/appearance/{$AppearanceID}/sprite$outsize.png";
-		$FileRelPath = "$CGPath/v/{$AppearanceID}s.png";
-		CoreUtils::fixPath($FileRelPath);
-		if (file_exists($OutputPath))
-			Image::outputPNG(null,$OutputPath,$FileRelPath);
+		$output_path = FSPATH."cg_render/appearance/{$AppearanceID}/sprite$outsize.png";
+		$file_rel_path = "$CGPath/v/{$AppearanceID}s.png";
+		CoreUtils::fixPath($file_rel_path);
+		if (file_exists($output_path))
+			Image::outputPNG(null,$output_path,$file_rel_path);
 
-		$Map = self::getSpriteImageMap($AppearanceID);
+		$map = self::getSpriteImageMap($AppearanceID);
 
-		$SizeFactor = (int)round($size/300);
-		$PNG = Image::createTransparent($Map['width']*$SizeFactor, $Map['height']*$SizeFactor);
-		foreach ($Map['linedata'] as $line){
-			$rgb = RGBAColor::parse($Map['colors'][$line['colorid']]);
-			$color = imagecolorallocatealpha($PNG, $rgb->red, $rgb->green, $rgb->blue, $line['opacity']);
-			Image::drawSquare($PNG, $line['x']*$SizeFactor, $line['y']*$SizeFactor, [$line['width']*$SizeFactor, $SizeFactor], $color, null);
+		$size_factor = (int)round($size/300);
+		$png = Image::createTransparent($map['width']*$size_factor, $map['height']*$size_factor);
+		foreach ($map['linedata'] as $line){
+			$rgb = RGBAColor::parse($map['colors'][$line['colorid']]);
+			$color = imagecolorallocatealpha($png, $rgb->red, $rgb->green, $rgb->blue, $line['opacity']);
+			Image::drawSquare($png, $line['x']*$size_factor, $line['y']*$size_factor, [$line['width']*$size_factor, $size_factor], $color, null);
 		}
 
-		Image::outputPNG($PNG, $OutputPath, $FileRelPath);
+		Image::outputPNG($png, $output_path, $file_rel_path);
 	}
 
-	public static function renderSpriteSVG($CGPath, $AppearanceID){
-		$Map = self::getSpriteImageMap($AppearanceID);
-		if (empty($Map))
+	public static function renderSpriteSVG($CGPath, $AppearanceID):void {
+		$map = self::getSpriteImageMap($AppearanceID);
+		if (empty($map))
 			CoreUtils::notFound();
 
-		$OutputPath = FSPATH."cg_render/appearance/{$AppearanceID}/sprite.svg";
-		$FileRelPath = "$CGPath/v/{$AppearanceID}s.svg";
-		if (file_exists($OutputPath))
-			Image::outputSVG(null,$OutputPath,$FileRelPath);
+		$output_path = FSPATH."cg_render/appearance/{$AppearanceID}/sprite.svg";
+		$file_rel_path = "$CGPath/v/{$AppearanceID}s.svg";
+		if (file_exists($output_path))
+			Image::outputSVG(null,$output_path,$file_rel_path);
 
-		$IMGWidth = $Map['width'];
-		$IMGHeight = $Map['height'];
+		$img_width = $map['width'];
+		$img_height = $map['height'];
 		$strokes = [];
-		foreach ($Map['linedata'] as $line){
-			$hex = $Map['colors'][$line['colorid']];
+		foreach ($map['linedata'] as $line){
+			$hex = $map['colors'][$line['colorid']];
 			if ($line['opacity'] !== 0){
 				$opacity = (float) number_format((127- $line['opacity'])/127, 2, '.', '');
 				$hex .= "' opacity='{$opacity}";
 			}
 			$strokes[$hex][] = "M{$line['x']} {$line['y']} l{$line['width']} 0Z";
 		}
-		$SVG = <<<XML
-			<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $IMGWidth $IMGHeight' enable-background='new 0 0 $IMGWidth $IMGHeight' xml:space='preserve'>
+		$svg = <<<XML
+			<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $img_width $img_height' enable-background='new 0 0 $img_width $img_height' xml:space='preserve'>
 			XML;
 		foreach ($strokes as $hex => $defs){
 			$d = '';
 			foreach ($defs as $def)
 				$d .= "$def ";
 			$d = rtrim($d);
-			$SVG .= /** @lang XML */
+			$svg .= /** @lang XML */
 				"<path stroke='$hex' d='$d'/>";
 		}
-		$SVG .= '</svg>';
+		$svg .= '</svg>';
 
-		Image::outputSVG($SVG, $OutputPath, $FileRelPath);
+		Image::outputSVG($svg, $output_path, $file_rel_path);
 	}
 
 	public const PREVIEW_SVG_PATH = FSPATH.'cg_render/appearance/#/preview.svg';
 
-	public static function renderPreviewSVG($CGPath, Appearance $Appearance){
-		$OutputPath = str_replace('#',$Appearance->id,self::PREVIEW_SVG_PATH);
-		$FileRelPath = "$CGPath/v/{$Appearance->id}p.svg";
-		if (file_exists($OutputPath))
-			Image::outputSVG(null,$OutputPath,$FileRelPath);
+	public static function renderPreviewSVG($CGPath, Appearance $Appearance):void {
+		$output_path = str_replace('#',$Appearance->id,self::PREVIEW_SVG_PATH);
+		$file_rel_path = "$CGPath/v/{$Appearance->id}p.svg";
+		if (file_exists($output_path))
+			Image::outputSVG(null,$output_path,$file_rel_path);
 
-		$SVG = '';
-		$PreviewColors = $Appearance->preview_colors;
-		$colorCount = \count($PreviewColors);
-		switch ($colorCount){
+		$svg = '';
+		$preview_colors = $Appearance->preview_colors;
+		$color_count = \count($preview_colors);
+		switch ($color_count){
 			case 0:
-				$SVG .= '<rect fill="#FFFFFF" width="2" height="2"/><rect fill="#EFEFEF" width="1" height="1"/><rect fill="#EFEFEF" width="1" height="1" x="1" y="1"/>';
+				$svg .= '<rect fill="#FFFFFF" width="2" height="2"/><rect fill="#EFEFEF" width="1" height="1"/><rect fill="#EFEFEF" width="1" height="1" x="1" y="1"/>';
 			break;
 			case 1:
-				$SVG .= /** @lang XML */
-					"<rect x='0' y='0' width='2' height='2' fill='{$PreviewColors[0]->hex}'/>";
+				$svg .= /** @lang XML */
+					"<rect x='0' y='0' width='2' height='2' fill='{$preview_colors[0]->hex}'/>";
 			break;
 			case 3:
-				$SVG .= <<<SVG
-					<rect x='0' y='0' width='2' height='2' fill='{$PreviewColors[0]['hex']}'/>
-					<rect x='0' y='1' width='1' height='1' fill='{$PreviewColors[1]['hex']}'/>
-					<rect x='1' y='1' width='1' height='1' fill='{$PreviewColors[2]['hex']}'/>
+				$svg .= <<<SVG
+					<rect x='0' y='0' width='2' height='2' fill='{$preview_colors[0]['hex']}'/>
+					<rect x='0' y='1' width='1' height='1' fill='{$preview_colors[1]['hex']}'/>
+					<rect x='1' y='1' width='1' height='1' fill='{$preview_colors[2]['hex']}'/>
 					SVG;
 			break;
 			case 2:
 			case 4:
 				$x = 0;
 				$y = 0;
-				foreach ($PreviewColors as $c){
+				foreach ($preview_colors as $c){
 					$w = $x % 2 === 0 ? 2 : 1;
 					$h = $y % 2 === 0 ? 2 : 1;
-					$SVG .= "<rect x='$x' y='$y' width='$w' height='$h' fill='{$c->hex}'/>";
+					$svg .= "<rect x='$x' y='$y' width='$w' height='$h' fill='{$c->hex}'/>";
 					$x++;
 					if ($x > 1){
 						$x = 0;
@@ -783,35 +798,35 @@ class CGUtils {
 		}
 
 		// Only apply blur if we have colors
-		if ($colorCount > 0)
-			$SVG = "<defs><filter id='b' x='0' y='0'><feGaussianBlur in='SourceGraphic' stdDeviation='0.4' /></filter></defs><g filter='url(#b)'>$SVG</g>";
+		if ($color_count > 0)
+			$svg = "<defs><filter id='b' x='0' y='0'><feGaussianBlur in='SourceGraphic' stdDeviation='0.4' /></filter></defs><g filter='url(#b)'>$svg</g>";
 
-		$SVG = /** @lang XML */
-			"<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='.5 .5 1 1' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'>$SVG</svg>";
+		$svg = /** @lang XML */
+			"<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='.5 .5 1 1' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'>$svg</svg>";
 
-		Image::outputSVG($SVG, $OutputPath, $FileRelPath);
+		Image::outputSVG($svg, $output_path, $file_rel_path);
 	}
 
 	/**
 	 * @param Appearance $Appearance
 	 */
-	public static function getSwatchesAI(Appearance $Appearance){
+	public static function getSwatchesAI(Appearance $Appearance):void {
 		$label = $Appearance->label;
-		$JSON = [
+		$json = [
 			'Exported at' => gmdate('Y-m-d H:i:s \G\M\T'),
 			'Version' => '1.4',
 		];
-		$JSON[$label] = [];
+		$json[$label] = [];
 
-		$CGs = $Appearance->color_groups;
-		$Colors = self::getColorsForEach($CGs, true);
-		foreach ($CGs as $cg){
-			$JSON[$label][$cg->label] = [];
-			foreach ($Colors[$cg->id] as $c)
-				$JSON[$label][$cg->label][$c->label] = $c->hex;
+		$color_groups = $Appearance->color_groups;
+		$colors = self::getColorsForEach($color_groups, true);
+		foreach ($color_groups as $cg){
+			$json[$label][$cg->label] = [];
+			foreach ($colors[$cg->id] as $c)
+				$json[$label][$cg->label][$c->label] = $c->hex;
 		}
 
-		CoreUtils::downloadAsFile(JSON::encode($JSON), "$label.json");
+		CoreUtils::downloadAsFile(JSON::encode($json), "$label.json");
 	}
 
 	/**
@@ -851,7 +866,7 @@ class CGUtils {
 	/**
 	 * @param Appearance $appearance
 	 */
-	public static function getSwatchesInkscape(Appearance $appearance){
+	public static function getSwatchesInkscape(Appearance $appearance):void {
 		$label = $appearance->label;
 
 		$color_groups = $appearance->color_groups;
@@ -888,7 +903,7 @@ class CGUtils {
 		if (empty($CMColorGroup))
 			return $svg;
 
-		RGBAColor::forEachColorIn($svg, function(RGBAColor $color) use ($CMColorGroup){
+		RGBAColor::forEachColorIn($svg, static function(RGBAColor $color) use ($CMColorGroup){
 			/** @var $dbcolor Color[] */
 			$dbcolor = DB::$instance->where('hex', $color->toHex())->where('group_id', $CMColorGroup->id)->get(Color::$table_name);
 
@@ -913,12 +928,12 @@ class CGUtils {
 	 * @return string Un-tokenized SVG file
 	 */
 	public static function untokenizeSvg(string $svg, int $appearance_id):string {
-		/** @var $CMColorGroup ColorGroup */
-		$CMColorGroup = DB::$instance->where('label', 'Cutie Mark')->where('appearance_id', $appearance_id)->getOne(ColorGroup::$table_name);
-		if (empty($CMColorGroup))
+		/** @var $cm_color_group ColorGroup */
+		$cm_color_group = DB::$instance->where('label', 'Cutie Mark')->where('appearance_id', $appearance_id)->getOne(ColorGroup::$table_name);
+		if (empty($cm_color_group))
 			return $svg;
 
-		$svg = preg_replace_callback(new RegExp('<!--@(\d+)(?:,([\d.]+))?-->'), function($match){
+		$svg = preg_replace_callback(new RegExp('<!--@(\d+)(?:,([\d.]+))?-->'), static function($match){
 			/** @var $dbcolor Color */
 			$dbcolor = Color::find($match[1]);
 
@@ -929,7 +944,7 @@ class CGUtils {
 			$color->alpha = (float) (!empty($match[2]) ? $match[2] : 1);
 			return (string)$color;
 		}, $svg);
-		$svg = preg_replace_callback(new RegExp('<!--#/([A-F\d]{8})-->'), function($match){
+		$svg = preg_replace_callback(new RegExp('<!--#/([A-F\d]{8})-->'), static function($match){
 			$color = RGBAColor::parse("#{$match[1]}");
 			// This would restore the original color
 			//return (string) $color;
@@ -940,8 +955,8 @@ class CGUtils {
 		return $svg;
 	}
 
-	public static function validateTagName($key){
-		$name = strtolower((new Input($key,function($value, $range){
+	public static function validateTagName($key):string {
+		$name = strtolower((new Input($key, static function($value, $range){
 			if (Input::checkStringLength($value,$range,$code))
 				return $code;
 			if (CoreUtils::contains($value, ','))
@@ -979,7 +994,7 @@ class CGUtils {
 	 *
 	 * @return array
 	 */
-	public static function searchElastic(array $body, Pagination $Pagination){
+	public static function searchElastic(array $body, Pagination $Pagination):array {
 		$params = array_merge(self::ELASTIC_BASE, $Pagination->toElastic(), [
 			'type' => 'entry',
 			'body' => $body,
@@ -1083,20 +1098,20 @@ class CGUtils {
 	}
 
 	public static function getExportData() {
-		$JSON = [
+		$json = [
 			'Appearances' => [],
 			'Tags' => [],
 		];
 
-		/** @var $Tags \App\Models\Tag[] */
-		$Tags = DB::$instance->orderBy('id')->get('tags');
-		if (!empty($Tags)) foreach ($Tags as $t){
-			$JSON['Tags'][$t->id] = $t->to_array();
+		/** @var $tags Tag[] */
+		$tags = DB::$instance->orderBy('id')->get('tags');
+		if (!empty($tags)) foreach ($tags as $t){
+			$json['Tags'][$t->id] = $t->to_array();
 		}
 
-		$Appearances = Appearances::get(null);
-		if (!empty($Appearances)) foreach ($Appearances as $p){
-			$AppendAppearance = [
+		$appearances = Appearances::get(null);
+		if (!empty($appearances)) foreach ($appearances as $p){
+			$append_appearance = [
 				'id' => $p->id,
 				'order' => $p->order,
 				'label' => $p->label,
@@ -1106,71 +1121,174 @@ class CGUtils {
 				'private' => $p->private,
 			];
 
-			$CMs = Cutiemarks::get($p);
-			if (!empty($CMs)){
-				$AppendCMs = [];
-				foreach ($CMs as $CM){
+			$cms = Cutiemarks::get($p);
+			if (!empty($cms)){
+				$append_cms = [];
+				foreach ($cms as $cm){
 					$arr = [
-						'facing' => $CM->facing,
-						'svg' => $CM->getRenderedRelativeURL(),
+						'facing' => $cm->facing,
+						'svg' => $cm->getRenderedRelativeURL(),
 					];
-					if ($CM->favme !== null)
-						$arr['source'] = "http://fav.me/{$CM->favme}";
-					if ($CM->contributor_id !== null)
-						$arr['contributor'] = $CM->contributor->toDALink();
-					$AppendCMs[$CM->id] = $arr;
+					if ($cm->favme !== null)
+						$arr['source'] = "http://fav.me/{$cm->favme}";
+					if ($cm->contributor_id !== null)
+						$arr['contributor'] = $cm->contributor->toDALink();
+					$append_cms[$cm->id] = $arr;
 				}
-				$AppendAppearance['CutieMark'] = $AppendCMs;
+				$append_appearance['CutieMark'] = $append_cms;
 			}
 
-			$AppendAppearance['ColorGroups'] = [];
-			if (empty($AppendAppearance['private'])){
-				$ColorGroups = $p->color_groups;
-				if (!empty($ColorGroups)){
-					$AllColors = CGUtils::getColorsForEach($ColorGroups);
-					foreach ($ColorGroups as $cg){
-						$AppendColorGroup = $cg->to_array([
+			$append_appearance['ColorGroups'] = [];
+			if (empty($append_appearance['private'])){
+				$color_groups = $p->color_groups;
+				if (!empty($color_groups)){
+					$all_colors = self::getColorsForEach($color_groups);
+					foreach ($color_groups as $cg){
+						$append_color_group = $cg->to_array([
 							'except' => 'appearance_id',
 						]);
 
-						$AppendColorGroup['Colors'] = [];
-						if (!empty($AllColors[$cg->id])){
+						$append_color_group['Colors'] = [];
+						if (!empty($all_colors[$cg->id])){
 							/** @var $colors Color[] */
-							$colors = $AllColors[$cg->id];
+							$colors = $all_colors[$cg->id];
 							foreach ($colors as $c)
-								$AppendColorGroup['Colors'][] = $c->to_array([
+								$append_color_group['Colors'][] = $c->to_array([
 									'except' => ['id', 'group_id', 'linked_to'],
 								]);
 						}
 
-						$AppendAppearance['ColorGroups'][$cg->id] = $AppendColorGroup;
+						$append_appearance['ColorGroups'][$cg->id] = $append_color_group;
 					}
 				}
 			}
-			else $AppendAppearance['ColorGroups']['_hidden'] = true;
+			else $append_appearance['ColorGroups']['_hidden'] = true;
 
-			$AppendAppearance['TagIDs'] = [];
-			$TagIDs = Tags::getFor($p->id, null, true);
-			if (!empty($TagIDs)){
-				foreach ($TagIDs as $t)
-					$AppendAppearance['TagIDs'][] = $t->id;
+			$append_appearance['TagIDs'] = [];
+			$tag_ids = Tags::getFor($p->id, null, true);
+			if (!empty($tag_ids)){
+				foreach ($tag_ids as $t)
+					$append_appearance['TagIDs'][] = $t->id;
 			}
 
-			$AppendAppearance['RelatedAppearances'] = [];
-			$RelatedIDs = $p->related_appearances;
-			if (!empty($RelatedIDs))
-				foreach ($RelatedIDs as $rel)
-					$AppendAppearance['RelatedAppearances'][] = $rel->target_id;
+			$append_appearance['RelatedAppearances'] = [];
+			$related_ids = $p->related_appearances;
+			if (!empty($related_ids))
+				foreach ($related_ids as $rel)
+					$append_appearance['RelatedAppearances'][] = $rel->target_id;
 
-			$JSON['Appearances'][$AppendAppearance['id']] = $AppendAppearance;
+			$json['Appearances'][$append_appearance['id']] = $append_appearance;
 		}
 
-		return JSON::encode($JSON);
+		return JSON::encode($json);
 	}
 
 	const GUIDE_EXPORT_PATH = APPATH.'dist/mlpvc-colorguide.json';
 
 	public static function saveExportData():void {
 		File::put(self::GUIDE_EXPORT_PATH, self::getExportData());
+	}
+
+	public static function isElasticAvailable():bool {
+		try {
+			$elastic_avail = CoreUtils::elasticClient()->ping();
+		}
+		catch (NoNodesAvailableException|ServerErrorResponseException $e){
+			return false;
+		}
+		return $elastic_avail;
+	}
+
+	/**
+	 * @param Pagination  $pagination
+	 * @param bool        $EQG
+	 * @param bool        $searching
+	 * @param string|null $title
+	 *
+	 * @return array
+	 * @throws BadRequest400Exception
+	 * @throws ServerErrorResponseException
+	 */
+	public static function searchGuide(Pagination $pagination, bool $EQG, bool $searching = true, string $title = null):array {
+		$search = new ElasticsearchDSL\Search();
+		$in_order = true;
+
+		// Search query exists
+		if ($searching){
+			$search_query = preg_replace(new RegExp('[^\w\s*?\'-]'), '', CoreUtils::trim($_GET['q']));
+			$title .= "$search_query - ";
+			$multi_match = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
+				['label', 'tags'],
+				$search_query,
+				[
+					'type' => 'cross_fields',
+					'minimum_should_match' => '100%',
+				]
+			);
+			$search->addQuery($multi_match);
+			$score = new FunctionScoreQuery(new MatchAllQuery());
+			$score->addFieldValueFactorFunction('order', 1.5);
+			$score->addParameter('boost_mode', 'sum');
+			$search->addQuery($score);
+			$sort = new ElasticsearchDSL\Sort\FieldSort('_score', 'asc');
+			$search->addSort($sort);
+			$in_order = false;
+		}
+		else {
+			$sort = new ElasticsearchDSL\Sort\FieldSort('order', 'asc');
+			$search->addSort($sort);
+		}
+
+		$bool_query = new BoolQuery();
+		if (Permission::insufficient('staff'))
+			$bool_query->add(new TermQuery('private', 'false'), BoolQuery::MUST);
+		$bool_query->add(new TermQuery('ishuman', $EQG ? 'true' : 'false'), BoolQuery::MUST);
+		$search->addQuery($bool_query);
+
+		$search->setSource(false);
+		$search = $search->toArray();
+		try {
+			$search = self::searchElastic($search, $pagination);
+		}
+		catch (Missing404Exception $e){
+			$elastic_avail = false;
+			$search = [];
+		}
+		catch (ServerErrorResponseException | BadRequest400Exception $e){
+			$message = $e->getMessage();
+			if (
+				!CoreUtils::contains($message, 'Result window is too large, from + size must be less than or equal to')
+				&& !CoreUtils::contains($message, 'Failed to parse int parameter [from] with value')
+			){
+				throw $e;
+			}
+
+			$search = [];
+			$pagination->calcMaxPages(0);
+		}
+
+		if (!empty($search)){
+			$total_hits = $search['hits']['total'];
+			if (\is_array($total_hits) && isset($total_hits['value']))
+				$total_hits = $total_hits['value'];
+			$pagination->calcMaxPages($total_hits);
+			if (!empty($search['hits']['hits'])){
+				$ids = [];
+				/** @noinspection ForeachSourceInspection */
+				foreach($search['hits']['hits'] as $i => $hit)
+					$ids[$hit['_id']] = $i;
+
+				if ($in_order)
+					DB::$instance->orderBy('order');
+				DB::$instance->where('id', array_keys($ids));
+				$appearances = Appearances::get($EQG);
+				if (!empty($appearances) && !$in_order)
+					usort($appearances, static function(Appearance $a, Appearance $b) use ($ids){
+						return $ids[$a->id] <=> $ids[$b->id];
+					});
+			}
+		}
+
+		return [$appearances ?? [], $search_query ?? null];
 	}
 }

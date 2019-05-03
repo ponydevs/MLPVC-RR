@@ -65,15 +65,6 @@
 
 	$('.get-swatch').off('click').on('click', getSwatch);
 	window.copyHashToggler();
-
-	$('#search-form').on('reset', function(e){
-		e.preventDefault();
-
-		let $this = $(this);
-		$this.find('input[name=q]').val('');
-		$this.trigger('submit');
-	});
-
 	function getSwatch(e){
 		e.preventDefault();
 
@@ -115,7 +106,7 @@
 					</div>
 				</div>`
 			),
-			$appsel = $.mk('select')
+			$appSelect = $.mk('select')
 				.attr('required', true)
 				.html('<option value="" selected style="display:none">Choose one</option><option value="inkscape">Inkscape</option><option value="ai">Adobe Illustrator</option>')
 				.on('change',function(){
@@ -128,11 +119,64 @@
 			$SwatchDlForm = $.mk('form').attr('id','swatch-save').append(
 				$.mk('label').attr('class','align-center').append(
 					'<span>Choose your drawing program:</span>',
-					$appsel
+					$appSelect
 				),
 				$instr
 			);
 
 		$.Dialog.info(`Download swatch file for ${ponyName}`,$SwatchDlForm);
+	}
+
+
+	const $searchForm = $('#search-form');
+	$searchForm.on('reset', function(e){
+		e.preventDefault();
+
+		let $this = $(this);
+		$this.find('input[name=q]').val('');
+		$this.trigger('submit');
+	});
+	const $searchInput = $searchForm.children('input');
+	const appearanceAutocompleteCache = new window.KeyValueCache();
+	if ($searchInput.length) {
+		$searchInput.autocomplete(
+			{
+				hint: false,
+				minLength: 1,
+			},
+			[
+				{
+					name: 'appearance',
+					displayKey: 'label',
+					source: (q, callback) => {
+						if (appearanceAutocompleteCache.has(q))
+							return callback(appearanceAutocompleteCache.get(q));
+						$.API.get(`/cg/appearances`, { q, EQG }, $.mkAjaxHandler(data => {
+							callback(appearanceAutocompleteCache.set(q, data));
+						}));
+					},
+					templates: {
+						header: () => `<div class="aa-header">
+							Highlight suggestions with the arrow keys, then press <kbd>Enter</kbd> to accept. Pressing
+							<kbd>Enter</kbd> without highlighting a result will take you to the full search results.
+						</div>`,
+						suggestion: data => {
+							return $('<a>').attr('href', data.url).append(
+								`<img src="${data.image}" alt="search suggestion" class="ac-appearance-image">`,
+								$('<div class="ac-appearance-label" />').text(data.label)
+							).prop('outerHTML');
+						},
+					}
+				}
+			]
+		).on('autocomplete:selected', function(event, suggestion, dataset, context) {
+			if (context && context.selectionMethod === 'click'){
+				return;
+			}
+			if (suggestion.url){
+				$searchForm.find(':input').prop('disabled', true);
+				window.location.href = suggestion.url;
+			}
+		});
 	}
 })();

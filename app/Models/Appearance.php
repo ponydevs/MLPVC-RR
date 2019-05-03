@@ -936,4 +936,8 @@ class Appearance extends NSModel implements Linkable {
 	public function getCutiemarks():array {
 		return $this->cutiemarks;
 	}
+
+	public function getPreviewImage(int $size = self::SPRITE_SIZES['SOURCE']) {
+		return $this->getSpriteURL($size, $this->getPreviewURL());
+	}
 }

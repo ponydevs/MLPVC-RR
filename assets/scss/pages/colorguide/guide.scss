@@ -321,28 +321,32 @@ ul.colors {
 
 	$radius: 8px;
 
-	:first-child {
-		border-top-left-radius: $radius;
-		border-bottom-left-radius: $radius;
-	}
 	button:last-of-type {
 		border-top-right-radius: $radius;
 		border-bottom-right-radius: $radius;
 	}
 
 	$SearchBorder: #333;
+	$SearchButtonBG: #ddd;
 	input {
 		font-size: 1em;
 		line-height: .9em;
 		height: 1em;
 		margin: 0;
-		padding: .3em;
+		$padding: .3em;
+		padding: $padding;
 		border-color: $SearchBorder;
 		background-color: $BackgroundLight;
 		box-shadow: inset 0 1px 1px 1px rgba($SearchBorder, .1);
-
+		width: calc(100% - (#{$padding} * 2) - 2px);
+	}
+	> input, .algolia-autocomplete {
 		flex: 1 1 70%;
 		width: 70%;
+	}
+	input, .algolia-autocomplete {
+		border-top-left-radius: $radius;
+		border-bottom-left-radius: $radius;
 	}
 	button {
 		vertical-align: baseline;
@@ -359,7 +363,82 @@ ul.colors {
 
 		&:not(:hover) {
 			color: $SearchBorder !important;
-			background-color: #ddd !important;
+			background-color: $SearchButtonBG !important;
+		}
+	}
+
+	.algolia-autocomplete {
+		background-color: $BackgroundLight;
+
+		.aa-dataset-appearance {
+			overflow: hidden;
+			border-radius: $radius 0 $radius $radius;
+			border: 1px solid $SearchBorder;
+			margin-top: -1px;
+			box-shadow: 0 1px 5px rgba($HeaderBlue, .2);
+
+			.aa-header {
+				width: 100%;
+				border-bottom: 1px solid $SearchBorder;
+				background-color: $SearchButtonBG;
+				padding: 5px;
+				font-size: 14px;
+				line-height: 1.4em;
+				box-sizing: border-box;
+				user-select: none;
+			}
+
+			.aa-suggestions {
+				background: $BackgroundLight;
+				overflow: hidden;
+				width: 100%;
+				box-sizing: border-box;
+				font-size: 1.5rem;
+
+				.aa-suggestion {
+					display: block;
+
+					&.aa-cursor a {
+						background-color: $LinkHover;
+						color: white;
+					}
+
+					a {
+						display: flex;
+						flex-flow: row nowrap;
+						align-items: center;
+						justify-content: flex-start;
+						$suggestion-padding: 8px;
+						padding: $suggestion-padding;
+						cursor: pointer;
+						transition: none;
+
+						&:not(:last-child) {
+							border-bottom: 1px solid rgba(black, .2);
+						}
+
+						.ac-appearance-image {
+							flex: 0 0 auto;
+							display: block;
+							$base-size: 1.5em;
+							min-width: $base-size;
+							max-width: 100%;
+							max-height: $base-size;
+							margin-right: $suggestion-padding;
+							background: $BackgroundLight;
+							border-radius: 4px;
+						}
+
+						.ac-appearance-label {
+							flex: 1 1 auto;
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							text-align: left;
+						}
+					}
+				}
+			}
 		}
 	}
 }

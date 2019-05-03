@@ -238,14 +238,14 @@ class Pagination {
 	 * @return string
 	 */
 	public function getPageQueryString($page = null, bool $force_fixpath_empty = true):string {
-		$pagenum = $page ?? $this->page;
-		if ($pagenum === 1){
+		$page_number = $page ?? $this->page;
+		if ($page_number === 1){
 			if (!$force_fixpath_empty)
 				return '';
-			$pagenum = '§';
+			$page_number = '§';
 		}
 
-		return "{$this->query_prefix}page=$pagenum";
+		return "{$this->query_prefix}page=$page_number";
 	}
 
 	public function toURI(bool $force_fixpath_empty = true):NSUriBuilder {

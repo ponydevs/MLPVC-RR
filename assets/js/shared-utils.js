@@ -391,7 +391,7 @@
 			r.push(`CSRF_TOKEN=${t}`);
 			event.data = r.join("&");
 		}
-		else event.data.CSRF_TOKEN = t;
+		else event.data = { ...event.data, CSRF_TOKEN: t };
 	});
 	const simpleStatusHandler = xhr => {
 		let resp;
@@ -964,4 +964,29 @@
 			})(el);
 		});
 	}
+
+	class KeyValueCache {
+		constructor() {
+			this.clear();
+		}
+
+		set(k, v) {
+			this.cache[k] = v;
+
+			return v;
+		}
+
+		get(k) {
+			return this.cache[k];
+		}
+
+		has(k) {
+			return this.cache.hasOwnProperty(k);
+		}
+
+		clear() {
+			this.cache = {};
+		}
+	}
+	window.KeyValueCache = KeyValueCache;
 })();

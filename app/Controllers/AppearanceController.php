@@ -719,21 +719,21 @@ class AppearanceController extends ColorGuideController {
 
 		switch ($this->action){
 			case 'GET':
-				$CMs = Cutiemarks::get($this->appearance);
-				foreach ($CMs as &$CM)
-					$CM = $CM->to_js_response();
-				unset($CM);
+				$cms = Cutiemarks::get($this->appearance);
+				foreach ($cms as &$cm)
+					$cm = $cm->to_js_response();
+				unset($cm);
 
-				$ProcessedCMs = Cutiemarks::get($this->appearance);
+				$processed_cms = Cutiemarks::get($this->appearance);
 
-				Response::done(['cms' => $CMs, 'preview' => Cutiemarks::getListForAppearancePage($ProcessedCMs, NOWRAP)]);
+				Response::done(['cms' => $cms, 'preview' => Cutiemarks::getListForAppearancePage($processed_cms, NOWRAP)]);
 			break;
 			case 'PUT':
-				$GrabCMs = Cutiemarks::get($this->appearance);
-				/** @var $CurrentCMs Cutiemark[] */
-				$CurrentCMs = [];
-				foreach ($GrabCMs as $cm)
-					$CurrentCMs[$cm->id] = $cm;
+				$grab_cms = Cutiemarks::get($this->appearance);
+				/** @var $current_cms Cutiemark[] */
+				$current_cms = [];
+				foreach ($grab_cms as $cm)
+					$current_cms[$cm->id] = $cm;
 				/** @var $data array */
 				$data = (new Input('CMData','json',[
 					Input::CUSTOM_ERROR_MESSAGES => [
@@ -743,17 +743,17 @@ class AppearanceController extends ColorGuideController {
 				]))->out();
 				if (\count($data) > 4)
 					Response::fail('Appearances can only have a maximum of 4 cutie marks.');
-				/** @var $NewCMs Cutiemark[] */
-				$NewCMs = [];
-				$NewSVGs = [];
-				$NewIDs = [];
+				/** @var $new_cms Cutiemark[] */
+				$new_cms = [];
+				$new_svgs = [];
+				$new_ids = [];
 				$labels = [];
 				foreach ($data as $i => $item){
 					if (isset($item['id'])){
 						$cm = Cutiemark::find($item['id']);
 						if (empty($cm))
 							Response::fail("The cutie mark you're trying to update (#{$item['id']}) does not exist");
-						$NewIDs[] = $cm->id;
+						$new_ids[] = $cm->id;
 					}
 					else $cm = new Cutiemark([
 						'appearance_id' => $this->appearance->id,
@@ -802,9 +802,9 @@ class AppearanceController extends ColorGuideController {
 								Response::fail('Deviation link is missing');
 
 							try {
-								$Image = new ImageProvider(CoreUtils::trim($item['deviation']), ImageProvider::PROV_DEVIATION, true);
+								$image = new ImageProvider(CoreUtils::trim($item['deviation']), ImageProvider::PROV_DEVIATION, true);
 								/** @var $deviation CachedDeviation */
-								$deviation = $Image->extra;
+								$deviation = $image->extra;
 							}
 							catch (MismatchedProviderException $e){
 								Response::fail('The link must point to a DeviantArt submission, '.$e->getActualProvider().' links are not allowed');
@@ -847,18 +847,18 @@ class AppearanceController extends ColorGuideController {
 						Response::fail('Preview rotation must be between -45 and 45');
 					$cm->rotation = $rotation;
 
-					$NewCMs[$i] = $cm;
-					$NewSVGs[$i] = $svgdata;
+					$new_cms[$i] = $cm;
+					$new_svgs[$i] = $svgdata;
 				}
 
-				if (!empty($NewCMs)){
+				if (!empty($new_cms)){
 					CoreUtils::createFoldersFor(Cutiemark::SOURCE_FOLDER);
-					foreach ($NewCMs as $i => $cm){
+					foreach ($new_cms as $i => $cm){
 						if (!$cm->save())
 							Response::dbError("Saving cutie mark (index $i) failed");
 
-						if ($NewSVGs[$i] !== null){
-							if (false !== File::put($cm->getSourceFilePath(), $NewSVGs[$i])){
+						if ($new_svgs[$i] !== null){
+							if (false !== File::put($cm->getSourceFilePath(), $new_svgs[$i])){
 								CoreUtils::deleteFile($cm->getTokenizedFilePath());
 								CoreUtils::deleteFile($cm->getRenderedFilePath());
 								continue;
@@ -868,38 +868,38 @@ class AppearanceController extends ColorGuideController {
 						}
 					}
 
-					$RemovedIDs = CoreUtils::array_subtract(array_keys($CurrentCMs), $NewIDs);
-					if (!empty($RemovedIDs)){
-						foreach ($RemovedIDs as $removedID)
-							$CurrentCMs[$removedID]->delete();
+					$removed_ids = CoreUtils::array_subtract(array_keys($current_cms), $new_ids);
+					if (!empty($removed_ids)){
+						foreach ($removed_ids as $removedID)
+							$current_cms[$removedID]->delete();
 					}
 
-					$CutieMarks = Cutiemarks::get($this->appearance);
-					$olddata = Cutiemarks::convertDataForLogs($CurrentCMs);
-					$newdata = Cutiemarks::convertDataForLogs($CutieMarks);
-					if ($olddata !== $newdata)
+					$cutie_marks = Cutiemarks::get($this->appearance);
+					$old_data = Cutiemarks::convertDataForLogs($current_cms);
+					$new_data = Cutiemarks::convertDataForLogs($cutie_marks);
+					if ($old_data !== $new_data)
 						Logs::logAction('cm_modify',[
 							'appearance_id' => $this->appearance->id,
-							'olddata' => $olddata,
-							'newdata' => $newdata,
+							'olddata' => $old_data,
+							'newdata' => $new_data,
 						]);
 				}
 				else {
-					foreach ($CurrentCMs as $cm)
+					foreach ($current_cms as $cm)
 						$cm->delete();
 
 					$this->appearance->clearRenderedImages([Appearance::CLEAR_CMDIR]);
 
 					Logs::logAction('cm_delete',[
 						'appearance_id' => $this->appearance->id,
-						'data' => Cutiemarks::convertDataForLogs($CurrentCMs),
+						'data' => Cutiemarks::convertDataForLogs($current_cms),
 					]);
 
-					$CutieMarks = [];
+					$cutie_marks = [];
 				}
 
 				$data = [];
-				if ($this->_appearancePage && !empty($CutieMarks))
+				if ($this->_appearancePage && !empty($cutie_marks))
 					$data['html'] = Cutiemarks::getListForAppearancePage(Cutiemarks::get($this->appearance));
 				Response::done($data);
 			break;
@@ -951,9 +951,9 @@ class AppearanceController extends ColorGuideController {
 			CoreUtils::notAllowed();
 
 		$list = [];
-		$personalGuide = $_REQUEST['PERSONAL_GUIDE'] ?? null;
-		if ($personalGuide !== null){
-			$owner = Users::get($personalGuide, 'name');
+		$personal_guide = $_REQUEST['PERSONAL_GUIDE'] ?? null;
+		if ($personal_guide !== null){
+			$owner = Users::get($personal_guide, 'name');
 			if (empty($owner))
 				Response::fail('Personal Color Guide owner could not be found');
 			$cond = ['owner_id = ?', $owner->id];
@@ -966,7 +966,7 @@ class AppearanceController extends ColorGuideController {
 			'order' => 'label asc',
 		]) as $item)
 			$list[] = $item->to_array();
-		Response::done([ 'list' =>  $list, 'pcg' => $personalGuide !== null ]);
+		Response::done([ 'list' =>  $list, 'pcg' => $personal_guide !== null ]);
 	}
 
 	/**
@@ -981,7 +981,7 @@ class AppearanceController extends ColorGuideController {
 		$this->load_appearance($params);
 		$this->appearance->checkManagePermission(Auth::$user);
 
-		$returnedColorFields = [
+		$returned_color_fields = [
 			isset($_GET['hex']) ? 'hex' : 'id',
 			'label',
 		];
@@ -993,7 +993,7 @@ class AppearanceController extends ColorGuideController {
 				'colors' => []
 			];
 			foreach ($item->colors as $c){
-				$arr = $c->to_array(['only' => $returnedColorFields]);
+				$arr = $c->to_array(['only' => $returned_color_fields]);
 				if ($c->linked_to !== null)
 					unset($arr['id']);
 				$group['colors'][] = $arr;
@@ -1107,5 +1107,31 @@ class AppearanceController extends ColorGuideController {
 			default:
 				CoreUtils::notAllowed();
 		}
+	}
+
+
+	public function autocomplete():void {
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
+		if (empty($_GET['q']) || empty($_GET['EQG']))
+			CGUtils::autocompleteRespond('[]');
+
+		$eqg = $_GET['EQG'] === 'true';
+
+	    $pagination = new Pagination('', 5);
+	    /** @var $appearances Appearance[] */
+		[$appearances] = CGUtils::searchGuide($pagination, $eqg);
+
+		if (empty($appearances))
+			CGUtils::autocompleteRespond('[]');
+
+		CGUtils::autocompleteRespond(array_map(static function(Appearance $a) {
+			return [
+				'label' => $a->label,
+				'url' => $a->toURL(),
+				'image' => $a->getPreviewImage(),
+			];
+		}, $appearances));
 	}
 }

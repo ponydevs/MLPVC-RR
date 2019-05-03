@@ -39,17 +39,6 @@ use App\UserPrefs;
 use App\Appearances;
 use App\Tags;
 use App\Users;
-use Elasticsearch\Common\Exceptions\BadRequest400Exception;
-use Elasticsearch\Common\Exceptions\Missing404Exception;
-use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
-use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
-use ONGR\ElasticsearchDSL;
-use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
-use ONGR\ElasticsearchDSL\Query\Compound\FunctionScoreQuery;
-use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
-use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
-use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 
 class ColorGuideController extends Controller {
 	public $do = 'colorguide';
@@ -265,94 +254,12 @@ class ColorGuideController extends Controller {
 		/** @var $appearances_per_page int */
 		$appearances_per_page = UserPrefs::get('cg_itemsperpage');
 		$appearances = [];
-		try {
-			$elastic_avail = CoreUtils::elasticClient()->ping();
-		}
-		catch (NoNodesAvailableException|ServerErrorResponseException $e){
-			$elastic_avail = false;
-		}
-		$searching = !empty($_GET['q']) && mb_strlen(CoreUtils::trim($_GET['q'])) > 0;
+		$elastic_avail = CGUtils::isElasticAvailable();
+		$searching = !empty($_GET['q']) && CoreUtils::trim($_GET['q']) !== '';
 		$json_response = CoreUtils::isJSONExpected();
 		if ($elastic_avail){
-			$search = new ElasticsearchDSL\Search();
-			$in_order = true;
 		    $pagination = new Pagination($this->path, $appearances_per_page);
-
-			// Search query exists
-			if ($searching){
-				$search_query = preg_replace(new RegExp('[^\w\s*?\'-]'),'',CoreUtils::trim($_GET['q']));
-				$title .= "$search_query - ";
-				$multi_match = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
-					['label','tags'],
-					$search_query,
-					[
-						'type' => 'cross_fields',
-						'minimum_should_match' => '100%',
-					]
-				);
-				$search->addQuery($multi_match);
-				$score = new FunctionScoreQuery(new MatchAllQuery());
-				$score->addFieldValueFactorFunction('order',1.5);
-				$score->addParameter('boost_mode','sum');
-				$search->addQuery($score);
-				$sort = new ElasticsearchDSL\Sort\FieldSort('_score', 'asc');
-				$search->addSort($sort);
-				$in_order = false;
-			}
-			else {
-				$sort = new ElasticsearchDSL\Sort\FieldSort('order', 'asc');
-				$search->addSort($sort);
-			}
-
-			$bool_query = new BoolQuery();
-			if (Permission::insufficient('staff'))
-				$bool_query->add(new TermQuery('private', 'false'), BoolQuery::MUST);
-			$bool_query->add(new TermQuery('ishuman', $this->_EQG ? 'true' : 'false'), BoolQuery::MUST);
-			$search->addQuery($bool_query);
-
-			$search->setSource(false);
-			$search = $search->toArray();
-			try {
-				$search = CGUtils::searchElastic($search, $pagination);
-			}
-			catch (Missing404Exception $e){
-				$elastic_avail = false;
-				$search = [];
-			}
-			catch (ServerErrorResponseException | BadRequest400Exception $e){
-				$message = $e->getMessage();
-				if (
-					!CoreUtils::contains($message, 'Result window is too large, from + size must be less than or equal to')
-					&& !CoreUtils::contains($message, 'Failed to parse int parameter [from] with value')
-				){
-					throw $e;
-				}
-
-				$search = [];
-				$pagination->calcMaxPages(0);
-			}
-
-			if (!empty($search)){
-				$total_hits = $search['hits']['total'];
-				if (\is_array($total_hits) && isset($total_hits['value']))
-					$total_hits = $total_hits['value'];
-				$pagination->calcMaxPages($total_hits);
-				if (!empty($search['hits']['hits'])){
-					$ids = [];
-					/** @noinspection ForeachSourceInspection */
-					foreach($search['hits']['hits'] as $i => $hit)
-						$ids[$hit['_id']] = $i;
-
-					if ($in_order)
-						DB::$instance->orderBy('order');
-					DB::$instance->where('id', array_keys($ids));
-					$appearances = Appearances::get($this->_EQG);
-					if (!empty($appearances) && !$in_order)
-						uasort($appearances, function(Appearance $a, Appearance $b) use ($ids){
-							return $ids[$a->id] <=> $ids[$b->id];
-						});
-				}
-			}
+			[$appearances,$search_query] = CGUtils::searchGuide($pagination, $this->_EQG, $searching, $title);
 		}
 		else {
 			if ($searching && $json_response)
@@ -396,6 +303,7 @@ class ColorGuideController extends Controller {
 			'noindex' => $searching,
 			'css' => [true],
 			'js' => ['jquery.ctxmenu', true, 'paginate'],
+			'libs' => ['autocomplete'],
 			'import' => [
 				'eqg' => $this->_EQG,
 				'appearances' => $appearances,
