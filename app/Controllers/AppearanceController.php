@@ -224,70 +224,76 @@ class AppearanceController extends ColorGuideController {
 				}
 				else $data['notes_src'] = null;
 
-				$data['private'] = isset($_POST['private']);
+				$data['private'] = (new Input('private','bool', [
+					Input::IS_OPTIONAL => true,
+				]))->out();
 
 				if ($this->creating){
 					if ($this->_personalGuide || Permission::insufficient('staff')){
 						$data['owner_id'] = Auth::$user->id;
 					}
 					if (empty($data['owner_id'])){
-						$biggestOrder = DB::$instance->disableAutoClass()->where('ishuman', $data['ishuman'])->getOne('appearances','MAX("order") as "order"');
-						$data['order'] = ($biggestOrder['order'] ?? 0)+1;
+						$biggest_order = DB::$instance->disableAutoClass()
+							->where('ishuman', $data['ishuman'])
+							->getOne('appearances','MAX("order") as "order"');
+						$data['order'] = ($biggest_order['order'] ?? 0)+1;
 					}
 				}
-				else if ($data['private']){
+				else if ($data['private'] === true){
 					$data['last_cleared'] = date('c');
 				}
 
-				/** @var $newAppearance Appearance */
+				/** @var $new_appearance Appearance */
 				if ($this->creating){
-					$newAppearance = Appearance::create($data);
-					$newAppearance->reindex();
+					$new_appearance = Appearance::create($data);
+					$new_appearance->reindex();
 				}
 				else {
-					$olddata = $this->appearance->to_array();
+					$old_data = $this->appearance->to_array();
 					$this->appearance->update_attributes($data);
 					$this->appearance->reindex();
 				}
 
-				$EditedAppearance = $this->creating ? $newAppearance : $this->appearance;
+				$edited_appearance = $this->creating ? $new_appearance : $this->appearance;
 
 				if ($this->creating){
-					$data['id'] = $newAppearance->id;
+					$data['id'] = $new_appearance->id;
 					$response = [
 						'message' => 'Appearance added successfully',
-						'goto' => $newAppearance->toURL(),
+						'goto' => $new_appearance->toURL(),
 					];
-					$usetemplate = isset($_POST['template']);
-					if ($usetemplate){
+					$use_template = (new Input('template','bool', [
+						Input::IS_OPTIONAL => true,
+					]))->out();
+					if ($use_template){
 						try {
-							$newAppearance->applyTemplate();
+							$new_appearance->applyTemplate();
 						}
 						catch (\Exception $e){
 							$response['message'] .= ', but applying the template failed';
 							$response['info'] = 'The common color groups could not be added.<br>Reason: '.$e->getMessage();
-							$usetemplate = false;
+							$use_template = false;
 						}
 					}
 
 					Logs::logAction('appearances', [
 						'action' => 'add',
-						'id' => $newAppearance->id,
-						'order' => $newAppearance->order,
-						'label' => $newAppearance->label,
-						'notes' => $newAppearance->notes_src,
-						'ishuman' => $newAppearance->ishuman,
-						'usetemplate' => $usetemplate,
-						'private' => $newAppearance->private,
-						'owner_id' => $newAppearance->owner_id,
+						'id' => $new_appearance->id,
+						'order' => $new_appearance->order,
+						'label' => $new_appearance->label,
+						'notes' => $new_appearance->notes_src,
+						'ishuman' => $new_appearance->ishuman,
+						'usetemplate' => $use_template,
+						'private' => $new_appearance->private,
+						'owner_id' => $new_appearance->owner_id,
 					]);
 
-					if ($newAppearance->owner_id !== null){
-						PCGSlotHistory::record($newAppearance->owner_id, 'appearance_add', null, [
-							'id' => $newAppearance->id,
-							'label' => $newAppearance->label,
+					if ($new_appearance->owner_id !== null){
+						PCGSlotHistory::record($new_appearance->owner_id, 'appearance_add', null, [
+							'id' => $new_appearance->id,
+							'label' => $new_appearance->label,
 						]);
-						$newAppearance->owner->syncPCGSlotCount();
+						$new_appearance->owner->syncPCGSlotCount();
 					}
 
 					Response::done($response);
@@ -299,9 +305,9 @@ class AppearanceController extends ColorGuideController {
 					$diff = [];
 					foreach (['label' => true, 'notes_src' => 'notes', 'private' => true, 'owner_id' => true] as $orig => $mapped){
 						$key = $mapped === true ? $orig : $mapped;
-						if ($EditedAppearance->{$orig} !== $olddata[$orig]){
-							$diff["old$key"] = $olddata[$orig];
-							$diff["new$key"] = $EditedAppearance->{$orig};
+						if ($edited_appearance->{$orig} !== $old_data[$orig]){
+							$diff["old$key"] = $old_data[$orig];
+							$diff["new$key"] = $edited_appearance->{$orig};
 						}
 					}
 					if (!empty($diff)) Logs::logAction('appearance_modify', [
@@ -312,10 +318,10 @@ class AppearanceController extends ColorGuideController {
 
 				$response = [];
 				if (!$this->_appearancePage){
-					$response['label'] = $EditedAppearance->label;
-					if (isset($olddata['label']) && $olddata['label'] !== $this->appearance->label)
-						$response['newurl'] = $EditedAppearance->toURL();
-					$response['notes'] = $EditedAppearance->getNotesHTML(NOWRAP);
+					$response['label'] = $edited_appearance->label;
+					if (isset($old_data['label']) && $old_data['label'] !== $this->appearance->label)
+						$response['newurl'] = $edited_appearance->toURL();
+					$response['notes'] = $edited_appearance->getNotesHTML(NOWRAP);
 				}
 
 				Response::done($response);

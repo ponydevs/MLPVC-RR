@@ -95,8 +95,18 @@ class Input {
 				$this->_source = $_source;
 		}
 		$_SRC = $GLOBALS[$this->_source];
-		if (!isset($_SRC[$key]) || (\is_string($_SRC[$key]) && mb_strlen($_SRC[$key]) === 0))
-			$result = empty($o[self::IS_OPTIONAL]) ? self::ERROR_MISSING : self::ERROR_NONE;
+		if (!isset($_SRC[$key]) || (\is_string($_SRC[$key]) && $_SRC[$key] === '')){
+			$is_mandatory = empty($o[self::IS_OPTIONAL]);
+			if ($is_mandatory)
+				$result = self::ERROR_MISSING;
+			else {
+				$result = self::ERROR_NONE;
+				if ($this->_type === 'bool') {
+					$this->_origValue =
+					$this->_value = false;
+				}
+			}
+		}
 		else {
 			if ($this->_source === '_FILES')
 				$this->_origValue = new UploadedFile($_SRC[$key]);
