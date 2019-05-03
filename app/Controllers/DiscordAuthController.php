@@ -15,6 +15,7 @@ use App\Time;
 use App\UserPrefs;
 use App\Users;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use League\OAuth2\Client\Token\AccessToken;
 use RestCord\DiscordClient;
 use Wohali\OAuth2\Client\Provider\Discord;
@@ -145,23 +146,23 @@ class DiscordAuthController extends Controller {
 	public function unlink($params){
 		$this->_setTarget($params);
 
-		$discordUser = $this->_target->discord_member;
-		if ($discordUser->isLinked()){
-			$req = $this->provider->getRequest('POST', $this->provider->apiDomain.'/oauth2/token/revoke', [
-				'body' => http_build_query([
-					'token' => $discordUser->refresh,
-					'token_type_hint' => 'refresh_token'
-				]),
-				'headers' => [
-					'Content-Type' => 'application/x-www-form-urlencoded',
-				]
-			]);
+		$discord_user = $this->_target->discord_member;
+		if ($discord_user->isLinked()){
 			$status_code = null;
 			try {
+				$req = $this->provider->getRequest('POST', $this->provider->apiDomain.'/oauth2/token/revoke', [
+					'body' => http_build_query([
+						'token' => $discord_user->refresh,
+						'token_type_hint' => 'refresh_token'
+					]),
+					'headers' => [
+						'Content-Type' => 'application/x-www-form-urlencoded',
+					]
+				]);
 				$res = $this->provider->getResponse($req);
 				$status_code = $res->getStatusCode();
 			}
-			catch (ClientException $e) {
+			catch (RequestException $e) {
 				if ((string)$e->getResponse()->getBody() === '{"error": "invalid_client"}') {
 					$status_code = 200;
 				}
@@ -178,7 +179,7 @@ class DiscordAuthController extends Controller {
 		}
 
 		// Revoke successful
-		$discordUser->delete();
+		$discord_user->delete();
 
 		$Your = $this->_sameUser ? 'Your' : 'This';
 		Response::success("$Your Discord account was successfully unlinked.".($this->_sameUser?' If you want to verify it yourself, check your Authorized Apps in your settings.':''));
