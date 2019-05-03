@@ -10,7 +10,6 @@
 		$wssHeartbeat = $('#wss-heartbeat'),
 		$wssResponseTime = $('#wss-response-time'),
 		$connectionList = $('#connection-list'),
-		anonUsername = 'Anonymous',
 		updateStatus = function(){
 			$wssHeartbeat.removeClass('beat');
 			const startTime = new Date().getTime();
@@ -69,7 +68,6 @@
 								};
 							if (conn.username)
 								usernames[conn.username] = (usernames[conn.username] || 0) + 1;
-							else usernames[anonUsername] = (usernames[anonUsername] || 0) + 1;
 						});
 						const usernameKeys = Object.keys(usernames);
 						let $li = $(document.getElementById(ip));
@@ -85,16 +83,8 @@
 									usernameKeys.map(el => {
 										const count = usernames[el];
 										return $.mk('li').html(
-											(
-												el !== anonUsername
-												? `<a href="/@${el}" target="_blank">${el}</a>`
-												: anonUsername
-											)+(
-												count > 1
-												? ` (${count})`
-												: ''
-											)
-										)
+											`<a href="/@${el}" target="_blank">${el}</a>${count > 1?` (${count})`:''}`
+										);
 									})
 								)
 							);
