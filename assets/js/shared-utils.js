@@ -391,6 +391,9 @@
 			r.push(`CSRF_TOKEN=${t}`);
 			event.data = r.join("&");
 		}
+		else if (event.data instanceof FormData) {
+			event.data.append('CSRF_TOKEN', t);
+		}
 		else event.data = { ...event.data, CSRF_TOKEN: t };
 	});
 	const simpleStatusHandler = xhr => {

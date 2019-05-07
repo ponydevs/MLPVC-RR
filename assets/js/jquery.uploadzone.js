@@ -32,7 +32,7 @@
 					$input.prev().attr('href', response.path).children('img').fadeTo(200,0,function(){
 						let $image = $(this);
 						$this.addClass('loading');
-						$image.attr('src',response.path).on('load',function(){
+						$image.attr({ src: response.path, alt: '' }).on('load',function(){
 							$this.removeClass('loading');
 							$image.fadeTo(200,1);
 						});
@@ -63,7 +63,6 @@
 
 			let fd = new FormData();
 			fd.append(opt.requestKey, files[0]);
-			fd.append('CSRF_TOKEN', $.getCSRFToken());
 
 			let ajaxOpts = {
 				url: opt.target,

@@ -1875,11 +1875,12 @@
 						let title = 'Upload sprite image',
 							$uploadInput = $this.find('input[type="file"]');
 						$.Dialog.request(title,$SpriteUploadFormTemplate.clone(),'Download image', function($form){
-							let $image_url = $form.find('input[name=image_url]');
+							const $image_url = $form.find('input[name=image_url]');
 							$form.find('.upload-link').on('click', function(e){
 								e.preventDefault();
 								e.stopPropagation();
 
+								$.Dialog.close();
 								$uploadInput.trigger('click', [true]);
 							});
 							if (PersonalGuide)
