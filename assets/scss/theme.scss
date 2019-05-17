@@ -64,7 +64,7 @@
 				line-height: 45px;
 				color: #000;
 				@include outline(2);
-				font-family: 'Celestia', sans-serif;
+				font-family: $cursive;
 			}
 			ul {
 				position: relative;
@@ -498,7 +498,7 @@ header, #sidebar .mobile-nav {
 	h1 {
 		text-align: center;
 		margin: 0 0 5px;
-		font-family: "Celestia", sans-serif;
+		font-family: $cursive;
 
 		+ p {
 			text-align: center;
@@ -676,7 +676,7 @@ header, #sidebar .mobile-nav {
 		h2 {
 			font-size: 24px;
 			margin: 0 0 5px;
-			font-family: "Celestia", sans-serif;
+			font-family: $cursive;
 			font-weight: normal;
 		}
 		p {
