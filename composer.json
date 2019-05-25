@@ -48,7 +48,8 @@
 		"twig/twig": "^2.0",
 		"php-tmdb/api": "~2.1",
 		"symfony/dotenv": "^4.1",
-		"whichbrowser/parser": "^2.0"
+		"whichbrowser/parser": "^2.0",
+		"zircote/swagger-php": "^3.0"
 	},
 	"require-dev": {
 		"roave/security-advisories": "dev-master",

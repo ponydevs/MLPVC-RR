@@ -1382,4 +1382,19 @@ class CoreUtils {
 				return $value;
 		}
 	}
+
+	/**
+	 * Generate pagination data for API requests
+	 *
+	 * @param Pagination $pagination
+	 *
+	 * @return array
+	 */
+	public static function paginationForApi(Pagination $pagination): array {
+		return [
+			'currentPage' => $pagination->getPage(),
+			'totalPages' => $pagination->getMaxPages(),
+			'totalItems' => $pagination->getEntryCount(),
+		];
+	}
 }

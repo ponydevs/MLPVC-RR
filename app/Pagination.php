@@ -21,6 +21,8 @@ class Pagination {
 	private $page = 1;
 	/** @var string */
 	private $query_prefix;
+	/** @var int */
+	private $entry_count;
 
 	/**
 	 * @param string $base_path      The starting path of each paginated page
@@ -32,10 +34,11 @@ class Pagination {
 		$this->items_per_page = $items_per_page;
 		$this->base_path = $base_path;
 		$this->query_prefix = $query_prefix;
+		$this->entry_count = $entry_count;
 		$this->guessPage();
 
-		if ($entry_count !== null)
-			$this->calcMaxPages($entry_count);
+		if ($this->entry_count !== null)
+			$this->calcMaxPages();
 	}
 
 	public function guessPage(){
@@ -70,12 +73,15 @@ class Pagination {
 	/**
 	 * Calculate the number of maximum possible pages
 	 *
-	 * @param int $entry_count
+	 * @param int|null $entry_count
 	 *
 	 * @return self
 	 */
-	public function calcMaxPages(int $entry_count){
-		$this->max_pages = (int) max(1, ceil($entry_count/$this->items_per_page));
+	public function calcMaxPages(?int $entry_count = null){
+		if ($entry_count !== null) {
+			$this->entry_count = $entry_count;
+		}
+		$this->max_pages = (int) max(1, ceil($this->entry_count/$this->items_per_page));
 		if ($this->page > $this->max_pages)
 			$this->page = $this->max_pages;
 
@@ -264,5 +270,9 @@ class Pagination {
 
 	public function getMaxPages():?int {
 		return $this->max_pages;
+	}
+
+	public function getEntryCount():?int {
+		return $this->entry_count;
 	}
 }

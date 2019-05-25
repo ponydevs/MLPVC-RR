@@ -14,7 +14,7 @@ $safe_uri = preg_replace(new RegExp('[^ -~]'), '', $request_uri);
 // Enforce URL
 CoreUtils::fixPath($safe_uri);
 
-require CONFPATH.'routes.php';
+require CONFPATH.'routes/index.php';
 /** @var $match array */
 $match = $router->match($safe_uri);
 if (!isset($match['target']))
