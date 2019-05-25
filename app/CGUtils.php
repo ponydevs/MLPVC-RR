@@ -1216,7 +1216,8 @@ class CGUtils {
 		// Search query exists
 		if ($searching){
 			$search_query = preg_replace(new RegExp('[^\w\s*?\'-]'), '', CoreUtils::trim($_GET['q']));
-			$title .= "$search_query - ";
+			if ($title !== null)
+				$title .= "$search_query - ";
 			$multi_match = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
 				['label', 'tags'],
 				$search_query,
