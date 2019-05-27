@@ -147,6 +147,7 @@
 			[
 				{
 					name: 'appearance',
+					debounce: 200,
 					source: (q, callback) => {
 						if (appearanceAutocompleteCache.has(q))
 							return callback(appearanceAutocompleteCache.get(q));

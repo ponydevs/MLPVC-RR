@@ -408,6 +408,7 @@
 		$.Dialog.fail(false, resp);
 	};
 	const statusCodeHandlers = {
+		0: () => { /* noop */ },
 		400: simpleStatusHandler,
 		401: function(){
 			$.Dialog.fail(undefined, "Cross-site Request Forgery attack detected. Please <a class='send-feedback'>let us know</a> about this issue so we can look into it.");

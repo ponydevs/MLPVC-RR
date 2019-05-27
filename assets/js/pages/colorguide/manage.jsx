@@ -57,7 +57,7 @@
 				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide?'you and staff':'staff'} can see added colors)</label>`
 			),
 		ponyEditorActions = {
-			selectiveWipe: e => {
+			selectiveWipe: data => e => {
 				e.preventDefault();
 
 				// TODO Add some toggleable explanations on what each option clears exactly
@@ -108,16 +108,16 @@
 					});
 				});
 			},
-			cmEditor: e => {
+			cmEditor: (data, appearanceId) => e => {
 				e.preventDefault();
 
 				let ponyLabel = data.label;
 				$.Dialog.close();
 				$.Dialog.wait('Manage Cutie Mark of '+ponyLabel, 'Retrieving CM data from server');
-				$.API.get(`/cg/appearance/${appearanceID}/cutiemarks`,$.mkAjaxHandler(function(){
+				$.API.get(`/cg/appearance/${appearanceId}/cutiemarks`,$.mkAjaxHandler(function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
-					CutieMarkEditor.factory(false, appearanceID, ponyLabel, this);
+					CutieMarkEditor.factory(false, appearanceId, ponyLabel, this);
 				}));
 			},
 		},
@@ -158,13 +158,13 @@
 							$.mk('button')
 								.attr('class', 'orange typcn typcn-media-eject')
 								.text('Selective wipe')
-								.on('click', ponyEditorActions.selectiveWipe),
+								.on('click', ponyEditorActions.selectiveWipe(data)),
 							$.mk('button')
 								.attr({
 									'class': 'darkblue typcn typcn-pencil cg-cm-editor',
 								})
 								.text('Cutie Mark')
-								.on('click', ponyEditorActions.cmEditor)
+								.on('click', ponyEditorActions.cmEditor(data, appearanceID))
 						)
 					);
 				}
