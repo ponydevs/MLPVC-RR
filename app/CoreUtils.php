@@ -1395,6 +1395,7 @@ class CoreUtils {
 			'currentPage' => $pagination->getPage(),
 			'totalPages' => $pagination->getMaxPages(),
 			'totalItems' => $pagination->getEntryCount(),
+			'itemsPerPage' => $pagination->getItemsPerPage(),
 		];
 	}
 }
