@@ -124,7 +124,7 @@ class AppearancesController extends APIController {
 		$elastic_avail = CGUtils::isElasticAvailable();
 		if (!$elastic_avail){
 			HTTP::statusCode(503);
-			Response::fail('ElasticSearch server is down');
+			Response::fail('ELASTIC_DOWN');
 		}
 		$appearances_per_page = UserPrefs::get('cg_itemsperpage');
 		$pagination = new Pagination('', $appearances_per_page);
