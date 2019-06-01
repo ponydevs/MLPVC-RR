@@ -260,11 +260,11 @@ class Pagination {
 		return $uri;
 	}
 
-	public function getPage(){
+	public function getPage():?int {
 		return $this->page;
 	}
 
-	public function getItemsPerPage(){
+	public function getItemsPerPage():?int {
 		return $this->items_per_page;
 	}
 

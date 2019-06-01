@@ -83,7 +83,7 @@
 		"group": ["api"],
 		"name": ["gendocs"],
 		"cwd": "app",
-		"desc": "Generate OPenAPI documentation",
+		"desc": "Generate OpenAPI documentation",
 		"cmd": "../vendor/bin/openapi -o ../fs/api.json --format json ."
 	}
 ]

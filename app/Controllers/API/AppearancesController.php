@@ -20,6 +20,7 @@ use App\UserPrefs;
  *     "added",
  *     "notes"
  *   },
+ *   additionalProperties=false,
  *   @OA\Property(
  *     property="id",
  *     type="integer",
@@ -51,6 +52,7 @@ use App\UserPrefs;
  *   required={
  *     "appearances"
  *   },
+ *   additionalProperties=false,
  *   @OA\Property(
  *     property="appearances",
  *     type="array",
@@ -78,13 +80,6 @@ class AppearancesController extends APIController {
      *   type="string",
 	 *   enum={"pony", "eqg"},
 	 *   default="pony"
-	 * )
-	 *
-	 * @OA\Schema(
-	 *   schema="PageNumber",
-     *   type="integer",
-     *   minimum=1,
-     *   default=1
 	 * )
 	 *
 	 * @OA\Get(

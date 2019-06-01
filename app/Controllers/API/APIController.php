@@ -11,6 +11,7 @@ use App\Controllers\Controller;
  *   required={
  *     "status"
  *   },
+ *   additionalProperties=false,
  *   @OA\Property(
  *     property="status",
  *     type="boolean",
@@ -23,19 +24,31 @@ use App\Controllers\Controller;
  *   ),
  * )
  *
+ *
+ * @OA\Schema(
+ *   schema="PageNumber",
+ *   type="integer",
+ *   minimum=1,
+ *   default=1,
+ *   description="A query parameter used for specifying which page is currently being displayed"
+ * )
+ *
  * @OA\Schema(
  *   schema="PageData",
  *   required={
  *     "pagination"
  *   },
+ *   additionalProperties=false,
  *   @OA\Property(
  *     property="pagination",
  *     type="object",
  *     required={
  *       "currentPage",
  *       "totalPages",
- *       "totalItems"
+ *       "totalItems",
+ *       "itemsPerPage"
  *     },
+ *     additionalProperties=false,
  *     @OA\Property(
  *       property="currentPage",
  *       type="integer",
@@ -50,6 +63,11 @@ use App\Controllers\Controller;
  *       property="totalItems",
  *       type="integer",
  *       minimum=0
+ *     ),
+ *     @OA\Property(
+ *       property="itemsPerPage",
+ *       type="integer",
+ *       minimum=1
  *     ),
  *   ),
  * )

@@ -11,6 +11,16 @@ class Response {
 		self::_respond(false, $message, $data, $prettyPrint);
 	}
 
+	public static function failApi(string $message = '', $data = [], bool $prettyPrint = false){
+		if (empty($message)){
+			$message = Auth::$signed_in
+				? 'You do not have permission to access the requested resource'
+				: 'The requested resource requires authentication';
+		}
+
+		self::_respond(false, $message, $data, $prettyPrint);
+	}
+
 	public static function dbError(string $message = '', bool $prettyPrint = false){
 		if (!empty($message))
 			$message .= ': ';
