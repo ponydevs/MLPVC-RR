@@ -11,6 +11,7 @@ use App\DB;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\NoPCGSlotsException;
 use App\File;
+use App\HTTP;
 use App\ImageProvider;
 use App\Input;
 use App\JSON;
@@ -138,7 +139,7 @@ class AppearanceController extends ColorGuideController {
 		switch ($params['ext']){
 			case 'png':
 				switch ($params['type']){
-					case 's': CGUtils::renderSpritePNG($this->path, $this->appearance->id, $_GET['s'] ?? null);
+					case 's': HTTP::tempRedirect($this->appearance->getSpriteURL());
 					case 'p':
 					default: CGUtils::renderAppearancePNG($this->path, $this->appearance);
 				}
@@ -629,12 +630,13 @@ class AppearanceController extends ColorGuideController {
 					Response::fail('You are not allowed to upload sprite images on your own PCG appearances');
 				CGUtils::processUploadedImage('sprite', $final_path, ['image/png'], [300], [700, 300]);
 				$this->appearance->clearRenderedImages();
+				$this->appearance->regenerateSpriteHash();
 				$this->appearance->checkSpriteColors();
 
-				Response::done(['path' => "/cg/v/{$this->appearance->id}s.png?t=".filemtime($final_path)]);
+				Response::done(['path' => $this->appearance->getSpriteURL()]);
 			break;
 			case 'DELETE':
-				if (empty($this->appearance->getSpriteURL()))
+				if (!$this->appearance->hasSprite())
 					Response::fail('No sprite file found');
 
 				$this->appearance->deleteSprite($final_path);

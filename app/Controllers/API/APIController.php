@@ -4,7 +4,9 @@ namespace App\Controllers\API;
 use App\Controllers\Controller;
 
 /**
- * @OA\Info(title="MLP Vector Club API", version="1")
+ * @OA\OpenApi(
+ *   @OA\Info(title="MLP Vector Club API", version="1")
+ * )
  *
  * @OA\Schema(
  *   schema="ServerResponse",
@@ -24,13 +26,18 @@ use App\Controllers\Controller;
  *   ),
  * )
  *
- *
  * @OA\Schema(
  *   schema="PageNumber",
  *   type="integer",
  *   minimum=1,
  *   default=1,
  *   description="A query parameter used for specifying which page is currently being displayed"
+ * )
+ *
+ * @OA\Schema(
+ *   schema="File",
+ *   type="string",
+ *   format="binary",
  * )
  *
  * @OA\Schema(

@@ -699,10 +699,8 @@ class CGUtils {
 		$outsize = $size === Appearance::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
 
 		$output_path = FSPATH."cg_render/appearance/{$AppearanceID}/sprite$outsize.png";
-		$file_rel_path = "$CGPath/v/{$AppearanceID}s.png";
-		CoreUtils::fixPath($file_rel_path);
 		if (file_exists($output_path))
-			Image::outputPNG(null,$output_path,$file_rel_path);
+			Image::outputPNGAPI(null, $output_path);
 
 		$map = self::getSpriteImageMap($AppearanceID);
 
@@ -714,7 +712,7 @@ class CGUtils {
 			Image::drawSquare($png, $line['x']*$size_factor, $line['y']*$size_factor, [$line['width']*$size_factor, $size_factor], $color, null);
 		}
 
-		Image::outputPNG($png, $output_path, $file_rel_path);
+		Image::outputPNGAPI($png, $output_path);
 	}
 
 	public static function renderSpriteSVG($CGPath, $AppearanceID):void {

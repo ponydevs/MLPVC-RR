@@ -34,7 +34,6 @@ define('POSTGRES_INTEGER_MAX', 2147483647);
 # string
 define('FULL_LOG_PATH', PROJPATH.'logs/'.CoreUtils::env('LOG_PATH'));
 define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
-define('SPRITE_PATH', FSPATH.'sprites/');
 define('GDPR_IP_PLACEHOLDER', '127.168.80.82');
 # boolean
 define('AND_DIE', true); // CoreUtils::StatusCode

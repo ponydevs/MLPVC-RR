@@ -317,6 +317,16 @@ class Image {
 	}
 
 	/**
+	 * Output png file to API
+	 *
+	 * @param resource $resource
+	 * @param string   $path
+	 */
+	public static function outputPNGAPI($resource, $path):void {
+		self::_outputRaw($resource, $path, function($fp,$fd){ imagepng($fd, $fp, 9, PNG_NO_FILTER); }, 'png');
+	}
+
+	/**
 	 * Output svg file to browser
 	 *
 	 * @param string|null $svgdata
@@ -335,6 +345,30 @@ class Image {
 	 * @param string          $content_type
 	 */
 	private static function _output($data, $file_path, $relative_path, $write_callback, $content_type):void {
+		$last_modified = filemtime($file_path);
+
+		$file_portion = strtok($relative_path,'?');
+		$query_string = strtok('?');
+		$path_build = new NSUriBuilder($file_portion);
+		if (!empty($query_string))
+			$path_build->append_query_raw($query_string);
+		$remove_params = null;
+		if (!empty($_GET['token']))
+			$path_build->append_query_param('token', $_GET['token']);
+		else $remove_params = ['token'];
+		$path_build->append_query_param('t', $last_modified);
+
+		CoreUtils::fixPath($path_build, $remove_params);
+		self::_outputRaw($data, $file_path, $write_callback, $content_type);
+	}
+
+	/**
+	 * @param resource|string $data
+	 * @param string          $file_path
+	 * @param callable        $write_callback
+	 * @param string          $content_type
+	 */
+	private static function _outputRaw($data, $file_path, $write_callback, $content_type):void {
 		$development = !CoreUtils::env('PRODUCTION');
 		$last_modified = filemtime($file_path);
 
@@ -353,18 +387,6 @@ class Image {
 			}
 		}
 
-		$file_portion = strtok($relative_path,'?');
-		$query_string = strtok('?');
-		$path_build = new NSUriBuilder($file_portion);
-		if (!empty($query_string))
-			$path_build->append_query_raw($query_string);
-		$remove_params = null;
-		if (!empty($_GET['token']))
-			$path_build->append_query_param('token', $_GET['token']);
-		else $remove_params = ['token'];
-		$path_build->append_query_param('t', $last_modified);
-
-		CoreUtils::fixPath($path_build, $remove_params);
 		header("Content-Type: image/$content_type");
 		if ($development){
 			header('Cache-Control: public, max-age=31536000');
