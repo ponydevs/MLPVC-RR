@@ -20,7 +20,8 @@ use App\UserPrefs;
  *     "id",
  *     "name",
  *     "role",
- *     "avatar_url"
+ *     "avatarUrl",
+ *     "avatarProvider"
  *   },
  *   additionalProperties=false,
  *   @OA\Property(
@@ -29,19 +30,23 @@ use App\UserPrefs;
  *     format="uuid"
  *   ),
  *   @OA\Property(
- *     property="label",
+ *     property="name",
  *     type="string",
  *     example="example"
  *   ),
  *   @OA\Property(
  *     property="role",
- *     @OA\Schema(ref="#/components/schemas/UserRole"),
+ *     ref="#/components/schemas/UserRole",
  *   ),
  *   @OA\Property(
- *     property="avatar_url",
+ *     property="avatarUrl",
  *     type="string",
  *     format="uri",
  *     example="https://a.deviantart.net/avatars/e/x/example.png"
+ *   ),
+ *   @OA\Property(
+ *     property="avatarProvider",
+ *     ref="#/components/schemas/AvatarProvider",
  *   )
  * )
  *
@@ -53,17 +58,30 @@ use App\UserPrefs;
  * )
  *
  * @OA\Schema(
+ *   schema="AvatarProvider",
+ *   type="string",
+ *   description="List of supported avatar providers",
+ *   enum={"deviantart","discord"}
+ * )
+ *
+ * @OA\Schema(
  *   schema="ValueOfUser",
  *   type="object",
  *   description="A user's data under the user key",
  *   required={
- *     "user"
+ *     "user",
+ *     "sessionUpdating"
  *   },
  *   additionalProperties=false,
  *   @OA\Property(
  *     property="user",
  *     type="object",
  *     @OA\Items(ref="#/components/schemas/User")
+ *   ),
+ *   @OA\Property(
+ *     property="sessionUpdating",
+ *     type="boolean",
+ *     description="If this value is true the DeviantArt access token expired and the backend is updating it in the background. Future requests should be made to the appropriate endpoint periodically to check whether the session update was successful and the user should be logged out if it wasn't."
  *   )
  * )
  *
@@ -76,7 +94,8 @@ function map_user(User $u) {
 		'id' => $u->id,
 		'name' => $u->name,
 		'role' => $u->role,
-		'avatar_url' => $u->avatar_url,
+		'avatarUrl' => $u->avatar_url,
+		'avatarProvider' => $u->avatar_provider,
 	];
 }
 
@@ -96,7 +115,7 @@ class UsersController extends APIController {
 	 *   )
 	 * )
 	 */
-	function getMe() {
+	function me() {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
@@ -105,6 +124,9 @@ class UsersController extends APIController {
 			Response::failApi();
 		}
 
-		Response::done([ 'user' => map_user(Auth::$user) ]);
+		Response::done([
+			'user' => map_user(Auth::$user),
+			'sessionUpdating' => Auth::$session->updating,
+		]);
 	}
 }

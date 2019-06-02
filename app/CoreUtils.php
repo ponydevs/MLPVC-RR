@@ -762,7 +762,28 @@ class CoreUtils {
 	}
 
 	/**
-	 * Returns the HTML of the GIT informaiiton in the website's footer
+	 * Returns the HTML raw GIT information
+	 *
+	 * @return array
+	 */
+	public static function getFooterGitInfoRaw(): array {
+		$commit_info = RedisHelper::get('commit_info');
+		if ($commit_info === null || !self::env('PRODUCTION')){
+			$commit_info = rtrim(shell_exec('git log -1 --date=short --pretty="format:%h;%ci"'));
+			RedisHelper::set('commit_info', $commit_info);
+		}
+
+		$data = [];
+		if (!empty($commit_info)){
+			[ $commit_id, $commit_time ] = explode(';', $commit_info);
+			$data['commit_id'] = $commit_id;
+			$data['commit_time'] = Time::tag($commit_time);
+		}
+		return $data;
+	}
+
+	/**
+	 * Returns the HTML of the GIT information in the website's footer
 	 *
 	 * @param bool $wrap
 	 * @param bool $reload_warning
@@ -770,21 +791,7 @@ class CoreUtils {
 	 * @return string
 	 */
 	public static function getFooterGitInfo(bool $wrap = WRAP, bool $reload_warning = false):string {
-		$commit_info = RedisHelper::get('commit_info');
-		if ($commit_info === null || !self::env('PRODUCTION')){
-			$commit_info = rtrim(shell_exec('git log -1 --date=short --pretty="format:%h;%ci"'));
-			RedisHelper::set('commit_info', $commit_info);
-		}
-		$data = [
-			'wrap' => $wrap,
-			'reload_warning' => $reload_warning,
-		];
-		if (!empty($commit_info)){
-			[ $commit_id, $commit_time ] = explode(';', $commit_info);
-			$data['commit_id'] = $commit_id;
-			$data['commit_time'] = Time::tag($commit_time);
-		}
-
+		$data = self::getFooterGitInfoRaw();
 		return Twig::$env->render('layout/_footer_git_info.html.twig', $data);
 	}
 

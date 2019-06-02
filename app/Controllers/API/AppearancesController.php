@@ -117,7 +117,7 @@ class AppearancesController extends APIController {
 	 *   )
 	 * )
 	 */
-	function getAll() {
+	function all() {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
