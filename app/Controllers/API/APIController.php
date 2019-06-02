@@ -20,7 +20,7 @@ use App\Controllers\Controller;
  *   @OA\Property(
  *     property="message",
  *     type="string",
- *     description="A translation key pointing to a messsage that explains the outcome of the request, typically used for errors"
+ *     description="A translation key pointing to a message that explains the outcome of the request, typically used for errors"
  *   ),
  * )
  *
