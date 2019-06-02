@@ -18,7 +18,8 @@ use App\UserPrefs;
  *     "id",
  *     "label",
  *     "added",
- *     "notes"
+ *     "notes",
+ *     "spriteHash"
  *   },
  *   additionalProperties=false,
  *   @OA\Property(
@@ -29,6 +30,7 @@ use App\UserPrefs;
  *   @OA\Property(
  *     property="label",
  *     type="string",
+ *     description="The name of the appearance",
  *     example="Twinkle Sprinkle"
  *   ),
  *   @OA\Property(
@@ -42,6 +44,12 @@ use App\UserPrefs;
  *     format="html",
  *     nullable=true,
  *     example="Far legs use darker colors. Based on <strong>S2E21</strong>."
+ *   ),
+ *   @OA\Property(
+ *     property="spriteHash",
+ *     nullable=true,
+ *     ref="#/components/schemas/SpriteHash",
+ *     description="MD5 hash of the current sprite image, if there is one, and null otherwise. The actual file is available from a different endpoint."
  *   )
  * )
  *
@@ -70,6 +78,7 @@ function map_appearance(Appearance $a) {
 		'label' => $a->label,
 		'added' => gmdate('c', $a->added->getTimestamp()),
 		'notes' => $a->notes_rend,
+		'spriteHash' => $a->sprite_hash,
 	];
 }
 
@@ -84,6 +93,7 @@ class AppearancesController extends APIController {
 	 *
 	 * @OA\Get(
 	 *   path="/api/v1/appearances",
+	 *   description="Allows querying the full library of public appearances",
 	 *   @OA\Parameter(
 	 *     in="query",
 	 *     name="guide",
@@ -117,7 +127,7 @@ class AppearancesController extends APIController {
 	 *   )
 	 * )
 	 */
-	function all() {
+	function queryPublic() {
 		if ($this->action !== 'GET')
 			CoreUtils::notAllowed();
 
@@ -139,5 +149,95 @@ class AppearancesController extends APIController {
 			'appearances' => $results,
 			'pagination' => CoreUtils::paginationForApi($pagination),
 		]);
+	}
+
+	/**
+	 * @OA\Schema(
+	 *   schema="SpriteSize",
+     *   type="integer",
+	 *   enum={300, 600},
+	 *   default="300"
+	 * )
+	 *
+	 * @OA\Schema(
+	 *   schema="SpriteHash",
+     *   type="string",
+	 *   format="md5",
+	 *   minLength=32,
+	 *   maxLength=32
+	 * )
+	 *
+	 * @OA\Schema(
+	 *   schema="AppearanceToken",
+     *   type="string",
+	 *   format="uuid"
+	 * )
+	 *
+	 * @OA\Get(
+	 *   path="/api/v1/appearances/{id}/sprite",
+	 *   @OA\Parameter(
+	 *     in="path",
+	 *     name="id",
+	 *     required=true,
+     *     schema={
+     *       "type"="integer",
+	 *       "minimum"=1
+	 *     }
+	 *   ),
+	 *   @OA\Parameter(
+	 *     in="query",
+	 *     name="size",
+     *     @OA\Schema(ref="#/components/schemas/SpriteSize")
+	 *   ),
+	 *   @OA\Parameter(
+	 *     in="query",
+	 *     name="token",
+     *     @OA\Schema(ref="#/components/schemas/AppearanceToken")
+	 *   ),
+	 *   @OA\Parameter(
+	 *     in="query",
+	 *     name="hash",
+	 *     description="Used for cache busting. The latest value is provided by the appearance resource.",
+     *     @OA\Schema(ref="#/components/schemas/SpriteHash")
+	 *   ),
+	 *   @OA\Response(
+	 *     response="200",
+	 *     description="The sprite image at the specified size",
+	 *     @OA\MediaType(
+	 *       mediaType="image/png",
+     *       @OA\Schema(ref="#/components/schemas/File")
+	 *     )
+	 *   ),
+	 *   @OA\Response(
+	 *     response="404",
+	 *     description="Sprite image missing",
+	 *     @OA\JsonContent(
+	 *       allOf={
+     *         @OA\Schema(ref="#/components/schemas/ServerResponse")
+	 *       }
+	 *     )
+	 *   )
+	 * )
+	 *
+	 * @param array $params
+	 */
+	function sprite(array $params) {
+		if ($this->action !== 'GET')
+			CoreUtils::notAllowed();
+
+		$id = \intval($params['id'], 10);
+		$appearance = Appearance::find($id);
+		if (empty($appearance)){
+			HTTP::statusCode(404);
+			Response::fail('APPEARANCE_NOT_FOUND');
+		}
+
+		if ($appearance->private) {
+			// TODO check for token param and allow if correct
+			HTTP::statusCode(403);
+			Response::fail('APPEARANCE_PRIVATE');
+		}
+
+		CGUtils::renderSpritePNG($this->path, $appearance->id, $_GET['size'] ?? null);
 	}
 }

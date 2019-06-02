@@ -8,6 +8,7 @@ use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
+use App\NSUriBuilder;
 use App\ShowHelper;
 use App\JSON;
 use App\Models\Logs\MajorChange;
@@ -37,6 +38,7 @@ use SeinopSys\RGBAColor;
  * @property bool                $ishuman
  * @property bool                $private
  * @property string              $token
+ * @property string              $sprite_hash
  * @property Cutiemark[]         $cutiemarks          (Via relations)
  * @property ColorGroup[]        $color_groups        (Via relations)
  * @property User|null           $owner               (Via relations)
@@ -93,7 +95,7 @@ class Appearance extends NSModel implements Linkable {
 			'SELECT c.hex FROM colors c
 			LEFT JOIN color_groups cg ON c.group_id = cg.id
 			WHERE cg.appearance_id = ? AND c.hex IS NOT NULL
-			ORDER BY cg."order" ASC, c."order" ASC
+			ORDER BY cg."order", c."order"
 			LIMIT 4', [$this->id]);
 
 		if (!empty($arr))
@@ -163,11 +165,43 @@ class Appearance extends NSModel implements Linkable {
 	 *
 	 * @return string
 	 */
-	public function getSpriteURL(int $size = self::SPRITE_SIZES['REGULAR'], string $fallback = ''):string {
-		$fpath = SPRITE_PATH."{$this->id}.png";
-		if (file_exists($fpath))
-			return "/cg/v/{$this->id}s.png?s=$size&t=".filemtime($fpath).(!empty($_GET['token']) ? "&token={$_GET['token']}" : '');
+	public function getSpriteURL(?int $size = null, string $fallback = ''):string {
+		if ($this->hasSprite()) {
+			$sprite_hash = $this->sprite_hash ?? $this->regenerateSpriteHash();
+			$url = new NSUriBuilder(PUBLIC_API_V1_PATH."/appearances/{$this->id}/sprite");
+			if (!empty($sprite_hash))
+				$url->append_query_param('hash', $sprite_hash);
+			if ($size !== null)
+				$url->append_query_param('size', $size);
+			if (!empty($_GET['token']))
+				$url->append_query_param('token', $_GET['token']);
+			return (string) $url;
+		}
 		return $fallback;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function hasSprite():bool {
+		return file_exists($this->getSpriteFilePath());
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function regenerateSpriteHash():?string {
+		$sprite_path = $this->getSpriteFilePath();
+		if (!file_exists($sprite_path)) {
+			return null;
+		}
+
+		$hash = md5_file($sprite_path);
+		if ($hash !== false)
+			throw new \RuntimeException("Failed to get MD5 hash for sprite file {$sprite_path}");
+
+		$this->sprite_hash = $hash;
+		return $hash;
 	}
 
 	/**
@@ -711,6 +745,7 @@ class Appearance extends NSModel implements Linkable {
 		self::CLEAR_CM,
 		self::CLEAR_CMDIR,
 		self::CLEAR_SPRITE,
+		self::CLEAR_SPRITE_600,
 		self::CLEAR_SPRITE_SVG,
 	];
 	public const
@@ -719,6 +754,7 @@ class Appearance extends NSModel implements Linkable {
 		CLEAR_CM          = '&cutiemark',
 		CLEAR_CMDIR       = 'cmdir-*.svg',
 		CLEAR_SPRITE      = 'sprite.png',
+		CLEAR_SPRITE_600  = 'sprite-600.png',
 		CLEAR_SPRITE_SVG  = 'sprite.svg',
 		CLEAR_SPRITE_MAP  = 'linedata.json.gz';
 
@@ -731,9 +767,9 @@ class Appearance extends NSModel implements Linkable {
 	 */
 	public function clearRenderedImages(array $which = self::CLEAR_ALL):bool {
 		$success = [];
-		$clearCMPos = array_search(self::CLEAR_CM, $which, true);
-		if ($clearCMPos !== false){
-			array_splice($which, $clearCMPos, 1);
+		$clear_cm_pos = array_search(self::CLEAR_CM, $which, true);
+		if ($clear_cm_pos !== false){
+			array_splice($which, $clear_cm_pos, 1);
 			foreach ($this->cutiemarks as $cm){
 				$fpath = $cm->getRenderedFilePath();
 				$success[] = CoreUtils::deleteFile($fpath);
@@ -765,7 +801,7 @@ class Appearance extends NSModel implements Linkable {
 			FROM color_groups cg
 			LEFT JOIN colors c on c.group_id = cg.id
 			WHERE cg.appearance_id = ?
-			ORDER BY cg.order ASC, c.label ASC', [$this->id]);
+			ORDER BY cg.order, c.label', [$this->id]);
 
 		$color_mapping = [];
 		foreach ($colors as $row){
@@ -874,7 +910,7 @@ class Appearance extends NSModel implements Linkable {
 	}
 
 	public function getSpriteFilePath(){
-		return SPRITE_PATH.$this->id.'.png';
+		return SPRITE_PATH."{$this->id}.png";
 	}
 
 	public function deleteSprite(?string $path = null, bool $silent = false){
@@ -883,6 +919,8 @@ class Appearance extends NSModel implements Linkable {
 				return;
 			Response::fail('File could not be deleted');
 		}
+		$this->sprite_hash = null;
+		$this->save();
 		$this->clearRenderedImages();
 		if ($this->owner_id === null)
 			Appearances::clearSpriteColorIssueNotifications($this->id, 'del', null);
