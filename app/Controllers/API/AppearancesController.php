@@ -50,6 +50,11 @@ use App\UserPrefs;
  *     nullable=true,
  *     ref="#/components/schemas/SpriteHash",
  *     description="MD5 hash of the current sprite image, if there is one, and null otherwise. The actual file is available from a different endpoint."
+ *   ),
+ *   @OA\Property(
+ *     property="hasCutieMarks",
+ *     type="boolean",
+ *     description="Indicates whether there are any cutie marks tied to this appearance"
  *   )
  * )
  *
@@ -79,6 +84,7 @@ function map_appearance(Appearance $a) {
 		'added' => gmdate('c', $a->added->getTimestamp()),
 		'notes' => $a->notes_rend,
 		'spriteHash' => $a->sprite_hash,
+		'hasCutieMarks' => \count($a->cutiemarks) !== 0
 	];
 }
 
