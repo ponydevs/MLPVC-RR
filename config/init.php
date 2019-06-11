@@ -15,6 +15,11 @@ while (file_exists(PROJPATH.$_ENV['NPM_BUILD_LOCK_FILE_PATH'])){
 
 use App\About;
 use App\CoreUtils;
+use App\HTTP;
+use App\LibHelper;
+use App\NavBreadcrumb;
+use App\RedisHelper;
+use App\Twig;
 
 if (CoreUtils::env('CSP_ENABLED')){
 	$csp_header = implode(';', [
@@ -37,11 +42,11 @@ if (CoreUtils::env('CSP_ENABLED')){
 }
 
 function fatal_error(string $cause, ?Throwable $e = null){
-	\App\HTTP::statusCode(503);
+	HTTP::statusCode(503);
 	if ($e !== null)
-		CoreUtils::error_log(__FILE__.": Fatal error of type $cause; ".$e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
-	$bc = new \App\NavBreadcrumb('Error');
-	$bc->setChild(\App\HTTP::STATUS_CODES[503]);
+		CoreUtils::error_log(sprintf("%s: Fatal error of type $cause; %s\nStack trace:\n%s", __FILE__, $e->getMessage(), $e->getTraceAsString()));
+	$bc = new NavBreadcrumb('Error');
+	$bc->setChild(HTTP::STATUS_CODES[503]);
 	$scope = [
 		'err_cause' => $cause,
 		'breadcrumbs' => $bc,
@@ -49,15 +54,23 @@ function fatal_error(string $cause, ?Throwable $e = null){
 		'css' => CoreUtils::DEFAULT_CSS,
 		'js' => CoreUtils::DEFAULT_JS,
 	];
-	\App\LibHelper::process($scope, [], CoreUtils::DEFAULT_LIBS);
-	foreach ($scope['css'] as &$css)
-		$css = CoreUtils::cachedAssetLink($css, 'css', 'min.css');
-	unset($css);
-	foreach ($scope['js'] as &$js)
-		$js = CoreUtils::cachedAssetLink($js, 'js', 'min.js');
-	unset($js);
-	echo \App\Twig::$env->render('error/fatal.html.twig', $scope);
+	LibHelper::process($scope, [], CoreUtils::DEFAULT_LIBS);
+	$scope['css'] = array_map(static function($css){
+		return CoreUtils::cachedAssetLink($css, 'css', 'min.css');
+	}, $scope['css']);
+	$scope['js'] = array_map(static function($js){
+		return CoreUtils::cachedAssetLink($js, 'js', 'min.js');
+	}, $scope['js']);
+	echo Twig::$env->render('error/fatal.html.twig', $scope);
 	die();
+}
+
+// Redis is missing (again) \\
+try {
+	RedisHelper::getInstance();
+}
+catch (Throwable $e) {
+	fatal_error('config', $e);
 }
 
 // Maintenance mode \\

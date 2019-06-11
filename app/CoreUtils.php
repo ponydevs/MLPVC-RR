@@ -772,7 +772,7 @@ class CoreUtils {
 	public static function getFooterGitInfo(bool $wrap = WRAP, bool $reload_warning = false):string {
 		$commit_info = RedisHelper::get('commit_info');
 		if ($commit_info === null || !self::env('PRODUCTION')){
-			$commit_info = rtrim(shell_exec('git log -1 --date=short  --pretty="format:%h;%ci"'));
+			$commit_info = rtrim(shell_exec('git log -1 --date=short --pretty="format:%h;%ci"'));
 			RedisHelper::set('commit_info', $commit_info);
 		}
 		$data = [
