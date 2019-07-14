@@ -1290,4 +1290,44 @@ class CGUtils {
 
 		return [$appearances ?? [], $search_query ?? null];
 	}
+
+	static function getSpritePreviewPath(int $appearance_id): string {
+		return FSPATH."cg_render/appearance/$appearance_id/sprite-preview.png";
+	}
+
+	/**
+	 * @param int $appearance_id
+	 *
+	 * @return string Binary data of the preview image
+	 */
+	static function generateSpritePreview(int $appearance_id): string {
+		$output_path = self::getSpritePreviewPath($appearance_id);
+
+		if (!file_exists($output_path)){
+			$sprite_path = self::getSpriteFilePath($appearance_id);
+			if (!file_exists($sprite_path)) {
+				throw new \RuntimeException("Trying to get preview for non-exiting sprite file $sprite_path");
+			}
+
+			$sprite = imagecreatefrompng($sprite_path);
+			$sprite_size = \array_slice(getimagesize($sprite_path), 0, 2);
+			$preview_scale_factor = .2;
+			[$preview_width, $preview_height] = \array_map(function (int $size) use ($preview_scale_factor) {
+				return (int)round($size * $preview_scale_factor);
+			}, $sprite_size);
+
+			$preview = Image::createTransparent($preview_width, $preview_height);
+			imagecopyresampled($preview, $sprite, 0, 0, 0, 0, $preview_width, $preview_height, ...$sprite_size);
+
+			CoreUtils::createFoldersFor($output_path);
+			imagepng($preview, $output_path);
+			File::chmod($output_path);
+		}
+
+		return file_get_contents($output_path);
+	}
+
+	static function getSpriteFilePath(int $appearance_id):string {
+		return SPRITE_PATH."$appearance_id.png";
+	}
 }

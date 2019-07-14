@@ -6,13 +6,12 @@ global $router;
 
 /**
  * @file
- * List of API v1 endpoints meant for general use
- * These endpoints must remain backwards compatible
- * If backwards compatibility is broken a new copy of this file shall be created with an increased major version number
+ * List of API v0 endpoints meant for pre-release testing
+ * These endpoints may change as needed until v1 is released
  */
-\define('PUBLIC_API_V1_PATH', '/api/v1');
+\define('PUBLIC_API_V0_PATH', '/api/v0');
 $public_api_endpoint = function($path, $controller) use ($router){
-	$router->map('POST|GET|PUT|DELETE', PUBLIC_API_V1_PATH.$path, $controller);
+	$router->map('POST|GET|PUT|DELETE', PUBLIC_API_V0_PATH.$path, $controller);
 };
 $public_api_endpoint('/appearances',               'API\AppearancesController#queryPublic');
 $public_api_endpoint('/appearances/[i:id]/sprite', 'API\AppearancesController#sprite');
