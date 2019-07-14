@@ -345,7 +345,7 @@ class Image {
 	 * @param string          $content_type
 	 */
 	private static function _output($data, $file_path, $relative_path, $write_callback, $content_type):void {
-		$last_modified = filemtime($file_path);
+		$last_modified = file_exists($file_path) ? filemtime($file_path) : time();
 
 		$file_portion = strtok($relative_path,'?');
 		$query_string = strtok('?');
@@ -370,7 +370,7 @@ class Image {
 	 */
 	private static function _outputRaw($data, $file_path, $write_callback, $content_type):void {
 		$development = !CoreUtils::env('PRODUCTION');
-		$last_modified = filemtime($file_path);
+		$last_modified = file_exists($file_path) ? filemtime($file_path) : time();
 
 		if ($data !== null){
 			CoreUtils::createFoldersFor($file_path);

@@ -22,6 +22,7 @@ use enshrined\svgSanitize\data\AttributeInterface;
 use enshrined\svgSanitize\data\TagInterface;
 use enshrined\svgSanitize\Sanitizer;
 use Monolog\Logger;
+use RuntimeException;
 
 class CoreUtils {
 	public const FIXPATH_EMPTY = [
@@ -216,7 +217,7 @@ class CoreUtils {
 	 *     @var string[]        $og           OpenGraph data replacement to override defaults
 	 *     @var string          $canonical    If specified, provides the supplied URL as the canonical URL in a meta tag
 	 * }
-	 * @throws \RuntimeException
+	 * @throws RuntimeException
 	 */
 	public static function loadPage(string $method_name, array $options = []){
 		if (self::isJSONExpected()){
@@ -428,7 +429,7 @@ class CoreUtils {
 	private static function _checkAssets(array $options, &$customType, string $ext, View $view){
 		if (isset($options[$ext])){
 			if (!\is_array($options[$ext]))
-				throw new \RuntimeException("\$options[$ext] must be an array");
+				throw new RuntimeException("\$options[$ext] must be an array");
 			$customType = array_merge($customType, $options[$ext]);
 		}
 
@@ -457,7 +458,7 @@ class CoreUtils {
 		$pathStart = APPATH.$relpath;
 		$item .= ".$type";
 		if (!file_exists("$pathStart/$item"))
-			throw new \RuntimeException("File /$relpath/$item does not exist");
+			throw new RuntimeException("File /$relpath/$item does not exist");
 		$item = "/$relpath/$item?".filemtime("$pathStart/$item");
 	}
 
@@ -576,7 +577,7 @@ class CoreUtils {
 
 	public static function minifySvgData(string $svgdata){
 		if (!file_exists(SVGO_BINARY) || !is_executable(SVGO_BINARY))
-			throw new \RuntimeException('svgo is required for SVG processing, please run `npm i` to install Node.js dependencies');
+			throw new RuntimeException('svgo is required for SVG processing, please run `npm i` to install Node.js dependencies');
 		$tmp_path = FSPATH.'tmp/sanitize/'.self::sha256($svgdata).'.svg';
 		self::createFoldersFor($tmp_path);
 		File::put($tmp_path, $svgdata);
@@ -1023,7 +1024,7 @@ class CoreUtils {
 				: "There was an issue while checking the acceptance status (Error code: $Status)"
 			);
 			if ($throw)
-				throw new \RuntimeException($errmsg);
+				throw new RuntimeException($errmsg);
 			Response::fail($errmsg);
 		}
 	}
@@ -1077,7 +1078,7 @@ class CoreUtils {
 			$on->{$key} = $value;
 		else if (\is_array($on))
 			$on[$key] = $value;
-		else throw new \RuntimeException('$on is of invalid type ('.\gettype($on).')');
+		else throw new RuntimeException('$on is of invalid type ('.\gettype($on).')');
 	}
 
 	/**
@@ -1224,11 +1225,11 @@ class CoreUtils {
 	public static function array_subtract(array $initial, array $remove):array {
 		$initial = array_flip($initial);
 		if ($initial === false)
-			throw new \RuntimeException(__METHOD__.': $initial could not be flipped');
+			throw new RuntimeException(__METHOD__.': $initial could not be flipped');
 		/** @var $initial array */
 		$remove = array_flip($remove);
 		if ($remove === false)
-			throw new \RuntimeException(__METHOD__.': $remove could not be flipped');
+			throw new RuntimeException(__METHOD__.': $remove could not be flipped');
 		/** @var $remove array */
 		foreach ($initial as $el => $_){
 			if (isset($remove[$el]))
@@ -1370,7 +1371,7 @@ class CoreUtils {
 	public static function cacheExpired($cacheables){
 		foreach ($cacheables as $cacheable){
 			if (!($cacheable instanceof Cacheable))
-				throw new \RuntimeException('The following value does not implement '.Cacheable::class.":\n".var_export($cacheable, true));
+				throw new RuntimeException('The following value does not implement '.Cacheable::class.":\n".var_export($cacheable, true));
 
 			if ($cacheable->cacheExpired())
 				return true;
@@ -1404,5 +1405,16 @@ class CoreUtils {
 			'totalItems' => $pagination->getEntryCount(),
 			'itemsPerPage' => $pagination->getItemsPerPage(),
 		];
+	}
+
+	public static function generateFileHash(string $file_path): string {
+		$hash = md5_file($file_path);
+		if ($hash === false)
+			throw new RuntimeException("Failed to get MD5 hash for file {$file_path}");
+		return $hash;
+	}
+
+	public static function bin2dataUri(string $binary_str, string $content_type): string {
+		return "data:$content_type;base64," . base64_encode($binary_str);
 	}
 }

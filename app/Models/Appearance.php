@@ -168,7 +168,7 @@ class Appearance extends NSModel implements Linkable {
 	public function getSpriteURL(?int $size = null, string $fallback = ''):string {
 		if ($this->hasSprite()) {
 			$sprite_hash = $this->sprite_hash ?? $this->regenerateSpriteHash();
-			$url = new NSUriBuilder(PUBLIC_API_V1_PATH."/appearances/{$this->id}/sprite");
+			$url = new NSUriBuilder(PUBLIC_API_V0_PATH."/appearances/{$this->id}/sprite");
 			if (!empty($sprite_hash))
 				$url->append_query_param('hash', $sprite_hash);
 			if ($size !== null)
@@ -196,12 +196,8 @@ class Appearance extends NSModel implements Linkable {
 			return null;
 		}
 
-		$hash = md5_file($sprite_path);
-		if ($hash !== false)
-			throw new \RuntimeException("Failed to get MD5 hash for sprite file {$sprite_path}");
-
-		$this->sprite_hash = $hash;
-		return $hash;
+		$this->sprite_hash = CoreUtils::generateFileHash($sprite_path);
+		return $this->sprite_hash;
 	}
 
 	/**
@@ -631,15 +627,15 @@ class Appearance extends NSModel implements Linkable {
 	}
 
 	public function checkSpriteColors():bool {
-		$checkWho = $this->owner_id ?? Appearances::SPRITE_NAG_USERID;
-		$hasColorIssues = $this->spriteHasColorIssues();
-		$oldNotifs = Appearances::getSpriteColorIssueNotifications($this->id, $checkWho);
-		if ($hasColorIssues && empty($oldNotifs))
-			Notification::send($checkWho,'sprite-colors',['appearance_id' => $this->id]);
-		else if (!$hasColorIssues && !empty($oldNotifs))
-			Appearances::clearSpriteColorIssueNotifications($oldNotifs);
+		$check_who = $this->owner_id ?? Appearances::SPRITE_NAG_USERID;
+		$has_color_issues = $this->spriteHasColorIssues();
+		$old_notifs = Appearances::getSpriteColorIssueNotifications($this->id, $check_who);
+		if ($has_color_issues && empty($old_notifs))
+			Notification::send($check_who, 'sprite-colors', ['appearance_id' => $this->id]);
+		else if (!$has_color_issues && !empty($old_notifs))
+			Appearances::clearSpriteColorIssueNotifications($old_notifs);
 
-		return $hasColorIssues;
+		return $has_color_issues;
 	}
 
 	/**
@@ -747,16 +743,18 @@ class Appearance extends NSModel implements Linkable {
 		self::CLEAR_SPRITE,
 		self::CLEAR_SPRITE_600,
 		self::CLEAR_SPRITE_SVG,
+		self::CLEAR_SPRITE_PREVIEW,
 	];
 	public const
-		CLEAR_PALETTE     = 'palette.png',
-		CLEAR_PREVIEW     = 'preview.svg',
-		CLEAR_CM          = '&cutiemark',
-		CLEAR_CMDIR       = 'cmdir-*.svg',
-		CLEAR_SPRITE      = 'sprite.png',
-		CLEAR_SPRITE_600  = 'sprite-600.png',
-		CLEAR_SPRITE_SVG  = 'sprite.svg',
-		CLEAR_SPRITE_MAP  = 'linedata.json.gz';
+		CLEAR_PALETTE        = 'palette.png',
+		CLEAR_PREVIEW        = 'preview.svg',
+		CLEAR_CM             = '&cutiemark',
+		CLEAR_CMDIR          = 'cmdir-*.svg',
+		CLEAR_SPRITE         = 'sprite.png',
+		CLEAR_SPRITE_600     = 'sprite-600.png',
+		CLEAR_SPRITE_SVG     = 'sprite.svg',
+		CLEAR_SPRITE_PREVIEW = 'sprite-preview.png.txt',
+		CLEAR_SPRITE_MAP     = 'linedata.json.gz';
 
 	/**
 	 * Deletes rendered images of an appearance (forcing its re-generation)
@@ -910,7 +908,7 @@ class Appearance extends NSModel implements Linkable {
 	}
 
 	public function getSpriteFilePath(){
-		return SPRITE_PATH."{$this->id}.png";
+		return CGUtils::getSpriteFilePath($this->id);
 	}
 
 	public function deleteSprite(?string $path = null, bool $silent = false){
@@ -977,5 +975,15 @@ class Appearance extends NSModel implements Linkable {
 
 	public function getPreviewImage(int $size = self::SPRITE_SIZES['SOURCE']) {
 		return $this->getSpriteURL($size, $this->getPreviewURL());
+	}
+
+	public function getSpriteAPI():?array {
+		if (!$this->hasSprite())
+			return null;
+
+		return [
+			'hash' => $this->sprite_hash,
+			'preview' => CoreUtils::bin2dataUri(CGUtils::generateSpritePreview($this->id), 'image/png'),
+		];
 	}
 }

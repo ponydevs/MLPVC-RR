@@ -1,5 +1,6 @@
 <?php
 
+use App\CoreUtils;
 use Phinx\Migration\AbstractMigration;
 
 class AddSpriteHashToAppearances extends AbstractMigration {
@@ -13,10 +14,8 @@ class AddSpriteHashToAppearances extends AbstractMigration {
 
 			$filename = $file_info->getFilename();
 			$appearance_id = explode('.', $filename)[0];
-			$hash = md5_file($file_info->getPathname());
-			if ($hash !== false) {
-				$this->query("UPDATE appearances SET sprite_hash = '$hash' WHERE id = $appearance_id");
-			}
+			$hash = CoreUtils::generateFileHash($file_info->getPathname());
+			$this->query("UPDATE appearances SET sprite_hash = '$hash' WHERE id = $appearance_id");
 		}
 	}
 

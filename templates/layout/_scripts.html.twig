@@ -1,5 +1,5 @@
 {% if js_libs is defined %}{{ js_libs }}{% endif %}
-<script nonce="{{ constant('CSP_NONCE') }}">$.API = { API_PATH: "{{ constant('API_PATH') }}" }</script>
+<script nonce="{{ constant('CSP_NONCE') }}">$.API = { API_PATH: "{{ constant('PRIVATE_API_PATH') }}" }</script>
 {% if default_js %}
 {% if ws_server_host is defined %}
 <script src="https://{{ ws_server_host }}/socket.io/socket.io.js" id="wss"></script>
