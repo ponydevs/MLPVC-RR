@@ -491,7 +491,11 @@ class CoreUtils {
 		else return mb_strlen($str) === 1 ? strtoupper($str) : strtoupper($str[0]).mb_substr($str,1);
 	}
 
-	// Turns a file size ini setting value into bytes
+    public static function rangeLimit(int $value, int $min, int $max){
+        return min($max, max($min, $value));
+    }
+
+    // Turns a file size ini setting value into bytes
 	private static function _shortSizeInBytes($size){
 		$unit = mb_substr($size, -1);
 		$value = \intval(mb_substr($size, 0, -1), 10);

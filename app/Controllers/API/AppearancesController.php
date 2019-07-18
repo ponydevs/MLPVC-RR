@@ -119,6 +119,14 @@ class AppearancesController extends APIController {
 	 *   enum={"pony", "eqg"},
 	 *   default="pony"
 	 * )
+     *
+	 * @OA\Schema(
+	 *   schema="GuidePageSize",
+     *   type="integer",
+	 *   minimum=7,
+     *   maximum=20,
+	 *   default=7
+	 * )
 	 *
 	 * @OA\Get(
 	 *   path="/api/v1/appearances",
@@ -134,6 +142,12 @@ class AppearancesController extends APIController {
 	 *     name="page",
      *     @OA\Schema(ref="#/components/schemas/PageNumber"),
      *     description="Which page of results to return"
+	 *   ),
+	 *   @OA\Parameter(
+	 *     in="query",
+	 *     name="size",
+     *     @OA\Schema(ref="#/components/schemas/GuidePageSize"),
+     *     description="The number of results to return per page"
 	 *   ),
 	 *   @OA\Parameter(
 	 *     in="query",
@@ -165,7 +179,9 @@ class AppearancesController extends APIController {
 			HTTP::statusCode(503);
 			Response::fail('ELASTIC_DOWN');
 		}
-		$appearances_per_page = UserPrefs::get('cg_itemsperpage');
+		if (isset($_GET['size']) && is_numeric($_GET['size']))
+		    $appearances_per_page = CoreUtils::rangeLimit(intval($_GET['size'], 10), 7, 20);
+		else $appearances_per_page = 7;
 		$pagination = new Pagination('', $appearances_per_page);
 		$searching = !empty($_GET['q']) && $_GET['q'] !== '';
 		$guide_name = $_GET['guide'] ?? null;
