@@ -10,14 +10,11 @@ conf.php
 .env
 
 *.log
-logs/*
-!logs/.gitkeep
 /node_modules
 /public/*.html
 /public/js
 /public/css
 /public/dist/mlpvc-colorguide.json
-/fs
 /setup/*.pg.sql
 !/setup/create_extensions.pg.sql
 /vendor

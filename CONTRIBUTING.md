@@ -25,7 +25,7 @@ The site is known to work with the following set of software, assuming correct c
 | Database Server   | PostgreSQL 10+                                |
 | Asset Compilation | Node.js 8.0+                                  |
 | Search Server     | ElasticSearch 6+                              |
-| Runtime & Dependencies | Composer (latest)<br>PHP 7.2+            |
+| Runtime & Dependencies | Composer (latest)<br>PHP 7.3+            |
 | Source Control    | Git<br><small>(the site shows the commit data in the footer, so the binary should be runnable by the application)</small> |
 | SSL Certificate   | Self-signed ([get a pair here](https://seinopsys.hu/selfsigned))<br><small>(required to use the site through HTTPS while developing)</small> |
 
@@ -92,7 +92,7 @@ Make sure the `build-essential` package is installed, otherwise some required as
 
 ### Web Server (nginx)
 
-The `php7.2-fpm` package is used used by the provided `setup/nginx.conf` configuration file.
+The `php7.3-fpm` package is used used by the provided `setup/nginx.conf` configuration file.
 
 Replace `domain.tld` with the domain of your choice, and change `/path/to/*` placeholders appropriately. `/path/to/www` is the `www` directory of this repository, and `/path/to/error.log` should point to a file in the `logs` directory. The site assumes that this isn't the only site running on your machine, so you'll have to add your domain to your `/etc/hosts` file (`C:\Windows\System32\drivers\etc\hosts` on Windows) on all machines where you want to reach the server from.
 
@@ -128,8 +128,6 @@ $ wtf db migrate
 ```
 
 You can use `wtf db` To see all Phinx-related commands.
-
-Avoid using the `setup/mlpvc-rr.pg.sql` dump file as it can contain values specific to the live environment such as the database name or username which can differ from your development environment causing all sorts of issues.
 
 ### ElasticSearch
 
