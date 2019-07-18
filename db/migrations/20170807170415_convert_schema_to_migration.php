@@ -64,7 +64,7 @@ class ConvertSchemaToMigration extends AbstractMigration {
 			->addColumn('appearance_id',  'integer')
 			->addColumn('facing',         'string',  ['length' => 10, 'null' => true])
 			->addColumn('favme',          'string',  ['length' => 7])
-			->addColumn('favme_rotation', 'integer', ['limit' => PostgresAdapter::INT_SMALL])
+			->addColumn('favme_rotation', 'smallinteger')
 			->addColumn('preview',        'string',  ['length' => 255, 'null' => true])
 			->addColumn('preview_src',    'string',  ['length' => 255, 'null' => true])
 			->addIndex(['appearance_id','facing'], ['unique' => true]);
@@ -98,7 +98,7 @@ class ConvertSchemaToMigration extends AbstractMigration {
 			->addColumn('season',  'integer')
 			->addColumn('episode', 'integer')
 			->addColumn('user_id', 'uuid')
-			->addColumn('vote',    'integer', ['limit' => PostgresAdapter::INT_SMALL])
+			->addColumn('vote',    'smallinteger')
 			->addIndex('user_id');
 		$this->tables[$table]->create();
 
@@ -106,14 +106,14 @@ class ConvertSchemaToMigration extends AbstractMigration {
 		$this->tables[$table] = $this->table($table, ['id' => false, 'primary_key' => ['season','episode']])
 			->addColumn('season',    'integer')
 			->addColumn('episode',   'integer')
-			->addColumn('twoparter', 'boolean',   ['default' => false])
+			->addColumn('twoparter', 'boolean',      ['default' => false])
 			->addColumn('title',     'text')
-			->addColumn('posted',    'timestamp', ['timezone' => true, 'default' => 'CURRENT_TIMESTAMP'])
+			->addColumn('posted',    'timestamp',    ['timezone' => true, 'default' => 'CURRENT_TIMESTAMP'])
 			->addColumn('posted_by', 'uuid')
-			->addColumn('airs',      'timestamp', ['timezone' => true, 'null' => true])
-			->addColumn('no',        'integer',   ['limit' => PostgresAdapter::INT_SMALL, 'null' => true])
-			->addColumn('score',     'float',     ['default' => 0])
-			->addColumn('notes',     'text',      ['null' => true])
+			->addColumn('airs',      'timestamp',    ['timezone' => true, 'null' => true])
+			->addColumn('no',        'smallinteger', ['null' => true])
+			->addColumn('score',     'float',        ['default' => 0])
+			->addColumn('notes',     'text',         ['null' => true])
 			->addIndex('posted_by');
 		$this->tables[$table]->create();
 
@@ -154,7 +154,7 @@ class ConvertSchemaToMigration extends AbstractMigration {
 		$this->tables[$table] = $this->table($table,['id' => false, 'primary_key' => ['entry_id','user_id']])
 			->addColumn('entry_id', 'integer')
 			->addColumn('user_id',  'uuid')
-			->addColumn('value',    'integer',   ['limit' => PostgresAdapter::INT_SMALL])
+			->addColumn('value',    'smallinteger')
 			->addColumn('cast_at',  'timestamp', ['timezone' => true, 'default' => 'CURRENT_TIMESTAMP']);
 		$this->tables[$table]->create();
 
