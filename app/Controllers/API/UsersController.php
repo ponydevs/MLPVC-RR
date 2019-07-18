@@ -129,4 +129,6 @@ class UsersController extends APIController {
 			'sessionUpdating' => Auth::$session->updating,
 		]);
 	}
+
+	// TODO Endpoint for changing user settings
 }
