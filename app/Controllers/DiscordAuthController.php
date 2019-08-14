@@ -130,6 +130,8 @@ class DiscordAuthController extends Controller {
 	}
 
 	public function sync($params){
+		Response::fail('The Discord account link got severed, you will need to re-link your account.', ['segway' => true]);
+
 		$this->_setTarget($params);
 
 		$discordUser = $this->_target->discord_member;

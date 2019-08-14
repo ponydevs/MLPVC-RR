@@ -192,13 +192,13 @@
 
 		$.Dialog.wait(title, 'Retrieving event details from server');
 
-		$.API.get(`/event/${eventID}`,$.mkAjaxHandler(function(){
+		$.API.get(`/event/${eventID}`,function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this;
 			data.eventID = eventID;
 			mkEventEditor($this, title, data);
-		}));
+		});
 	});
 	$content.on('click','[id^=event-] .finalize-event',function(e){
 		e.preventDefault();
@@ -221,12 +221,12 @@
 				const data = $form.mkData();
 				$.Dialog.wait(false,'Finalizing event');
 
-				$.API.post(`/event/${eventID}/finalize`,data,$.mkAjaxHandler(function(){
+				$.API.post(`/event/${eventID}/finalize`,data,function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.success(false, 'Event finalized successfully');
 					$.Navigation.reload(true);
-				}));
+				});
 			});
 		});
 	});
@@ -244,7 +244,7 @@
 
 			$.Dialog.wait(false);
 
-			$.API.delete(`/event/${eventid}`,$.mkAjaxHandler(function(){
+			$.API.delete(`/event/${eventid}`,function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				if (EventPage){
@@ -255,7 +255,7 @@
 				}
 
 				$.Navigation.reload(true);
-			}));
+			});
 		});
 	});
 })();

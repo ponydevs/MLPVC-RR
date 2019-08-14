@@ -111,7 +111,7 @@
 
 						$this.disable();
 
-						$.API.get('/show/prefill', $.mkAjaxHandler(function(){
+						$.API.get('/show/prefill', function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							let airs = setSat830(this.airday);
@@ -124,7 +124,7 @@
 							}, (name, value) => {
 								$form.find(`[name=${name}]`).val(value);
 							});
-						})).always(function(){
+						}).always(function(){
 							$this.enable();
 						});
 					})
@@ -148,13 +148,13 @@
 				const what = is_episode ? 'episode' : 'show entry';
 				$.Dialog.wait(false, `Adding ${what} to database`);
 
-				$.API.post('/show', data, $.mkAjaxHandler(function(){
+				$.API.post('/show', data, function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Dialog.wait(false, `Opening ${what} page`, true);
 
 					$.Navigation.visit(this.url);
-				}));
+				});
 			});
 		});
 	});
@@ -171,7 +171,7 @@
 		$.Dialog.wait(`Editing show entry #${id}`);
 
 		const endpoint = `/show/${id}`;
-		$.API.get(endpoint, $.mkAjaxHandler(function(){
+		$.API.get(endpoint, function(){
 			if (!this.status) return $.Dialog.fail(false,this.message);
 
 			const { show } = this;
@@ -215,15 +215,15 @@
 
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.API.put(endpoint, data, $.mkAjaxHandler(function(){
+					$.API.put(endpoint, data, function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.wait(false, 'Updating page', true);
 						$.Navigation.reload();
-					}));
+					});
 				});
 			});
-		}));
+		});
 	}
 	$content.on('click','#edit-show',EditEp);
 	$tables.on('click', '.edit-show', EditEp).on('click', '.delete-show', function(e){
@@ -239,11 +239,11 @@
 
 			$.Dialog.wait(false, 'Removing episode');
 
-			$.API.delete(`/show/${id}`, $.mkAjaxHandler(function(){
+			$.API.delete(`/show/${id}`, function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Navigation.reload(true);
-			}));
+			});
 		});
 	});
 })();

@@ -12,7 +12,7 @@
 			$.Dialog.segway(false, this.message ? $.mk('span').attr('class','color-green').html(this.message) : undefined);
 		},
 		tagUseUpdateHandler = function(successDialog){
-			return $.mkAjaxHandler(function(){
+			return function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				if (this.counts){
@@ -28,7 +28,7 @@
 
 				if (successDialog) $.Dialog.success(false, this.message, true);
 				else $.Dialog.close();
-			});
+			};
 		};
 	window.cgTagEditing = function(tagName, tagID, action, $tr){
 		switch (action){
@@ -38,15 +38,15 @@
 
 					$.Dialog.wait(false,'Deleting tag');
 
-					$.API.delete(`/cg/tag/${tagID}`, {sanitycheck: true},$.mkAjaxHandler(function(){
+					$.API.delete(`/cg/tag/${tagID}`, {sanitycheck: true},function(){
 						updateList.call(this, $tr, action);
-					}));
+					});
 				});
 			break;
 			case "synon":
 				$.Dialog.wait(`Make ${tagName} a synonym`, 'Retrieving tag list from server');
 
-				$.API.get('/cg/tags',{not:tagID,action:action},$.mkAjaxHandler(function(){
+				$.API.get('/cg/tags',{not:tagID,action:action},function(){
 					if (!this.length){
 						if (this.undo)
 							return window.cgTagEditing.call(this, tagName, tagID, 'unsynon', $tr);
@@ -88,12 +88,12 @@
 							let sent = $form.mkData();
 							$.Dialog.wait(false, 'Creating tag synonym');
 
-							$.API.put(`/cg/tag/${tagID}/synonym`,sent, $.mkAjaxHandler(function(data){
+							$.API.put(`/cg/tag/${tagID}/synonym`,sent, function(data){
 								updateList.call(data, $tr, action);
-							}));
+							});
 						});
 					});
-				}));
+				});
 			break;
 			case "unsynon": {
 				let message = this.message;
@@ -115,9 +115,9 @@
 								let data = $form.mkData();
 								$.Dialog.wait(false, 'Removing synonym');
 
-								$.API.delete(`/cg/tag/${tagID}/synonym`,data,$.mkAjaxHandler(function(){
+								$.API.delete(`/cg/tag/${tagID}/synonym`,data,function(){
 									updateList.call(this, $tr, action);
-								}));
+								});
 							});
 						});
 					});

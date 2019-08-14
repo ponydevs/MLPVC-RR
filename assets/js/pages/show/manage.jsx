@@ -11,7 +11,7 @@
 		$.Dialog.wait('Set video links', 'Requesting links from the server');
 
 		const endpoint = `/show/${showId}/video-data`;
-		$.API.get(endpoint, $.mkAjaxHandler(function(){
+		$.API.get(endpoint, function(){
 			const data = this;
 			const { type } = data;
 
@@ -74,7 +74,7 @@
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Saving links');
 
-					$.API.put(endpoint, data, $.mkAjaxHandler(function() {
+					$.API.put(endpoint, data, function() {
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.epsection){
@@ -90,17 +90,17 @@
 							$epSection = {length:0};
 						}
 						$.Dialog.close();
-					}));
+					});
 				});
 			});
-		}));
+		});
 	});
 
 	$('#cg-relations').on('click',function(){
 		$.Dialog.wait('Guide relation editor', 'Retrieving relations from server');
 
 		const endpoint = `/show/${showId}/guide-relations`;
-		$.API.get(endpoint, $.mkAjaxHandler(response => {
+		$.API.get(endpoint, response => {
 			if (!response.status) return $.Dialog.fail(false, response.message);
 
 			const { SplitSelector } = window.reactComponents;
@@ -124,7 +124,7 @@
 				},
 			};
 			$.Dialog.request(false, <SplitSelector {...data} />, 'Save');
-		}));
+		});
 	});
 
 	$('#edit-about_reservations, #edit-reservation_rules').on('click', function(e){
@@ -137,7 +137,7 @@
 		let text = $h2c.text().trim();
 
 		$.Dialog.wait(`Editing "${text}"`,"Retrieving setting's value");
-		$.API.get(`/setting/${endpoint}`,$.mkAjaxHandler(function(){
+		$.API.get(`/setting/${endpoint}`,function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let $EditorForm = $.mk('form', `${endpoint}-editor`),
@@ -156,16 +156,16 @@
 					let data = { value: dataEditor.getValue() };
 					$.Dialog.wait(false, 'Saving');
 
-					$.API.put(`/setting/${endpoint}`, data, $.mkAjaxHandler(function(){
+					$.API.put(`/setting/${endpoint}`, data, function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$h2.siblings().remove();
 						$h2.parent().append(this.value);
 						$.Dialog.close();
-					}));
+					});
 				});
 			});
-		}));
+		});
 	});
 
 	function reservePost($li, reserveAs, id){
@@ -173,7 +173,7 @@
 			send = function(data){
 				$.Dialog.wait(title, 'Sending reservation to the server');
 
-				$.API.post(`/post/${id}/reservation`, data, $.mkAjaxHandler(function(){
+				$.API.post(`/post/${id}/reservation`, data, function(){
 					if (this.retry)
 						return $.Dialog.confirm(false, this.message, function(sure){
 							if (!sure) return;
@@ -193,7 +193,7 @@
 						$newli.rebindFluidbox();
 					}
 					$.Dialog.close();
-				}));
+				});
 			};
 
 		if (typeof USERNAME_REGEX === 'undefined' || !reserveAs)
@@ -249,7 +249,7 @@
 
 			$.Dialog.wait(`Editing post #${id}`, `Retrieving details`);
 
-			$.API.get(`/post/${id}`,$.mkAjaxHandler(function(data){
+			$.API.get(`/post/${id}`,function(data){
 				if (!data.status) return $.Dialog.fail(false, data.message);
 
 				let $PostEditForm = $.mk('form').attr('id', 'post-edit-form').append(
@@ -430,16 +430,16 @@
 
 						$.Dialog.wait(false, 'Saving changes');
 
-						$.API.put(`/post/${id}`,newData, $.mkAjaxHandler(function(){
+						$.API.put(`/post/${id}`,newData, function(){
 							if (!this.status) return $.Dialog.fail(false, this.message);
 
 							$li.reloadLi();
 
 							$.Dialog.close();
-						}));
+						});
 					});
 				});
-			}));
+			});
 		})
 		.on('click','li[id] .cancel',function(e){
 			e.preventDefault();
@@ -454,21 +454,21 @@
 				$li.addClass('deleting');
 
 				if (type === 'request')
-					$.API.delete(`/post/${id}/reservation`, $.mkAjaxHandler(function(){
+					$.API.delete(`/post/${id}/reservation`, function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$li.removeClass('deleting').reloadLi(false);
 						$.Dialog.close();
-					}));
+					});
 				else {
-					$.API.delete(`/post/${id}/reservation`, $.mkAjaxHandler(function(){
+					$.API.delete(`/post/${id}/reservation`, function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.close();
 						return $li[window.withinMobileBreakpoint()?'slideUp':'fadeOut'](500,function(){
 							$li.remove();
 						});
-					}));
+					});
 				}
 			});
 		})
@@ -513,7 +513,7 @@
 					(function attempt(){
 						$.Dialog.wait(false, 'Marking post as finished');
 
-						$.API.put(`/post/${id}/finish`,sent_data,$.mkAjaxHandler(function(data){
+						$.API.put(`/post/${id}/finish`,sent_data,function(data){
 							if (data.status){
 								$.Dialog.success(false, `${Type} has been marked as finished`);
 
@@ -534,7 +534,7 @@
 								});
 							}
 							else $.Dialog.fail(false, data.message);
-						}));
+						});
 					})();
 				});
 			});
@@ -572,12 +572,12 @@
 
 					$.Dialog.wait(false, 'Removing "finished" flag'+(unbind?' & unbinding from user':''));
 
-					$.API.delete(`/post/${id}/finish${unbind?'?unbind':''}`,$.mkAjaxHandler(function(){
+					$.API.delete(`/post/${id}/finish${unbind?'?unbind':''}`,function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, typeof this.message !== 'undefined' ? this.message : '"finished" flag removed successfully');
 						$(`#${type}s`).trigger('pls-update');
-					}));
+					});
 				});
 			});
 		})
@@ -589,13 +589,13 @@
 
 			$.Dialog.wait('Submission approval status','Checking');
 
-			$.API.post(`/post/${id}/approval`, $.mkAjaxHandler(function(){
+			$.API.post(`/post/${id}/approval`, function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let message = this.message;
 				$li.reloadLi();
 				$.Dialog.success(false, message, true);
-			}));
+			});
 		})
 		.on('click','li[id] .unlock',function(e){
 			e.preventDefault();
@@ -608,11 +608,11 @@
 
 				$.Dialog.wait(false);
 
-				$.API.delete(`/post/${id}/approval`, $.mkAjaxHandler(function(){
+				$.API.delete(`/post/${id}/approval`, function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$li.closest('.posts').trigger('pls-update');
-				}));
+				});
 			});
 		})
 		.on('click','li[id] .delete',function(e){
@@ -627,7 +627,7 @@
 				$.Dialog.wait(false);
 				$li.addClass('deleting');
 
-				$.API.delete(`/post/request/${id}`,$.mkAjaxHandler(function(){
+				$.API.delete(`/post/request/${id}`,function(){
 					if (!this.status){
 						$li.removeClass('deleting');
 						return $.Dialog.fail(false, this.message);
@@ -637,7 +637,7 @@
 					$li[window.withinMobileBreakpoint()?'slideUp':'fadeOut'](500,() => {
 						$li.remove();
 					});
-				}));
+				});
 			});
 		})
 		.on('click','li[id] .pls-transfer',function(e){
@@ -656,7 +656,7 @@
 
 					$.Dialog.wait(false);
 
-					$.API.post(`/post/${id}/transfer`,$.mkAjaxHandler(function(){
+					$.API.post(`/post/${id}/transfer`,function(){
 						if (this.canreserve)
 							return $.Dialog.confirm(false, this.message, function(sure){
 								if (!sure) return;
@@ -667,7 +667,7 @@
 							return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, this.message, true);
-					}));
+					});
 				});
 		});
 	$body
@@ -703,7 +703,7 @@
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Replacing image');
 
-					$.API.put(`/post/${id}/image`,data,$.mkAjaxHandler(function(){
+					$.API.put(`/post/${id}/image`,data,function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, 'Image has been updated', true);
@@ -717,7 +717,7 @@
 							$newli.rebindFluidbox();
 						}
 						else $li.reloadLi();
-					}));
+					});
 				});
 			});
 		})
@@ -729,7 +729,7 @@
 			$.Dialog.close();
 			$.Dialog.wait('Fix Sta.sh fullsize URL', 'Fixing Sta.sh full size image URL');
 
-			$.API.post(`/post/${id}/fix-stash`, $.mkAjaxHandler(function() {
+			$.API.post(`/post/${id}/fix-stash`, function() {
 				if (!this.status){
 					if (this.rmdirect){
 						if (!finished){
@@ -743,7 +743,7 @@
 
 				$fullsize_link.attr('href', this.fullsize);
 				$.Dialog.success(false, 'Fix successful', true);
-			}));
+			});
 		})
 		.on('click', '#dialog-clear-broken-status', function(e){
 			e.preventDefault();
@@ -753,7 +753,7 @@
 			$.Dialog.close();
 			$.Dialog.wait('Clear post broken status', 'Checking image availability');
 
-			$.API.get(`/post/${id}/unbreak`, $.mkAjaxHandler(function() {
+			$.API.get(`/post/${id}/unbreak`, function() {
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				if (this.li){
@@ -766,6 +766,6 @@
 				}
 
 				$.Dialog.close();
-			}));
+			});
 		});
 })();

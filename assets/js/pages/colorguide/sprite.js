@@ -98,10 +98,10 @@
 
 		$.Dialog.wait('Server-side sprite color check');
 
-		$.API.post(`/cg/appearance/${AppearanceID}/sprite/check-colors`, $.mkAjaxHandler(function(){
+		$.API.post(`/cg/appearance/${AppearanceID}/sprite/check-colors`, function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			$.Dialog.segway(false, this.message);
-		}));
+		});
 	});
 })();

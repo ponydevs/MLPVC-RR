@@ -3,8 +3,7 @@
 	"use strict";
 
 	const $scriptTag = $('#wss');
-	let conn,
-		connpath = $scriptTag.attr('src').replace(/^(.*?:\d+\/).*$/,'$1'),
+	let connpath = $scriptTag.attr('src').replace(/^(.*?:\d+\/).*$/,'$1'),
 		wsdecoder = f =>
 			data => {
 				if (typeof data === 'string'){
@@ -69,13 +68,13 @@
 						$notifCnt.empty();
 					});
 				}
-				else $.API.get('/notif',$.mkAjaxHandler(data => {
+				else $.API.get('/notif', data => {
 					$notifCnt.text(cnt);
 					$notifSbList.html(data.list);
 					Time.update();
 					this.bindMarkRead();
 					$notifSb.stop().slideDown();
-				}));
+				});
 			}));
 			this.conn.on('post-delete', wsdecoder(data => {
 				if (!data.id)
@@ -113,7 +112,7 @@
 
 				if ($(`.posts #post-${data.id}`).length > 0)
 					return;
-				$.API.get(`/post/${data.id}/reload`,$.mkAjaxHandler(resp => {
+				$.API.get(`/post/${data.id}/reload`, resp => {
 					if (!resp.status) return;
 
 					if ($(`.posts #post-${data.id}`).length > 0)
@@ -124,7 +123,7 @@
 					Time.update();
 					$newli.rebindHandlers().parent().reorderPosts();
 					console.log(`[WS] Post added (id=${data.id}) to container ${this.section}`);
-				}));
+				});
 			}));
 			this.conn.on('post-update', wsdecoder(data => {
 				if (!data.id)
@@ -281,14 +280,14 @@
 					send = () => {
 						$el.siblings('.mark-read').addBack().addClass('disabled');
 
-						$.API.post(`/notif/${nid}/mark-read`,data,$.mkAjaxHandler(data => {
+						$.API.post(`/notif/${nid}/mark-read`,data, data => {
 							if (!data.status) return $.Dialog.fail(title, data.message);
 
 							if (data.message)
 								return $.Dialog.success(title, data.message, true);
 
 							$.Dialog.close();
-						})).always(() => {
+						}).always(() => {
 							$el.siblings('.mark-read').addBack().removeClass('disabled');
 						});
 					};

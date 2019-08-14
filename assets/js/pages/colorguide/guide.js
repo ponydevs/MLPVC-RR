@@ -151,9 +151,9 @@
 					source: (q, callback) => {
 						if (appearanceAutocompleteCache.has(q))
 							return callback(appearanceAutocompleteCache.get(q));
-						$.API.get(`/cg/appearances`, { q, EQG }, $.mkAjaxHandler(data => {
+						$.API.get(`/cg/appearances`, { q, EQG }, data => {
 							callback(appearanceAutocompleteCache.set(q, data));
-						}));
+						});
 					},
 					templates: {
 						header: () => `<div class="aa-header">

@@ -84,7 +84,7 @@
 
 				$.Dialog.wait(false, 'Submitting your rating');
 
-				$.API.post(`/show/${showId}/vote`,data,$.mkAjaxHandler(function(){
+				$.API.post(`/show/${showId}/vote`,data,function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					let $section = $voteButton.closest('section');
@@ -92,7 +92,7 @@
 					$section.append(this.newhtml);
 					$voting.bindDetails();
 					$.Dialog.close();
-				}));
+				});
 			});
 		});
 	});
@@ -101,13 +101,13 @@
 		if (diff.past !== true) return;
 
 		if (!$voting.children('.rate').length){
-			$.API.get(`/show/${showId}/vote?html`,$.mkAjaxHandler(function(){
+			$.API.get(`/show/${showId}/vote?html`,function(){
 				if (!this.status) return $.Dialog.fail('Display voting buttons',this.message);
 
 				$voting.children('h2').nextAll().remove();
 				$voting.append(this.html);
 				$voting.bindDetails();
-			}));
+			});
 			$(this).removeData('dyntime-beforeupdate');
 			return false;
 		}
@@ -120,7 +120,7 @@
 
 			$.Dialog.wait('Voting details','Getting vote distribution information');
 
-			$.API.get(`/show/${showId}/vote`, $.mkAjaxHandler(function(){
+			$.API.get(`/show/${showId}/vote`, function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				const $ul = $.mk('ul');
@@ -141,7 +141,7 @@
 					$.mk('p').text("Here's how the votes are distributed:"),
 					$.mk('div').attr('id','vote-distrib').append($ul, $bars)
 				]);
-			}));
+			});
 		});
 	};
 	$voting.bindDetails();
@@ -188,7 +188,7 @@
 				Kinds = $.capitalize(kinds);
 			if (silent !== true)
 				$.Dialog.wait($.Dialog.isOpen() ? false : Kinds, `Updating list of ${kinds}`, true);
-			$.API.get(`/show/${showId}/posts`, {section:kinds}, $.mkAjaxHandler(function(){
+			$.API.get(`/show/${showId}/posts`, {section:kinds}, function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				let $newChildren = $(this.render).filter('section').children();
@@ -201,7 +201,7 @@
 					callback();
 				else if (silent !== true)
 					$.Dialog.close();
-			}));
+			});
 		});
 	$posts.find('li[id]').each(function(){
 		$(this).rebindFluidbox();
@@ -260,7 +260,7 @@
 						deviation,
 						show_id: showId,
 					};
-					$.API.post('/post/reservation',data,$.mkAjaxHandler(function(){
+					$.API.post('/post/reservation',data,function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, this.message);
@@ -268,7 +268,7 @@
 							$.Dialog.close();
 							window.location.hash = `#${this.id}`;
 						}]);
-					}));
+					});
 				});
 			});
 		});
@@ -299,7 +299,7 @@
 			imgCheckDisabler(true);
 			$.Dialog.wait(title,'Checking image, this can take a bit of time');
 
-			$.API.post('/post/check-image', { image_url }, $.mkAjaxHandler(function(){
+			$.API.post('/post/check-image', { image_url }, function(){
 				let data = this;
 				if (!data.status){
 					$notice.children('p:not(.keep)').remove();
@@ -349,7 +349,7 @@
 					});
 				}
 				load(data, 0);
-			}));
+			});
 		}
 		$formImgCheck.on('click', function(e){
 			e.preventDefault();
@@ -397,7 +397,7 @@
 			(function submit(){
 				$.Dialog.wait(title,'Submitting post');
 
-				$.API.post('/post',data,$.mkAjaxHandler(function(){
+				$.API.post('/post',data,function(){
 					if (!this.status){
 						if (!this.canforce)
 							return $.Dialog.fail(false, this.message);
@@ -423,7 +423,7 @@
 						});
 						window.location.hash = '#'+id;
 					}]);
-				}));
+				});
 			})();
 		}).on('reset',function(){
 			$formImgCheck.prop('disabled', false).addClass('red');
@@ -447,7 +447,7 @@
 
 			const { postId, viewonly } = el.dataset;
 
-			$.API.get(`/post/${postId}/lazyload`,{viewonly},$.mkAjaxHandler(function(){
+			$.API.get(`/post/${postId}/lazyload`,{viewonly},function(){
 				const $el = $(el);
 				if (!this.status){
 					$el.trigger('error');
@@ -457,7 +457,7 @@
 				$.loadImages(this.html).then(function(resp){
 					$el.trigger(resp.e).closest('.image').replaceWith(resp.$el);
 				});
-			}));
+			});
 		});
 	});
 	const screencapIO = new IntersectionObserver(entries => {
@@ -512,7 +512,7 @@
 
 			const { id } = el.dataset;
 
-			$.API.get(`/show/${id}/synopsis`,$.mkAjaxHandler(function(){
+			$.API.get(`/show/${id}/synopsis`,function(){
 				const $el = $(el);
 				const $section = $el.closest('section');
 				if (!this.status){
@@ -528,7 +528,7 @@
 					$section.html(resp.$el);
 					$section.find('.synopsis-image').fluidboxThis();
 				});
-			}));
+			});
 		});
 	});
 
@@ -559,7 +559,7 @@
 
 		if (log)
 			console.log(`[POST-FIX] Attempting to reload post #${id}`);
-		$.API.get(`/post/${id}/reload`,{cache:log},$.mkAjaxHandler(function(){
+		$.API.get(`/post/${id}/reload`,{cache:log},function(){
 			reloading[_idAttr] = false;
 			if (!this.status) return;
 			if (this.broken === true){
@@ -586,7 +586,7 @@
 			if (log)
 				console.log(`[POST-FIX] Reloaded post #${id}`);
 			$.callCallback(callback);
-		}));
+		});
 
 		return this;
 	};
@@ -614,7 +614,7 @@
 			const title = 'Scroll post into view';
 			// Attempt to find the post as a last resort, it might be on a different episode page
 			const postID = location.hash.replace(/\D/g,'');
-			$.API.post(`/post/${postID}/locate`, { show_id: showId }, $.mkAjaxHandler(function(){
+			$.API.post(`/post/${postID}/locate`, { show_id: showId }, function(){
 				if (!this.status) return $.Dialog.info(title, this.message);
 
 				if (this.refresh){
@@ -648,7 +648,7 @@
 						$.Navigation.visit(castle.url);
 					});
 				});
-			}));
+			});
 		}
 	}
 
@@ -669,7 +669,7 @@
 				if (typeof $embedWrap === 'undefined'){
 					$.Dialog.wait($showPlayers.text());
 
-					$.API.get(`/show/${showId}/video-embeds`, $.mkAjaxHandler(function(){
+					$.API.get(`/show/${showId}/video-embeds`, function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (this.parts === 2){
@@ -686,7 +686,7 @@
 							.text('Hide on-site player')
 							.triggerHandler('scroll-video-into-view');
 						$.Dialog.close();
-					}));
+					});
 				}
 				else {
 					let show = $showPlayers.hasClass('typcn-eye');
@@ -711,7 +711,7 @@
 
 					$.Dialog.wait(false, 'Sending report');
 
-					$.API.post(`/show/${showId}/broken-videos`, $.mkAjaxHandler(function(){
+					$.API.post(`/show/${showId}/broken-videos`, function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						if (typeof this.epsection !== 'undefined'){
@@ -723,7 +723,7 @@
 						}
 
 						$.Dialog.success(false, this.message, true);
-					}));
+					});
 				});
 			});
 		}

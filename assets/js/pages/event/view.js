@@ -43,7 +43,7 @@
 
 		$.Dialog.wait('New entry','Checking whether you can submit any more entries');
 
-		$.API.get(`/event/${eventID}/check-entries`,$.mkAjaxHandler(function(){
+		$.API.get(`/event/${eventID}/check-entries`,function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			if (this.message)
@@ -56,15 +56,15 @@
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Submitting your entry');
 
-					$.API.post(`/event/${eventID}/entry`,data,$.mkAjaxHandler(function(){
+					$.API.post(`/event/${eventID}/entry`,data,function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$eventEntries.html(this.entrylist).rebindFluidbox();
 						$.Dialog.close();
-					}));
+					});
 				});
 			});
-		}));
+		});
 	});
 
 	$eventEntries.rebindFluidbox().on('click','.edit-entry', function(e){
@@ -75,7 +75,7 @@
 
 		$.Dialog.wait(`Editing entry #${entryID}`,'Retrieving entry details from server');
 
-		$.API.get(`/event/entry/${entryID}`,$.mkAjaxHandler(function(){
+		$.API.get(`/event/entry/${entryID}`,function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this;
@@ -93,15 +93,15 @@
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Saving changes');
 
-					$.API.put(`/event/entry/${entryID}`,data,$.mkAjaxHandler(function(){
+					$.API.put(`/event/entry/${entryID}`,data,function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$li.html(this.entryhtml).rebindFluidbox();
 						$.Dialog.close();
-					}));
+					});
 				});
 			});
-		}));
+		});
 	});
 
 	$eventEntries.on('click','.delete-entry', function(e){
@@ -116,14 +116,14 @@
 
 			$.Dialog.wait(false, 'Sending deletion request');
 
-			$.API.delete(`/event/entry/${entryID}`,$.mkAjaxHandler(function(){
+			$.API.delete(`/event/entry/${entryID}`,function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Dialog.close();
 				$li.fadeOut(500,function(){
 					$li.remove();
 				});
-			}));
+			});
 		});
 	});
 
@@ -137,7 +137,7 @@
 			un = $btn.hasClass('clicked');
 
 		$btn.siblings('button').addBack().disable();
-		$.API[un?'delete':'post'](`/event/entry/${entryID}/vote`,{value},$.mkAjaxHandler(function(){
+		$.API[un?'delete':'post'](`/event/entry/${entryID}/vote`,{value},function(){
 			let $otherBtn = $btn.siblings('button');
 			if (!this.disable)
 				$otherBtn.addBack().enable();
@@ -149,7 +149,7 @@
 			$btn.siblings('.score').text(this.score);
 
 			$eventEntries.triggerHandler('reorder-items');
-		}));
+		});
 	}).on('reorder-items',function(){
 		if ($eventEntries.find('.voting').length === 0)
 			return;
@@ -168,13 +168,13 @@
 			$entry = this,
 			entryID = $entry.attr('id').split('-')[1];
 
-		$.API.get(`/event/entry/${entryID}/vote`,$.mkAjaxHandler(function(){
+		$.API.get(`/event/entry/${entryID}/vote`,function(){
 			if (!this.status)
 				return $.Dialog.fail('Refresh voting buttons of entry #'+entryID, this.message);
 
 			$entry.find('.voting').replaceWith(this.voting);
 			$eventEntries.triggerHandler('reorder-items');
-		}));
+		});
 	};
 
 	if (window.EventType === 'contest')
@@ -191,7 +191,7 @@
 
 			const { entryid } = el.dataset;
 
-			$.API.get(`/event/entry/${entryid}/lazyload`,$.mkAjaxHandler(function(){
+			$.API.get(`/event/entry/${entryid}/lazyload`,function(){
 				if (!this.status) return $.Dialog.fail(`Failed to load preview for entry #${entryid}`, this.message);
 
 				$.loadImages(this.html).then(function(resp){
@@ -200,7 +200,7 @@
 					$el.replaceWith(resp.$el);
 					$parent.rebindFluidbox();
 				});
-			}));
+			});
 		});
 	});
 

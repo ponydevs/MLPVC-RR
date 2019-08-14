@@ -131,7 +131,7 @@
 			$.Dialog.success(false, 'Hello response received', true);
 		});
 
-		$.API.get('/admin/wsdiag/hello', { priv, clientid }, $.mkAjaxHandler(function(){
+		$.API.get('/admin/wsdiag/hello', { priv, clientid }, function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			if (!responseReceived)
@@ -146,6 +146,6 @@
 				$w.off('ws-hello');
 				$.Dialog.fail(false, 'Hello response timed out');
 			}, timeout);
-		}));
+		});
 	});
 })();

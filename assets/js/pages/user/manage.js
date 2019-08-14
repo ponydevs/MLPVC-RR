@@ -4,7 +4,6 @@
 	if (typeof window.ROLES === 'undefined') return;
 
 	let $briefing = $content.children('.briefing'),
-		name = $briefing.find('.username').text().trim(),
 		$currRole = $briefing.find('.role-label'),
 		currRole = $currRole.text().trim(),
 		$RoleModFormTemplate = $.mk('form').attr('id','rolemod').html('<select name="newrole" required><optgroup label="Possible roles"></optgroup></select>'),
@@ -29,14 +28,14 @@
 				let data = $form.mkData();
 				$.Dialog.wait(false,'Moving user to the new group');
 
-				$.API.put(`/user/${userId}/role`, data, $.mkAjaxHandler(function(){
+				$.API.put(`/user/${userId}/role`, data, function(){
 					if (this.already_in === true)
 						return $.Dialog.close();
 
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Navigation.reload(true);
-				}));
+				});
 			});
 		});
 	});
@@ -53,11 +52,11 @@
 				let data = $form.mkData();
 				$.Dialog.wait(false,'Changing role mask');
 
-				$.API.put(`/setting/dev_role_label`, data, $.mkAjaxHandler(function(){
+				$.API.put(`/setting/dev_role_label`, data, function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Navigation.reload(true);
-				}));
+				});
 			});
 		});
 	});

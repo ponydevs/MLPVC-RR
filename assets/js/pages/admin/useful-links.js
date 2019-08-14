@@ -13,7 +13,7 @@
 
 		$.Dialog.wait(`Editing link #${linkid}`, 'Retrieving link information from server');
 
-		$.API.get(`/admin/usefullinks/${linkid}`,$.mkAjaxHandler(function(){
+		$.API.get(`/admin/usefullinks/${linkid}`, function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			let data = this;
@@ -23,7 +23,7 @@
 				$form.find('input[name=title]').val(data.title);
 				$form.find('select[name=minrole]').val(data.minrole);
 			});
-		}));
+		});
 	});
 	$uflol.on('click','.delete-link',function(){
 		let $li = $(this).closest('[id^=ufl-]'),
@@ -34,7 +34,7 @@
 
 			$.Dialog.wait(false, 'Removing link');
 
-			$.API.delete(`/admin/usefullinks/${linkId}`,$.mkAjaxHandler(function(){
+			$.API.delete(`/admin/usefullinks/${linkId}`, function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$li.remove();
@@ -42,7 +42,7 @@
 				if ($sbUflContainer.is(':empty'))
 					$sbUflContainer.hide();
 				$.Dialog.close();
-			}));
+			});
 		});
 	});
 	$('#add-link').on('click',function(){
@@ -113,11 +113,11 @@
 				list.push($(this).find('.typcn-arrow-move').remove().end().attr('id').split('-').pop());
 			});
 
-			$.API.post('/admin/usefullinks/reorder', {list:list.join(',')}, $.mkAjaxHandler(function(){
+			$.API.post('/admin/usefullinks/reorder', {list:list.join(',')}, function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Navigation.reload(true);
-			}));
+			});
 		}
 	});
 })();

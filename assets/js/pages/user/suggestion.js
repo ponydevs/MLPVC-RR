@@ -21,7 +21,7 @@
 
 					$btn.disable();
 
-					$.API.get('/post/request/suggestion',{already_loaded: already_loaded.join(',')},$.mkAjaxHandler(function(){
+					$.API.get('/post/request/suggestion',{already_loaded: already_loaded.join(',')},function(){
 						if (!this.status){
 							$btn.enable();
 							return $.Dialog.fail(false, this.message);
@@ -42,16 +42,16 @@
 						});
 						$result.find('.reserve-request').on('click',function(){
 							let $this = $(this);
-							$.API.post(`/post/${postID}/reservation`,{from:'suggestion'},$.mkAjaxHandler(function(){
+							$.API.post(`/post/${postID}/reservation`,{from:'suggestion'},function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$this.replaceWith(this.button);
 								$pendingReservations.html($(this.pendingReservations).children());
-							}));
+							});
 						});
 						$output.html($result);
 						$btn.enable();
-					})).fail(function(){
+					}).fail(function(){
 						$btn.enable();
 					});
 				});

@@ -80,7 +80,7 @@
 
 			const ids = deviationIDArray.join(',');
 
-			$.API.post('/admin/mass-approve', { ids }, $.mkAjaxHandler(function(){
+			$.API.post('/admin/mass-approve', { ids }, function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				if (this.html){
@@ -91,9 +91,23 @@
 				if (this.message)
 					$.Dialog.success(false, this.message, true);
 				else $.Dialog.close();
-			}));
+			});
 		}
 	})();
+
+	$('#clear-stat-cache').on('click', e => {
+		e.preventDefault();
+
+		$.Dialog.wait('Clearing file stat cache');
+
+		$.API.delete('/admin/stat-cache', function () {
+			if (!this.status) return $.Dialog.fail(false, this.message);
+
+			if (this.message)
+				$.Dialog.success(false, this.message, true);
+			else $.Dialog.close();
+		});
+	});
 
 	const deviationIO = new IntersectionObserver(entries => {
 		entries.forEach(entry => {
@@ -107,13 +121,13 @@
 				postID = el.dataset.postId,
 				viewonly = el.dataset.viewonly;
 
-			$.API.get(`/post/${postID}/lazyload`,{viewonly},$.mkAjaxHandler(function(){
+			$.API.get(`/post/${postID}/lazyload`,{viewonly},function(){
 				if (!this.status) return $.Dialog.fail(`Cannot load post ${postID}`, this.message);
 
 				$.loadImages(this.html).then(function(resp){
 					$(el).closest('.image').replaceWith(resp.$el);
 				});
-			}));
+			});
 		});
 	});
 	const imageIO = new IntersectionObserver(entries => {

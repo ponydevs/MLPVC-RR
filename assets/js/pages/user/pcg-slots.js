@@ -16,11 +16,11 @@
 				if (!sure) return;
 
 				$.Dialog.wait(false, 'Recalculating');
-				$.API.post(`/user/${userId}/pcg/point-history/recalc`, $.mkAjaxHandler(function(){
+				$.API.post(`/user/${userId}/pcg/point-history/recalc`, function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$.Navigation.reload(true);
-				}));
+				});
 			}
 		);
 	});
@@ -31,7 +31,7 @@
 
 		$.Dialog.wait(`Pending gifts for ${username}`, 'Checking for pending gifts');
 
-		$.API.get(`/user/${userId}/pcg/pending-gifts`, $.mkAjaxHandler(function(){
+		$.API.get(`/user/${userId}/pcg/pending-gifts`, function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			if (!this.pendingGifts)
@@ -96,13 +96,13 @@
 
 					$.Dialog.wait(false, 'Refunding selected gifts');
 
-					$.API.post('/user/pcg/refund-gifts', { giftids: ids.join(',') }, $.mkAjaxHandler(function(){
+					$.API.post('/user/pcg/refund-gifts', { giftids: ids.join(',') }, function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, this.message, true);
-					}));
+					});
 				});
 			});
-		}));
+		});
 	});
 })();

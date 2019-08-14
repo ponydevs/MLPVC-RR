@@ -17,6 +17,7 @@ $private_api_endpoint('/admin/usefullinks/reorder',          'AdminController#re
 $private_api_endpoint('/admin/wsdiag/hello',                 'AdminController#wshello');
 $private_api_endpoint('/admin/mass-approve',                 'AdminController#massApprove');
 $private_api_endpoint('/admin/notices/[i:id]?',              'AdminController#noticesApi');
+$private_api_endpoint('/admin/stat-cache',                   'AdminController#statCacheApi');
 $private_api_endpoint('/cg/appearances',                     'AppearanceController#autocomplete');
 $private_api_endpoint('/cg/appearances/list',                'AppearanceController#listApi');
 $private_api_endpoint('/cg/appearance/[i:id]?',              'AppearanceController#api');

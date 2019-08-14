@@ -31,7 +31,7 @@
 				$.Dialog.wait(false, 'Cancelling reservation');
 
 				let postId = $link.prop('hash').substring(1).split('-')[1];
-				$.API.delete(`/post/${postId}/reservation`,{from:'profile'},$.mkAjaxHandler(function(){
+				$.API.delete(`/post/${postId}/reservation`,{from:'profile'},function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					let pendingRes = this.pendingReservations;
@@ -43,7 +43,7 @@
 						}
 					});
 					$.Dialog.close();
-				}));
+				});
 			});
 		});
 		$pendingRes.on('click','button.fix',function(){
@@ -71,12 +71,12 @@
 					let data = $form.mkData();
 					$.Dialog.wait(false, 'Replacing image');
 
-					$.API.put(`/post/${id}/image`,data,$.mkAjaxHandler(function(){
+					$.API.put(`/post/${id}/image`,data,function(){
 						if (!this.status) return $.Dialog.fail(false, this.message);
 
 						$.Dialog.success(false, 'Image has been updated');
 						$.Navigation.reload(true);
-					}));
+					});
 				});
 			});
 		});
@@ -89,7 +89,7 @@
 
 			$.Dialog.wait(`Gifting PCG slots to ${username}`, 'Checking your available slot count');
 
-			$.API.get('/user/pcg/giftable-slots', $.mkAjaxHandler(function(){
+			$.API.get('/user/pcg/giftable-slots', function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				const availableSlots = this.avail;
@@ -125,15 +125,15 @@
 
 							$.Dialog.wait(false, 'Sending gift');
 
-							$.API.post(`/user/${userId}/pcg/slots`, data, $.mkAjaxHandler(function(){
+							$.API.post(`/user/${userId}/pcg/slots`, data, function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$.Dialog.success(false, this.message, true);
-							}));
+							});
 						});
 					});
 				});
-			}));
+			});
 		});
 	}
 
@@ -144,7 +144,7 @@
 
 			$.Dialog.wait('Giving PCG points to '+username, "Checking user's total points");
 
-			$.API.get(`/user/${userId}/pcg/points`, $.mkAjaxHandler(function(){
+			$.API.get(`/user/${userId}/pcg/points`, function(){
 				const $GiveForm = $.mk('form','pcg-point-give-form').append(
 					$.mk('label').append(
 						`<p>Choose how many <strong>points</strong> you want to give. Enter a negative number to take points. You cannot take more points than what the user has, and the free slot cannot be taken away.</p><p><strong>Remember, 10 points = 1 slot!</strong></p>`,
@@ -186,15 +186,15 @@
 
 							$.Dialog.wait(false, 'Giving points');
 
-							$.API.post(`/user/${userId}/pcg/points`, data, $.mkAjaxHandler(function(){
+							$.API.post(`/user/${userId}/pcg/points`, data, function(){
 								if (!this.status) return $.Dialog.fail(false, this.message);
 
 								$.Dialog.segway(false, this.message);
-							}));
+							});
 						});
 					});
 				});
-			}));
+			});
 		});
 	}
 
@@ -225,7 +225,7 @@
 
 			$.Dialog.wait(title,`Signing out of ${browser}${platform}`);
 
-			$.API.delete(`/user/session/${sessionID}`, $.mkAjaxHandler(function(){
+			$.API.delete(`/user/session/${sessionID}`, function(){
 				if (!this.status) return $.Dialog.fail(title,this.message);
 
 				if ($li.siblings().length !== 0){
@@ -234,7 +234,7 @@
 				}
 
 				$.Navigation.reload(true);
-			}));
+			});
 		});
 	});
 	$sessionList.find('button.useragent').on('click', function(e){
@@ -249,11 +249,11 @@
 
 			$.Dialog.wait(false, 'Signing out');
 
-			$.API.post('/da-auth/signout?everywhere',{name: username},$.mkAjaxHandler(function(){
+			$.API.post('/da-auth/signout?everywhere',{name: username},function(){
 				if (!this.status) return $.Dialog.fail(false, this.message);
 
 				$.Navigation.reload(true);
-			}));
+			});
 		});
 	});
 
@@ -321,7 +321,7 @@
 
 			const { postId, viewonly } = el.dataset;
 
-			$.API.get(`/post/${postId}/lazyload`, { viewonly }, $.mkAjaxHandler(({ status, message, html }) => {
+			$.API.get(`/post/${postId}/lazyload`, { viewonly }, ({ status, message, html }) => {
 				const $el = $(el);
 				if (!status){
 					$el.trigger('error');
@@ -335,7 +335,7 @@
 					if (title)
 						$li.children('.label').removeClass('hidden').find('a').text(title);
 				});
-			}));
+			});
 		});
 	});
 
@@ -350,12 +350,12 @@
 
 		$.Dialog.wait('Deviation acceptance status', 'Checking');
 
-		$.API.post(`/post/${id}/approval`, $.mkAjaxHandler(function(){
+		$.API.post(`/post/${id}/approval`, function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			$li.remove();
 			$.Dialog.success(false, this.message, true);
-		}));
+		});
 	});
 
 	function settingChanged(which,from,to_what){
@@ -395,7 +395,7 @@
 					$(`.provider-${from}:not(.avatar-wrap)`).removeClass('provider-'+from).addClass('provider-'+to_what);
 				let error = false;
 				$.each(forUser, (forId, elements) => {
-					$.API.get(`/user/${forId}/avatar-wrap`, $.mkAjaxHandler(function(){
+					$.API.get(`/user/${forId}/avatar-wrap`, function(){
 						if (!this.status){
 							error = true;
 							return $.Dialog.fail(`Update avatar elements for ${forId}`, false);
@@ -404,7 +404,7 @@
 						$.each(elements, (_, $el) => {
 							$el.replaceWith(this.html);
 						});
-					}));
+					});
 				});
 				if (!error)
 					$.Dialog.close();
@@ -440,7 +440,7 @@
 
 		$.Dialog.wait('Saving setting','Please wait');
 
-		$.API.put(endpoint,data,$.mkAjaxHandler(function(){
+		$.API.put(endpoint,data,function(){
 			if (!this.status) return $.Dialog.fail(false, this.message);
 
 			if ($input.is('[type=number]'))
@@ -452,7 +452,7 @@
 			$input.data('orig', this.value).triggerHandler('change');
 
 			settingChanged(endpoint.split('/').pop(), orig, this.value);
-		}));
+		});
 	});
 	$slbl.children('input[type=number]').each(function(){
 		let $el = $(this);

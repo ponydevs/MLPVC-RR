@@ -59,11 +59,11 @@
 
 			$.Dialog.wait(false, 'Saving changes');
 
-			$.API.put(this.props.endpoint, { ids }, $.mkAjaxHandler(data => {
+			$.API.put(this.props.endpoint, { ids }, data => {
 				if (!data.status) return $.Dialog.fail(false, data.message);
 
 				this.props.onSuccess(data);
-			}));
+			});
 		}
 
 		handleSearch(e){

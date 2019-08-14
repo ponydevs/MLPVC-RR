@@ -43,13 +43,13 @@
 
 			waitingList[this.appearanceId] = [this];
 
-			$.API.post(`/cg/appearance/${this.appearanceId}/link-targets?hex`, $.mkAjaxHandler(data => {
+			$.API.post(`/cg/appearance/${this.appearanceId}/link-targets?hex`, data => {
 				if (!data.status) return this.displayError(data.message);
 
 				$.each(waitingList[this.appearanceId], (_, picker) => {
 					picker.fillSwatchBox(data.list);
 				});
-			}));
+			});
 		}
 		fillSwatchBox(list){
 			this.$swatchBox.removeClass('loading').children().first().nextAll().remove();

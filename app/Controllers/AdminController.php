@@ -1,33 +1,23 @@
 <?php
 
 namespace App\Controllers;
-use App\Appearances;
 use App\Auth;
 use App\CoreUtils;
-use App\CSRFProtection;
 use App\DB;
 use App\Input;
-use App\JSON;
 use App\Logs;
 use App\Models\Appearance;
-use App\Models\DiscordMember;
 use App\Models\Logs\Log;
 use App\Models\Notice;
 use App\Models\Post;
 use App\Models\UsefulLink;
-use App\Models\User;
-use App\Models\UserPref;
 use App\Pagination;
 use App\Permission;
-use App\PostgresDbWrapper;
 use App\Posts;
 use App\RegExp;
 use App\Response;
-use App\UserPrefs;
 use App\Users;
-use GuzzleHttp\Command\Guzzle\GuzzleClient;
 use IPTools\IP;
-use RestCord\DiscordClient;
 
 class AdminController extends Controller {
 	public $do = 'admin';
@@ -556,5 +546,13 @@ class AdminController extends Controller {
 			default:
 				CoreUtils::notAllowed();
 		}
+	}
+
+	public function statCacheApi() {
+		if ($this->action !== 'DELETE')
+			CoreUtils::notAllowed();
+
+		clearstatcache();
+		Response::done();
 	}
 }

@@ -7,17 +7,21 @@
 {% extends "layout/base.html.twig" %}
 
 {% block content %}
+{% set is_dev = permission('developer') %}
 <div id="content" class="section-container">
 	<h1>{{ title }}</h1>
 	<p>Various tools related to managing the site</p>
 	<div class='align-center button-block'>
 		<a class='btn link typcn typcn-document-text' href="/admin/logs">Logs</a>
 		<a class='btn link typcn typcn-info' href="/admin/notices">Notices</a>
-		{% if permission('developer') %}
+		{% if is_dev %}
 		<a class='btn link typcn typcn-code' href="/admin/wsdiag">WS</a>
 		{% endif %}
 		<a class='btn link typcn typcn-link' href="/admin/usefullinks">Useful Links</a>
 		<a class='btn link typcn typcn-user' href="/admin/pcg-appearances">PCG Appearances</a>
+		{% if is_dev %}
+		<button class='btn blue typcn typcn-database' id="clear-stat-cache">Clear Stat Cache</button>
+		{% endif %}
 	</div>
 
 	<section class="mass-approve">
@@ -25,7 +29,7 @@
 		<div class="textarea" contenteditable="true"></div>
 	</section>
 
-	{% if permission('developer') %}
+	{% if is_dev %}
 	<section class="elastic-status">
 		<h2><span class="typcn typcn-zoom"></span>Elasticsearch status</h2>
 		{% if elastic_down %}

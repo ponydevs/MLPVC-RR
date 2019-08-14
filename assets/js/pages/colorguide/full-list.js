@@ -84,7 +84,7 @@
 				if (EQG)
 					data.eqg = true;
 
-				$.API.post('/cg/full/reorder', data, $.mkAjaxHandler(function(){
+				$.API.post('/cg/full/reorder', data, function(){
 					if (!this.status) return $.Dialog.fail(false, this.message);
 
 					$fullList.removeClass('sorting').html(this.html);
@@ -92,7 +92,7 @@
 					$ReorderBtn.removeClass('typcn-tick green').addClass('typcn-arrow-unsorted darkblue').html('Re-order');
 					$ReorderCancelBtn.addClass('hidden');
 					$.Dialog.close();
-				}));
+				});
 			}
 		});
 

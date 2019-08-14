@@ -924,12 +924,12 @@
 						return;
 					}
 
-					$.API.get(this._endpoint.replace('%d', id),this._params,$.mkAjaxHandler(data => {
+					$.API.get(this._endpoint.replace('%d', id),this._params,data => {
 						if (!data.status) return $.Dialog.fail('Cache entry retrieval', data.message);
 
 						this._list[id] = data.list;
 						res(this._list[id]);
-					})).fail(() => rej());
+					}).fail(() => rej());
 				});
 			}
 		}
@@ -963,7 +963,11 @@
 		$.each(['get','post','put','delete'], (i, el) => {
 			((method) => {
 				$.API[method] = function(url, ...args) {
-					return $[method]($.API.API_PATH+url, ...args);
+					const lastArg = args.slice(-1)[0];
+					if (typeof lastArg === 'function'){
+						args.splice(-1, 1, $.mkAjaxHandler(lastArg));
+					}
+					return $[method]($.API.API_PATH + url, ...args);
 				};
 			})(el);
 		});

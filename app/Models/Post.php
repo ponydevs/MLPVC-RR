@@ -128,7 +128,7 @@ class Post extends NSModel implements Linkable {
 			FROM log__post_lock pl
 			LEFT JOIN log l ON l.reftype = 'post_lock' AND l.refid = pl.entryid
 			WHERE $where_query
-			ORDER BY pl.entryid ASC
+			ORDER BY pl.entryid
 			LIMIT 1", $where_bind
 		);
 	}
@@ -327,9 +327,9 @@ class Post extends NSModel implements Linkable {
 				$HTML .= $post_label.$posted_at.$post_type.$reserved_at.$finished_at.$locked_at;
 
 				if (!empty($this->fullsize))
-					$HTML .= "<span class='info-line'><a href='{$this->fullsize}' class='original color-green' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a></span>";
+					$HTML .= "<span class='info-line'><a href='{$this->fullsize}' class='original' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a></span>";
 				if (!$approved && Permission::sufficient('staff'))
-					$HTML .= "<span class='info-line'><a href='{$this->reserver->getOpenSubmissionsURL()}' class='color-blue' target='_blank' rel='noopener'><span class='typcn typcn-arrow-forward'></span> View open submissions</a></span>";
+					$HTML .= "<span class='info-line'><a href='{$this->reserver->getOpenSubmissionsURL()}' target='_blank' rel='noopener'><span class='typcn typcn-arrow-forward'></span> View open submissions</a></span>";
 			}
 			else $HTML .= $post_label.$posted_at.$reserved_at;
 		}
@@ -403,7 +403,7 @@ class Post extends NSModel implements Linkable {
 		}
 		if (!empty($Buttons)){
 			if ($view_only !== false)
-				$HTML .= "<div><a href='$view_only' class='btn blue typcn typcn-arrow-forward'>View</a></div>";
+				$HTML .= "<div><a href='$view_only' class='btn link typcn typcn-arrow-forward'>View</a></div>";
 			else {
 				$regularButton = \count($Buttons) < 3;
 				foreach ($Buttons as $b){

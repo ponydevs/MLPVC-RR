@@ -163,7 +163,7 @@
 				}
 				if (!cdExists || diff.past){
 					clearCD();
-					$.API.get('/about/upcoming', $.mkAjaxHandler(function(){
+					$.API.get('/about/upcoming', function(){
 						if (!this.status) return console.error(`Failed to load upcoming event list: ${this.message}`);
 
 						const $uc = $('#upcoming');
@@ -172,7 +172,7 @@
 							$uc.addClass('hidden');
 						else $uc.removeClass('hidden');
 						window.setUpcomingCountdown();
-					}));
+					});
 					return;
 				}
 				let text;
@@ -540,11 +540,11 @@
 
 			$.Dialog.wait(title,'Signing out');
 
-			$.API.post('/da-auth/sign-out',$.mkAjaxHandler(function(){
+			$.API.post('/da-auth/sign-out', function(){
 				if (!this.status) return $.Dialog.fail(title,this.message);
 
 				$.Navigation.reload();
-			}));
+			});
 		});
 	});
 
@@ -556,7 +556,7 @@
 			if ($sessionUpdating === null)
 				return;
 
-			$.API.get('/da-auth/status', $.mkAjaxHandler(function(){
+			$.API.get('/da-auth/status', function(){
 				if ($sessionUpdating === null)
 					return;
 
@@ -568,7 +568,7 @@
 				if (this.deleted === true)
 					$.Dialog.fail(sessionRefTitle, "We couldn't refresh your DeviantArt session automatically so you have been signed out. Due to elements on the page assuming you are signed in some actions will not work as expected until the page is reloaded.");
 				$sessionUpdating.html(this.loggedIn).removeClass('updating-session');
-			}));
+			});
 		}, pollInterval);
 	}
 

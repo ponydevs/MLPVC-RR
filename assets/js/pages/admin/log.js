@@ -32,7 +32,7 @@
 						$this.addClass('typcn-times color-red').css('cursor','not-allowed').off('click');
 					};
 
-				$.API.get(`/admin/logs/details/${EntryID}`,$.mkAjaxHandler(function(){
+				$.API.get(`/admin/logs/details/${EntryID}`, function(){
 					if (!this.status){
 						if (this.unclickable === true)
 							$this.replaceWith($this.text().trim());
@@ -61,7 +61,7 @@
 					$dataDiv.insertAfter($this).slideDown();
 					Time.update();
 					$this.addClass('typcn-minus color-darkblue');
-				})).always(function(){
+				}).always(function(){
 					requesting = false;
 					$this.removeClass('typcn-refresh');
 				}).fail(fail);
