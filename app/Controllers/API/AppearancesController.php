@@ -180,7 +180,7 @@ class AppearancesController extends APIController {
 			Response::fail('ELASTIC_DOWN');
 		}
 		if (isset($_GET['size']) && is_numeric($_GET['size']))
-		    $appearances_per_page = CoreUtils::rangeLimit(intval($_GET['size'], 10), 7, 20);
+		    $appearances_per_page = CoreUtils::rangeLimit(\intval($_GET['size'], 10), 7, 20);
 		else $appearances_per_page = 7;
 		$pagination = new Pagination('', $appearances_per_page);
 		$searching = !empty($_GET['q']) && $_GET['q'] !== '';

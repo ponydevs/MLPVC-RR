@@ -13,7 +13,9 @@
 		{% if lazyload is not defined or lazyload == true %}
 		<div class="synopsis-promise{% if current_episode.twoparter %} twoparter{% endif %}" data-id="{{ current_episode.id }}"></div>
 		{% else %}
-			{% set synopses = current_episode.synopses %}
+			{% if synopses is not defined %}
+				{% set synopses = current_episode.synopses %}
+			{% endif %}
 			{% if synopses is not empty %}
 				{% for i, synopsis in synopses %}
 				{% set has_image = synopsis.image is defined and synopsis.image %}

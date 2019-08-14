@@ -2,32 +2,31 @@
 
 namespace App\Controllers;
 
-use ActiveRecord\Cache;
-use ActiveRecord\Table;
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\DB;
 use App\DeviantArt;
-use App\Models\ShowAppearance;
-use App\ShowHelper;
 use App\HTTP;
 use App\Input;
 use App\Logs;
 use App\Models\Appearance;
+use App\Models\Show;
+use App\Models\ShowAppearance;
+use App\Models\ShowVideo;
 use App\Models\ShowVote;
 use App\Pagination;
 use App\Permission;
 use App\Posts;
 use App\Regexes;
 use App\Response;
+use App\ShowHelper;
 use App\Time;
 use App\TMDBHelper;
 use App\Twig;
 use App\VideoProvider;
-use App\Models\Show;
-use App\Models\ShowVideo;
+use GuzzleHttp\Exception\ServerException;
 
 class ShowController extends Controller {
 	public function index(){
@@ -308,7 +307,7 @@ class ShowController extends Controller {
 
 				$table = ShowVote::$table_name;
 				$vote_count_query = DB::$instance->query(
-					"SELECT count(*) as value, vote as label FROM $table WHERE show_id = ? GROUP BY vote ORDER BY vote ASC", [$this->show->id]);
+					"SELECT count(*) as value, vote as label FROM $table WHERE show_id = ? GROUP BY vote ORDER BY vote", [$this->show->id]);
 				$vote_counts = [];
 				foreach ($vote_count_query as $row)
 					$vote_counts[$row['label']] = $row['value'];
@@ -540,9 +539,20 @@ class ShowController extends Controller {
 	public function synopsis($params) {
 		$this->load_show($params);
 
+		try {
+			$synopses = $this->show->getSynopses();
+		}
+		catch (\Throwable $exception){
+			$message = $exception->getMessage();
+			if (strpos($message, '503 Service Temporarily Unavailable') !== false) {
+				Response::fail('The TMDB API is experiencing a temporary outage, synopsis data is currently unavailable.');
+			}
+		}
+
 		Response::done([
 			'html' => Twig::$env->render('show/_synopsis.html.twig', [
 				'current_episode' => $this->show,
+				'synopses' => $synopses,
 				'wrap' => false,
 				'lazyload' => false,
 				'signed_in' => Auth::$signed_in,

@@ -840,12 +840,6 @@
 			this.updateTabs();
 			ColorPicker.getInstance().updatePickingState();
 		}
-		closeActiveTabConfirm(){
-			if (!(this._activeTab instanceof Tab))
-				return;
-
-			this._activeTab.getElement().find('.close').trigger('click');
-		}
 	}
 
 	const $LevelsChangeForm = $.mk('form','levels-changer').append(

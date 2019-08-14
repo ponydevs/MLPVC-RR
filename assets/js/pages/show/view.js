@@ -513,9 +513,14 @@
 			const { id } = el.dataset;
 
 			$.API.get(`/show/${id}/synopsis`,$.mkAjaxHandler(function(){
-				const $section = $(el).closest('section');
+				const $el = $(el);
+				const $section = $el.closest('section');
 				if (!this.status){
-					$section.remove();
+					if (this.message)
+						$el.replaceWith(
+							$.mk('div').addClass('notice warn').text(this.message)
+						);
+					else $section.remove();
 					return;
 				}
 
