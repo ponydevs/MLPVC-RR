@@ -81,7 +81,7 @@ use App\UserPrefs;
  *     type="string",
  *     format="data-uri",
  *     example="data:image/png;base64,<image data>",
- *     description="Data URI for a small preview image with matching proportions to the actual image, suitable for displaying as a preview while the full image loads. May not be sent based on the reuqest parameters."
+ *     description="Data URI for a small preview image with matching proportions to the actual image, suitable for displaying as a preview while the full image loads. May not be sent based on the request parameters."
  *   ),
  * )
  *
