@@ -52,6 +52,38 @@ use App\Controllers\Controller;
  * )
  *
  * @OA\Schema(
+ *   schema="BooleanTrue",
+ *   type="boolean",
+ *   enum={true}
+ * )
+ *
+ * @OA\Schema(
+ *   schema="BooleanFalse",
+ *   type="boolean",
+ *   enum={false}
+ * )
+ *
+ * @OA\Schema(
+ *   schema="QueryString",
+ *   type="string",
+ *   default=""
+ * )
+ *
+ * @OA\Schema(
+ *   schema="OneBasedId",
+ *   type="integer",
+ *   minimum=1,
+ *   example=1
+ * )
+ *
+ * @OA\Schema(
+ *   schema="ZeroBasedId",
+ *   type="integer",
+ *   minimum=0,
+ *   example=1
+ * )
+ *
+ * @OA\Schema(
  *   schema="PageData",
  *   required={
  *     "pagination"

@@ -974,15 +974,4 @@ class Appearance extends NSModel implements Linkable {
 	public function getPreviewImage(int $size = self::SPRITE_SIZES['SOURCE']) {
 		return $this->getSpriteURL($size, $this->getPreviewURL());
 	}
-
-	public function getSpriteAPI($with_preview = false):?array {
-		if (!$this->hasSprite())
-			return null;
-
-		$value = [ 'hash' => $this->sprite_hash ];
-		if ($with_preview)
-			$value['preview'] = CoreUtils::bin2dataUri(CGUtils::generateSpritePreview($this->id), 'image/png');
-
-		return $value;
-	}
 }

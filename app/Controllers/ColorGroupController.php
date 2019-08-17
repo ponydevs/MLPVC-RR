@@ -17,6 +17,7 @@ use App\Permission;
 use App\Regexes;
 use App\Response;
 use App\Users;
+use Elasticsearch\Endpoints\Count;
 use GuzzleHttp\Exception\BadResponseException;
 
 class ColorGroupController extends ColorGuideController {
@@ -121,6 +122,9 @@ class ColorGroupController extends ColorGuideController {
 						Input::ERROR_INVALID => 'List of colors is invalid',
 					],
 				]))->out();
+				if (\count($recvColors) < 1)
+					Response::fail('Each color group must have at least one color');
+
 				/** @var $newcolors Color[] */
 				$newcolors = [];
 				/** @var $recvColorIDs int[] */
