@@ -1,14 +1,14 @@
 <?php
 
-use App\CoreUtils;
-
 require __DIR__.'/../config/init/minimal.php';
 
-$result = CoreUtils::generateApiSchema();
-if (!$result){
-	fwrite(STDERR, "Could not write API schema\n");
+try {
+	$result = \App\CoreUtils::generateApiSchema();
+}
+catch (\Exception $e){
+	fwrite(STDERR, implode("\n", ['Could not write API schema to file: '.get_class($e), $e->getMessage(), 'Stack trace:', $e->getTraceAsString(), '']));
 	exit(1);
 }
-fwrite(STDOUT, "Written API schema ($result bytes)\n");
+fwrite(STDOUT, "Written API schema to file\n");
 exit(0);
 
