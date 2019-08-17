@@ -78,12 +78,5 @@
 		"cwd": "public/.well-known",
 		"desc": "Re-create the security.txt file's signature after a modification",
 		"cmd": "gpg --detach-sign --armor -o security.txt.sig security.txt"
-	},
-	{
-		"group": ["api"],
-		"name": ["gendocs"],
-		"cwd": "app",
-		"desc": "Generate OpenAPI documentation",
-		"cmd": "../vendor/bin/openapi -o ../fs/api.json --format json ."
 	}
 ]

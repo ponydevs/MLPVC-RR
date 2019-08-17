@@ -44,7 +44,9 @@ use App\UserPrefs;
  *   @OA\Property(
  *     property="git",
  *     type="object",
- *     @OA\Items(ref="#/components/schemas/GitInfo")
+ *     allOf={
+ *       @OA\Schema(ref="#/components/schemas/GitInfo"),
+ *     }
  *   )
  * )
  *
@@ -61,7 +63,8 @@ function map_git(array $git) {
 class AboutController extends APIController {
 	/**
 	 * @OA\Get(
-	 *   path="/api/v1/about/server",
+	 *   path="/about/server",
+	 *   tags={"server info"},
 	 *   @OA\Response(
 	 *     response="200",
 	 *     description="OK",
@@ -87,7 +90,6 @@ class AboutController extends APIController {
 
 		Response::done([
 			'git' => map_git($git),
-			'sessionUpdating' => Auth::$session->updating,
 		]);
 	}
 }

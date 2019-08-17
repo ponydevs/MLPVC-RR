@@ -25,7 +25,8 @@ use App\UserPrefs;
  *   @OA\Property(
  *     property="id",
  *     type="integer",
- *     example=1
+ *     minimum=0,
+ *     example=3
  *   ),
  *   @OA\Property(
  *     property="label",
@@ -48,7 +49,9 @@ use App\UserPrefs;
  *   @OA\Property(
  *     property="sprite",
  *     nullable=true,
- *     ref="#/components/schemas/Sprite",
+ *     allOf={
+ *       @OA\Schema(ref="#/components/schemas/Sprite"),
+ *     },
  *     description="The sprite that belongs to this appearance, or null if there is none"
  *   ),
  *   @OA\Property(
@@ -64,20 +67,21 @@ use App\UserPrefs;
  *   description="Data related to an appearance's sprite file. The actual file is available from a different endpoint.",
  *   required={
  *     "hash",
- *     "preview",
  *   },
  *   additionalProperties=false,
  *   @OA\Property(
  *     property="hash",
  *     description="MD5 hash of the current sprite image",
- *     ref="#/components/schemas/SpriteHash"
+ *     allOf={
+ *       @OA\Schema(ref="#/components/schemas/SpriteHash"),
+ *     }
  *   ),
  *   @OA\Property(
  *     property="preview",
  *     type="string",
  *     format="data-uri",
  *     example="data:image/png;base64,<image data>",
- *     description="Data URI for a small preview image with matching proportions to the actual image, suitable for displaying as a preview while the full image loads"
+ *     description="Data URI for a small preview image with matching proportions to the actual image, suitable for displaying as a preview while the full image loads. May not be sent based on the reuqet parameters."
  *   ),
  * )
  *
@@ -97,16 +101,17 @@ use App\UserPrefs;
  * )
  *
  * @param Appearance $a
+ * @param bool       $with_previews
  *
  * @return array
  */
-function map_appearance(Appearance $a) {
+function map_appearance(Appearance $a, bool $with_previews) {
 	return [
 		'id' => $a->id,
 		'label' => $a->label,
 		'added' => gmdate('c', $a->added->getTimestamp()),
 		'notes' => $a->notes_rend,
-		'sprite' => $a->getSpriteAPI(),
+		'sprite' => $a->getSpriteAPI($with_previews),
 		'hasCutieMarks' => \count($a->cutiemarks) !== 0
 	];
 }
@@ -129,8 +134,9 @@ class AppearancesController extends APIController {
 	 * )
 	 *
 	 * @OA\Get(
-	 *   path="/api/v1/appearances",
+	 *   path="/appearances",
 	 *   description="Allows querying the full library of public appearances",
+	 *   tags={"color guide", "appearances"},
 	 *   @OA\Parameter(
 	 *     in="query",
 	 *     name="guide",
@@ -157,6 +163,16 @@ class AppearancesController extends APIController {
 	 *       "default"=""
 	 *     },
      *     description="Search query"
+	 *   ),
+	 *   @OA\Parameter(
+	 *     in="query",
+	 *     name="previews",
+	 *     required=false,
+     *     schema={
+     *       "type"="string",
+	 *       "enum"={"true"},
+	 *     },
+     *     description="Optional parameter that indicates whether you would like to get preview image data with the request. Typically unneccessary unless you want to display a temporary image on the fronend while the larger image loads."
 	 *   ),
 	 *   @OA\Response(
 	 *     response="200",
@@ -185,6 +201,7 @@ class AppearancesController extends APIController {
 		$pagination = new Pagination('', $appearances_per_page);
 		$searching = !empty($_GET['q']) && $_GET['q'] !== '';
 		$guide_name = $_GET['guide'] ?? null;
+		$with_previews = ($_GET['previews'] ?? null) === 'true';
 		if (!isset(CGUtils::GUIDE_MAP[$guide_name])) {
 			HTTP::statusCode(400);
 			Response::fail('COLOR_GUIDE.INVALID_GUIDE_NAME');
@@ -192,8 +209,8 @@ class AppearancesController extends APIController {
 		$eqg = $guide_name === 'eqg';
 		[$appearances] = CGUtils::searchGuide($pagination, $eqg, $searching);
 
-		$results = array_map(function(Appearance $a) {
-			return map_appearance($a);
+		$results = array_map(function(Appearance $a) use($with_previews) {
+			return map_appearance($a, $with_previews);
 		}, $appearances);
 		Response::done([
 			'appearances' => $results,
@@ -206,7 +223,7 @@ class AppearancesController extends APIController {
 	 *   schema="SpriteSize",
      *   type="integer",
 	 *   enum={300, 600},
-	 *   default="300"
+	 *   default=300
 	 * )
 	 *
 	 * @OA\Schema(
@@ -224,14 +241,17 @@ class AppearancesController extends APIController {
 	 * )
 	 *
 	 * @OA\Get(
-	 *   path="/api/v1/appearances/{id}/sprite",
+	 *   path="/appearances/{id}/sprite",
+	 *   description="Fetch the sprite file associated with the appearance",
+	 *   tags={"color guide", "appearances"},
 	 *   @OA\Parameter(
 	 *     in="path",
 	 *     name="id",
 	 *     required=true,
      *     schema={
      *       "type"="integer",
-	 *       "minimum"=1
+	 *       "minimum"=0,
+	 *       "example"=3
 	 *     }
 	 *   ),
 	 *   @OA\Parameter(

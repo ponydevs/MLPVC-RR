@@ -17,6 +17,7 @@ define('SITE_TITLE', 'MLP Vector Club');
 define('SVGO_BINARY',PROJPATH.'node_modules/svgo/bin/svgo');
 define('DISCORD_INVITE_LINK', 'https://discord.gg/hrffb8k');
 define('CSP_NONCE', base64_encode(random_bytes(16)));
+define('API_SCHEMA_PATH', 'dist/api.json');
 
 require __DIR__.'/init/env.php';
 

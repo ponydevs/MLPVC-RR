@@ -76,7 +76,9 @@ use App\UserPrefs;
  *   @OA\Property(
  *     property="user",
  *     type="object",
- *     @OA\Items(ref="#/components/schemas/User")
+ *     allOf={
+ *       @OA\Schema(ref="#/components/schemas/User")
+ *     }
  *   ),
  *   @OA\Property(
  *     property="sessionUpdating",
@@ -102,7 +104,9 @@ function map_user(User $u) {
 class UsersController extends APIController {
 	/**
 	 * @OA\Get(
-	 *   path="/api/v1/users/me",
+	 *   path="/users/me",
+	 *   description="Get information about the currently logged in user",
+	 *   tags={"authentication"},
 	 *   @OA\Response(
 	 *     response="200",
 	 *     description="OK",

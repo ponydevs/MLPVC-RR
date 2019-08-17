@@ -5,18 +5,15 @@ namespace App;
 use ActiveRecord\ConnectionManager;
 use ActiveRecord\DateTime;
 use ActiveRecord\SQLBuilder;
+use App\Exceptions\CURLRequestException;
 use App\Models\Cacheable;
-use App\Models\Show;
 use App\Models\Event;
-use App\Models\FailsafeUser;
 use App\Models\Notice;
-use App\Models\Notification;
+use App\Models\Show;
 use App\Models\UsefulLink;
-use App\Models\User;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version2X as SocketIOEngine;
-use App\Exceptions\CURLRequestException;
 use enshrined\svgSanitize\data\AllowedAttributes;
 use enshrined\svgSanitize\data\AttributeInterface;
 use enshrined\svgSanitize\data\TagInterface;
@@ -1420,5 +1417,20 @@ class CoreUtils {
 
 	public static function bin2dataUri(string $binary_str, string $content_type): string {
 		return "data:$content_type;base64," . base64_encode($binary_str);
+	}
+
+	/**
+	 * @param bool $only_if_missing Generates the file only if it doesn't exist
+	 * @return void
+	 */
+	public static function generateApiSchema($only_if_missing = false): void {
+		$output_path = APPATH.API_SCHEMA_PATH;
+		if ($only_if_missing && file_exists($output_path))
+			return;
+		$openapi = \OpenApi\scan(PROJPATH.'app/Controllers/API');
+		if (!$openapi->validate())
+			throw new RuntimeException("Invalid OpenAPI schema, could not generate $output_path");
+		self::createFoldersFor($output_path);
+		$openapi->saveAs($output_path, 'json');
 	}
 }

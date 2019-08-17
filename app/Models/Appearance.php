@@ -8,22 +8,20 @@ use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
-use App\NSUriBuilder;
-use App\ShowHelper;
-use App\JSON;
 use App\Models\Logs\MajorChange;
+use App\NSUriBuilder;
 use App\Permission;
 use App\RegExp;
 use App\Response;
+use App\ShowHelper;
 use App\Tags;
 use App\Time;
 use App\Twig;
 use App\UserPrefs;
 use App\Users;
-use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
+use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
-use HtmlGenerator\HtmlTag;
 use SeinopSys\RGBAColor;
 
 /**
@@ -240,7 +238,7 @@ class Appearance extends NSModel implements Linkable {
 				? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(ShowHelper::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY,'title'))).'</a>'
 				: "<strong>{$a[0]}</strong>";
 		},$notes);
-		$notes = preg_replace_callback('/(?:^|[^\\\\])\K(?:#(\d+))(\'s?)?\b/',function($a){
+		$notes = preg_replace_callback('/(?:^|[^\\\\])(?:#(\d+))(\'s?)?\b/',function($a){
 
 			$Appearance = DB::$instance->where('id', $a[1])->getOne('appearances');
 			return (
@@ -977,13 +975,14 @@ class Appearance extends NSModel implements Linkable {
 		return $this->getSpriteURL($size, $this->getPreviewURL());
 	}
 
-	public function getSpriteAPI():?array {
+	public function getSpriteAPI($with_preview = false):?array {
 		if (!$this->hasSprite())
 			return null;
 
-		return [
-			'hash' => $this->sprite_hash,
-			'preview' => CoreUtils::bin2dataUri(CGUtils::generateSpritePreview($this->id), 'image/png'),
-		];
+		$value = [ 'hash' => $this->sprite_hash ];
+		if ($with_preview)
+			$value['preview'] = CoreUtils::bin2dataUri(CGUtils::generateSpritePreview($this->id), 'image/png');
+
+		return $value;
 	}
 }

@@ -15,6 +15,7 @@ conf.php
 /public/js
 /public/css
 /public/dist/mlpvc-colorguide.json
+/public/dist/api.json
 /setup/*.pg.sql
 !/setup/create_extensions.pg.sql
 /vendor

@@ -13,6 +13,7 @@ if [[ "$refname" ==  "$RUN_FOR_REF" ]]; then
     CMD_NPM="sudo -u www-data npm install --production --no-save"
     CMD_BUILD="sudo -u www-data npm run build"
     CMD_REDIS_CLEAR="sudo -u www-data php -f scripts/clear_redis_keys.php commit_info"
+    CMD_API_DOCS="sudo -u www-data npm run api:schema"
 
     echo "$ $CMD_CD"
     eval ${CMD_CD}
@@ -35,6 +36,13 @@ if [[ "$refname" ==  "$RUN_FOR_REF" ]]; then
         eval $CMD_BUILD
     else
         echo "# Skipping asset rebuild, no changes in assets folder"
+    fi
+
+    if $GIT diff --name-only $oldrev $newrev | grep "^app/Controllers/API/"; then
+        echo "$ $CMD_API_DOCS"
+        eval $CMD_API_DOCS
+    else
+        echo "# Skipping API schema generation, no changes in API Controllers folder"
     fi
 
     echo "$ $CMD_REDIS_CLEAR"
