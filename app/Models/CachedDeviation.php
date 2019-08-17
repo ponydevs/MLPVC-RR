@@ -17,10 +17,11 @@ use App\CoreUtils;
  * @method static CachedDeviation find_by_id_and_provider(string $id, string $provider)
  */
 class CachedDeviation extends NSModel {
-	public static $primary_key = ['provider', 'id'];
+  public static $primary_key = ['provider', 'id'];
 
-	public function toLinkWithPreview(){
-		$stitle = CoreUtils::aposEncode($this->title);
-		return "<a class='deviation-link with-preview' href='http://{$this->provider}/{$this->id}'><img src='{$this->preview}' alt='$stitle'><span>$stitle</span></a>";
-	}
+  public function toLinkWithPreview() {
+    $stitle = CoreUtils::aposEncode($this->title);
+
+    return "<a class='deviation-link with-preview' href='http://{$this->provider}/{$this->id}'><img src='{$this->preview}' alt='$stitle'><span>$stitle</span></a>";
+  }
 }

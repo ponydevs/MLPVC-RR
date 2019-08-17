@@ -1,4 +1,5 @@
 @import "../../node_modules/normalize-scss/sass/normalize";
+
 @include normalize();
 
 @import "vars";
@@ -12,1151 +13,1344 @@
 @import "components/vital/codemirror";
 // Mobile-only Styles
 @media all and (max-width: $Breakpoint) {
-	.desktop-only { display: none !important }
-	body {
-		overflow: initial;
-		background: $HeaderFooterBG;
+  .desktop-only {
+    display: none !important
+  }
+  body {
+    overflow: initial;
+    background: $HeaderFooterBG;
 
-		@media all and (max-width: $Breakpoint){
-			&:before {
-				z-index: 2;
-				transition: left .4s linear;
-			}
+    @media all and (max-width: $Breakpoint) {
+      &:before {
+        z-index: 2;
+        transition: left .4s linear;
+      }
 
-			&.sidebar-open {
-				overflow: hidden;
+      &.sidebar-open {
+        overflow: hidden;
 
-				&:before {
-					content: "";
-					display: block;
-					position: fixed;
-					top: 0;
-					left: 0;
-					bottom: 0;
-					right: 0;
-					background: rgba(black, .7);
-				}
-			}
-		}
-	}
-	header, footer {
-		position: initial;
-	}
-	header {
-		background: $HeaderFooterBG;
-		
-		nav {
-			height: 100%;
-			position: relative;
-			transition: box-shadow .5s ease-in-out;
+        &:before {
+          content: "";
+          display: block;
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          background: rgba(black, .7);
+        }
+      }
+    }
+  }
+  header, footer {
+    position: initial;
+  }
+  header {
+    background: $HeaderFooterBG;
 
-			&:after {
-				content: "MLP Vector Club";
-				position: absolute;
-				top: 0;
-				left: 0;
-				z-index: 1;
-				width: 100%;
-				height: 100%;
-				display: block;
-				text-align: center;
-				font-size: 28px;
-				line-height: 45px;
-				color: #000;
-				@include outline(2);
-				font-family: $cursive;
-			}
-			ul {
-				position: relative;
-				z-index: 2;
+    nav {
+      height: 100%;
+      position: relative;
+      transition: box-shadow .5s ease-in-out;
 
-				li:not(:first-child) { display: none }
-			}
-			#to-the-top {
-				display: block;
-				position: absolute;
-				z-index: 3;
-				top: 0;
-				right: -$HeaderHeight;
-				color: #fff;
-				opacity: 0;
-				transition: opacity .2s linear, right .2s linear;
-				width: $HeaderHeight;
-				height: $HeaderHeight;
-				cursor: pointer;
-				font-size: $HeaderHeight;
-				line-height: $HeaderHeight;
+      &:after {
+        content: "MLP Vector Club";
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: block;
+        text-align: center;
+        font-size: 28px;
+        line-height: 45px;
+        color: #000;
+        @include outline(2);
+        font-family: $cursive;
+      }
 
-				&.show {
-					opacity: 1;
-					right: 0;
-				}
-			}
-		}
-	}
-	#sidebar {
-		height: calc(100% - #{$HeaderHeight});
-		background: $SidebarBackgroundMobile !important;
-		padding-top: 0 !important;
+      ul {
+        position: relative;
+        z-index: 2;
 
-		> .mobile-nav {
-			display: block;
-			position: relative;
-			left: -10px;
-			width: calc(100% + 20px);
-			padding: 5px 7px;
-			margin-bottom: 10px !important;
-			background: $HeaderFooterBG;
-			box-sizing: border-box;
+        li:not(:first-child) {
+          display: none
+        }
+      }
 
-			ul {
-				display: flex;
-				flex-flow: row wrap;
-				justify-content: space-evenly;
-				list-style: none;
-				padding: 0;
-				margin: 0;
-				font-size: 1.1em;
+      #to-the-top {
+        display: block;
+        position: absolute;
+        z-index: 3;
+        top: 0;
+        right: -$HeaderHeight;
+        color: #fff;
+        opacity: 0;
+        transition: opacity .2s linear, right .2s linear;
+        width: $HeaderHeight;
+        height: $HeaderHeight;
+        cursor: pointer;
+        font-size: $HeaderHeight;
+        line-height: $HeaderHeight;
 
-				li {
-					flex: 1 1 auto;
-					margin: 6px;
-				}
-			}
-		}
+        &.show {
+          opacity: 1;
+          right: 0;
+        }
+      }
+    }
+  }
+  #sidebar {
+    height: calc(100% - #{$HeaderHeight});
+    background: $SidebarBackgroundMobile !important;
+    padding-top: 0 !important;
 
-		.button-block {
-			border: 2px solid $SidebarContentBorder;
+    > .mobile-nav {
+      display: block;
+      position: relative;
+      left: -10px;
+      width: calc(100% + 20px);
+      padding: 5px 7px;
+      margin-bottom: 10px !important;
+      background: $HeaderFooterBG;
+      box-sizing: border-box;
 
-			button, .btn {
-				border: 0;
-				box-shadow: 0 0 0 1px $SidebarContentBorder;
-			}
-		}
-	}
-	#above-content, #main {
-		position: initial;
-	}
-	#breadcrumbs, #main {
-		padding: 5px;
-	}
-	#main {
-		@include white-grid;
-	}
-	#content h1 {
-		font-size: 1.7em;
+      ul {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-evenly;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 1.1em;
 
-		+ p { font-size: 1.4em }
-	}
+        li {
+          flex: 1 1 auto;
+          margin: 6px;
+        }
+      }
+    }
 
-	footer { text-align: center }
+    .button-block {
+      border: 2px solid $SidebarContentBorder;
 
-	.button-block {
-		display: flex;
-		flex-flow: row wrap;
-		margin: 10px 0;
-		border-radius: 10px;
-		overflow: hidden;
-		text-align: center;
+      button, .btn {
+        border: 0;
+        box-shadow: 0 0 0 1px $SidebarContentBorder;
+      }
+    }
+  }
+  #above-content, #main {
+    position: initial;
+  }
+  #breadcrumbs, #main {
+    padding: 5px;
+  }
+  #main {
+    @include white-grid;
+  }
+  #content h1 {
+    font-size: 1.7em;
 
-		> button, .btn {
-			margin: 0 !important;
-			padding: 5px !important;
-			min-height: 1.3em;
-			line-height: 1.3em;
-			flex: 1 1 auto;
+    + p {
+      font-size: 1.4em
+    }
+  }
 
-			border-radius: 0;
-		}
-	}
+  footer {
+    text-align: center
+  }
 
-	.notice > label:first-child { text-align: center; font-size: 1.2em }
+  .button-block {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 10px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+
+    > button, .btn {
+      margin: 0 !important;
+      padding: 5px !important;
+      min-height: 1.3em;
+      line-height: 1.3em;
+      flex: 1 1 auto;
+
+      border-radius: 0;
+    }
+  }
+
+  .notice > label:first-child {
+    text-align: center;
+    font-size: 1.2em
+  }
 }
+
 // Desktop-only Styles
 @media all and (min-width: $Breakpoint) {
-	.mobile-only { display: none !important }
-	body {
-		overflow-x: auto;
-		overflow-y: scroll;
-		@include white-grid;
+  .mobile-only {
+    display: none !important
+  }
+  body {
+    overflow-x: auto;
+    overflow-y: scroll;
+    @include white-grid;
 
-		&.fluidbox-open {
-			overflow: hidden;
-			padding-right: 18px;
+    &.fluidbox-open {
+      overflow: hidden;
+      padding-right: 18px;
 
-			header, footer {
-				opacity: 0;
-				pointer-events: none;
-			}
-			#sidebar { display: none }
-		}
-	}
+      header, footer {
+        opacity: 0;
+        pointer-events: none;
+      }
 
-	header, footer {
-		z-index: 3;
-		left: 0;
-	}
+      #sidebar {
+        display: none
+      }
+    }
+  }
 
-	header {
-		background: $HeaderFooterBG;
-		top: 0 !important;
-		overflow: hidden;
+  header, footer {
+    z-index: 3;
+    left: 0;
+  }
 
-		nav {
-			height: $HeaderHeight;
-			width: 100%;
+  header {
+    background: $HeaderFooterBG;
+    top: 0 !important;
+    overflow: hidden;
 
-			ul {
-				height: $HeaderHeight + 30px;
-				overflow-x: scroll;
-				overflow-y: hidden;
-			}
-			#to-the-top {
-				display: none;
-			}
-		}
-	}
+    nav {
+      height: $HeaderHeight;
+      width: 100%;
 
-	#main, #above-content {
-		position: relative;
-		z-index: 1;
-	}
-	#breadcrumbs {
-		padding: $MainMargin;
-	}
-	#main {
-		padding: $MainMargin $MainMargin #{$MainMargin + $FooterHeight} $MainMargin;
-	}
-	#content h1 {
-		font-size: 2em;
+      ul {
+        height: $HeaderHeight + 30px;
+        overflow-x: scroll;
+        overflow-y: hidden;
+      }
 
-		+ p { font-size: 1.6em }
-	}
-	#sidebar {
-		height: calc(100% - #{$HeaderHeight} - #{$FooterHeight});
+      #to-the-top {
+        display: none;
+      }
+    }
+  }
 
-		.mobile-nav { display: none }
-	}
-	footer {
-		position: fixed;
-		bottom: 0;
-		height: $FooterHeight;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		background: $HeaderFooterBG;
-	}
+  #main, #above-content {
+    position: relative;
+    z-index: 1;
+  }
+  #breadcrumbs {
+    padding: $MainMargin;
+  }
+  #main {
+    padding: $MainMargin $MainMargin #{$MainMargin + $FooterHeight} $MainMargin;
+  }
+  #content h1 {
+    font-size: 2em;
 
-	.button-block {
-		margin: 0;
-	}
+    + p {
+      font-size: 1.6em
+    }
+  }
+  #sidebar {
+    height: calc(100% - #{$HeaderHeight} - #{$FooterHeight});
 
-	.notice > label:first-child { font-size: 1.4em }
+    .mobile-nav {
+      display: none
+    }
+  }
+  footer {
+    position: fixed;
+    bottom: 0;
+    height: $FooterHeight;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: $HeaderFooterBG;
+  }
+
+  .button-block {
+    margin: 0;
+  }
+
+  .notice > label:first-child {
+    font-size: 1.4em
+  }
 }
+
 // Sidebar always visible
-@media all and (min-width: $SidebarBreakpoint){
-	#sidebar { left: 0 !important }
-	#main {
-		padding-left: $SidebarWidth + $MainMargin;
+@media all and (min-width: $SidebarBreakpoint) {
+  #sidebar {
+    left: 0 !important
+  }
+  #main {
+    padding-left: $SidebarWidth + $MainMargin;
 
-		&:before {
-			content: "";
-			display: block;
-			position: absolute;
-			top: 0;
-			left: $SidebarWidth;
-			$size: 8px;
-			width: $size;
-			height: $size;
-			background: url('/img/sidebar-corner.svg') no-repeat top left;
-			background-size: $size * 2;
-		}
-	}
-	#above-content { padding-left: $SidebarWidth }
+    &:before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: $SidebarWidth;
+      $size: 8px;
+      width: $size;
+      height: $size;
+      background: url('/img/sidebar-corner.svg') no-repeat top left;
+      background-size: $size * 2;
+    }
+  }
+  #above-content {
+    padding-left: $SidebarWidth
+  }
 
-	header nav ul {
-		padding-left: $HeaderLiTopMargin !important;
-		padding-right: $HeaderLiTopMargin !important;
-		padding-top: $HeaderLiTopMargin !important;
+  header nav ul {
+    padding-left: $HeaderLiTopMargin !important;
+    padding-right: $HeaderLiTopMargin !important;
+    padding-top: $HeaderLiTopMargin !important;
 
-		li.sidebar-toggle {
-			display: none;
+    li.sidebar-toggle {
+      display: none;
 
-			+ li {
-				margin-left: 0 !important;
-			}
-		}
-	}
+      + li {
+        margin-left: 0 !important;
+      }
+    }
+  }
 }
-@media all and (max-width: $SidebarBreakpoint){
-	#sidebar {
-		transition: left .5s ease-in-out;
-		will-change: left;
-	}
-	@include sidebar-open {
-		#sidebar { left: 0 !important }
-	}
+
+@media all and (max-width: $SidebarBreakpoint) {
+  #sidebar {
+    transition: left .5s ease-in-out;
+    will-change: left;
+  }
+  @include sidebar-open {
+    #sidebar {
+      left: 0 !important
+    }
+  }
 }
+
 // Page layout
 body {
-	margin: 0;
-	padding-top: $HeaderHeight;
-	font-family: $RegularFont;
+  margin: 0;
+  padding-top: $HeaderHeight;
+  font-family: $RegularFont;
 }
+
 // Page layout - Header
 header {
-	position: fixed;
-	z-index: 4;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: $HeaderHeight;
-	@include navfoot;
+  position: fixed;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: $HeaderHeight;
+  @include navfoot;
 
-	// Page layout - Header - Navigation
-	nav {
-		display: block;
-		line-height: 0;
-		font-size: 0;
-		white-space: nowrap;
-		user-select: none;
-		cursor: default;
+  // Page layout - Header - Navigation
+  nav {
+    display: block;
+    line-height: 0;
+    font-size: 0;
+    white-space: nowrap;
+    user-select: none;
+    cursor: default;
 
-		ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-			display: block;
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: block;
 
-			li {
-				display: inline-block;
-				color: #fff;
-				height: 24px;
-				line-height: 24px;
-				font-size: 18px;
-				box-sizing: border-box;
-				vertical-align: middle;
+      li {
+        display: inline-block;
+        color: #fff;
+        height: 24px;
+        line-height: 24px;
+        font-size: 18px;
+        box-sizing: border-box;
+        vertical-align: middle;
 
-				&:not(:first-child) { margin-left: 7px }
+        &:not(:first-child) {
+          margin-left: 7px
+        }
 
-				&.sidebar-toggle {
-					$toggleSize: 45px;
-					position: relative;
-					margin: ($HeaderHeight - $toggleSize)/2;
-					width: $toggleSize;
-					height: $toggleSize;
-					cursor: pointer;
-					transition: background-color .35s linear;
+        &.sidebar-toggle {
+          $toggleSize: 45px;
+          position: relative;
+          margin: ($HeaderHeight - $toggleSize)/2;
+          width: $toggleSize;
+          height: $toggleSize;
+          cursor: pointer;
+          transition: background-color .35s linear;
 
-					&:before {
-						display: block;
-						font-family: 'Typicons';
-						font-size: $toggleSize*0.8;
-						line-height: $toggleSize;
-						height: $toggleSize;
-						width: $toggleSize;
-						position: absolute;
-						z-index: 5;
-						text-align: center;
-						opacity: .9;
+          &:before {
+            display: block;
+            font-family: 'Typicons';
+            font-size: $toggleSize*0.8;
+            line-height: $toggleSize;
+            height: $toggleSize;
+            width: $toggleSize;
+            position: absolute;
+            z-index: 5;
+            text-align: center;
+            opacity: .9;
 
-						transition: opacity .2s linear, font-size .2s linear;
-						will-change: opacity, font-size;
-					}
+            transition: opacity .2s linear, font-size .2s linear;
+            will-change: opacity, font-size;
+          }
 
-					body.sidebar-open & {
-						&:before {
-							content: '\e047';
-						}
-					}
-					@include sidebar-open {
-						& {
-							> *:not(.notif-cnt) {
-								opacity: 0;
-								transition: opacity .35s linear;
-							}
-							> .notif-cnt {
-								font-size: 12px;
-								padding: 0 2px;
-								height: 1.2em;
-								line-height: 1.2em;
-								box-shadow: 0 0 5px $HeaderFooterBG;
-							}
-						}
-					}
-					@include sidebar-closed {
-						&:before {
-							content: '\e116';
-						}
-					}
+          body.sidebar-open & {
+            &:before {
+              content: '\e047';
+            }
+          }
 
-					> .notif-cnt {
-						position: absolute;
-						z-index: 6;
-						bottom: 0;
-						right: 0;
-						padding: 0 4px;
-						cursor: pointer;
-						color: $NRed;
-						text-shadow: 0 1px 0 rgba($NRed, .3);
-						background: #fff;
-						border-radius: 4px;
-						font-size: 16px;
-						font-weight: bold;
-						display: inline-block;
-						max-width: 100%;
-						height: #{$toggleSize / 2};
-						line-height: 1.5em;
-						overflow: hidden;
-						text-align: center;
-						will-change: opacity, font-size, padding, height, line-height, box-shadow;
-						transition-property: opacity, font-size, padding, height, line-height, box-shadow;
-						transition-duration: .35s;
-						transition-timing-function: linear;
-						box-shadow: 0 0 5px 2px $HeaderFooterBG;
+          @include sidebar-open {
+            & {
+              > *:not(.notif-cnt) {
+                opacity: 0;
+                transition: opacity .35s linear;
+              }
 
-						&:empty { display: none }
-					}
-				}
+              > .notif-cnt {
+                font-size: 12px;
+                padding: 0 2px;
+                height: 1.2em;
+                line-height: 1.2em;
+                box-shadow: 0 0 5px $HeaderFooterBG;
+              }
+            }
+          }
+          @include sidebar-closed {
+            &:before {
+              content: '\e116';
+            }
+          }
 
-				&:not(:first-child){
-					@extend %navbar-li;
-				}
-			}
-		}
-	}
+          > .notif-cnt {
+            position: absolute;
+            z-index: 6;
+            bottom: 0;
+            right: 0;
+            padding: 0 4px;
+            cursor: pointer;
+            color: $NRed;
+            text-shadow: 0 1px 0 rgba($NRed, .3);
+            background: #fff;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            display: inline-block;
+            max-width: 100%;
+            height: #{$toggleSize / 2};
+            line-height: 1.5em;
+            overflow: hidden;
+            text-align: center;
+            will-change: opacity, font-size, padding, height, line-height, box-shadow;
+            transition-property: opacity, font-size, padding, height, line-height, box-shadow;
+            transition-duration: .35s;
+            transition-timing-function: linear;
+            box-shadow: 0 0 5px 2px $HeaderFooterBG;
+
+            &:empty {
+              display: none
+            }
+          }
+        }
+
+        &:not(:first-child) {
+          @extend %navbar-li;
+        }
+      }
+    }
+  }
 }
+
 // External link icon
 header, #sidebar .mobile-nav {
-	a[href^=http]:after {
-		font-style: italic;
-		content: "";
-		width: 12px;
-		height: 12px;
-		background-image: url(/img/extlink.svg);
-		background-size: 12px;
-		display: inline-block;
-		margin-left: 2px;
-	}
+  a[href^=http]:after {
+    font-style: italic;
+    content: "";
+    width: 12px;
+    height: 12px;
+    background-image: url(/img/extlink.svg);
+    background-size: 12px;
+    display: inline-block;
+    margin-left: 2px;
+  }
 }
+
 // Page layout - Breadcrumbs
 #breadcrumbs {
-	background: $SidebarBackground;
-	width: 100%;
-	box-sizing: border-box;
-	color: #fff;
-	display: block;
-	margin: 0;
+  background: $SidebarBackground;
+  width: 100%;
+  box-sizing: border-box;
+  color: #fff;
+  display: block;
+  margin: 0;
 
-	&:empty {
-		display: none;
-	}
+  &:empty {
+    display: none;
+  }
 
-	li {
-		display: inline;
+  li {
+    display: inline;
 
-		&.div {
-			$margin: .5em;
-			opacity: .5;
-			margin-right: $margin;
+    &.div {
+      $margin: .5em;
+      opacity: .5;
+      margin-right: $margin;
 
-			&:not(:first-child) {
-				margin-left: $margin;
-			}
-		}
+      &:not(:first-child) {
+        margin-left: $margin;
+      }
+    }
 
-		a {
-			color: inherit;
-			font-weight: normal;
-		}
-	}
+    a {
+      color: inherit;
+      font-weight: normal;
+    }
+  }
 }
+
 // Page layout - Notices
 #notices .notice {
-	margin: 0;
-	border-width: 0 0 2px;
-	border-radius: 0;
+  margin: 0;
+  border-width: 0 0 2px;
+  border-radius: 0;
 }
+
 // Page layout - Content
 #main {
-	position: relative;
-	z-index: 1;
-	width: 100%;
-	box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  box-sizing: border-box;
 
-	&.locked { overflow: visible }
+  &.locked {
+    overflow: visible
+  }
 }
+
 #content {
-	border-radius: 5px;
-	border: 1px solid $ContentOutline;
-	background-color: $ContentBG;
-	padding: 10px;
-	color: #000;
-	box-sizing: border-box;
-	width: 100%;
+  border-radius: 5px;
+  border: 1px solid $ContentOutline;
+  background-color: $ContentBG;
+  padding: 10px;
+  color: #000;
+  box-sizing: border-box;
+  width: 100%;
 
-	h1 {
-		text-align: center;
-		margin: 0 0 5px;
-		font-family: $cursive;
+  h1 {
+    text-align: center;
+    margin: 0 0 5px;
+    font-family: $cursive;
 
-		+ p {
-			text-align: center;
-			margin: 0 0 10px;
-			font-style: italic;
-		}
-	}
+    + p {
+      text-align: center;
+      margin: 0 0 10px;
+      font-style: italic;
+    }
+  }
 }
+
 #content, #dialogContent, .notice {
-	a:not(.btn) { @include link }
+  a:not(.btn) {
+    @include link
+  }
 }
+
 // Page layout - Sidebar
-#turbo-sign-in:before { vertical-align: middle }
+#turbo-sign-in:before {
+  vertical-align: middle
+}
+
 .btn-da, .btn-discord {
-	color: white;
+  color: white;
 
-	//noinspection CssOptimizeSimilarProperties
-	&:before {
-		content: "_";
-		color: transparent;
-		background-repeat: no-repeat;
-		background-position: center center;
-		background-size: contain;
-		vertical-align: middle;
-	}
+  //noinspection CssOptimizeSimilarProperties
+  &:before {
+    content: "_";
+    color: transparent;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    vertical-align: middle;
+  }
 }
+
 .typcn.btn-da {
-	background-color: desaturate($DeviantArtGreen, 20);
+  background-color: desaturate($DeviantArtGreen, 20);
 
-	&:before { background-image: url('/img/da-logo.svg') }
+  &:before {
+    background-image: url('/img/da-logo.svg')
+  }
 }
+
 .typcn.btn-discord {
-	background-color: #7289DA;
+  background-color: #7289DA;
 
-	&:before { background-image: url('/img/discord-logo-white.svg') }
+  &:before {
+    background-image: url('/img/discord-logo-white.svg')
+  }
 }
+
 #sidebar {
-	position: fixed;
-	z-index: 3;
-	top: $HeaderHeight;
-	left: -$SidebarWidth;
-	width: $SidebarWidth;
-	max-width: 100%;
-	box-sizing: border-box;
-	color: $SidebarContentColor;
-	background: $SidebarBackground;
-	padding: 10px;
-	text-align: center;
-	overflow: auto;
-	will-change: left, width;
+  position: fixed;
+  z-index: 3;
+  top: $HeaderHeight;
+  left: -$SidebarWidth;
+  width: $SidebarWidth;
+  max-width: 100%;
+  box-sizing: border-box;
+  color: $SidebarContentColor;
+  background: $SidebarBackground;
+  padding: 10px;
+  text-align: center;
+  overflow: auto;
+  will-change: left, width;
 
-	button, .btn {
-		&:not(:hover):not(:active) {
-			border-color: $SidebarContentBorder !important;
-			background-color: $SidebarContentBackground !important;
-			color: $SidebarContentColor !important;
-		}
-	}
+  button, .btn {
+    &:not(:hover):not(:active) {
+      border-color: $SidebarContentBorder !important;
+      background-color: $SidebarContentBackground !important;
+      color: $SidebarContentColor !important;
+    }
+  }
 
-	&::-webkit-scrollbar {
-		width: 10px;
-		height: 10px;
-	}
-	&::-webkit-scrollbar-button {
-		display: none;
-	}
-	&::-webkit-scrollbar-thumb {
-		background-color: #aaa;
-		border-radius: 6px;
-		width: 6px;
-		border: 2px solid transparent;
-		background-clip: padding-box;
-	}
-	&::-webkit-scrollbar-track {
-		background: transparent;
-	}
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
 
-	@include sidebar-open { left: 0 }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
 
-	> .mobile-nav ul li {
-		display: inline-block;
-		margin: 0 2px;
+  &::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 6px;
+    width: 6px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
 
-		@extend %navbar-li;
-	}
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-	> .logged-in {
-		display: flex;
-		flex-flow: row nowrap;
-		padding: 4px;
-		margin-bottom: 6px;
-		border-radius: 50px;
-		position: relative;
+  @include sidebar-open {
+    left: 0
+  }
 
-		&:before {
-			content: '';
-			position: absolute;
-			$size: 2.5em;
-			$offset: calc(50% - #{$size/2});
-			top: $offset;
-			left: $offset;
-			width: $size;
-			height: $size;
-			background: url('/img/loading-ring-white.svg') no-repeat center;
-			background-size: contain;
-			display: block;
-			opacity: 0;
-			pointer-events: none;
-		}
+  > .mobile-nav ul li {
+    display: inline-block;
+    margin: 0 2px;
 
-		> *, &:before {
-			transition: opacity .5s;
-		}
+    @extend %navbar-li;
+  }
 
-		&.provider-deviantart {
-			border-radius: 5px;
-		}
+  > .logged-in {
+    display: flex;
+    flex-flow: row nowrap;
+    padding: 4px;
+    margin-bottom: 6px;
+    border-radius: 50px;
+    position: relative;
 
-		&.updating-session {
-			> * {
-				opacity: .3;
-				pointer-events: none;
-			}
-			&:before {
-				opacity: 1;
-			}
-		}
+    &:before {
+      content: '';
+      position: absolute;
+      $size: 2.5em;
+      $offset: calc(50% - #{$size/2});
+      top: $offset;
+      left: $offset;
+      width: $size;
+      height: $size;
+      background: url('/img/loading-ring-white.svg') no-repeat center;
+      background-size: contain;
+      display: block;
+      opacity: 0;
+      pointer-events: none;
+    }
 
-		a { @include link($LinkLight, $LinkHoverLight) }
+    > *, &:before {
+      transition: opacity .5s;
+    }
 
-		.avatar-wrap {
-			flex: 1 1 auto;
-			display: block;
-			margin: 0 10px 0 0;
-			width: 50px;
-			height: 50px;
+    &.provider-deviantart {
+      border-radius: 5px;
+    }
 
-			.avatar {
-				width: 50px;
-				height: 50px;
-			}
-		}
+    &.updating-session {
+      > * {
+        opacity: .3;
+        pointer-events: none;
+      }
 
-		.user-data {
-			flex: 1 1 100%;
-			text-align: left;
-			display: flex;
-			flex-flow: column nowrap;
-			justify-content: space-around;
-			align-items: flex-start;
-			max-width: calc(100% - 50px - 4px - 10px);
+      &:before {
+        opacity: 1;
+      }
+    }
 
-			.user-name {
-				display: block;
-				font-size: 1.5em;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-			.user-role {
-				display: flex;
-				flex-flow: row nowrap;
-				justify-content: flex-start;
-				align-items: center;
-				text-transform: uppercase;
-				font-size: .8em;
-			}
-		}
-	}
+    a {
+      @include link($LinkLight, $LinkHoverLight)
+    }
 
-	> section {
-		text-align: center;
+    .avatar-wrap {
+      flex: 1 1 auto;
+      display: block;
+      margin: 0 10px 0 0;
+      width: 50px;
+      height: 50px;
 
-		&:not(:last-child) { margin-bottom: 15px }
+      .avatar {
+        width: 50px;
+        height: 50px;
+      }
+    }
 
-		h2 {
-			font-size: 24px;
-			margin: 0 0 5px;
-			font-family: $cursive;
-			font-weight: normal;
-		}
-		p {
-			margin: 0;
+    .user-data {
+      flex: 1 1 100%;
+      text-align: left;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-around;
+      align-items: flex-start;
+      max-width: calc(100% - 50px - 4px - 10px);
 
-			a {
-				display: inline;
-				line-height: .9em;
-				color: $SidebarContentColor;
-				text-decoration: none;
-				border-bottom: 1px solid rgba(white, .4);
-				transition: border-bottom-color .1s;
-				cursor: pointer;
+      .user-name {
+        display: block;
+        font-size: 1.5em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-				&:hover, &:focus {
-					border-bottom-color: rgba(white, .55);
-				}
-				&:active { border-bottom-color: $SidebarContentColor }
-			}
-		}
+      .user-role {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        text-transform: uppercase;
+        font-size: .8em;
+      }
+    }
+  }
 
-		&.welcome .links {
-			list-style: none;
-			border-radius: 5px;
-			margin: 0 0 6px;
-			padding: 5px;
-			line-height: 1.2em;
+  > section {
+    text-align: center;
 
-			&:before {
-				content: "Useful links";
-				display: block;
-				border-bottom: 1px solid $SidebarContentBorder;
-				font-size: 1.2em;
-				line-height: 1.2em;
-				margin-bottom: 5px;
-				text-align: left;
-				font-weight: bold;
-			}
-			&:empty { display: none }
+    &:not(:last-child) {
+      margin-bottom: 15px
+    }
 
-			li {
-				display: inline-block;
-				white-space: normal;
+    h2 {
+      font-size: 24px;
+      margin: 0 0 5px;
+      font-family: $cursive;
+      font-weight: normal;
+    }
 
-				a {
-					display: inline-block;
-					text-decoration: none;
-					color: inherit;
-					border-bottom: 1px solid transparent;
-					transition: border-bottom-color .2s linear;
-				}
+    p {
+      margin: 0;
 
-				&:not(:last-child):after {
-					content: ",";
-					margin-right: .3em;
-					display: inline-block;
-				}
-				&:not(.active) a:hover:not(:active) {
-					border-bottom-color: initial;
-				}
-				&.active a {
-					border-bottom-color: rgba(255, 255, 255, .5);
-				}
-			}
-		}
-		&.notifications ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
+      a {
+        display: inline;
+        line-height: .9em;
+        color: $SidebarContentColor;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(white, .4);
+        transition: border-bottom-color .1s;
+        cursor: pointer;
 
-			li {
-				padding: 3px 0;
-				&:not(:last-child){
-					border-bottom: 1px solid rgba(white, .2);
-				}
-				a {
-					@include link($LinkLight, $LinkHoverLight);
-				}
+        &:hover, &:focus {
+          border-bottom-color: rgba(white, .55);
+        }
 
-				.nobr {
-					white-space: nowrap;
+        &:active {
+          border-bottom-color: $SidebarContentColor
+        }
+      }
+    }
 
-					.mark-read {
-						cursor: pointer;
-						padding: 1px 3px;
-						border-radius: 3px;
-						line-height: 1em;
+    &.welcome .links {
+      list-style: none;
+      border-radius: 5px;
+      margin: 0 0 6px;
+      padding: 5px;
+      line-height: 1.2em;
 
-						&:first-of-type { margin-left: .5em }
-						&:not(:first-of-type) { margin-left: 3px }
+      &:before {
+        content: "Useful links";
+        display: block;
+        border-bottom: 1px solid $SidebarContentBorder;
+        font-size: 1.2em;
+        line-height: 1.2em;
+        margin-bottom: 5px;
+        text-align: left;
+        font-weight: bold;
+      }
 
-						&.variant-green {
-							color: $NGreen;
-							background: $NGreenBG;
-						}
-						&.variant-red {
-							color: $NRed;
-							background: $NRedBG;
-						}
-						&.variant-orange {
-							color: $NOrange;
-							background: $NOrangeBG;
-						}
-						&.variant-lavender {
-							color: $NLavender;
-							background: $NLavenderBG;
-						}
-					}
-				}
-			}
-		}
-	}
-	#upcoming {
-		ul {
-			padding: 0;
-			margin: 0;
-			list-style: none;
-			text-align: left;
+      &:empty {
+        display: none
+      }
 
-			li {
-				display: block;
-				white-space: nowrap;
+      li {
+        display: inline-block;
+        white-space: normal;
 
-				&:not(:last-child) {
-					margin-bottom: 5px;
-				}
+        a {
+          display: inline-block;
+          text-decoration: none;
+          color: inherit;
+          border-bottom: 1px solid transparent;
+          transition: border-bottom-color .2s linear;
+        }
 
-				> * { vertical-align: middle }
-				.calendar {
-					width: 40px;
-					height: 40px;
-					display: inline-block;
-					position: relative;
-					box-shadow: inset 0 0 5px rgba(0, 0, 0, .3);
-					background: #fafafa;
-					text-align: center;
+        &:not(:last-child):after {
+          content: ",";
+          margin-right: .3em;
+          display: inline-block;
+        }
 
-					> * {
-						width: 100%;
-						display: block;
-						box-sizing: border-box;
-					}
-					.top {
-						top: 0;
-						height: 15px;
-						line-height: 15px;
-						background: $NRed linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .1) 100%);
-						color: #fff;
-						text-transform: uppercase;
-						font-weight: bold;
-						font-size: 13px;
+        &:not(.active) a:hover:not(:active) {
+          border-bottom-color: initial;
+        }
 
-						&.event {
-							background-color: $NBlue;
-						}
+        &.active a {
+          border-bottom-color: rgba(255, 255, 255, .5);
+        }
+      }
+    }
 
-						&.movie {
-							background-color: $NOrange;
-						}
-					}
-					.bottom {
-						bottom: 0;
-						height: 25px;
-						line-height: 25px;
-						font-size: 1.5em;
-						color: #000;
-						border: 1px solid #777;
-						border-top: 0;
-					}
-				}
-				.meta {
-					display: inline-block;
-					margin: 2.5px 0 2.5px 5px;
-					max-width: calc(100% - 45px);
-				}
-				.title, .time, .countdown {
-					display: block;
-					overflow: hidden;
-				}
-				.title {
-					font-size: 18px;
-					height: 21px;
+    &.notifications ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
 
-					a {
-						display: inline-block;
-						@include link($LinkLight, $LinkHoverLight);
-					}
-				}
-				.time, .countdown {
-					font-size: 12px;
-					height: 14px;
-				}
-			}
-		}
-	}
+      li {
+        padding: 3px 0;
 
-	> section.welcome .links, > .logged-in {
-		color: $SidebarContentColor;
-		background-color: $SidebarContentBackground;
-		border: 1px solid $SidebarContentBorder;
-	}
+        &:not(:last-child) {
+          border-bottom: 1px solid rgba(white, .2);
+        }
+
+        a {
+          @include link($LinkLight, $LinkHoverLight);
+        }
+
+        .nobr {
+          white-space: nowrap;
+
+          .mark-read {
+            cursor: pointer;
+            padding: 1px 3px;
+            border-radius: 3px;
+            line-height: 1em;
+
+            &:first-of-type {
+              margin-left: .5em
+            }
+
+            &:not(:first-of-type) {
+              margin-left: 3px
+            }
+
+            &.variant-green {
+              color: $NGreen;
+              background: $NGreenBG;
+            }
+
+            &.variant-red {
+              color: $NRed;
+              background: $NRedBG;
+            }
+
+            &.variant-orange {
+              color: $NOrange;
+              background: $NOrangeBG;
+            }
+
+            &.variant-lavender {
+              color: $NLavender;
+              background: $NLavenderBG;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #upcoming {
+    ul {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      text-align: left;
+
+      li {
+        display: block;
+        white-space: nowrap;
+
+        &:not(:last-child) {
+          margin-bottom: 5px;
+        }
+
+        > * {
+          vertical-align: middle
+        }
+
+        .calendar {
+          width: 40px;
+          height: 40px;
+          display: inline-block;
+          position: relative;
+          box-shadow: inset 0 0 5px rgba(0, 0, 0, .3);
+          background: #fafafa;
+          text-align: center;
+
+          > * {
+            width: 100%;
+            display: block;
+            box-sizing: border-box;
+          }
+
+          .top {
+            top: 0;
+            height: 15px;
+            line-height: 15px;
+            background: $NRed linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .1) 100%);
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 13px;
+
+            &.event {
+              background-color: $NBlue;
+            }
+
+            &.movie {
+              background-color: $NOrange;
+            }
+          }
+
+          .bottom {
+            bottom: 0;
+            height: 25px;
+            line-height: 25px;
+            font-size: 1.5em;
+            color: #000;
+            border: 1px solid #777;
+            border-top: 0;
+          }
+        }
+
+        .meta {
+          display: inline-block;
+          margin: 2.5px 0 2.5px 5px;
+          max-width: calc(100% - 45px);
+        }
+
+        .title, .time, .countdown {
+          display: block;
+          overflow: hidden;
+        }
+
+        .title {
+          font-size: 18px;
+          height: 21px;
+
+          a {
+            display: inline-block;
+            @include link($LinkLight, $LinkHoverLight);
+          }
+        }
+
+        .time, .countdown {
+          font-size: 12px;
+          height: 14px;
+        }
+      }
+    }
+  }
+
+  > section.welcome .links, > .logged-in {
+    color: $SidebarContentColor;
+    background-color: $SidebarContentBackground;
+    border: 1px solid $SidebarContentBorder;
+  }
 }
+
 .avatar-wrap {
-	position: relative;
-	border: 2px solid;
-	margin: 0 auto 5px;
-	width: $AvatarSize;
-	height: $AvatarSize;
-	cursor: default;
-	user-select: none;
-	color: #777;
-	background-color: #efefef;
-		overflow: hidden;
+  position: relative;
+  border: 2px solid;
+  margin: 0 auto 5px;
+  width: $AvatarSize;
+  height: $AvatarSize;
+  cursor: default;
+  user-select: none;
+  color: #777;
+  background-color: #efefef;
+  overflow: hidden;
 
-	&.provider-deviantart {
-		border-radius: 5px;
-	}
-	&.provider-discord {
-		&, .avatar { border-radius: 100% }
-	}
+  &.provider-deviantart {
+    border-radius: 5px;
+  }
+
+  &.provider-discord {
+    &, .avatar {
+      border-radius: 100%
+    }
+  }
 }
+
 .da-userlink {
-	&.with-avatar {
-		@extend %reserve-button;
+  &.with-avatar {
+    @extend %reserve-button;
 
-		$image-height: 1.4em;
+    $image-height: 1.4em;
 
-		&.local {
-			$border: 1px solid lighten($HeaderFooterBG, 20);
-			background: lighten($HeaderFooterBG, 47);
-			border: $border;
+    &.local {
+      $border: 1px solid lighten($HeaderFooterBG, 20);
+      background: lighten($HeaderFooterBG, 47);
+      border: $border;
 
-			&.provider-discord {
-				&, .avatar{
-					border-radius: ($image-height + .1em) / 2;
-				}
-			}
-		}
+      &.provider-discord {
+        &, .avatar {
+          border-radius: ($image-height + .1em) / 2;
+        }
+      }
+    }
 
-		display: inline-block;
-		white-space: nowrap;
-		overflow: hidden;
-		font-style: normal;
-		font-size: $image-height * 0.75;
-	  vertical-align: middle;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    font-style: normal;
+    font-size: $image-height * 0.75;
+    vertical-align: middle;
 
-		> * {
-			display: inline-block;
-	    vertical-align: bottom;
-		}
-		.avatar {
-			height: $image-height;
-			width: $image-height;
-		}
-		.name {
-			display: inline-block;
-			margin-right: 5px;
-			line-height: $image-height;
-		}
-	}
+    > * {
+      display: inline-block;
+      vertical-align: bottom;
+    }
 
-	.vectorapp-logo {
-		height: 1em;
-		display: inline-block;
-		margin-left: 5px;
-	}
+    .avatar {
+      height: $image-height;
+      width: $image-height;
+    }
+
+    .name {
+      display: inline-block;
+      margin-right: 5px;
+      line-height: $image-height;
+    }
+  }
+
+  .vectorapp-logo {
+    height: 1em;
+    display: inline-block;
+    margin-left: 5px;
+  }
 }
+
 // Page layout - Footer
 footer {
-	display: block;
-	width: 100%;
-	padding: 10px;
-	line-height: 18px;
-	@include navfoot;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  line-height: 18px;
+  @include navfoot;
 
-	a {
-		text-decoration: underline;
-		color: inherit;
-		cursor: pointer;
-	}
-	abbr {
-		border-bottom: 1px dashed;
-		cursor: help;
-		font-weight: bold;
-	}
+  a {
+    text-decoration: underline;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  abbr {
+    border-bottom: 1px dashed;
+    cursor: help;
+    font-weight: bold;
+  }
 }
+
 // Colors
-.color-blue     { color: $NBlue !important }
-.color-darkblue { color: $NDarkBlue !important }
-.color-teal     { color: $NTeal !important }
-.color-green    { color: $NGreen !important }
-.color-red      { color: $NRed !important }
-.color-orange   { color: $NOrange !important }
-.color-yellow   { color: $NYellow !important }
-.color-ui       { color: $DefaultUIColor !important }
-.color-light-blue     { color: darken($NBlueBG, 10) !important }
-.color-light-darkblue { color: darken($NDarkBlueBG, 10) !important }
-.color-light-teal     { color: darken($NTealBG, 10) !important }
-.color-light-green    { color: darken($NGreenBG, 10) !important }
-.color-light-red      { color: darken($NRedBG, 10) !important }
-.color-light-orange   { color: darken($NOrangeBG, 10) !important }
-.color-light-yellow   { color: darken($NYellowBG, 10) !important }
+.color-blue {
+  color: $NBlue !important
+}
+
+.color-darkblue {
+  color: $NDarkBlue !important
+}
+
+.color-teal {
+  color: $NTeal !important
+}
+
+.color-green {
+  color: $NGreen !important
+}
+
+.color-red {
+  color: $NRed !important
+}
+
+.color-orange {
+  color: $NOrange !important
+}
+
+.color-yellow {
+  color: $NYellow !important
+}
+
+.color-ui {
+  color: $DefaultUIColor !important
+}
+
+.color-light-blue {
+  color: darken($NBlueBG, 10) !important
+}
+
+.color-light-darkblue {
+  color: darken($NDarkBlueBG, 10) !important
+}
+
+.color-light-teal {
+  color: darken($NTealBG, 10) !important
+}
+
+.color-light-green {
+  color: darken($NGreenBG, 10) !important
+}
+
+.color-light-red {
+  color: darken($NRedBG, 10) !important
+}
+
+.color-light-orange {
+  color: darken($NOrangeBG, 10) !important
+}
+
+.color-light-yellow {
+  color: darken($NYellowBG, 10) !important
+}
+
 // Alignment
-.align-center { text-align: center }
-.align-left { text-align: left }
-.align-right { text-align: right }
+.align-center {
+  text-align: center
+}
+
+.align-left {
+  text-align: left
+}
+
+.align-right {
+  text-align: right
+}
+
 // Pagination
 ul.pagination {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: center;
-	align-items: center;
-	padding: 0;
-	margin: 10px 0;
-	list-style: none;
-	text-align: center;
-	user-select: none;
-	cursor: default;
-	transition: opacity .2s linear;
-	will-change: opacity;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 10px 0;
+  list-style: none;
+  text-align: center;
+  user-select: none;
+  cursor: default;
+  transition: opacity .2s linear;
+  will-change: opacity;
 
-	&:last-child { margin-bottom: 0 }
-	&:empty { display: none }
+  &:last-child {
+    margin-bottom: 0
+  }
 
-	&.loading {
-		cursor: not-allowed;
-		a {
-			pointer-events: none;
-		}
-	}
+  &:empty {
+    display: none
+  }
 
-	li {
-		display: block;
-		flex: 0 0 auto;
-		border: 1px solid #aaa;
-		background: linear-gradient(to bottom, #fff 0%, #dedede 100%);
-		overflow: hidden;
+  &.loading {
+    cursor: not-allowed;
 
-		&:not(:last-child) { border-right: 0 }
-		&:first-child {
-			border-top-left-radius: 5px;
-			border-bottom-left-radius: 5px;
-		}
-		&:last-child  {
-			border-top-right-radius: 5px;
-			border-bottom-right-radius: 5px;
-		}
+    a {
+      pointer-events: none;
+    }
+  }
 
-		&.loading {
-			overflow: hidden;
-			position: relative;
-			&, * {
-				color: transparent !important;
-			}
-			a {
-				background-color: rgba(black,.1);
-			}
+  li {
+    display: block;
+    flex: 0 0 auto;
+    border: 1px solid #aaa;
+    background: linear-gradient(to bottom, #fff 0%, #dedede 100%);
+    overflow: hidden;
 
-			&:before {
-				content: '';
-				position: absolute;
-				top: 0;
-				left: 0;
-				@include loading-indicator(100%, 'gear');
-			}
-		}
+    &:not(:last-child) {
+      border-right: 0
+    }
 
-		* {
-			display: inline-block;
-			padding: 5px;
-			min-width: 1em;
-			line-height: 1em;
-			height: 1em;
-		}
-		strong {
-			background-color: rgba(black,.2);
-			box-shadow: inset 0 2px 5px rgba(black,.5);
-			color: #444;
-			cursor: default;
-		}
-		a {
-			color: #000 !important;
-			transition: none !important;
-			cursor: pointer;
+    &:first-child {
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 5px;
+    }
 
-			&:active {
-				box-shadow: inset 0 2px 5px rgba(0,0,0,.2);
-				background-color: rgba(0,0,0,.1);
-			}
-		}
-		&.spec a {
-			color: $Link !important;
-			background-color: rgba($Link, .15);
-		}
-	}
+    &:last-child {
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+    }
+
+    &.loading {
+      overflow: hidden;
+      position: relative;
+
+      &, * {
+        color: transparent !important;
+      }
+
+      a {
+        background-color: rgba(black, .1);
+      }
+
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        @include loading-indicator(100%, 'gear');
+      }
+    }
+
+    * {
+      display: inline-block;
+      padding: 5px;
+      min-width: 1em;
+      line-height: 1em;
+      height: 1em;
+    }
+
+    strong {
+      background-color: rgba(black, .2);
+      box-shadow: inset 0 2px 5px rgba(black, .5);
+      color: #444;
+      cursor: default;
+    }
+
+    a {
+      color: #000 !important;
+      transition: none !important;
+      cursor: pointer;
+
+      &:active {
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, .2);
+        background-color: rgba(0, 0, 0, .1);
+      }
+    }
+
+    &.spec a {
+      color: $Link !important;
+      background-color: rgba($Link, .15);
+    }
+  }
 }
+
 // <kbd> style
 kbd {
-		border: 1px solid;
-		padding: 0 3px;
-		border-radius: 4px;
-		border-bottom-width: 2px;
-		margin: 0 2px;
+  border: 1px solid;
+  padding: 0 3px;
+  border-radius: 4px;
+  border-bottom-width: 2px;
+  margin: 0 2px;
 }
+
 // Vector app styles
-@mixin vapp($Base, $imgname){
-	$RGradTop: lighten($Base, 40);
-	$RBorder: desaturate(lighten($Base, 20), 40);
-	&.avatar-wrap {
-		border-color: $RBorder;
-		background-color: lighten($RGradTop, 5);
-	}
-	&.reserver .da-userlink {
-		border-color: mix(#93a98f, $RBorder, 70%);
-		background: mix(#d2dfc5, $RGradTop, 70%);
-		transition: border-color .2s ease-in-out, background-color .2s ease-in-out, color .2s linear !important;
+@mixin vapp($Base, $imgname) {
+  $RGradTop: lighten($Base, 40);
+  $RBorder: desaturate(lighten($Base, 20), 40);
+  &.avatar-wrap {
+    border-color: $RBorder;
+    background-color: lighten($RGradTop, 5);
+  }
+  &.reserver .da-userlink {
+    border-color: mix(#93a98f, $RBorder, 70%);
+    background: mix(#d2dfc5, $RGradTop, 70%);
+    transition: border-color .2s ease-in-out, background-color .2s ease-in-out, color .2s linear !important;
 
-		> .avatar {
-			transition: opacity .2s ease-in-out;
-		}
+    > .avatar {
+      transition: opacity .2s ease-in-out;
+    }
 
-		$avatarsize: 40px;
-		$border: 1px;
+    $avatarsize: 40px;
+    $border: 1px;
 
-		&:after {
-			content: "";
-			display: block;
-			background: url('/img/vapps/#{$imgname}.svg') no-repeat center center;
-			background-size: contain;
-			position: absolute;
-			$size: 18px;
-			$spacearound: $avatarsize - $size - $border;
-			width: $size;
-			height: $size;
-			top: $spacearound;
-			left: $spacearound;
-			opacity: .8;
+    &:after {
+      content: "";
+      display: block;
+      background: url('/img/vapps/#{$imgname}.svg') no-repeat center center;
+      background-size: contain;
+      position: absolute;
+      $size: 18px;
+      $spacearound: $avatarsize - $size - $border;
+      width: $size;
+      height: $size;
+      top: $spacearound;
+      left: $spacearound;
+      opacity: .8;
 
-			transition-property: opacity, top, left, width, height;
-			transition-duration: .2s;
-			transition-timing-function: ease-in-out;
-		}
-		&:hover {
-			background-color: $RGradTop;
-			border-color: $RBorder;
+      transition-property: opacity, top, left, width, height;
+      transition-duration: .2s;
+      transition-timing-function: ease-in-out;
+    }
 
-			&:after {
-				opacity: 1;
+    &:hover {
+      background-color: $RGradTop;
+      border-color: $RBorder;
 
-				$size: 32px;
-				$spacearound: $avatarsize - $size - ($border*2);
-				width: $size;
-				height: $size;
-				top: $spacearound/2;
-				left: $spacearound/2;
-			}
-			> .avatar { opacity: .3 }
-		}
-		&.local.provider-discord:hover:after {
-			$size: 24px;
-			$spacearound: $avatarsize - $size - ($border*2);
-			width: $size;
-			height: $size;
-			top: $spacearound/2;
-			left: $spacearound/2;
-		}
-	}
+      &:after {
+        opacity: 1;
+
+        $size: 32px;
+        $spacearound: $avatarsize - $size - ($border*2);
+        width: $size;
+        height: $size;
+        top: $spacearound/2;
+        left: $spacearound/2;
+      }
+
+      > .avatar {
+        opacity: .3
+      }
+    }
+
+    &.local.provider-discord:hover:after {
+      $size: 24px;
+      $spacearound: $avatarsize - $size - ($border*2);
+      width: $size;
+      height: $size;
+      top: $spacearound/2;
+      left: $spacearound/2;
+    }
+  }
 }
+
 .app-illustrator {
-	@include vapp(#f80, 'illustrator');
+  @include vapp(#f80, 'illustrator');
 }
+
 .app-inkscape {
-	@include vapp(#0af, 'inkscape');
+  @include vapp(#0af, 'inkscape');
 }
+
 .app-ponyscape {
-	@include vapp(#f00, 'ponyscape');
+  @include vapp(#f00, 'ponyscape');
 }
 
 #sidebar .live-circle {
-	display: inline-block;
+  display: inline-block;
   width: .5em;
   height: .5em;
   border-radius: 50%;
@@ -1164,25 +1358,27 @@ kbd {
 }
 
 #dialogContent {
-	> .green .sideways-smiley-face {
-		background: $NGreenBG;
-	}
-	> .darkblue .sideways-smiley-face {
-		background: $NDarkBlueBG;
-	}
-	.sideways-smiley-face {
-		display: inline-block;
-		transform: rotate(90deg);
-		font-size: 52px;
-		letter-spacing: .1em;
-		height: 1.5em;
-		width: 1.5em;
-		border: .06em solid;
-		border-radius: 100%;
-		line-height: 1.1em;
-		text-align: center;
-		margin: 10px 0 5px;
-		padding: 0 0 .1em .1em;
-		box-sizing: border-box;
-	}
+  > .green .sideways-smiley-face {
+    background: $NGreenBG;
+  }
+
+  > .darkblue .sideways-smiley-face {
+    background: $NDarkBlueBG;
+  }
+
+  .sideways-smiley-face {
+    display: inline-block;
+    transform: rotate(90deg);
+    font-size: 52px;
+    letter-spacing: .1em;
+    height: 1.5em;
+    width: 1.5em;
+    border: .06em solid;
+    border-radius: 100%;
+    line-height: 1.1em;
+    text-align: center;
+    margin: 10px 0 5px;
+    padding: 0 0 .1em .1em;
+    box-sizing: border-box;
+  }
 }

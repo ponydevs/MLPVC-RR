@@ -3,466 +3,532 @@
 @import "../../components/optional/ctxmenu";
 // Mobile-only
 @media all and (max-width: $Breakpoint) {
-	.appearance-list > li {
-		display: block !important;
-		text-align: center;
+  .appearance-list > li {
+    display: block !important;
+    text-align: center;
 
-		> div {
-			&.sprite {
-				display: inline-block !important;
-				margin-bottom: 8px;
-			}
-			&.data {
-				max-width: 100% !important;
-				padding: 0 !important;
-				display: block !important;
-				text-align: left;
-			}
+    > div {
+      &.sprite {
+        display: inline-block !important;
+        margin-bottom: 8px;
+      }
 
-			.appearance-header {
-				text-align: center;
+      &.data {
+        max-width: 100% !important;
+        padding: 0 !important;
+        display: block !important;
+        text-align: left;
+      }
 
-				.appearance-name {
-					display: block;
-				}
+      .appearance-header {
+        text-align: center;
 
-				.button-block {
-					button, a {
-						&:after {
-							content: " " attr(title);
-						}
-					}
-				}
-			}
+        .appearance-name {
+          display: block;
+        }
 
-			div.tags {
-				display: flex;
-				width: 100%;
-				flex-flow: row wrap;
+        .button-block {
+          button, a {
+            &:after {
+              content: " " attr(title);
+            }
+          }
+        }
+      }
 
-				&:empty { display: none }
+      div.tags {
+        display: flex;
+        width: 100%;
+        flex-flow: row wrap;
 
-				> * {
-					flex: 1 1 auto;
+        &:empty {
+          display: none
+        }
 
-					margin: 2.5px !important;
-				}
-			}
+        > * {
+          flex: 1 1 auto;
 
-			ul.colors {
-				display: flex;
-				flex-wrap: wrap;
-				width: 100%;
-				border-style: solid;
-				border-color: rgba(black, .3);
-				border-width: 1px 0 0 1px;
-				margin-top: 5px;
+          margin: 2.5px !important;
+        }
+      }
 
-				li {
-					display: block;
-					text-align: center;
-					flex: 1 0 auto;
-					max-width: 100%;
-					box-sizing: border-box;
-					margin: 0;
-					border-width: 0 1px 1px 0;
+      ul.colors {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        border-style: solid;
+        border-color: rgba(black, .3);
+        border-width: 1px 0 0 1px;
+        margin-top: 5px;
 
-					.cat {
-						text-align: right;
-					}
-				}
-			}
-		}
-	}
+        li {
+          display: block;
+          text-align: center;
+          flex: 1 0 auto;
+          max-width: 100%;
+          box-sizing: border-box;
+          margin: 0;
+          border-width: 0 1px 1px 0;
+
+          .cat {
+            text-align: right;
+          }
+        }
+      }
+    }
+  }
 }
+
 // Desktop-only
 @media all and (min-width: $Breakpoint) {
-	.appearance-list > li > div {
-		&.sprite {
-			margin-right: 10px;
-		}
-		&.data:not(:first-child) { max-width: calc(100% - 160px) }
+  .appearance-list > li > div {
+    &.sprite {
+      margin-right: 10px;
+    }
 
-		.appearance-header {
-			display: flex;
-			flex-flow: row wrap;
-			align-items: center;
+    &.data:not(:first-child) {
+      max-width: calc(100% - 160px)
+    }
 
-			.appearance-name {
-				padding-right: .5em;
-			}
-		}
+    .appearance-header {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
 
-		.update time { border-bottom: 1px dashed }
-	}
+      .appearance-name {
+        padding-right: .5em;
+      }
+    }
 
-	#search-form {
-		font-size: 1.7em;
-	}
+    .update time {
+      border-bottom: 1px dashed
+    }
+  }
+
+  #search-form {
+    font-size: 1.7em;
+  }
 }
 
-#content > p { margin: 0 0 5px }
+#content > p {
+  margin: 0 0 5px
+}
 
 .appearance-list {
-	padding: 0;
-	margin: 0;
+  padding: 0;
+  margin: 0;
 
-	.pagination:empty + & {
-		margin-top: 8px;
-	}
+  .pagination:empty + & {
+    margin-top: 8px;
+  }
 
-	.pagination + &:empty:before {
-		font-size: 1.4em;
-		font-style: italic;
-		content: "There are no appearances on this page";
-		display: block;
-		text-align: center;
-	}
+  .pagination + &:empty:before {
+    font-size: 1.4em;
+    font-style: italic;
+    content: "There are no appearances on this page";
+    display: block;
+    text-align: center;
+  }
 
-	> li {
-		padding: 10px;
-		color: #434343;
-		background-color: rgba(black, .03);
-		border: 1px solid rgba(black, .3);
-		display: flex;
-		flex-flow: row nowrap;
+  > li {
+    padding: 10px;
+    color: #434343;
+    background-color: rgba(black, .03);
+    border: 1px solid rgba(black, .3);
+    display: flex;
+    flex-flow: row nowrap;
 
-		&:not(:last-child) { margin-bottom: 10px }
+    &:not(:last-child) {
+      margin-bottom: 10px
+    }
 
-		> * {
-			flex: 0 0 auto;
-			max-width: 100%;
-		}
-		> div {
-			&.sprite img {
-				min-width: 150px;
-		    max-width: 100%;
-		    max-height: 150px;
-			}
-			.appearance-header .appearance-name {
-				font-size: 1.5em;
-			}
-			> .update {
-				margin-top: 5px;
-				font-size: .8em;
+    > * {
+      flex: 0 0 auto;
+      max-width: 100%;
+    }
 
-				&:empty { display: none }
-			}
-			> .notes {
-				margin-top: 6px;
+    > div {
+      &.sprite img {
+        min-width: 150px;
+        max-width: 100%;
+        max-height: 150px;
+      }
 
-				&:empty { display: none }
+      .appearance-header .appearance-name {
+        font-size: 1.5em;
+      }
 
-				span:not(:last-child) {
-					padding-right: 5px;
-					margin-right: 5px;
-					border-right: 1px solid;
-				}
-			}
-		}
-	}
+      > .update {
+        margin-top: 5px;
+        font-size: .8em;
+
+        &:empty {
+          display: none
+        }
+      }
+
+      > .notes {
+        margin-top: 6px;
+
+        &:empty {
+          display: none
+        }
+
+        span:not(:last-child) {
+          padding-right: 5px;
+          margin-right: 5px;
+          border-right: 1px solid;
+        }
+      }
+    }
+  }
 }
 
 @import "../../components/optional/jquery.uploadzone";
 
 #content .upload-wrap:not(.uploading):not(.nosprite) > .helper {
-	&:before { content: '\e00b' }
-	&:after { content: "Open in new tab" }
+  &:before {
+    content: '\e00b'
+  }
+
+  &:after {
+    content: "Open in new tab"
+  }
 }
 
 div.tags {
-	user-select: none;
-	margin-top: 6px;
+  user-select: none;
+  margin-top: 6px;
 }
+
 .tag, div.tags .twitter-typeahead {
-	margin: 0 6px 6px 0;
-	vertical-align: top;
+  margin: 0 6px 6px 0;
+  vertical-align: top;
 }
+
 .tag {
-	display: inline-block;
-	font-weight: bold;
-	box-sizing: border-box;
-	padding: 3px 5px;
-	border: 1px solid;
-	cursor: default;
-	height: 26px;
+  display: inline-block;
+  font-weight: bold;
+  box-sizing: border-box;
+  padding: 3px 5px;
+  border: 1px solid;
+  cursor: default;
+  height: 26px;
 
-	&:before {
-		//noinspection CssNoGenericFontName
-		font-family: 'Typicons';
-		margin-right: 5px;
-	}
-	&:not(:last-child) { margin-right: 5px }
+  &:before {
+    //noinspection CssNoGenericFontName
+    font-family: 'Typicons';
+    margin-right: 5px;
+  }
 
-	&:not([class*=typ-]) { @include tag-style($TDefault) }
-	&.typ-cat { @include tag-style($TCategory, '\e083') }
-	&.typ-spec { @include tag-style($TSpecies, '\e148') }
-	&.typ-gen { @include tag-style($TGender, '\e10f') }
-	&.typ-app { @include tag-style($TClothing, '\e07e') }
-	&.typ-ep { @include tag-style($TEpisode, '\e131') }
-	&.typ-char { @include tag-style($TCharacter, '\e12c') }
-	&.typ-warn { @include tag-style($TWarning, '\e137') }
-	&.synonym {
-		font-weight: normal !important;
-		opacity: .8;
-		letter-spacing: -.8px;
-		font-size: .9em;
+  &:not(:last-child) {
+    margin-right: 5px
+  }
 
-		> .uses .typcn { margin-right: 4px }
-	}
+  &:not([class*=typ-]) {
+    @include tag-style($TDefault)
+  }
+
+  &.typ-cat {
+    @include tag-style($TCategory, '\e083')
+  }
+
+  &.typ-spec {
+    @include tag-style($TSpecies, '\e148')
+  }
+
+  &.typ-gen {
+    @include tag-style($TGender, '\e10f')
+  }
+
+  &.typ-app {
+    @include tag-style($TClothing, '\e07e')
+  }
+
+  &.typ-ep {
+    @include tag-style($TEpisode, '\e131')
+  }
+
+  &.typ-char {
+    @include tag-style($TCharacter, '\e12c')
+  }
+
+  &.typ-warn {
+    @include tag-style($TWarning, '\e137')
+  }
+
+  &.synonym {
+    font-weight: normal !important;
+    opacity: .8;
+    letter-spacing: -.8px;
+    font-size: .9em;
+
+    > .uses .typcn {
+      margin-right: 4px
+    }
+  }
 }
 
 #universal {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 div.colors-pending, ul.colors:empty:before {
-	display: block;
-	width: 100%;
-	text-align: center;
-	padding: .2em;
-	box-sizing: border-box;
-	border: 1px dashed rgba(black, .5);
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: .2em;
+  box-sizing: border-box;
+  border: 1px dashed rgba(black, .5);
 }
+
 div.colors-pending {
-	font-size: 1.2em;
-	color: $NDarkBlue;
+  font-size: 1.2em;
+  color: $NDarkBlue;
 }
 
 ul.colors {
-	display: block;
-	padding: 0;
-	list-style: none;
-	white-space: initial !important;
-	margin: 0;
+  display: block;
+  padding: 0;
+  list-style: none;
+  white-space: initial !important;
+  margin: 0;
 
-	&:empty:before {
-		content: "There are no color groups for this appearance";
-		font-size: 1.4em;
-		font-style: italic;
-		margin-top: 5px;
-	}
-	&:not(.full) {
-		user-select: none;
+  &:empty:before {
+    content: "There are no color groups for this appearance";
+    font-size: 1.4em;
+    font-style: italic;
+    margin-top: 5px;
+  }
 
-		&:empty:before {
-			font-size: 18px;
-		}
-	}
+  &:not(.full) {
+    user-select: none;
 
-	&.compact {
-		.color-group {
-			display: inline-flex;
-			justify-content: center;
-			align-items: center;
+    &:empty:before {
+      font-size: 18px;
+    }
+  }
 
-			> :not(:last-child) {
-				margin-right: 4px;
-			}
+  &.compact {
+    .color-group {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
 
-			.color-list {
-				display: flex;
-				flex-flow: row wrap;
-				align-items: flex-start;
+      > :not(:last-child) {
+        margin-right: 4px;
+      }
 
-				.color {
-					margin: 2px;
-				}
-			}
-		}
-	}
+      .color-list {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: flex-start;
 
-	.color-group {
-		display: inline-block;
-		border: 1px solid rgba(black, .2);
-		background-color: rgba(black, .05);
-		padding: 4px;
-		margin: 5px 5px 0 0;
-		font-size: 16px;
+        .color {
+          margin: 2px;
+        }
+      }
+    }
+  }
 
-		.color {
-			@include colored-square(16px, 1px)
-		}
-	}
+  .color-group {
+    display: inline-block;
+    border: 1px solid rgba(black, .2);
+    background-color: rgba(black, .05);
+    padding: 4px;
+    margin: 5px 5px 0 0;
+    font-size: 16px;
+
+    .color {
+      @include colored-square(16px, 1px)
+    }
+  }
 }
 
 // Sidebar - hash copy checkbox
 #hash-copy {
-	user-select: none;
+  user-select: none;
 
-	label {
-		display: block;
-		margin-top: 10px;
-		cursor: pointer;
+  label {
+    display: block;
+    margin-top: 10px;
+    cursor: pointer;
 
-		input {
-			border-color: rgba(white, .3);
-			background-color: rgba(white, .1);
-			margin-right: 7px;
+    input {
+      border-color: rgba(white, .3);
+      background-color: rgba(white, .1);
+      margin-right: 7px;
 
-			&:before {
-				color: $NGreenBG;
-			}
-		}
-	}
+      &:before {
+        color: $NGreenBG;
+      }
+    }
+  }
 }
 
 #search-form {
-	display: flex;
-	flex-flow: row;
-	max-width: 700px;
-	width: 100%;
-	text-align: center;
-	margin: 0 auto 10px;
+  display: flex;
+  flex-flow: row;
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+  margin: 0 auto 10px;
 
-	> * {
-		border-radius: 0;
-	}
+  > * {
+    border-radius: 0;
+  }
 
-	$radius: 8px;
+  $radius: 8px;
 
-	button:last-of-type {
-		border-top-right-radius: $radius;
-		border-bottom-right-radius: $radius;
-	}
+  button:last-of-type {
+    border-top-right-radius: $radius;
+    border-bottom-right-radius: $radius;
+  }
 
-	$SearchBorder: #333;
-	$SearchButtonBG: #ddd;
-	input {
-		font-size: 1em;
-		line-height: .9em;
-		height: 1em;
-		margin: 0;
-		$padding: .3em;
-		padding: $padding;
-		border-color: $SearchBorder;
-		background-color: $BackgroundLight;
-		box-shadow: inset 0 1px 1px 1px rgba($SearchBorder, .1);
-		width: calc(100% - (#{$padding} * 2) - 2px);
-	}
-	> input, .algolia-autocomplete {
-		flex: 1 1 70%;
-		width: 70%;
-	}
-	input, .algolia-autocomplete {
-		border-top-left-radius: $radius;
-		border-bottom-left-radius: $radius;
-	}
-	button {
-		vertical-align: baseline;
-		margin: 0;
-		flex: 0 0 auto;
-		font-size: .8em;
-		border: 1px solid $SearchBorder;
-		border-left: 0;
-		transform: none !important;
-		padding-left: 7px;
-		padding-right: 7px;
+  $SearchBorder: #333;
+  $SearchButtonBG: #ddd;
 
-		&:before { line-height: 1em }
+  input {
+    font-size: 1em;
+    line-height: .9em;
+    height: 1em;
+    margin: 0;
+    $padding: .3em;
+    padding: $padding;
+    border-color: $SearchBorder;
+    background-color: $BackgroundLight;
+    box-shadow: inset 0 1px 1px 1px rgba($SearchBorder, .1);
+    width: calc(100% - (#{$padding} * 2) - 2px);
+  }
 
-		&:not(:hover) {
-			color: $SearchBorder !important;
-			background-color: $SearchButtonBG !important;
-		}
-	}
+  > input, .algolia-autocomplete {
+    flex: 1 1 70%;
+    width: 70%;
+  }
 
-	.algolia-autocomplete {
-		background-color: $BackgroundLight;
+  input, .algolia-autocomplete {
+    border-top-left-radius: $radius;
+    border-bottom-left-radius: $radius;
+  }
 
-		.aa-dataset-appearance {
-			overflow: hidden;
-			border-radius: $radius 0 $radius $radius;
-			border: 1px solid $SearchBorder;
-			margin-top: -1px;
-			box-shadow: 0 1px 5px rgba($HeaderBlue, .2);
+  button {
+    vertical-align: baseline;
+    margin: 0;
+    flex: 0 0 auto;
+    font-size: .8em;
+    border: 1px solid $SearchBorder;
+    border-left: 0;
+    transform: none !important;
+    padding-left: 7px;
+    padding-right: 7px;
 
-			.aa-header {
-				width: 100%;
-				border-bottom: 1px solid $SearchBorder;
-				background-color: $SearchButtonBG;
-				padding: 5px;
-				font-size: 14px;
-				line-height: 1.4em;
-				box-sizing: border-box;
-				user-select: none;
-			}
+    &:before {
+      line-height: 1em
+    }
 
-			.aa-suggestions {
-				background: $BackgroundLight;
-				overflow: hidden;
-				width: 100%;
-				box-sizing: border-box;
-				font-size: 1.5rem;
+    &:not(:hover) {
+      color: $SearchBorder !important;
+      background-color: $SearchButtonBG !important;
+    }
+  }
 
-				.aa-suggestion {
-					display: block;
+  .algolia-autocomplete {
+    background-color: $BackgroundLight;
 
-					&.aa-cursor a {
-						background-color: $LinkHover;
-						color: white;
-					}
+    .aa-dataset-appearance {
+      overflow: hidden;
+      border-radius: $radius 0 $radius $radius;
+      border: 1px solid $SearchBorder;
+      margin-top: -1px;
+      box-shadow: 0 1px 5px rgba($HeaderBlue, .2);
 
-					a {
-						display: flex;
-						flex-flow: row nowrap;
-						align-items: center;
-						justify-content: flex-start;
-						$suggestion-padding: 8px;
-						padding: $suggestion-padding;
-						cursor: pointer;
-						transition: none;
+      .aa-header {
+        width: 100%;
+        border-bottom: 1px solid $SearchBorder;
+        background-color: $SearchButtonBG;
+        padding: 5px;
+        font-size: 14px;
+        line-height: 1.4em;
+        box-sizing: border-box;
+        user-select: none;
+      }
 
-						&:not(:last-child) {
-							border-bottom: 1px solid rgba(black, .2);
-						}
+      .aa-suggestions {
+        background: $BackgroundLight;
+        overflow: hidden;
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 1.5rem;
 
-						.ac-appearance-image {
-							flex: 0 0 auto;
-							display: block;
-							$base-size: 1.5em;
-							min-width: $base-size;
-							max-width: 100%;
-							max-height: $base-size;
-							margin-right: $suggestion-padding;
-							background: $BackgroundLight;
-							border-radius: 4px;
-						}
+        .aa-suggestion {
+          display: block;
 
-						.ac-appearance-label {
-							flex: 1 1 auto;
-							white-space: nowrap;
-							overflow: hidden;
-							text-overflow: ellipsis;
-							text-align: left;
-						}
-					}
-				}
-			}
-		}
-	}
+          &.aa-cursor a {
+            background-color: $LinkHover;
+            color: white;
+          }
+
+          a {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            justify-content: flex-start;
+            $suggestion-padding: 8px;
+            padding: $suggestion-padding;
+            cursor: pointer;
+            transition: none;
+
+            &:not(:last-child) {
+              border-bottom: 1px solid rgba(black, .2);
+            }
+
+            .ac-appearance-image {
+              flex: 0 0 auto;
+              display: block;
+              $base-size: 1.5em;
+              min-width: $base-size;
+              max-width: 100%;
+              max-height: $base-size;
+              margin-right: $suggestion-padding;
+              background: $BackgroundLight;
+              border-radius: 4px;
+            }
+
+            .ac-appearance-label {
+              flex: 1 1 auto;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              text-align: left;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 #swatch-save {
-	.section .btn {
-		vertical-align: baseline;
-		padding: 2px 3px;
-	}
-	.responsive-embed {
-		border: 1px solid;
-		margin-top: 15px;
-	}
+  .section .btn {
+    vertical-align: baseline;
+    padding: 2px 3px;
+  }
+
+  .responsive-embed {
+    border: 1px solid;
+    margin-top: 15px;
+  }
 }
 
 #template-gen-form {
-	canvas {
-		display: block;
-		width: 300px;
-		height: 300px;
-		margin: 0 auto;
-		border: 1px solid black;
-		background: url('/img/transparency.svg') repeat center;
-		background-size: 16px;
-		pointer-events: none;
-	}
+  canvas {
+    display: block;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    border: 1px solid black;
+    background: url('/img/transparency.svg') repeat center;
+    background-size: 16px;
+    pointer-events: none;
+  }
 }

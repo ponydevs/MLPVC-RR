@@ -7,4 +7,5 @@ namespace App\Models;
  * @property string $name
  * @property string $avatar_url
  */
-abstract class AbstractUser extends NSModel { }
+abstract class AbstractUser extends NSModel {
+}

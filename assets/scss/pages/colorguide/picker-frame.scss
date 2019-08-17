@@ -7,393 +7,431 @@
 @import "../../components/vital/forms";
 @import "../../components/optional/no-ui-slider";
 
-html,body {
-	width: 100%;
-	height: 100%;
-	margin: 0;
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
 }
-body {
-	font-family: 'PT Sans', sans-serif;
-	overflow: hidden;
 
-	&.area-list-resizing {
-		&, * {
-			cursor: w-resize !important;
-		}
-	}
+body {
+  font-family: 'PT Sans', sans-serif;
+  overflow: hidden;
+
+  &.area-list-resizing {
+    &, * {
+      cursor: w-resize !important;
+    }
+  }
 }
+
 ::-webkit-scrollbar {
-	width: 10px;
-	height: 10px;
-	background-color: $PickerUIBackground;
+  width: 10px;
+  height: 10px;
+  background-color: $PickerUIBackground;
 }
+
 ::-webkit-scrollbar {
-	width: 10px;
-	height: 10px;
-	background-color: $PickerUIBackground;
+  width: 10px;
+  height: 10px;
+  background-color: $PickerUIBackground;
 }
+
 ::-webkit-scrollbar-thumb:vertical,
 ::-webkit-scrollbar-thumb:horizontal {
-	background-color: $PickerUIColor;
-	border: 2px solid $PickerUIBackground;
-	border-radius: 5px;
+  background-color: $PickerUIColor;
+  border: 2px solid $PickerUIBackground;
+  border-radius: 5px;
 }
-::-webkit-scrollbar-thumb:vertical { width: 6px }
-::-webkit-scrollbar-thumb:horizontal { height: 6px }
+
+::-webkit-scrollbar-thumb:vertical {
+  width: 6px
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  height: 6px
+}
+
 #dialogOverlay {
-	background: rgba(black, .3);
-	backdrop-filter: blur(3px);
+  background: rgba(black, .3);
+  backdrop-filter: blur(3px);
 }
+
 #dialogBox {
-	box-shadow: 0 0 10px rgba(black, .5), 0 0 70px black;
+  box-shadow: 0 0 10px rgba(black, .5), 0 0 70px black;
 }
-:focus{outline:0}
+
+:focus {
+  outline: 0
+}
+
 .fileinput {
-	width: 0;
-	height: 0;
-	overflow: hidden;
-	pointer-events: none;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
-.hidden{display:none!important}
+
+.hidden {
+  display: none !important
+}
+
 %colorat {
-	text-align: center;
-	font-family: $monospace;
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
-	font-size: .9em;
-	line-height: 1em;
-	white-space: nowrap;
+  text-align: center;
+  font-family: $monospace;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  font-size: .9em;
+  line-height: 1em;
+  white-space: nowrap;
 
-	.color {
-		text-transform: uppercase;
-		border-radius: 2px;
-		padding: 1px 2px;
-	}
+  .color {
+    text-transform: uppercase;
+    border-radius: 2px;
+    padding: 1px 2px;
+  }
 }
+
 #menubar {
-	position: absolute;
-	z-index: 4;
-	top: 0;
-	height: $PickerMenubarHeight;
-	background: $PickerUIBackground;
-	color: $PickerUIColor;
-	padding: 0 5px;
-	margin: 0;
-	display: flex;
-	flex-flow: row nowrap;
-	font-size: 0;
-	width: 100%;
-	user-select: none;
-	cursor: default;
-	box-sizing: border-box;
-	border-bottom: 1px solid $PickerUIBorders;
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  height: $PickerMenubarHeight;
+  background: $PickerUIBackground;
+  color: $PickerUIColor;
+  padding: 0 5px;
+  margin: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  font-size: 0;
+  width: 100%;
+  user-select: none;
+  cursor: default;
+  box-sizing: border-box;
+  border-bottom: 1px solid $PickerUIBorders;
 
-	> li {
-		position: relative;
-		font-size: 16px;
-		display: flex;
-		flex-flow: row nowrap;
-		align-items: center;
+  > li {
+    position: relative;
+    font-size: 16px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
 
-		&:not(:last-child){
-			margin-right: 5px;
-		}
+    &:not(:last-child) {
+      margin-right: 5px;
+    }
 
-		> a {
-			flex: 0 0 auto;
-			padding: 1px 10px;
-			cursor: default;
-			border-radius: 3px;
-			border: 1px solid transparent;
+    > a {
+      flex: 0 0 auto;
+      padding: 1px 10px;
+      cursor: default;
+      border-radius: 3px;
+      border: 1px solid transparent;
 
-			&.disabled {
-				opacity: .7;
-				pointer-events: none;
-			}
+      &.disabled {
+        opacity: .7;
+        pointer-events: none;
+      }
 
-			&:not(.disabled):not(.active):hover {
-				border-color: $PickerUIBorders;
-				background: rgba(black, .2);
-			}
+      &:not(.disabled):not(.active):hover {
+        border-color: $PickerUIBorders;
+        background: rgba(black, .2);
+      }
 
-			&.active {
-				background: rgba(black, .5);
-				box-shadow: inset 0 0 2px black;
-			}
+      &.active {
+        background: rgba(black, .5);
+        box-shadow: inset 0 0 2px black;
+      }
 
-			.kbd {
-				float: right;
-			}
-		}
-		> ul {
-			position: absolute;
-			top: $PickerMenubarHeight;
-			background: #f2f2f2;
-			border: 1px solid #ccc;
-			padding: 2px;
-			margin: 0;
-			white-space: nowrap;
+      .kbd {
+        float: right;
+      }
+    }
 
-			li {
-				&.toggle {
-					&.checked > a:before {
-						content: "Disable ";
-					}
-					&:not(.checked) > a:before {
-						content: "Enable ";
-					}
-				}
+    > ul {
+      position: absolute;
+      top: $PickerMenubarHeight;
+      background: #f2f2f2;
+      border: 1px solid #ccc;
+      padding: 2px;
+      margin: 0;
+      white-space: nowrap;
 
-				> a {
-					display: block;
-					color: #000;
-					padding: 2px 8px;
+      li {
+        &.toggle {
+          &.checked > a:before {
+            content: "Disable ";
+          }
 
-					&:not(.disabled):hover {
-						background-color: rgba(deepskyblue,.3);
-					}
-					&.disabled {
-						opacity: .4;
-						pointer-events: none;
-					}
-				}
-			}
-		}
-	}
+          &:not(.checked) > a:before {
+            content: "Enable ";
+          }
+        }
+
+        > a {
+          display: block;
+          color: #000;
+          padding: 2px 8px;
+
+          &:not(.disabled):hover {
+            background-color: rgba(deepskyblue, .3);
+          }
+
+          &.disabled {
+            opacity: .4;
+            pointer-events: none;
+          }
+        }
+      }
+    }
+  }
 }
+
 #tabbar {
-	position: absolute;
-	z-index: 3;
-	top: $PickerMenubarHeight;
-	height: $PickerTabbarHeight;
-	background: darken($PickerUIBackground,3);
-	color: $PickerUIColor;
-	padding: 0 1px;
-	margin: 0;
-	display: flex;
-	flex-flow: row nowrap;
-	overflow: hidden;
-	font-size: 0;
-	width: 100%;
-	user-select: none;
-	cursor: default;
-	box-sizing: border-box;
-	border-bottom: 1px solid $PickerUIBorders;
+  position: absolute;
+  z-index: 3;
+  top: $PickerMenubarHeight;
+  height: $PickerTabbarHeight;
+  background: darken($PickerUIBackground, 3);
+  color: $PickerUIColor;
+  padding: 0 1px;
+  margin: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  overflow: hidden;
+  font-size: 0;
+  width: 100%;
+  user-select: none;
+  cursor: default;
+  box-sizing: border-box;
+  border-bottom: 1px solid $PickerUIBorders;
 
-	> .tab {
-		display: flex;
-		flex-flow: row nowrap;
-		flex: 0 1 auto;
-		color: $PickerUIColor;
-		background: $PickerUIBackground;
-		border: $PickerTabBorder solid $PickerUIBorders;
-		border-bottom: 0;
-		border-top-left-radius: 4px;
-		border-top-right-radius: 4px;
-		justify-content: space-between;
-		align-items: baseline;
-		$height: $PickerTabbarHeight - $PickerTabTopMargin - ($PickerTabBorder*2);
-		height: $height;
-		line-height: $height;
-		margin-top: $PickerTabTopMargin;
-		max-width: 20%;
-		font-size: 16px;
-		padding: 0 4px;
-		min-width: 90px;
+  > .tab {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 0 1 auto;
+    color: $PickerUIColor;
+    background: $PickerUIBackground;
+    border: $PickerTabBorder solid $PickerUIBorders;
+    border-bottom: 0;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    justify-content: space-between;
+    align-items: baseline;
+    $height: $PickerTabbarHeight - $PickerTabTopMargin - ($PickerTabBorder*2);
+    height: $height;
+    line-height: $height;
+    margin-top: $PickerTabTopMargin;
+    max-width: 20%;
+    font-size: 16px;
+    padding: 0 4px;
+    min-width: 90px;
 
-		&:not(:last-child){
-			margin-right: 1px;
-		}
-		&:not(.active){
-			opacity: .6;
-			background: darken($PickerUIBackground,10);
-			height: $PickerTabbarHeight - $PickerTabTopMargin - ($PickerTabBorder*2) - $PickerTabInactiveTopOffset;
-			margin-top: $PickerTabTopMargin + $PickerTabInactiveTopOffset;
-		}
+    &:not(:last-child) {
+      margin-right: 1px;
+    }
 
-		> * {
-			display: inline-block;
-			white-space: nowrap;
-		}
+    &:not(.active) {
+      opacity: .6;
+      background: darken($PickerUIBackground, 10);
+      height: $PickerTabbarHeight - $PickerTabTopMargin - ($PickerTabBorder*2) - $PickerTabInactiveTopOffset;
+      margin-top: $PickerTabTopMargin + $PickerTabInactiveTopOffset;
+    }
 
-		//noinspection CssOptimizeSimilarProperties
-		.pickcolor {
-			$size: 12px;
-			flex: 0 0 $size;
-			width: $size;
-			height: $size;
-			border: 1px solid black;
-			margin-right: 5px;
-			background-image: url('/img/transparency.svg');
-			background-position:  center;
-			background-size: cover;
-			box-sizing: border-box;
-			cursor: pointer;
+    > * {
+      display: inline-block;
+      white-space: nowrap;
+    }
 
-			span {
-				display: block;
-				width: 100%;
-				height: 100%;
-				pointer-events: none;
-			}
-		}
-		.filename {
-			flex: 0 1 auto;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-		.fileext {
-			flex: 1 1 auto;
+    //noinspection CssOptimizeSimilarProperties
+    .pickcolor {
+      $size: 12px;
+      flex: 0 0 $size;
+      width: $size;
+      height: $size;
+      border: 1px solid black;
+      margin-right: 5px;
+      background-image: url('/img/transparency.svg');
+      background-position: center;
+      background-size: cover;
+      box-sizing: border-box;
+      cursor: pointer;
 
-			&:before {
-				content: ".";
-			}
-		}
-		.close {
-			$size: .6em;
-			font-weight: bold;
-			flex: 0 0 $size;
-			border: 1px solid transparent;
-			padding: 1px 2px;
-			margin-left: 4px;
-			border-radius: 2px;
-			height: $size;
-			line-height: $size;
-			width: $size;
-			text-align: center;
-			cursor: pointer;
+      span {
+        display: block;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+    }
 
-			&:hover {
-				border-color: $PickerUIBorders;
-				background-color: rgba(black, .3);
-			}
-		}
-	}
+    .filename {
+      flex: 0 1 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .fileext {
+      flex: 1 1 auto;
+
+      &:before {
+        content: ".";
+      }
+    }
+
+    .close {
+      $size: .6em;
+      font-weight: bold;
+      flex: 0 0 $size;
+      border: 1px solid transparent;
+      padding: 1px 2px;
+      margin-left: 4px;
+      border-radius: 2px;
+      height: $size;
+      line-height: $size;
+      width: $size;
+      text-align: center;
+      cursor: pointer;
+
+      &:hover {
+        border-color: $PickerUIBorders;
+        background-color: rgba(black, .3);
+      }
+    }
+  }
 }
+
 #statusbar {
-	position: absolute;
-	z-index: 2;
-	bottom: 0;
-	height: $PickerStatusbarHeight;
-	background: $PickerUIBackground;
-	color: $PickerUIColor;
-	padding: 5px 5px 0;
-	margin: 0;
-	display: flex;
-	flex-flow: row nowrap;
-	font-size: 18px;
-	width: 100%;
-	user-select: none;
-	cursor: default;
-	box-sizing: border-box;
-	border-top: 1px solid $PickerUIBorders;
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  height: $PickerStatusbarHeight;
+  background: $PickerUIBackground;
+  color: $PickerUIColor;
+  padding: 5px 5px 0;
+  margin: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  font-size: 18px;
+  width: 100%;
+  user-select: none;
+  cursor: default;
+  box-sizing: border-box;
+  border-top: 1px solid $PickerUIBorders;
 
-	> *:not(:last-child) {
-		border-right: 1px solid $PickerUIBorders;
-		padding-right: 6px !important;
-		margin-right: 6px !important;
-	}
+  > *:not(:last-child) {
+    border-right: 1px solid $PickerUIBorders;
+    padding-right: 6px !important;
+    margin-right: 6px !important;
+  }
 
-	.info {
-		flex: 1 1 85%;
-		text-align: left;
-	}
-	.pos {
-		flex: 1 1 5%;
-		text-align: center;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		flex-flow: row nowrap;
-		align-items: center;
-		font-family: $monospace;
+  .info {
+    flex: 1 1 85%;
+    text-align: left;
+  }
 
-		> * {
-			flex: 1 1 25%;
-		}
+  .pos {
+    flex: 1 1 5%;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    font-family: $monospace;
 
-		li {
-			cursor: default;
-			display: inline-block;
-			font-size: .8em;
-		}
-	}
-	.colorat {
-		flex: 1 1 10%;
-		@extend %colorat;
+    > * {
+      flex: 1 1 25%;
+    }
 
-		.opacity {
-			white-space: pre;
+    li {
+      cursor: default;
+      display: inline-block;
+      font-size: .8em;
+    }
+  }
 
-			&:empty { display:none }
-			&:not(:empty):before {
-				content: " @ ";
-			}
-		}
-	}
+  .colorat {
+    flex: 1 1 10%;
+    @extend %colorat;
+
+    .opacity {
+      white-space: pre;
+
+      &:empty {
+        display: none
+      }
+
+      &:not(:empty):before {
+        content: " @ ";
+      }
+    }
+  }
 }
+
 %panel {
-	position: absolute;
-	z-index: 4;
-	background-color: rgba(darken($PickerUIBackground,6), .9);
-	color: $PickerUIColor;
-	border: 1px solid $PickerUIBorders;
-	cursor: default;
+  position: absolute;
+  z-index: 4;
+  background-color: rgba(darken($PickerUIBackground, 6), .9);
+  color: $PickerUIColor;
+  border: 1px solid $PickerUIBorders;
+  cursor: default;
 }
+
 #areas-sidebar {
-	@extend %panel;
-	top: $PickerMenubarHeight+$PickerTabbarHeight;
-	right: 0;
-	width: 0;
-	height: calc(100% - #{$PickerMenubarHeight+$PickerTabbarHeight+$PickerStatusbarHeight});
-	border-width: 0 0 0 1px;
-	box-sizing: border-box;
-	user-select: none;
-	text-align: left;
-	background-color: $PickerUIBackground;
+  @extend %panel;
+  top: $PickerMenubarHeight+$PickerTabbarHeight;
+  right: 0;
+  width: 0;
+  height: calc(100% - #{$PickerMenubarHeight+$PickerTabbarHeight+$PickerStatusbarHeight});
+  border-width: 0 0 0 1px;
+  box-sizing: border-box;
+  user-select: none;
+  text-align: left;
+  background-color: $PickerUIBackground;
 
-	$handleSize: 4px;
+  $handleSize: 4px;
 
-	body.area-list-resizing & .resize-handle, .resize-handle:hover {
-		$color: darken(deepskyblue,7);
-		background-color: $color;
-		box-shadow: 0 0 10px black;
-	}
+  body.area-list-resizing & .resize-handle, .resize-handle:hover {
+    $color: darken(deepskyblue, 7);
+    background-color: $color;
+    box-shadow: 0 0 10px black;
+  }
 
-	> .resize-handle {
-		position: absolute;
-		z-index: 3;
-		top: 0;
-		left: -$handleSize/2;
-		height: 100%;
-		width: $handleSize;
-		background-color: transparent;
-		cursor: w-resize;
-		border-left: 0 solid transparent;
-		transition-property: background-color, box-shadow;
-		transition-duration: .2s;
-		transition-timing-function: linear;
-	}
+  > .resize-handle {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: -$handleSize/2;
+    height: 100%;
+    width: $handleSize;
+    background-color: transparent;
+    cursor: w-resize;
+    border-left: 0 solid transparent;
+    transition-property: background-color, box-shadow;
+    transition-duration: .2s;
+    transition-timing-function: linear;
+  }
 
-	$sbHeadingHeight: 16px;
-	$sbHeadingMargin: 14px;
-	> .label {
-		display: block;
-		font-size: 14px;
-		margin: 4px 0 10px;
-		line-height: 1em;
-		text-transform: uppercase;
-		pointer-events: none;
-		text-align: center;
-		height: $sbHeadingHeight;
-		box-sizing: border-box;
-	}
+  $sbHeadingHeight: 16px;
+  $sbHeadingMargin: 14px;
 
-	$selectCircleColor: #b7b7b7;
+  > .label {
+    display: block;
+    font-size: 14px;
+    margin: 4px 0 10px;
+    line-height: 1em;
+    text-transform: uppercase;
+    pointer-events: none;
+    text-align: center;
+    height: $sbHeadingHeight;
+    box-sizing: border-box;
+  }
 
-	li {
+  $selectCircleColor: #b7b7b7;
+
+  li {
     &.selected {
       > span, & {
         > .select-handle {
@@ -401,542 +439,566 @@ body {
         }
       }
     }
-		.select-handle {
-			$size: 8px;
-			display: block;
-			flex: 0 0 auto;
-			width: $size;
-			height: $size;
-			border-radius: 50%;
-			padding: 1px;
-			border: 1px solid transparent;
-			margin-left: $size;
-			cursor: pointer;
 
-			&:before {
-				content:"";
-				display: block;
-				width: $size;
-				height: $size;
-				border: 1px solid $selectCircleColor;
-				border-radius: 50%;
-				box-sizing: border-box;
-			}
-		}
-	}
+    .select-handle {
+      $size: 8px;
+      display: block;
+      flex: 0 0 auto;
+      width: $size;
+      height: $size;
+      border-radius: 50%;
+      padding: 1px;
+      border: 1px solid transparent;
+      margin-left: $size;
+      cursor: pointer;
 
-	ul {
-		margin: 0;
-		display: flex;
-		flex-flow: column nowrap;
-		align-items: flex-start;
-		list-style: none;
+      &:before {
+        content: "";
+        display: block;
+        width: $size;
+        height: $size;
+        border: 1px solid $selectCircleColor;
+        border-radius: 50%;
+        box-sizing: border-box;
+      }
+    }
+  }
 
-		li {
-			&.selected {
-				&.entry, > .entry {
-		      background-color: #374E63 !important;
-		      border-color: transparent !important;
-				}
-			}
-			&.entry, > .entry {
-				height: 1.5em;
-			}
-		}
+  ul {
+    margin: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+    list-style: none;
 
-		> li {
-			flex: 0 0 auto;
-			width: 100%;
-			display: block;
+    li {
+      &.selected {
+        &.entry, > .entry {
+          background-color: #374E63 !important;
+          border-color: transparent !important;
+        }
+      }
+
+      &.entry, > .entry {
+        height: 1.5em;
+      }
+    }
+
+    > li {
+      flex: 0 0 auto;
+      width: 100%;
+      display: block;
       overflow: hidden;
-		}
-	}
+    }
+  }
 
-	$buttonsHeight: 28px;
-	$buttonMargin: 1px;
+  $buttonsHeight: 28px;
+  $buttonMargin: 1px;
 
-	> ul {
-		position: absolute;
-		top: $sbHeadingHeight + $sbHeadingMargin;
-		left: 0;
-		height: calc(100% - #{$sbHeadingHeight + $sbHeadingMargin + $buttonsHeight});
-		padding: 0 0 6px;
-		width: 100%;
-		overflow-y: auto;
-		box-sizing: border-box;
+  > ul {
+    position: absolute;
+    top: $sbHeadingHeight + $sbHeadingMargin;
+    left: 0;
+    height: calc(100% - #{$sbHeadingHeight + $sbHeadingMargin + $buttonsHeight});
+    padding: 0 0 6px;
+    width: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
 
-		&:not(:last-child) {
-			border-bottom: 1px solid $PickerUIBorders;
-		}
+    &:not(:last-child) {
+      border-bottom: 1px solid $PickerUIBorders;
+    }
 
-		&:empty:before {
-			content: "Use the eyedropper tool to place picking areas on opened images. Once you do, they will appear here.";
-			display: block;
-			font-style: italic;
-			opacity: .7;
-			padding: 0 8px;
-			text-align: justify;
-		}
+    &:empty:before {
+      content: "Use the eyedropper tool to place picking areas on opened images. Once you do, they will appear here.";
+      display: block;
+      font-style: italic;
+      opacity: .7;
+      padding: 0 8px;
+      text-align: justify;
+    }
 
-		> li {
-			> span {
-				display: flex;
-				flex-flow: row nowrap;
-				white-space: nowrap;
-				align-items: center;
-				justify-content: space-between;
-				padding: 0 8px;
-				box-sizing: border-box;
+    > li {
+      > span {
+        display: flex;
+        flex-flow: row nowrap;
+        white-space: nowrap;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 8px;
+        box-sizing: border-box;
 
-				> .name {
-					flex: 0 1 auto;
-					display: block;
-			    overflow: hidden;
+        > .name {
+          flex: 0 1 auto;
+          display: block;
+          overflow: hidden;
           text-overflow: ellipsis;
-				}
-			}
-			> ul {
-				padding: 0;
-				display: block;
-				list-style: none;
+        }
+      }
 
-				> li {
-					display: flex;
-					flex-flow: row nowrap;
-					white-space: nowrap;
-					align-items: center;
-					justify-content: space-between;
-					padding: 0 8px 0 16px;
-					box-sizing: border-box;
-					border: 1px solid transparent;
+      > ul {
+        padding: 0;
+        display: block;
+        list-style: none;
 
-					&:hover {
-						border-color: rgba(white,.2);
-						background: rgba(white,.05);
-					}
+        > li {
+          display: flex;
+          flex-flow: row nowrap;
+          white-space: nowrap;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 8px 0 16px;
+          box-sizing: border-box;
+          border: 1px solid transparent;
 
-					> .index {
-						flex: 0 0 20px;
-						font-family: $monospace;
-						margin-right: 10px;
-						text-align:center;
-					}
-					> .color {
-						flex: 0 1 auto;
-						display: block;
-				    overflow: hidden;
-	          text-overflow: ellipsis;
+          &:hover {
+            border-color: rgba(white, .2);
+            background: rgba(white, .05);
+          }
+
+          > .index {
+            flex: 0 0 20px;
+            font-family: $monospace;
+            margin-right: 10px;
+            text-align: center;
+          }
+
+          > .color {
+            flex: 0 1 auto;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
             padding: 0 3px;
             border-radius: 2px;
             font-family: $monospace;
-					}
-					> .size {
-						flex: 1 0 auto;
-						display: block;
-						text-align: right;
-						font-size: .9em;
-						color: white;
+          }
 
-						&.rounded span {
-							border-radius: 50%;
-						}
-						span {
-							background-color: rgba(gray, .8);
-							text-shadow: 0 0 5px black;
-							line-height: 1em;
-							display: inline-block;
-							padding: 3px;
-							border: 1px solid silver;
-						}
-					}
-				}
-			}
-		}
-	}
+          > .size {
+            flex: 1 0 auto;
+            display: block;
+            text-align: right;
+            font-size: .9em;
+            color: white;
 
-	.action-buttons {
-		position: absolute;
-		z-index: 2;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		height: $buttonsHeight;
-		border-top: 1px solid $PickerUIBorders;
-		background-color: $PickerUIBackground;
-		box-sizing: border-box;
-		display: flex;
+            &.rounded span {
+              border-radius: 50%;
+            }
 
-		button {
-			display: inline-block;
-			height: $buttonsHeight - ($buttonMargin*2);
-			box-sizing: border-box;
-			margin: 1px;
-			border: 1px solid transparent;
-			background-color: transparent;
-			flex: 1 1 auto;
+            span {
+              background-color: rgba(gray, .8);
+              text-shadow: 0 0 5px black;
+              line-height: 1em;
+              display: inline-block;
+              padding: 3px;
+              border: 1px solid silver;
+            }
+          }
+        }
+      }
+    }
+  }
 
-			&:not(:last-child) {
-			 margin-right: $buttonMargin;
-			}
+  .action-buttons {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: $buttonsHeight;
+    border-top: 1px solid $PickerUIBorders;
+    background-color: $PickerUIBackground;
+    box-sizing: border-box;
+    display: flex;
 
-			&:hover, &:active {
-				border-color: $PickerUIBorders;
-				background-color: rgba(black, .3);
-			}
+    button {
+      display: inline-block;
+      height: $buttonsHeight - ($buttonMargin*2);
+      box-sizing: border-box;
+      margin: 1px;
+      border: 1px solid transparent;
+      background-color: transparent;
+      flex: 1 1 auto;
 
-			&:active {
-				box-shadow: inset 0 2px 5px black;
-			}
-		}
-	}
+      &:not(:last-child) {
+        margin-right: $buttonMargin;
+      }
+
+      &:hover, &:active {
+        border-color: $PickerUIBorders;
+        background-color: rgba(black, .3);
+      }
+
+      &:active {
+        box-shadow: inset 0 2px 5px black;
+      }
+    }
+  }
 }
+
 #picker {
-	position: absolute;
-	z-index: 1;
-	overflow: hidden;
-	box-sizing: border-box;
-	user-select: none;
-	top: $PickerMenubarHeight + $PickerTabbarHeight;
-	left: 0;
-	width: 100%;
-	height: calc(100% - #{$PickerMenubarHeight+$PickerTabbarHeight+$PickerStatusbarHeight});
-	cursor: url('/img/colorpicker/normal.cur'), default;
-	background: $PickerEditorBG;
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+  user-select: none;
+  top: $PickerMenubarHeight + $PickerTabbarHeight;
+  left: 0;
+  width: 100%;
+  height: calc(100% - #{$PickerMenubarHeight+$PickerTabbarHeight+$PickerStatusbarHeight});
+  cursor: url('/img/colorpicker/normal.cur'), default;
+  background: $PickerEditorBG;
 
-	.image-element {
-		position: absolute;
-		z-index: 1;
-		image-rendering: pixelated;
-		background: url('/img/transparency.svg') repeat top left;
-		background-size: 16px 16px;
-	}
+  .image-element {
+    position: absolute;
+    z-index: 1;
+    image-rendering: pixelated;
+    background: url('/img/transparency.svg') repeat top left;
+    background-size: 16px 16px;
+  }
 
-	.mouse-overlay {
-		position: absolute;
-		z-index: 2;
-		image-rendering: pixelated;
+  .mouse-overlay {
+    position: absolute;
+    z-index: 2;
+    image-rendering: pixelated;
 
-		&:not(.picking):not(.zooming) {
-			pointer-events: none;
-		}
-		&.picking {
-			cursor: url('/img/colorpicker/picker.cur'), crosshair;
-		}
-		&.zooming {
-			cursor: url('/img/colorpicker/zoom.cur'), zoom-in;
-		}
-	}
+    &:not(.picking):not(.zooming) {
+      pointer-events: none;
+    }
 
-	.image-overlay {
-		position: absolute;
-		z-index: 3;
-		image-rendering: pixelated;
+    &.picking {
+      cursor: url('/img/colorpicker/picker.cur'), crosshair;
+    }
 
-		&:not(.draggable){
-			pointer-events: none;
-		}
-		&.draggable {
-			cursor: grab;
-		}
-		&.draggable.dragging {
-			cursor: grabbing;
-		}
-	}
+    &.zooming {
+      cursor: url('/img/colorpicker/zoom.cur'), zoom-in;
+    }
+  }
 
-	$btn-size: 24px;
-	$btn-padding: 4px;
+  .image-overlay {
+    position: absolute;
+    z-index: 3;
+    image-rendering: pixelated;
 
-	.actions {
-		$actionsPadding: 5px;
-		padding: 0 $actionsPadding $actionsPadding;
-		text-align: center;
-		@extend %panel;
+    &:not(.draggable) {
+      pointer-events: none;
+    }
 
-		&:empty {
-			display: none;
-		}
+    &.draggable {
+      cursor: grab;
+    }
 
-		> div {
-			$spacing: 4px;
-			$label-size: 9px;
-			position: relative;
-			padding-top: $label-size+$spacing+$actionsPadding;
-			margin-left: -$spacing;
-			width: 100%;
-			display: flex;
-			justify-content: space-around;
+    &.draggable.dragging {
+      cursor: grabbing;
+    }
+  }
 
-			&:not(:last-child){
-				$spacing: 4px;
-				margin-bottom: $spacing;
-				border-bottom: 1px solid transparent;
-				padding-bottom: $spacing;
+  $btn-size: 24px;
+  $btn-padding: 4px;
 
-				&:after {
-					content: "";
-					position: absolute;
-					display: block;
-					bottom: -$spacing - 1px;
-					left: $spacing;
-					width: 100%;
-					height: 0;
-					border-bottom: 1px solid $PickerUIBorders;
-				}
-			}
+  .actions {
+    $actionsPadding: 5px;
+    padding: 0 $actionsPadding $actionsPadding;
+    text-align: center;
+    @extend %panel;
 
-			> .label {
-				position: absolute;
-				top: $label-size/1.5;
-				left: 0;
-				width: 100%;
-				font-size: $label-size;
-				line-height: 1em;
-				text-transform: uppercase;
-				pointer-events: none;
-				margin-left: $spacing;
-			}
-			> :not(.label) {
-				margin: $spacing 0 0 $spacing;
-				color: inherit;
-				background-color: transparent;
-				box-sizing: border-box;
-				border-radius: 2px;
-				border: 1px solid transparent;
+    &:empty {
+      display: none;
+    }
 
-				&:not(:disabled):not(.text) {
-					&:hover, &:active {
-						border-color: gray;
-					}
-					&:not(:active):not(:focus):hover {
-						background-color: rgba(black, .1);
-					}
-				}
-			}
-			[contenteditable] {
-				flex: 0 0 100%;
-				display: block;
-				cursor: text;
-				max-width: 100%;
-				overflow: hidden;
-				white-space: nowrap;
-				margin-top: 5px;
+    > div {
+      $spacing: 4px;
+      $label-size: 9px;
+      position: relative;
+      padding-top: $label-size+$spacing+$actionsPadding;
+      margin-left: -$spacing;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
 
-				&:focus {
-					background-color: $PickerUIColor;
-					color: $PickerUIBackground;
-				}
-			}
-		}
+      &:not(:last-child) {
+        $spacing: 4px;
+        margin-bottom: $spacing;
+        border-bottom: 1px solid transparent;
+        padding-bottom: $spacing;
 
-		button[readonly] {
-			opacity: .4;
-			cursor: not-allowed;
+        &:after {
+          content: "";
+          position: absolute;
+          display: block;
+          bottom: -$spacing - 1px;
+          left: $spacing;
+          width: 100%;
+          height: 0;
+          border-bottom: 1px solid $PickerUIBorders;
+        }
+      }
 
-			&:hover, &:active, &:focus {
-				border-color: transparent !important;
-				background-color: transparent !important;
-				box-shadow: none !important;
-			}
-		}
-	}
-	.actions-tl {
-		top: 0;
-		left: 0;
-		width: 75px;
-		border-top: 0;
-		border-left: 0;
-		display: flex;
-		flex-flow: column nowrap;
-		justify-content: space-around;
+      > .label {
+        position: absolute;
+        top: $label-size/1.5;
+        left: 0;
+        width: 100%;
+        font-size: $label-size;
+        line-height: 1em;
+        text-transform: uppercase;
+        pointer-events: none;
+        margin-left: $spacing;
+      }
 
-		> div {
-			flex-flow: row wrap;
-		}
+      > :not(.label) {
+        margin: $spacing 0 0 $spacing;
+        color: inherit;
+        background-color: transparent;
+        box-sizing: border-box;
+        border-radius: 2px;
+        border: 1px solid transparent;
 
-		button {
-			display: inline-block;
-			padding: 0;
-			font-size: $btn-size*0.8;
-			line-height: $btn-size;
-			$size: $btn-size + ($btn-padding*2);
-			height: $size;
-			width: $size;
-			flex: 0 0 $size;
+        &:not(:disabled):not(.text) {
+          &:hover, &:active {
+            border-color: gray;
+          }
 
-			&:active, &.selected {
-				background: rgba(black, .5) !important;
-				box-shadow: inset 0 0 2px black !important;
-			}
-			&.selected {
-				border-color: $PickerUIBorders;
-			}
+          &:not(:active):not(:focus):hover {
+            background-color: rgba(black, .1);
+          }
+        }
+      }
 
-			&:disabled {
-				opacity: .6;
-			}
-		}
-	}
-	.actions-bl {
-		bottom: 0;
-		left: 0;
-		border-bottom: 0;
-		border-left: 0;
-		display: flex;
-		flex-flow: column nowrap;
-		align-items: center;
+      [contenteditable] {
+        flex: 0 0 100%;
+        display: block;
+        cursor: text;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        margin-top: 5px;
 
-		> * {
-			flex: 0 0 100%;
-			white-space: nowrap;
-		}
+        &:focus {
+          background-color: $PickerUIColor;
+          color: $PickerUIBackground;
+        }
+      }
+    }
 
-		> div {
-			flex-flow: column nowrap;
-		}
+    button[readonly] {
+      opacity: .4;
+      cursor: not-allowed;
 
-		button {
-			background-color: transparent;
-			border: 1px solid transparent;
-			padding: 4px 6px;
-			border-radius: 2px;
+      &:hover, &:active, &:focus {
+        border-color: transparent !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+      }
+    }
+  }
 
-			&:hover {
-				border-color: $PickerUIBorders;
-			}
+  .actions-tl {
+    top: 0;
+    left: 0;
+    width: 75px;
+    border-top: 0;
+    border-left: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-around;
 
-			&:active {
-				background-color: rgba(black,.5);
-				box-shadow: inset 0 0 2px black;
-			}
-		}
+    > div {
+      flex-flow: row wrap;
+    }
 
-		.picking-controls {
-			display: flex;
-			flex-flow: row nowrap;
-			justify-content: space-between;
-			align-items: center;
-			width: 100%;
+    button {
+      display: inline-block;
+      padding: 0;
+      font-size: $btn-size*0.8;
+      line-height: $btn-size;
+      $size: $btn-size + ($btn-padding*2);
+      height: $size;
+      width: $size;
+      flex: 0 0 $size;
 
-			button {
-				flex: 1 1 15%;
-			}
-			.picking-size {
-				flex: 1 1 60%;
-				margin: 0 8px;
-			}
-		}
-		.average {
-			@extend %colorat;
-			padding: 3px 5px;
-			font-size: 1.2em;
+      &:active, &.selected {
+        background: rgba(black, .5) !important;
+        box-shadow: inset 0 0 2px black !important;
+      }
 
-			&:empty {
-				display: none;
-			}
+      &.selected {
+        border-color: $PickerUIBorders;
+      }
 
-			&.rgb {
-				font-size: .8em;
-				margin: 0;
-			}
+      &:disabled {
+        opacity: .6;
+      }
+    }
+  }
 
-			.color {
-				user-select: all;
-			}
+  .actions-bl {
+    bottom: 0;
+    left: 0;
+    border-bottom: 0;
+    border-left: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
 
-			button {
-				margin: 0 0 0 5px !important;
+    > * {
+      flex: 0 0 100%;
+      white-space: nowrap;
+    }
 
-				&.tool-disabled {
-					color: rgba(white, .3);
-				}
-			}
-		}
-	}
+    > div {
+      flex-flow: column nowrap;
+    }
 
-	&:not(.loading) .loader {
-		display: none;
-	}
+    button {
+      background-color: transparent;
+      border: 1px solid transparent;
+      padding: 4px 6px;
+      border-radius: 2px;
 
-	.loader {
-		position: absolute;
-		$size: 128px;
-		top: calc(50% - #{$size/2});
-		left: calc(50% - #{$size/2});
+      &:hover {
+        border-color: $PickerUIBorders;
+      }
 
-		@include loading-indicator($size);
-	}
+      &:active {
+        background-color: rgba(black, .5);
+        box-shadow: inset 0 0 2px black;
+      }
+    }
+
+    .picking-controls {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+
+      button {
+        flex: 1 1 15%;
+      }
+
+      .picking-size {
+        flex: 1 1 60%;
+        margin: 0 8px;
+      }
+    }
+
+    .average {
+      @extend %colorat;
+      padding: 3px 5px;
+      font-size: 1.2em;
+
+      &:empty {
+        display: none;
+      }
+
+      &.rgb {
+        font-size: .8em;
+        margin: 0;
+      }
+
+      .color {
+        user-select: all;
+      }
+
+      button {
+        margin: 0 0 0 5px !important;
+
+        &.tool-disabled {
+          color: rgba(white, .3);
+        }
+      }
+    }
+  }
+
+  &:not(.loading) .loader {
+    display: none;
+  }
+
+  .loader {
+    position: absolute;
+    $size: 128px;
+    top: calc(50% - #{$size/2});
+    left: calc(50% - #{$size/2});
+
+    @include loading-indicator($size);
+  }
 }
 
 #set-area-color {
-	.input-red {
-		color: red !important;
-		background-color: rgba(red, .1);
-	}
-	.input-green {
-		color: green !important;
-		background-color: rgba(green, .1);
-	}
-	.input-blue {
-		color: blue !important;
-		background-color: rgba(blue, .1);
-	}
+  .input-red {
+    color: red !important;
+    background-color: rgba(red, .1);
+  }
 
-	//noinspection CssOptimizeSimilarProperties
-	.color-preview {
-		display: block;
-		width: 175px;
-		height: 175px;
-		margin: 10px auto;
-		border: 2px solid black;
-		background-image: url('/img/transparency.svg');
-		background-position: center;
-		background-size: 16px;
+  .input-green {
+    color: green !important;
+    background-color: rgba(green, .1);
+  }
 
-		> div {
-			width: 100%;
-			height: 100%;
-		}
-	}
+  .input-blue {
+    color: blue !important;
+    background-color: rgba(blue, .1);
+  }
+
+  //noinspection CssOptimizeSimilarProperties
+  .color-preview {
+    display: block;
+    width: 175px;
+    height: 175px;
+    margin: 10px auto;
+    border: 2px solid black;
+    background-image: url('/img/transparency.svg');
+    background-position: center;
+    background-size: 16px;
+
+    > div {
+      width: 100%;
+      height: 100%;
+    }
+  }
 }
 
 #levels-changer {
-	.slider-holder {
-		.slider {
-			width: calc(100% - 40px);
-			margin: 10px auto;
-		}
-		.inputs {
-			display: flex;
-			width: 100%;
-			flex-flow: row nowrap;
+  .slider-holder {
+    .slider {
+      width: calc(100% - 40px);
+      margin: 10px auto;
+    }
 
-			> * {
-				flex: 1 1 50%;
+    .inputs {
+      display: flex;
+      width: 100%;
+      flex-flow: row nowrap;
 
-				input {
-					text-align: center;
-				}
-			}
-			.low {
-				text-align: left;
-			}
-			.high {
-				text-align: right;
-			}
-		}
-	}
+      > * {
+        flex: 1 1 50%;
+
+        input {
+          text-align: center;
+        }
+      }
+
+      .low {
+        text-align: left;
+      }
+
+      .high {
+        text-align: right;
+      }
+    }
+  }
 }
 
 #paste-div {
-	width: 100%;
-	border: 1px dotted;
-	padding: 10px;
-	box-sizing: border-box;
-	text-align: center;
-	cursor: text;
+  width: 100%;
+  border: 1px dotted;
+  padding: 10px;
+  box-sizing: border-box;
+  text-align: center;
+  cursor: text;
 
-	&:before {
-		content: "Paste here";
-		opacity: .7;
-	}
+  &:before {
+    content: "Paste here";
+    opacity: .7;
+  }
 }

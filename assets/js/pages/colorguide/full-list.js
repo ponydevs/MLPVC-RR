@@ -1,113 +1,114 @@
-(function(){
-	'use strict';
+(function() {
+  'use strict';
 
-	let $sortBy = $('#sort-by'),
-		$fullList = $('#full-list'),
-		$ReorderBtn = $('#guide-reorder'),
-		$ReorderCancelBtn = $('#guide-reorder-cancel'),
-		EQG = !!window.EQG;
-	$sortBy.on('change',function(){
-		let baseUrl = $sortBy.data('base-url'),
-			val = $sortBy.val(),
-			url = `${baseUrl}?ajax&sort_by=${val}`;
+  let $sortBy = $('#sort-by'),
+    $fullList = $('#full-list'),
+    $ReorderBtn = $('#guide-reorder'),
+    $ReorderCancelBtn = $('#guide-reorder-cancel'),
+    EQG = !!window.EQG;
+  $sortBy.on('change', function() {
+    let baseUrl = $sortBy.data('base-url'),
+      val = $sortBy.val(),
+      url = `${baseUrl}?ajax&sort_by=${val}`;
 
-		$.Dialog.wait('Changing sort order');
+    $.Dialog.wait('Changing sort order');
 
-		$.get(url, $.mkAjaxHandler(function(){
-			if (!this.status) return $.Dialog.fail(false, this.message);
+    $.get(url, $.mkAjaxHandler(function() {
+      if (!this.status) return $.Dialog.fail(false, this.message);
 
-			$fullList.html(this.html);
-			reobserve();
-			$ReorderBtn.prop('disabled', val.length > 0);
-			history.replaceState(history.state,'',this.stateUrl);
-			$.Dialog.close();
-		}));
-	});
+      $fullList.html(this.html);
+      reobserve();
+      $ReorderBtn.prop('disabled', val.length > 0);
+      history.replaceState(history.state, '', this.stateUrl);
+      $.Dialog.close();
+    }));
+  });
 
-	const io = new IntersectionObserver(entries => {
-		entries.forEach(entry => {
-			if (!entry.isIntersecting)
-				return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting)
+        return;
 
-			const el = entry.target;
-			io.unobserve(el);
+      const el = entry.target;
+      io.unobserve(el);
 
-			const img = new Image();
-			img.src = el.dataset.src;
-			$(img).on('load',function(){
-				if (el.classList.contains('border'))
-					img.classList.add('border');
-				$(el).replaceWith(img).css('opacity',0).animate({opacity:1},300);
-			});
-		});
-	});
+      const img = new Image();
+      img.src = el.dataset.src;
+      $(img).on('load', function() {
+        if (el.classList.contains('border'))
+          img.classList.add('border');
+        $(el).replaceWith(img).css('opacity', 0).animate({ opacity: 1 }, 300);
+      });
+    });
+  });
 
-	function reobserve(){
-		$fullList.find('section > ul .image-promise').each((_, el) => io.observe(el));
-	}
-	reobserve();
+  function reobserve() {
+    $fullList.find('section > ul .image-promise').each((_, el) => io.observe(el));
+  }
 
-	if (window.Sortable){
-		$fullList.on('click','.sort-alpha',function(){
-			let $section = $(this).closest('section'),
-				$ul = $section.children('ul');
-			$ul.children().sort(function(a,b){
-				return $(a).text().trim().localeCompare($(b).text().trim());
-			}).appendTo($ul);
-		});
+  reobserve();
 
-		$ReorderBtn.on('click',function(){
-			if (!$ReorderBtn.hasClass('typcn-tick')){
-				$ReorderBtn.removeClass('typcn-arrow-unsorted darkblue').addClass('typcn-tick green').html('Save');
-				$fullList.addClass('sorting').children().each(function(){
-					let $names = $(this).children('ul');
-					$names.children().each(function(){
-						let $li = $(this);
-						$li.data('orig-index', $li.index());
-					}).children().moveAttr('href','data-href');
-					$names.sortable({ draggable: 'li' });
-				});
-				$('.sort-alpha').add($ReorderCancelBtn).removeClass('hidden');
-			}
-			else {
-				$.Dialog.wait('Re-ordering appearances');
+  if (window.Sortable){
+    $fullList.on('click', '.sort-alpha', function() {
+      let $section = $(this).closest('section'),
+        $ul = $section.children('ul');
+      $ul.children().sort(function(a, b) {
+        return $(a).text().trim().localeCompare($(b).text().trim());
+      }).appendTo($ul);
+    });
 
-				let list = [];
-				$fullList.children().children('ul').children().each(function(){
-					list.push($(this).children().attr('data-href').split('/').pop().replace(/^(\d+)\D.*$/,'$1'));
-				});
+    $ReorderBtn.on('click', function() {
+      if (!$ReorderBtn.hasClass('typcn-tick')){
+        $ReorderBtn.removeClass('typcn-arrow-unsorted darkblue').addClass('typcn-tick green').html('Save');
+        $fullList.addClass('sorting').children().each(function() {
+          let $names = $(this).children('ul');
+          $names.children().each(function() {
+            let $li = $(this);
+            $li.data('orig-index', $li.index());
+          }).children().moveAttr('href', 'data-href');
+          $names.sortable({ draggable: 'li' });
+        });
+        $('.sort-alpha').add($ReorderCancelBtn).removeClass('hidden');
+      }
+      else {
+        $.Dialog.wait('Re-ordering appearances');
 
-				const data = {
-					list: list.join(','),
-					ordering: $sortBy.val(),
-				};
-				if (EQG)
-					data.eqg = true;
+        let list = [];
+        $fullList.children().children('ul').children().each(function() {
+          list.push($(this).children().attr('data-href').split('/').pop().replace(/^(\d+)\D.*$/, '$1'));
+        });
 
-				$.API.post('/cg/full/reorder', data, function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
+        const data = {
+          list: list.join(','),
+          ordering: $sortBy.val(),
+        };
+        if (EQG)
+          data.eqg = true;
 
-					$fullList.removeClass('sorting').html(this.html);
-					reobserve();
-					$ReorderBtn.removeClass('typcn-tick green').addClass('typcn-arrow-unsorted darkblue').html('Re-order');
-					$ReorderCancelBtn.addClass('hidden');
-					$.Dialog.close();
-				});
-			}
-		});
+        $.API.post('/cg/full/reorder', data, function() {
+          if (!this.status) return $.Dialog.fail(false, this.message);
 
-		$ReorderCancelBtn.on('click',function(){
-			$ReorderBtn.removeClass('typcn-tick green').addClass('typcn-arrow-unsorted darkblue').html('Re-order');
-			$fullList.removeClass('sorting').children().each(function(){
-				let $names = $(this).children('ul');
-				$names.children().sort(function(a, b){
-					a = $(a).data('orig-index');
-					b = $(b).data('orig-index');
-					return a > b ? 1 : (a < b ? -1 : 0);
-				}).appendTo($names).removeData('orig-index').children().moveAttr('data-href', 'href');
-				$names.sortable('destroy');
-			});
-			$('.sort-alpha').add($ReorderCancelBtn).addClass('hidden');
-		});
-	}
+          $fullList.removeClass('sorting').html(this.html);
+          reobserve();
+          $ReorderBtn.removeClass('typcn-tick green').addClass('typcn-arrow-unsorted darkblue').html('Re-order');
+          $ReorderCancelBtn.addClass('hidden');
+          $.Dialog.close();
+        });
+      }
+    });
+
+    $ReorderCancelBtn.on('click', function() {
+      $ReorderBtn.removeClass('typcn-tick green').addClass('typcn-arrow-unsorted darkblue').html('Re-order');
+      $fullList.removeClass('sorting').children().each(function() {
+        let $names = $(this).children('ul');
+        $names.children().sort(function(a, b) {
+          a = $(a).data('orig-index');
+          b = $(b).data('orig-index');
+          return a > b ? 1 : (a < b ? -1 : 0);
+        }).appendTo($names).removeData('orig-index').children().moveAttr('data-href', 'href');
+        $names.sortable('destroy');
+      });
+      $('.sort-alpha').add($ReorderCancelBtn).addClass('hidden');
+    });
+  }
 })();

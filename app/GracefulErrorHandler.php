@@ -5,19 +5,19 @@ namespace App;
 use Monolog\ErrorHandler;
 
 class GracefulErrorHandler extends ErrorHandler {
-	/**
-	 * @param \Exception $e
-	 */
-	private function _outputErrorPage($e){
-		[$msec, $sec] =  explode(' ', microtime());
-		File::put(PROJPATH.'logs/error-at-'.date('YmdHis', (int) $sec).substr($msec, 2).'.log', $e->getMessage()."\n".$e->getTraceAsString());
+  /**
+   * @param \Exception $e
+   */
+  private function _outputErrorPage($e) {
+    [$msec, $sec] = explode(' ', microtime());
+    File::put(PROJPATH.'logs/error-at-'.date('YmdHis', (int)$sec).substr($msec, 2).'.log', $e->getMessage()."\n".$e->getTraceAsString());
 
-		if (headers_sent())
-			return;
+    if (headers_sent())
+      return;
 
-		$title = '500 Internal Server Error';
-		header($_SERVER['SERVER_PROTOCOL']." $title");
-		echo <<<HTML
+    $title = '500 Internal Server Error';
+    header($_SERVER['SERVER_PROTOCOL']." $title");
+    echo <<<HTML
 <!DOCTYPE html>
 <html lang="en"><head><title>$title</title></head><style>
 html, body, #wr {
@@ -58,10 +58,10 @@ p, h1 { font-family: sans-serif }
 </div>
 </body></html>
 HTML;
-	}
+  }
 
-	public function handleException($e){
-		$this->_outputErrorPage($e);
-		parent::handleException($e);
-	}
+  public function handleException($e) {
+    $this->_outputErrorPage($e);
+    parent::handleException($e);
+  }
 }

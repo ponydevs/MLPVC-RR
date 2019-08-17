@@ -1,82 +1,104 @@
 [
-	{
-		"group": "db",
-		"name": ["migrate", "m"],
-		"desc": [
-			"Run pending migrations",
-			"Requires `composer install` to be run in the project first"
-		],
-		"cmd": {
-			"bash": "vendor/bin/phinx migrate",
-			"powershell": "vendor\\bin\\phinx migrate"
-		}
-	},
-	{
-		"group": "db",
-		"name": ["rollback", "r"],
-		"desc": [
-			"Roll back migrations",
-			"Requires `composer install` to be run in the project first"
-		],
-		"cmd": {
-			"bash": "vendor/bin/phinx rollback",
-			"powershell": "vendor\\bin\\phinx rollback"
-		}
-	},
-	{
-		"group": "db",
-		"name": ["create", "c"],
-		"desc": [
-			"Create a migration with the specified name",
-			"Requires `composer install` to be run in the project first"
-		],
-		"cmd": {
-			"bash": "vendor/bin/phinx create {{.name}}",
-			"powershell": "vendor\\bin\\phinx create {{.name}}"
-		},
-		"args": [
-			{
-				"name": "name",
-				"desc": "Name for the migration class (CamelCase)",
-				"required": true,
-				"test": "^[A-Z][A-Za-z\\d]+$"
-			}
-		]
-	},
-	{
-		"name": ["tests", "t"],
-		"desc": [
-			"Run tests",
-			"Requires `composer install` to be run in the project first"
-		],
-		"cmd": {
-			"bash": "vendor/bin/phpunit",
-			"powershell": "vendor\\bin\\phpunit"
-		}
-	},
-	{
-		"group": ["security","sec"],
-		"name": ["gpg"],
-		"desc": "Export gpg public key to the web root",
-		"cwd": "public",
-		"cmd": "gpg --armor --output pgp-key.txt --export {{.ident}}",
-		"args": [
-			{
-				"name": "ident",
-				"desc": [
-					"Identifier to use for finding the key to export (e.g. the e-mail)",
-					"You can use `gpg --list-keys` to find your key"
-				],
-				"required": true,
-				"test": "^(.+@.+|[A-Fa-f\\d]+)$"
-			}
-		]
-	},
-	{
-		"group": ["security","sec"],
-		"name": ["resign"],
-		"cwd": "public/.well-known",
-		"desc": "Re-create the security.txt file's signature after a modification",
-		"cmd": "gpg --detach-sign --armor -o security.txt.sig security.txt"
-	}
+  {
+    "group": "db",
+    "name": [
+      "migrate",
+      "m"
+    ],
+    "desc": [
+      "Run pending migrations",
+      "Requires `composer install` to be run in the project first"
+    ],
+    "cmd": {
+      "bash": "vendor/bin/phinx migrate",
+      "powershell": "vendor\\bin\\phinx migrate"
+    }
+  },
+  {
+    "group": "db",
+    "name": [
+      "rollback",
+      "r"
+    ],
+    "desc": [
+      "Roll back migrations",
+      "Requires `composer install` to be run in the project first"
+    ],
+    "cmd": {
+      "bash": "vendor/bin/phinx rollback",
+      "powershell": "vendor\\bin\\phinx rollback"
+    }
+  },
+  {
+    "group": "db",
+    "name": [
+      "create",
+      "c"
+    ],
+    "desc": [
+      "Create a migration with the specified name",
+      "Requires `composer install` to be run in the project first"
+    ],
+    "cmd": {
+      "bash": "vendor/bin/phinx create {{.name}}",
+      "powershell": "vendor\\bin\\phinx create {{.name}}"
+    },
+    "args": [
+      {
+        "name": "name",
+        "desc": "Name for the migration class (CamelCase)",
+        "required": true,
+        "test": "^[A-Z][A-Za-z\\d]+$"
+      }
+    ]
+  },
+  {
+    "name": [
+      "tests",
+      "t"
+    ],
+    "desc": [
+      "Run tests",
+      "Requires `composer install` to be run in the project first"
+    ],
+    "cmd": {
+      "bash": "vendor/bin/phpunit",
+      "powershell": "vendor\\bin\\phpunit"
+    }
+  },
+  {
+    "group": [
+      "security",
+      "sec"
+    ],
+    "name": [
+      "gpg"
+    ],
+    "desc": "Export gpg public key to the web root",
+    "cwd": "public",
+    "cmd": "gpg --armor --output pgp-key.txt --export {{.ident}}",
+    "args": [
+      {
+        "name": "ident",
+        "desc": [
+          "Identifier to use for finding the key to export (e.g. the e-mail)",
+          "You can use `gpg --list-keys` to find your key"
+        ],
+        "required": true,
+        "test": "^(.+@.+|[A-Fa-f\\d]+)$"
+      }
+    ]
+  },
+  {
+    "group": [
+      "security",
+      "sec"
+    ],
+    "name": [
+      "resign"
+    ],
+    "cwd": "public/.well-known",
+    "desc": "Re-create the security.txt file's signature after a modification",
+    "cmd": "gpg --detach-sign --armor -o security.txt.sig security.txt"
+  }
 ]

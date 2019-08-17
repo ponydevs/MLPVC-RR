@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use ActiveRecord\DateTime;
 use App\Auth;
 
@@ -16,26 +17,27 @@ use App\Auth;
  * @property User       $user          (Via relations)
  */
 class TagChange extends NSModel {
-	public static $belongs_to = [
-		['tag'],
-		['appearance'],
-		['user'],
-	];
+  public static $belongs_to = [
+    ['tag'],
+    ['appearance'],
+    ['user'],
+  ];
 
-	public static function record(bool $added, int $tag_id, string $tag_name, int $appearance_id, ?string $user_id = null):self {
-		if ($user_id === null){
-			if (!Auth::$signed_in)
-				throw new \RuntimeException(__METHOD__.' called without $user_id but no user is signed in');
-			$user_id = Auth::$user->id;
-		}
+  public static function record(bool $added, int $tag_id, string $tag_name, int $appearance_id, ?string $user_id = null):self {
+    if ($user_id === null){
+      if (!Auth::$signed_in)
+        throw new \RuntimeException(__METHOD__.' called without $user_id but no user is signed in');
+      $user_id = Auth::$user->id;
+    }
 
-		$instance = new self();
-		$instance->tag_id = $tag_id;
-		$instance->tag_name = $tag_name;
-		$instance->appearance_id = $appearance_id;
-		$instance->user_id = $user_id;
-		$instance->added = $added;
-		$instance->save();
-		return $instance;
-	}
+    $instance = new self();
+    $instance->tag_id = $tag_id;
+    $instance->tag_name = $tag_name;
+    $instance->appearance_id = $appearance_id;
+    $instance->user_id = $user_id;
+    $instance->added = $added;
+    $instance->save();
+
+    return $instance;
+  }
 }

@@ -12,5 +12,5 @@ use App\Models\Appearance;
  * @property Appearance $appearance
  */
 class CMModify extends AbstractEntryType {
-	public static $table_name = 'log__cm_modify';
+  public static $table_name = 'log__cm_modify';
 }

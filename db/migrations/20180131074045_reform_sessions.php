@@ -3,20 +3,20 @@
 use Phinx\Migration\AbstractMigration;
 
 class ReformSessions extends AbstractMigration {
-	public function up() {
-		$this->query(
-			'ALTER TABLE sessions
+  public function up() {
+    $this->query(
+      'ALTER TABLE sessions
 			ALTER "user_id" DROP NOT NULL,
 			ALTER "token" DROP NOT NULL,
 			ALTER "access" DROP NOT NULL,
 			ALTER "refresh" DROP NOT NULL,
 			ALTER "scope" DROP NOT NULL,
 			ALTER "scope" DROP DEFAULT');
-		$this->query('ALTER TABLE sessions ALTER COLUMN id DROP DEFAULT, ALTER COLUMN id TYPE uuid USING (uuid_generate_v4()), ALTER COLUMN id SET DEFAULT uuid_generate_v4()');
-		$this->query('DROP SEQUENCE sessions_id_seq');
-		$this->table('sessions')
-			->addColumn('data', 'text', ['null' => true])
-			->update();
-	}
-	// There is no going back
+    $this->query('ALTER TABLE sessions ALTER COLUMN id DROP DEFAULT, ALTER COLUMN id TYPE uuid USING (uuid_generate_v4()), ALTER COLUMN id SET DEFAULT uuid_generate_v4()');
+    $this->query('DROP SEQUENCE sessions_id_seq');
+    $this->table('sessions')
+      ->addColumn('data', 'text', ['null' => true])
+      ->update();
+  }
+  // There is no going back
 }

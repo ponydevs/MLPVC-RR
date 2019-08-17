@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use ActiveRecord\DateTime;
 use App\Auth;
 
@@ -21,31 +22,32 @@ use App\Auth;
  * @method static PCGSlotGift find(int $id)
  */
 class PCGSlotGift extends NSModel {
-	public static $table_name = 'pcg_slot_gifts';
+  public static $table_name = 'pcg_slot_gifts';
 
-	public static $after_create = ['make_related_entries'];
+  public static $after_create = ['make_related_entries'];
 
-	public static $belongs_to = [
-		['sender', 'class' => '\App\Models\User', 'foreign_key' => 'sender_id'],
-		['receiver', 'class' => '\App\Models\User', 'foreign_key' => 'receiver_id'],
-		['refunder', 'class' => '\App\Models\User', 'foreign_key' => 'refunded_by']
-	];
+  public static $belongs_to = [
+    ['sender', 'class' => '\App\Models\User', 'foreign_key' => 'sender_id'],
+    ['receiver', 'class' => '\App\Models\User', 'foreign_key' => 'receiver_id'],
+    ['refunder', 'class' => '\App\Models\User', 'foreign_key' => 'refunded_by'],
+  ];
 
-	public static function send(string $from, string $to, int $amount):PCGSlotGift {
-		$instance = new self();
-		$instance->sender_id = $from;
-		$instance->receiver_id = $to;
-		$instance->amount = $amount;
-		$instance->save();
-		return $instance;
-	}
+  public static function send(string $from, string $to, int $amount):PCGSlotGift {
+    $instance = new self();
+    $instance->sender_id = $from;
+    $instance->receiver_id = $to;
+    $instance->amount = $amount;
+    $instance->save();
 
-	public function make_related_entries(){
-		// Deduct slots from sender immediately
-		PCGSlotHistory::record($this->sender_id, 'gift_sent', $this->amount*10, ['gift_id' => $this->id ]);
-		Auth::$user->syncPCGSlotCount();
+    return $instance;
+  }
 
-		// Send notification
-		Notification::send($this->receiver_id, 'pcg-slot-gift', [ 'gift_id' => (int)$this->id ]);
-	}
+  public function make_related_entries() {
+    // Deduct slots from sender immediately
+    PCGSlotHistory::record($this->sender_id, 'gift_sent', $this->amount * 10, ['gift_id' => $this->id]);
+    Auth::$user->syncPCGSlotCount();
+
+    // Send notification
+    Notification::send($this->receiver_id, 'pcg-slot-gift', ['gift_id' => (int)$this->id]);
+  }
 }

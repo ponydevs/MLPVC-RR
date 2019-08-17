@@ -1,40 +1,43 @@
 :root #content {
-	background: #fff;
-	border-radius: 0;
-	border: 0;
-	box-shadow: 0 2px 3px black;
-	padding: 2em 4em;
-	max-width: 21cm;
-	margin: 0 auto;
+  background: #fff;
+  border-radius: 0;
+  border: 0;
+  box-shadow: 0 2px 3px black;
+  padding: 2em 4em;
+  max-width: 21cm;
+  margin: 0 auto;
 
-	h1, h2, p, blockquote {
-		font-family: serif !important;
-	}
+  h1, h2, p, blockquote {
+    font-family: serif !important;
+  }
 
-	a, a:hover {
-		color: blue;
-		text-decoration: underline !important;
-		font-weight: inherit;
-		transition: none;
-	}
-	a:visited {
-		color: purple;
-	}
-	a:active {
-		color: red;
-	}
+  a, a:hover {
+    color: blue;
+    text-decoration: underline !important;
+    font-weight: inherit;
+    transition: none;
+  }
 
-	blockquote {
-		background: #eee;
-		border: 1px solid #888;
-		padding: 10px;
-		margin: .7cm;
-	}
+  a:visited {
+    color: purple;
+  }
 
-	h2 {
-		margin: .7cm 0 .4cm;
-	}
-	p {
-		margin: 0 0 .3cm;
-	}
+  a:active {
+    color: red;
+  }
+
+  blockquote {
+    background: #eee;
+    border: 1px solid #888;
+    padding: 10px;
+    margin: .7cm;
+  }
+
+  h2 {
+    margin: .7cm 0 .4cm;
+  }
+
+  p {
+    margin: 0 0 .3cm;
+  }
 }

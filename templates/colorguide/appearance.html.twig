@@ -7,92 +7,92 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-{% set is_staff = permission('staff') %}
-{% set owner_or_staff = is_owner or is_staff %}
-<div id="content">
-	<div class="sprite-wrap">{{ appearance.spriteHTML(owner_or_staff) }}</div>
-	<h1>{{ heading | escape }}</h1>
-	<p>from {% if owner is defined -%}
-		{{ owner.toAnchor ~ posess(owner.name, true) }} <a href='/@{{ owner.name }}/cg'>Personal Color Guide</a>
-	{%- else -%}
-		the MLP-VectorClub's <a href='/cg{{ eqg ? '/eqg' : '/pony' }}'>{{ eqg ? 'EQG ' : '' }}Color Guide</a>
-	{%- endif %}</p>
+  {% set is_staff = permission('staff') %}
+  {% set owner_or_staff = is_owner or is_staff %}
+  <div id="content">
+    <div class="sprite-wrap">{{ appearance.spriteHTML(owner_or_staff) }}</div>
+    <h1>{{ heading | escape }}</h1>
+    <p>from {% if owner is defined -%}
+        {{ owner.toAnchor ~ posess(owner.name, true) }} <a href='/@{{ owner.name }}/cg'>Personal Color Guide</a>
+      {%- else -%}
+        the MLP-VectorClub's <a href='/cg{{ eqg ? '/eqg' : '/pony' }}'>{{ eqg ? 'EQG ' : '' }}Color Guide</a>
+      {%- endif %}</p>
 
-	{% if owner_or_staff %}
-	<div class="notice warn align-center appearance-private-notice{{ not appearance.private ? ' hidden' : '' }}"><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to {{ owner is defined ? (is_owner ? 'you' : owner.name) ~ ' and ' : '' }}staff members)</strong></p></div>
-	{% endif %}
+    {% if owner_or_staff %}
+      <div class="notice warn align-center appearance-private-notice{{ not appearance.private ? ' hidden' : '' }}"><p><span class="typcn typcn-lock-closed"></span> <strong>This appearance is currently private (its colors are only visible to {{ owner is defined ? (is_owner ? 'you' : owner.name) ~ ' and ' : '' }}staff members)</strong></p></div>
+    {% endif %}
 
-	<div id="p{{ appearance.id }}" class="section-container">
-		<div class='button-block align-center'>
-			<a class='btn link typcn typcn-image' href='{{ appearance.paletteURL }}' target='_blank'>View as PNG</a>
-			<button class='get-swatch typcn typcn-brush teal'>Download swatch file</button>
-			<button class='blue share typcn typcn-export'{{ appearance.private ? ' data-private="true"' : '' }} data-url="{{ appearance.shareURL(owner_or_staff) }}">Share</button>
-	{% if owner_or_staff %}
-			<button class='darkblue edit-appearance typcn typcn-pencil'>Edit metadata</button>
-		{% if not appearance.protected %}
-			<button class='red delete-appearance typcn typcn-trash'>Delete appearance</button>
-		{% endif %}
-	{% endif %}
-		</div>
+    <div id="p{{ appearance.id }}" class="section-container">
+      <div class='button-block align-center'>
+        <a class='btn link typcn typcn-image' href='{{ appearance.paletteURL }}' target='_blank'>View as PNG</a>
+        <button class='get-swatch typcn typcn-brush teal'>Download swatch file</button>
+        <button class='blue share typcn typcn-export'{{ appearance.private ? ' data-private="true"' : '' }} data-url="{{ appearance.shareURL(owner_or_staff) }}">Share</button>
+        {% if owner_or_staff %}
+          <button class='darkblue edit-appearance typcn typcn-pencil'>Edit metadata</button>
+          {% if not appearance.protected %}
+            <button class='red delete-appearance typcn typcn-trash'>Delete appearance</button>
+          {% endif %}
+        {% endif %}
+      </div>
 
-	{% if appearance.owner_id is null %}
-		{{ appearance.changesHTML }}
-		{% if not appearance.protected and (appearance.hasTags or is_staff) %}
-		<section id="tags">
-			<h2><span class='typcn typcn-tags'></span>Tags</h2>
-			{{ appearance.tagsHTML() }}
-			{% if is_staff %}
-			<div class="button-block">
-				<button id="edit-tags-btn" class="darkblue typcn typcn-pencil">Edit tags</button>
-				<!-- <a class="btn link typcn typcn-document" href="/cg/tag-changes/{{ appearance.id }}">Tag changes</a> -->
-			</div>
-			{% endif %}
-		</section>
-		{% endif %}
-		{{ appearance.relatedShowsHTML() }}
-	{% endif %}
-	{% if appearance.notes_src is not empty %}
-		<section>
-			<h2><span class='typcn typcn-info-large'></span>Additional notes</h2>
-			<div id="notes">{{ appearance.notesHTML(constant('NOWRAP'), constant('NOTE_TEXT_ONLY')) }}</div>
-		</section>
-	{% endif %}
+      {% if appearance.owner_id is null %}
+        {{ appearance.changesHTML }}
+        {% if not appearance.protected and (appearance.hasTags or is_staff) %}
+          <section id="tags">
+            <h2><span class='typcn typcn-tags'></span>Tags</h2>
+            {{ appearance.tagsHTML() }}
+            {% if is_staff %}
+              <div class="button-block">
+                <button id="edit-tags-btn" class="darkblue typcn typcn-pencil">Edit tags</button>
+                <!-- <a class="btn link typcn typcn-document" href="/cg/tag-changes/{{ appearance.id }}">Tag changes</a> -->
+              </div>
+            {% endif %}
+          </section>
+        {% endif %}
+        {{ appearance.relatedShowsHTML() }}
+      {% endif %}
+      {% if appearance.notes_src is not empty %}
+        <section>
+          <h2><span class='typcn typcn-info-large'></span>Additional notes</h2>
+          <div id="notes">{{ appearance.notesHTML(constant('NOWRAP'), constant('NOTE_TEXT_ONLY')) }}</div>
+        </section>
+      {% endif %}
 
-	{% set cutie_marks = appearance.cutiemarks %}
-	{% set hide_cms = cutie_marks is empty %}
-		<section class="approved-cutie-mark{{ hide_cms ? ' hidden' : '' }}">
-			<h2>Cutie Mark</h2>
-			<p class="aside">{{ (cutie_marks | length) == 1 ? 'This is just an illustration' : 'These are just illustrations' }}, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
-	{% if not hide_cms %}
-		{% include 'appearances/_cutie_marks.html.twig' with { 'wrap': true } %}
-	{% endif %}
-		</section>
-		<section class="color-list">
-	{% if owner_or_staff %}
-			<h2 class="admin">Color groups</h2>
-			<div class="admin button-block">
-				<button class="darkblue typcn typcn-arrow-unsorted reorder-cgs">Re-order groups</button>
-				<button class="green typcn typcn-plus create-cg">Create group</button>
-				<button class="darkblue typcn typcn typcn-document-add apply-template">Apply template</button>
-			</div>
-	{% endif %}
-	{{ appearance.colorsHTML(false) }}
-		</section>
-	{% if appearance.owner_id is null %}
-		{{ appearance.relatedHTML }}
-	{% endif %}
-	</div>
-</div>
-{{ export_vars({
-	'EQG': eqg,
-	'AppearancePage': true,
-	'PersonalGuide': owner.name ?? false,
-}) }}
-{% if exports is defined %}
-	{{ export_vars(exports) }}
-{% endif %}
+      {% set cutie_marks = appearance.cutiemarks %}
+      {% set hide_cms = cutie_marks is empty %}
+      <section class="approved-cutie-mark{{ hide_cms ? ' hidden' : '' }}">
+        <h2>Cutie Mark</h2>
+        <p class="aside">{{ (cutie_marks | length) == 1 ? 'This is just an illustration' : 'These are just illustrations' }}, the body shape & colors are <strong>not</strong> guaranteed to reflect the actual design.</p>
+        {% if not hide_cms %}
+          {% include 'appearances/_cutie_marks.html.twig' with { 'wrap': true } %}
+        {% endif %}
+      </section>
+      <section class="color-list">
+        {% if owner_or_staff %}
+          <h2 class="admin">Color groups</h2>
+          <div class="admin button-block">
+            <button class="darkblue typcn typcn-arrow-unsorted reorder-cgs">Re-order groups</button>
+            <button class="green typcn typcn-plus create-cg">Create group</button>
+            <button class="darkblue typcn typcn typcn-document-add apply-template">Apply template</button>
+          </div>
+        {% endif %}
+        {{ appearance.colorsHTML(false) }}
+      </section>
+      {% if appearance.owner_id is null %}
+        {{ appearance.relatedHTML }}
+      {% endif %}
+    </div>
+  </div>
+  {{ export_vars({
+    'EQG': eqg,
+    'AppearancePage': true,
+    'PersonalGuide': owner.name ?? false,
+  }) }}
+  {% if exports is defined %}
+    {{ export_vars(exports) }}
+  {% endif %}
 {% endblock %}
 
 {% block widgets %}
-	{% include 'colorguide/_widget_hash_copy.html.twig' %}
+  {% include 'colorguide/_widget_hash_copy.html.twig' %}
 {% endblock %}

@@ -4,55 +4,55 @@
 {# @var compact bool #}
 {# @var extra_info bool #}
 {% spaceless %}
-{% macro color_square(c, compact) %}
-	{# @var c \App\Models\Color #}
-	{# @var compact bool #}
-	{% if c.hex is empty %}
-	<span class="color" title="{{ c.label }}"></span>
-	{% else %}
-	<span style="background-color:{{ c.hex }}" class="color valid-color"{% if compact %} title="{{ c.label }}"{% endif %}>{{ c.hex }}</span>
-	{% endif %}
-{% endmacro %}
-{% import _self as cg %}
-{% set is_staff = permission('staff') %}
-<li id="cg-{{ color_group.id }}" class="color-group {{ type }}">
-	{% set colors = all_colors is defined and  all_colors[color_group.id] is defined ? all_colors[color_group.id] : color_group.colors %}
-	{% if compact %}
-		<span class="cat">{{ color_group.label | escape }}:</span>
-		{% if colors is not empty %}
-			<div class="color-list">
-			{% for c in colors %}
-				{# @var c \App\Models\Color #}
-				{{ cg.color_square(c, compact) }}
-			{% endfor %}
-			</div>
-		{% endif %}
-	{% else %}
-		<span class="cat">
+  {% macro color_square(c, compact) %}
+    {# @var c \App\Models\Color #}
+    {# @var compact bool #}
+    {% if c.hex is empty %}
+      <span class="color" title="{{ c.label }}"></span>
+    {% else %}
+      <span style="background-color:{{ c.hex }}" class="color valid-color"{% if compact %} title="{{ c.label }}"{% endif %}>{{ c.hex }}</span>
+    {% endif %}
+  {% endmacro %}
+  {% import _self as cg %}
+  {% set is_staff = permission('staff') %}
+  <li id="cg-{{ color_group.id }}" class="color-group {{ type }}">
+    {% set colors = all_colors is defined and  all_colors[color_group.id] is defined ? all_colors[color_group.id] : color_group.colors %}
+    {% if compact %}
+      <span class="cat">{{ color_group.label | escape }}:</span>
+      {% if colors is not empty %}
+        <div class="color-list">
+          {% for c in colors %}
+            {# @var c \App\Models\Color #}
+            {{ cg.color_square(c, compact) }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% else %}
+      <span class="cat">
 			<span>{{ color_group.label | escape }}</span>
 			{% if is_staff %}
-			<span class="admin">
+        <span class="admin">
 				<button class="darkblue typcn typcn-pencil edit-cg"><span>Edit</span></button>
 				<button class="red typcn typcn-trash delete-cg"><span>Delete</span></button>
 			</span>
-			{% endif %}
+      {% endif %}
 		</span>
 
-		{% for c in colors %}
-			{# @var c \App\Models\Color #}
-			{% set has_detail = extra_info and c.hex is not empty %}
-			<div class="color-line{{ has_detail ? '' : ' no-detail' }}">
-				{{ cg.color_square(c, compact) }}
-				<span>
+      {% for c in colors %}
+        {# @var c \App\Models\Color #}
+        {% set has_detail = extra_info and c.hex is not empty %}
+        <div class="color-line{{ has_detail ? '' : ' no-detail' }}">
+          {{ cg.color_square(c, compact) }}
+          <span>
 					<span class="label">{{ c.label | escape }}</span>
 					{% if has_detail %}
 					<span class="hidden">: </span>
 					<span class="ext">{{ c.hex }} • {{ hex2rgb(c.hex) }}</span>
 					{% else %}
 				</span>
-				{% endif %}
-			</div>
-		{% endfor %}
-	{% endif %}
-</li>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </li>
 {% endspaceless %}

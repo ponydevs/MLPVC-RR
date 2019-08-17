@@ -1,18 +1,18 @@
 {% set reload_warning_text -%}
-	<sup style="cursor:help" title="The website has been updated, you should reload to get any new features/fixes">&#x2731;</sup>
+  <sup style="cursor:help" title="The website has been updated, you should reload to get any new features/fixes">&#x2731;</sup>
 {%- endset %}
 <span id='git-info'>
 Running <strong><a href='{{ constant('GITHUB_URL') }}' title='Visit the GitHub repository'>MLPVC-RR</a>
 	{%- if commit_id is defined -%}
-		@<a href='{{ constant('GITHUB_URL') }}/commit/{{ commit_id }}' title='See exactly what was changed and why'>{{ commit_id }}</a>
-	{%- endif -%}
+    @<a href='{{ constant('GITHUB_URL') }}/commit/{{ commit_id }}' title='See exactly what was changed and why'>{{ commit_id }}</a>
+  {%- endif -%}
 </strong>
 {%- if reload_warning is defined and reload_warning -%}
-	{{- reload_warning_text }}
+  {{- reload_warning_text }}
 {%- endif -%}
-{%- if commit_time is defined %}
- created {{ commit_time }}
-{%- else %}
- (version information unavailable)
-{%- endif -%}
+  {%- if commit_time is defined %}
+    created {{ commit_time }}
+  {%- else %}
+    (version information unavailable)
+  {%- endif -%}
 </span>

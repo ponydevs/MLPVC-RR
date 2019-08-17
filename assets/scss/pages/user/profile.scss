@@ -3,234 +3,271 @@
 @import "../../components/optional/post-list";
 
 // Mobile styles
-@media all and (max-width: $Breakpoint){
-	h1 > * {
-		display: inline-block;
-		vertical-align: bottom;
-	}
-	#suggestion {
-		&:before {
-			margin-right: 0 !important;
-		}
+@media all and (max-width: $Breakpoint) {
+  h1 > * {
+    display: inline-block;
+    vertical-align: bottom;
+  }
+  #suggestion {
+    &:before {
+      margin-right: 0 !important;
+    }
 
-		> span {
-			display: none;
-		}
-	}
+    > span {
+      display: none;
+    }
+  }
 }
+
 // Desktop styles
-@media all and (min-width: $Breakpoint){
-	.briefing {
-		display: flex;
-		flex-flow: row nowrap;
-		align-items: center;
-		justify-content: center;
-		text-align: left;
-		margin-bottom: 10px;
+@media all and (min-width: $Breakpoint) {
+  .briefing {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+    margin-bottom: 10px;
 
-		.avatar-wrap {
-			flex: 0 0 auto;
-			height: auto;
-			margin-bottom: 0;
-		}
-		.title {
-			flex: 1 1 100%;
-			justify-self: stretch;
-			align-self: stretch;
-			display: flex;
-			flex-flow: column nowrap;
-			justify-content: space-around;
-			padding: 0 10px;
+    .avatar-wrap {
+      flex: 0 0 auto;
+      height: auto;
+      margin-bottom: 0;
+    }
 
-			> * {
-				text-align: left !important;
-			}
+    .title {
+      flex: 1 1 100%;
+      justify-self: stretch;
+      align-self: stretch;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-around;
+      padding: 0 10px;
 
-			h1 {
-				font-size: 1.6em !important;
-				line-height: 1.2em;
+      > * {
+        text-align: left !important;
+      }
 
-				> * {
-					display: inline-block;
-					vertical-align: bottom;
-				}
-			}
-			p {
-				margin-bottom: 0 !important;
-				font-size: 1.2em !important;
+      h1 {
+        font-size: 1.6em !important;
+        line-height: 1.2em;
 
-				button {
-					vertical-align: middle;
-				}
-			}
-		}
-	}
+        > * {
+          display: inline-block;
+          vertical-align: bottom;
+        }
+      }
+
+      p {
+        margin-bottom: 0 !important;
+        font-size: 1.2em !important;
+
+        button {
+          vertical-align: middle;
+        }
+      }
+    }
+  }
 }
 
 #content {
-	.briefing {
-		.avatar-wrap {
-			border-width: 3px;
+  .briefing {
+    .avatar-wrap {
+      border-width: 3px;
 
-			.avatar {
-				display: block;
-			}
+      .avatar {
+        display: block;
+      }
 
-			&.provider-discord {
-				&, .avatar {
-					width: 75px;
-					height: 75px;
-				}
-			}
-		}
-		h1 {
-			.da {
-				line-height: 1em;
-				width: .6em;
+      &.provider-discord {
+        &, .avatar {
+          width: 75px;
+          height: 75px;
+        }
+      }
+    }
 
-				svg {
-					height: 100%;
-				}
-				path {
-					fill: darken($DeviantArtGreen, 10);
-					transition: fill .2s linear;
-				}
-				&:hover path { fill: $DeviantArtGreen }
-			}
+    h1 {
+      .da {
+        line-height: 1em;
+        width: .6em;
 
-			.da, .vectorapp-logo, .discord-logo {
-				height: 1em;
-				margin-left: .3em;
-			}
-		}
-		p {
-			.user-id, .discord-id {
-				letter-spacing: -1px;
-				font-size: .8em;
-			}
-		}
-	}
-	.details {
-		> section:not(:last-child) { margin-bottom: 15px }
-		.contributions {
-			ul {
-				padding: 0;
-				margin: 0;
-				list-style: none;
+        svg {
+          height: 100%;
+        }
 
-				li {
-					display: block;
+        path {
+          fill: darken($DeviantArtGreen, 10);
+          transition: fill .2s linear;
+        }
 
-					.amt {
-						font-weight: bold;
-						margin: 0 4px;
-					}
-				}
-			}
-		}
-		.personal-cg .personal-cg-appearances {
-			@extend %appearance-ul;
-			margin: 10px 0;
-			padding: 0;
-			list-style: none;
+        &:hover path {
+          fill: $DeviantArtGreen
+        }
+      }
 
-			li:not(:last-child) {
-				margin-right: 10px;
-			}
-		}
-		.pending-reservations, .awaiting-approval {
-			ul {
-				@extend %post-ul;
-				margin: 10px 0;
+      .da, .vectorapp-logo, .discord-logo {
+        height: 1em;
+        margin-left: .3em;
+      }
+    }
 
-				&:empty:before {
-					content: "You should never see this. If you do it's due to a bug. Please contact us and report this issue.";
-				}
-			}
-		}
-		.awaiting-approval:empty:before {
-			content:"";
-			display: block;
-			width: 80px;
-			height: 80px;
-			margin: 0 auto;
-			background: url('/img/loading-gears.svg') no-repeat center;
-			background-size: contain;
-		}
-	}
-	#settings {
-		margin-top: 15px;
-		border-top: 2px dashed $ContentOutline;
-		padding-top: 10px;
-		text-align: center;
+    p {
+      .user-id, .discord-id {
+        letter-spacing: -1px;
+        font-size: .8em;
+      }
+    }
+  }
 
-		&:empty { display: none }
-		&:not(:empty):before {
-			content: "Settings";
-			margin: 5px 0;
-			font-size: 1.6em;
-			font-weight: bold;
-			display: block;
-		}
-		form {
-			&:not(:last-child){
-				margin-bottom: 10px;
-			}
-			label {
-				display: inline-block;
+  .details {
+    > section:not(:last-child) {
+      margin-bottom: 15px
+    }
 
-				input, button, select {
-					vertical-align: middle;
-				}
-				.save {
-					margin: 0 0 0 5px;
-				}
-			}
-		}
-		.sessions {
-			.session-list {
-				list-style: none;
-				padding: 0;
-				margin: 10px 0 0;
-				display: flex;
-				flex-flow: row wrap;
-				justify-content:center;
+    .contributions {
+      ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
 
-				li {
-					display: inline-block;
-					padding: 8px;
-					border-radius: 5px;
-					background: rgba(0,0,0,.12);
-					margin: 0 5px 5px 0;
-					flex: 0 0 auto;
+        li {
+          display: block;
 
-					@include if-browser-has-icon {
-						//noinspection CssOptimizeSimilarProperties
-						&:before {
-							content: "";
-							display: block;
-							margin: 0 auto 8px;
-							height: 128px;
-							width: 100%;
-						}
-					}
+          .amt {
+            font-weight: bold;
+            margin: 0 4px;
+          }
+        }
+      }
+    }
 
-					@include browser-backgrounds(true);
+    .personal-cg .personal-cg-appearances {
+      @extend %appearance-ul;
+      margin: 10px 0;
+      padding: 0;
+      list-style: none;
 
-					span { display: block }
-					.browser {
-						font-weight: bold;
+      li:not(:last-child) {
+        margin-right: 10px;
+      }
+    }
 
-						> button { vertical-align: bottom }
-						+ .platform { font-size: .9em !important }
-						~ * { font-size: .8em }
-					}
+    .pending-reservations, .awaiting-approval {
+      ul {
+        @extend %post-ul;
+        margin: 10px 0;
 
-					button ~ {
-						button, .btn { margin-top: 0 }
-					}
-				}
-			}
-		}
-	}
+        &:empty:before {
+          content: "You should never see this. If you do it's due to a bug. Please contact us and report this issue.";
+        }
+      }
+    }
+
+    .awaiting-approval:empty:before {
+      content: "";
+      display: block;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto;
+      background: url('/img/loading-gears.svg') no-repeat center;
+      background-size: contain;
+    }
+  }
+
+  #settings {
+    margin-top: 15px;
+    border-top: 2px dashed $ContentOutline;
+    padding-top: 10px;
+    text-align: center;
+
+    &:empty {
+      display: none
+    }
+
+    &:not(:empty):before {
+      content: "Settings";
+      margin: 5px 0;
+      font-size: 1.6em;
+      font-weight: bold;
+      display: block;
+    }
+
+    form {
+      &:not(:last-child) {
+        margin-bottom: 10px;
+      }
+
+      label {
+        display: inline-block;
+
+        input, button, select {
+          vertical-align: middle;
+        }
+
+        .save {
+          margin: 0 0 0 5px;
+        }
+      }
+    }
+
+    .sessions {
+      .session-list {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+
+        li {
+          display: inline-block;
+          padding: 8px;
+          border-radius: 5px;
+          background: rgba(0, 0, 0, .12);
+          margin: 0 5px 5px 0;
+          flex: 0 0 auto;
+
+          @include if-browser-has-icon {
+            //noinspection CssOptimizeSimilarProperties
+            &:before {
+              content: "";
+              display: block;
+              margin: 0 auto 8px;
+              height: 128px;
+              width: 100%;
+            }
+          }
+
+          @include browser-backgrounds(true);
+
+          span {
+            display: block
+          }
+
+          .browser {
+            font-weight: bold;
+
+            > button {
+              vertical-align: bottom
+            }
+
+            + .platform {
+              font-size: .9em !important
+            }
+
+            ~ * {
+              font-size: .8em
+            }
+          }
+
+          button ~ {
+            button, .btn {
+              margin-top: 0
+            }
+          }
+        }
+      }
+    }
+  }
 }

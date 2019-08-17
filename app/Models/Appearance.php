@@ -55,923 +55,957 @@ use SeinopSys\RGBAColor;
  * @method static Appearance[] all(...$args)
  */
 class Appearance extends NSModel implements Linkable {
-	public static $table_name = 'appearances';
+  public static $table_name = 'appearances';
 
-	public static $has_many = [
-		['cutiemarks', 'foreign_key' => 'appearance_id', 'order' => 'facing asc'],
-		['tags', 'through' => 'tagged'],
-		['tagged', 'class' => 'Tagged'],
-		['color_groups', 'order' => '"order" asc, id asc'],
-		['related_appearances', 'class' => 'RelatedAppearance', 'foreign_key' => 'source_id', 'order' => 'target_id asc'],
-		['major_changes', 'class' => 'Logs\MajorChange', 'order' => 'entryid desc'],
-		['show_appearances'],
-		['related_shows', 'class' => 'Show', 'through' => 'show_appearances'],
-	];
-	/**
-	 * For Twig
-	 * @return RelatedAppearance[]
-	 */
-	public function getRelated_appearances(){
-		return $this->related_appearances;
-	}
-	public static $belongs_to = [
-		['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
-	];
-	/** For Twig */
-	public function getOwner(){
-		return $this->owner;
-	}
-	public static $before_save = ['render_notes'];
+  public static $has_many = [
+    ['cutiemarks', 'foreign_key' => 'appearance_id', 'order' => 'facing asc'],
+    ['tags', 'through' => 'tagged'],
+    ['tagged', 'class' => 'Tagged'],
+    ['color_groups', 'order' => '"order" asc, id asc'],
+    ['related_appearances', 'class' => 'RelatedAppearance', 'foreign_key' => 'source_id', 'order' => 'target_id asc'],
+    ['major_changes', 'class' => 'Logs\MajorChange', 'order' => 'entryid desc'],
+    ['show_appearances'],
+    ['related_shows', 'class' => 'Show', 'through' => 'show_appearances'],
+  ];
 
-	/** @return Color[] */
-	public function get_preview_colors(){
-		if ($this->private)
-			return [];
+  /**
+   * For Twig
+   *
+   * @return RelatedAppearance[]
+   */
+  public function getRelated_appearances() {
+    return $this->related_appearances;
+  }
 
-		/** @var $arr Color[] */
-		$arr = DB::$instance->setModel(Color::class)->query(
-			'SELECT c.hex FROM colors c
+  public static $belongs_to = [
+    ['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
+  ];
+
+  /** For Twig */
+  public function getOwner() {
+    return $this->owner;
+  }
+
+  public static $before_save = ['render_notes'];
+
+  /** @return Color[] */
+  public function get_preview_colors() {
+    if ($this->private)
+      return [];
+
+    /** @var $arr Color[] */
+    $arr = DB::$instance->setModel(Color::class)->query(
+      'SELECT c.hex FROM colors c
 			LEFT JOIN color_groups cg ON c.group_id = cg.id
 			WHERE cg.appearance_id = ? AND c.hex IS NOT NULL
 			ORDER BY cg."order", c."order"
 			LIMIT 4', [$this->id]);
 
-		if (!empty($arr))
-			usort($arr, function(Color $a, Color $b){
-				/** @noinspection NullPointerExceptionInspection */
-				return RGBAColor::parse($b->hex)->yiq() <=> RGBAColor::parse($a->hex)->yiq();
-			});
+    if (!empty($arr))
+      usort($arr, function (Color $a, Color $b) {
+        /** @noinspection NullPointerExceptionInspection */
+        return RGBAColor::parse($b->hex)->yiq() <=> RGBAColor::parse($a->hex)->yiq();
+      });
 
-		return $arr;
-	}
+    return $arr;
+  }
 
-	public function get_protected():bool {
-		return $this->id < 1;
-	}
+  public function get_protected():bool {
+    return $this->id < 1;
+  }
 
-	public function getPaletteFilePath(){
-		return FSPATH."cg_render/appearance/{$this->id}/palette.png";
-	}
+  public function getPaletteFilePath() {
+    return FSPATH."cg_render/appearance/{$this->id}/palette.png";
+  }
 
-	/**
-	 * Get rendered PNG URL
-	 *
-	 *
-	 * @return string
-	 */
-	public function getPaletteURL():string {
-		$pcg_prefix = $this->owner_id !== null ? '/@'.$this->owner->name : '';
-		$palette_path = $this->getPaletteFilePath();
-		$file_mod = CoreUtils::filemtime($palette_path);
-		$token = !empty($_GET['token']) ? '&token='.urlencode($_GET['token']) : '';
-		return "$pcg_prefix/cg/v/{$this->id}p.png?t=$file_mod$token";
-	}
+  /**
+   * Get rendered PNG URL
+   *
+   * @return string
+   */
+  public function getPaletteURL():string {
+    $pcg_prefix = $this->owner_id !== null ? '/@'.$this->owner->name : '';
+    $palette_path = $this->getPaletteFilePath();
+    $file_mod = CoreUtils::filemtime($palette_path);
+    $token = !empty($_GET['token']) ? '&token='.urlencode($_GET['token']) : '';
 
-	/**
-	 * Replaces non-alphanumeric characters in the appearance label with dashes
-	 *
-	 * @return string
-	 */
-	public function getURLSafeLabel():string {
-		return CoreUtils::makeUrlSafe($this->label);
-	}
+    return "$pcg_prefix/cg/v/{$this->id}p.png?t=$file_mod$token";
+  }
 
-	public static function find_dupe(bool $creating, bool $personalGuide, array $data){
-		$firstcol = $personalGuide?'owner_id':'ishuman';
-		$conds = [
-			"$firstcol = ? AND label = ?",
-			$data[$firstcol],
-			$data['label'],
-		];
-		if (!$creating){
-			$conds[0] .= ' AND id != ?';
-			$conds[] = $data['id'];
-		}
-		return Appearance::find('first', [ 'conditions' => $conds ]);
-	}
+  /**
+   * Replaces non-alphanumeric characters in the appearance label with dashes
+   *
+   * @return string
+   */
+  public function getURLSafeLabel():string {
+    return CoreUtils::makeUrlSafe($this->label);
+  }
 
-	public const SPRITE_SIZES = [
-		'REGULAR' => 600,
-		'SOURCE' => 300,
-	];
+  public static function find_dupe(bool $creating, bool $personalGuide, array $data) {
+    $firstcol = $personalGuide ? 'owner_id' : 'ishuman';
+    $conds = [
+      "$firstcol = ? AND label = ?",
+      $data[$firstcol],
+      $data['label'],
+    ];
+    if (!$creating){
+      $conds[0] .= ' AND id != ?';
+      $conds[] = $data['id'];
+    }
 
-	/**
-	 * Get sprite URL
-	 *
-	 * @param int    $size
-	 * @param string $fallback
-	 *
-	 * @return string
-	 */
-	public function getSpriteURL(?int $size = null, string $fallback = ''):string {
-		if ($this->hasSprite()) {
-			$sprite_hash = $this->sprite_hash ?? $this->regenerateSpriteHash();
-			$url = new NSUriBuilder(PUBLIC_API_V0_PATH."/appearances/{$this->id}/sprite");
-			if (!empty($sprite_hash))
-				$url->append_query_param('hash', $sprite_hash);
-			if ($size !== null)
-				$url->append_query_param('size', $size);
-			if (!empty($_GET['token']))
-				$url->append_query_param('token', $_GET['token']);
-			return (string) $url;
-		}
-		return $fallback;
-	}
+    return Appearance::find('first', ['conditions' => $conds]);
+  }
 
-	/**
-	 * @return boolean
-	 */
-	public function hasSprite():bool {
-		return file_exists($this->getSpriteFilePath());
-	}
+  public const SPRITE_SIZES = [
+    'REGULAR' => 600,
+    'SOURCE' => 300,
+  ];
 
-	/**
-	 * @return string|null
-	 */
-	public function regenerateSpriteHash():?string {
-		$sprite_path = $this->getSpriteFilePath();
-		if (!file_exists($sprite_path)) {
-			return null;
-		}
+  /**
+   * Get sprite URL
+   *
+   * @param int    $size
+   * @param string $fallback
+   *
+   * @return string
+   */
+  public function getSpriteURL(?int $size = null, string $fallback = ''):string {
+    if ($this->hasSprite()){
+      $sprite_hash = $this->sprite_hash ?? $this->regenerateSpriteHash();
+      $url = new NSUriBuilder(PUBLIC_API_V0_PATH."/appearances/{$this->id}/sprite");
+      if (!empty($sprite_hash))
+        $url->append_query_param('hash', $sprite_hash);
+      if ($size !== null)
+        $url->append_query_param('size', $size);
+      if (!empty($_GET['token']))
+        $url->append_query_param('token', $_GET['token']);
 
-		$this->sprite_hash = CoreUtils::generateFileHash($sprite_path);
-		return $this->sprite_hash;
-	}
+      return (string)$url;
+    }
 
-	/**
-	 * Returns the HTML for sprite images
-	 *
-	 * @param bool $canUpload
-	 * @param User $user
-	 *
-	 * @return string
-	 */
-	public function getSpriteHTML(bool $canUpload, ?User $user = null):string {
-		if (Auth::$signed_in && $this->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite'))
-			$canUpload = false;
+    return $fallback;
+  }
 
-		$imgPth = $this->getSpriteURL();
-		if (!empty($imgPth)){
-			$img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($this->label)."'></a>";
-			if ($canUpload)
-				$img = "<div class='upload-wrap'>$img</div>";
-		}
-		else if ($canUpload)
-			$img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png' alt='blank pixel'></a></div>";
-		else return '';
+  /**
+   * @return boolean
+   */
+  public function hasSprite():bool {
+    return file_exists($this->getSpriteFilePath());
+  }
 
-		return "<div class='sprite'>$img</div>";
-	}
+  /**
+   * @return string|null
+   */
+  public function regenerateSpriteHash():?string {
+    $sprite_path = $this->getSpriteFilePath();
+    if (!file_exists($sprite_path)){
+      return null;
+    }
 
-	private static function _processNotes(string $notes):string {
-		$notes = CoreUtils::sanitizeHtml($notes);
-		$notes = preg_replace(new RegExp('(\s)(&gt;&gt;(\d+))(\D|$)'),"$1<a href='https://derpibooru.org/$3'>$2</a>$4",$notes);
-		$notes = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/',function($a){
-			$Ep = ShowHelper::getActual((int)$a[1], (int)$a[2]);
-			return !empty($Ep)
-				? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY,'title')).'</a>'
-				: "<strong>{$a[0]}</strong>";
-		},$notes);
-		$notes = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/',function($a){
-			$Ep = ShowHelper::getActual(0, (int)$a[1], true);
-			return !empty($Ep)
-				? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(ShowHelper::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY,'title'))).'</a>'
-				: "<strong>{$a[0]}</strong>";
-		},$notes);
-		$notes = preg_replace_callback('/(?:^|[^\\\\])(?:#(\d+))(\'s?)?\b/',function($a){
+    $this->sprite_hash = CoreUtils::generateFileHash($sprite_path);
 
-			$Appearance = DB::$instance->where('id', $a[1])->getOne('appearances');
-			return (
-				!empty($Appearance)
-				? "<a href='/cg/v/{$Appearance->id}'>{$Appearance->label}</a>".(!empty($a[2])?CoreUtils::posess($Appearance->label, true):'')
-				: (string) $a[0]
-			);
-		},$notes);
-		return nl2br(str_replace('\#', '#', $notes));
-	}
+    return $this->sprite_hash;
+  }
 
-	/**
-	 * Get the notes for a specific appearance
-	 *
-	 * @param bool $wrap
-	 * @param bool $cm_link
-	 *
-	 * @return string
-	 */
-	public function getNotesHTML(bool $wrap = WRAP, bool $cm_link = true):string {
-		if (!empty($this->notes_src)){
-			if ($this->notes_rend === null){
-				$this->notes_rend = self::_processNotes($this->notes_src);
-				$this->save();
-			}
-			$notes = "<span>{$this->notes_rend}</span>";
-		}
-		else $notes = '';
-		$cm_count = Cutiemark::count(['appearance_id' => $this->id]);
+  /**
+   * Returns the HTML for sprite images
+   *
+   * @param bool $canUpload
+   * @param User $user
+   *
+   * @return string
+   */
+  public function getSpriteHTML(bool $canUpload, ?User $user = null):string {
+    if (Auth::$signed_in && $this->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite'))
+      $canUpload = false;
 
-		return Twig::$env->render('appearances/_notes.html.twig', [
-			'notes' => $notes,
-			'cm_count' => $cm_count,
-			'wrap' => $wrap,
-			'cm_link' => $cm_link,
-		]);
-	}
+    $imgPth = $this->getSpriteURL();
+    if (!empty($imgPth)){
+      $img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($this->label)."'></a>";
+      if ($canUpload)
+        $img = "<div class='upload-wrap'>$img</div>";
+    }
+    else if ($canUpload)
+      $img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png' alt='blank pixel'></a></div>";
+    else return '';
 
-	/**
-	 * Returns the markup of the color list for a specific appearance
-	 *
-	 * @param bool $compact
-	 * @param bool $wrap
-	 *
-	 * @return string
-	 */
-	public function getColorsHTML(bool $compact = true, bool $wrap = WRAP):string {
-		if ($placeholder = $this->getPendingPlaceholder())
-			return $placeholder;
+    return "<div class='sprite'>$img</div>";
+  }
 
-		return Twig::$env->render('appearances/_colors.html.twig', [
-			'color_groups' => $this->color_groups,
-			'all_colors' => CGUtils::getColorsForEach($this->color_groups),
-			'compact' => $compact,
-			'wrap' => $wrap,
-		]);
-	}
+  private static function _processNotes(string $notes):string {
+    $notes = CoreUtils::sanitizeHtml($notes);
+    $notes = preg_replace(new RegExp('(\s)(&gt;&gt;(\d+))(\D|$)'), "$1<a href='https://derpibooru.org/$3'>$2</a>$4", $notes);
+    $notes = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/', function ($a) {
+      $Ep = ShowHelper::getActual((int)$a[1], (int)$a[2]);
 
-	/**
-	 * Return the markup of a set of tags belonging to a specific appearance
-	 *
-	 * @param bool $wrap
-	 *
-	 * @return string
-	 */
-	public function getTagsHTML(bool $wrap = WRAP):string {
-		$tags = Tags::getFor($this->id, null, Permission::sufficient('staff'));
+      return !empty($Ep)
+        ? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY, 'title')).'</a>'
+        : "<strong>{$a[0]}</strong>";
+    }, $notes);
+    $notes = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/', function ($a) {
+      $Ep = ShowHelper::getActual(0, (int)$a[1], true);
 
-		$HTML = '';
-		if (!empty($tags)) foreach ($tags as $t)
-			$HTML .= $t->getHTML($this->ishuman);
+      return !empty($Ep)
+        ? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(ShowHelper::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY, 'title'))).'</a>'
+        : "<strong>{$a[0]}</strong>";
+    }, $notes);
+    $notes = preg_replace_callback('/(?:^|[^\\\\])(?:#(\d+))(\'s?)?\b/', function ($a) {
 
-		return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;
-	}
+      $Appearance = DB::$instance->where('id', $a[1])->getOne('appearances');
 
-	/**
-	 * Returns the markup for the time of last update displayed under an appaerance
-	 *
-	 * @param bool $wrap
-	 *
-	 * @return string
-	 */
-	public function getUpdatesHTML($wrap = WRAP){
-		$update = MajorChange::get($this->id, null, MOST_RECENT);
-		if (!empty($update)){
-			$update = 'Last major change '.Time::tag($update->log->timestamp);
-		}
-		else {
-			if (Permission::insufficient('staff'))
-				return '';
-			$update = '';
-		}
-		return $wrap ? "<div class='update'>$update</div>" : $update;
-	}
+      return (
+      !empty($Appearance)
+        ? "<a href='/cg/v/{$Appearance->id}'>{$Appearance->label}</a>".(!empty($a[2]) ? CoreUtils::posess($Appearance->label, true) : '')
+        : (string)$a[0]
+      );
+    }, $notes);
 
-	public function getChangesHTML(bool $wrap = WRAP):string {
-		$HTML = '';
-		if (\count($this->major_changes) === 0)
-			return $HTML;
+    return nl2br(str_replace('\#', '#', $notes));
+  }
 
-			$isStaff = Permission::sufficient('staff');
-		foreach ($this->major_changes as $change){
-			$li = CoreUtils::escapeHTML($change->reason).' &ndash; '.Time::tag($change->log->timestamp);
-			if ($isStaff)
-				$li .= ' by '.$change->log->actor->toAnchor();
-			$HTML .= "<li>$li</li>";
-		}
-		if (!$wrap)
-			return $HTML;
+  /**
+   * Get the notes for a specific appearance
+   *
+   * @param bool $wrap
+   * @param bool $cm_link
+   *
+   * @return string
+   */
+  public function getNotesHTML(bool $wrap = WRAP, bool $cm_link = true):string {
+    if (!empty($this->notes_src)){
+      if ($this->notes_rend === null){
+        $this->notes_rend = self::_processNotes($this->notes_src);
+        $this->save();
+      }
+      $notes = "<span>{$this->notes_rend}</span>";
+    }
+    else $notes = '';
+    $cm_count = Cutiemark::count(['appearance_id' => $this->id]);
 
-		return <<<HTML
+    return Twig::$env->render('appearances/_notes.html.twig', [
+      'notes' => $notes,
+      'cm_count' => $cm_count,
+      'wrap' => $wrap,
+      'cm_link' => $cm_link,
+    ]);
+  }
+
+  /**
+   * Returns the markup of the color list for a specific appearance
+   *
+   * @param bool $compact
+   * @param bool $wrap
+   *
+   * @return string
+   */
+  public function getColorsHTML(bool $compact = true, bool $wrap = WRAP):string {
+    if ($placeholder = $this->getPendingPlaceholder())
+      return $placeholder;
+
+    return Twig::$env->render('appearances/_colors.html.twig', [
+      'color_groups' => $this->color_groups,
+      'all_colors' => CGUtils::getColorsForEach($this->color_groups),
+      'compact' => $compact,
+      'wrap' => $wrap,
+    ]);
+  }
+
+  /**
+   * Return the markup of a set of tags belonging to a specific appearance
+   *
+   * @param bool $wrap
+   *
+   * @return string
+   */
+  public function getTagsHTML(bool $wrap = WRAP):string {
+    $tags = Tags::getFor($this->id, null, Permission::sufficient('staff'));
+
+    $HTML = '';
+    if (!empty($tags)) foreach ($tags as $t)
+      $HTML .= $t->getHTML($this->ishuman);
+
+    return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;
+  }
+
+  /**
+   * Returns the markup for the time of last update displayed under an appaerance
+   *
+   * @param bool $wrap
+   *
+   * @return string
+   */
+  public function getUpdatesHTML($wrap = WRAP) {
+    $update = MajorChange::get($this->id, null, MOST_RECENT);
+    if (!empty($update)){
+      $update = 'Last major change '.Time::tag($update->log->timestamp);
+    }
+    else {
+      if (Permission::insufficient('staff'))
+        return '';
+      $update = '';
+    }
+
+    return $wrap ? "<div class='update'>$update</div>" : $update;
+  }
+
+  public function getChangesHTML(bool $wrap = WRAP):string {
+    $HTML = '';
+    if (\count($this->major_changes) === 0)
+      return $HTML;
+
+    $isStaff = Permission::sufficient('staff');
+    foreach ($this->major_changes as $change){
+      $li = CoreUtils::escapeHTML($change->reason).' &ndash; '.Time::tag($change->log->timestamp);
+      if ($isStaff)
+        $li .= ' by '.$change->log->actor->toAnchor();
+      $HTML .= "<li>$li</li>";
+    }
+    if (!$wrap)
+      return $HTML;
+
+    return <<<HTML
 			<section class="major-changes">
 				<h2><span class='typcn typcn-warning'></span>List of major changes</h2>
 				<ul>$HTML</ul>
 			</section>
 			HTML;
-	}
+  }
 
-	/**
-	 * Returns the HTML of the "Featured in" section of appearance pages
-	 *
-	 * @return string
-	 * @throws \Exception
-	 */
-	public function getRelatedShowsHTML():string {
-		$related_shows = $this->related_shows;
-		$is_staff = Permission::sufficient('staff');
-		if (empty($related_shows) && !$is_staff)
-			return '';
+  /**
+   * Returns the HTML of the "Featured in" section of appearance pages
+   *
+   * @return string
+   * @throws \Exception
+   */
+  public function getRelatedShowsHTML():string {
+    $related_shows = $this->related_shows;
+    $is_staff = Permission::sufficient('staff');
+    if (empty($related_shows) && !$is_staff)
+      return '';
 
-		return Twig::$env->render('appearances/_featured_in.html.twig', [
-			'related_shows' => $related_shows,
-		]);
-	}
+    return Twig::$env->render('appearances/_featured_in.html.twig', [
+      'related_shows' => $related_shows,
+    ]);
+  }
 
-	public function verifyToken(?string $token = null){
-		if ($token === null){
-			if (!isset($_GET['token']))
-				return false;
-			$token = $_GET['token'];
-		}
+  public function verifyToken(?string $token = null) {
+    if ($token === null){
+      if (!isset($_GET['token']))
+        return false;
+      $token = $_GET['token'];
+    }
 
-		return hash_equals($this->token, $token);
-	}
+    return hash_equals($this->token, $token);
+  }
 
-	public function isPrivate(bool $ignoreStaff = false):bool {
-		$isPrivate = !empty($this->private);
-		if (!$ignoreStaff && (
-			Permission::sufficient('staff')
-			|| (Auth::$signed_in ? $this->owner_id === Auth::$user->id : false)
-			|| ($this->owner_id !== null && $this->verifyToken())
-		))
-			$isPrivate = false;
-		return $isPrivate;
-	}
+  public function isPrivate(bool $ignoreStaff = false):bool {
+    $isPrivate = !empty($this->private);
+    if (
+      !$ignoreStaff && (
+        Permission::sufficient('staff')
+        || (Auth::$signed_in ? $this->owner_id === Auth::$user->id : false)
+        || ($this->owner_id !== null && $this->verifyToken())
+      )
+    )
+      $isPrivate = false;
 
-	/**
-	 * Returns the HTML for the placeholder which is displayed in place of the color group
-	 *  to anyone without edit access while the appearance is private
-	 *
-	 * @return string
-	 */
-	public function getPendingPlaceholder():string {
-		return $this->isPrivate() ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".($this->last_cleared !== null ? 'This appearance is currently undergoing maintenance and will be available again shortly &mdash; '.Time::tag($this->last_cleared) :  'This appearance will be finished soon, please check back later &mdash; '.Time::tag($this->added)).'</div>' : '';
-	}
+    return $isPrivate;
+  }
 
-	/**
-	 * Retruns preview image link
-	 *
-	 * @see CGUtils::renderPreviewSVG()
-	 * @return string
-	 */
-	public function getPreviewURL():string {
-		$path = str_replace('#',$this->id,CGUtils::PREVIEW_SVG_PATH);
-		return "/cg/v/{$this->id}p.svg?t=".CoreUtils::filemtime($path);
-	}
+  /**
+   * Returns the HTML for the placeholder which is displayed in place of the color group
+   *  to anyone without edit access while the appearance is private
+   *
+   * @return string
+   */
+  public function getPendingPlaceholder():string {
+    return $this->isPrivate() ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".($this->last_cleared !== null
+        ? 'This appearance is currently undergoing maintenance and will be available again shortly &mdash; '.Time::tag($this->last_cleared)
+        : 'This appearance will be finished soon, please check back later &mdash; '.Time::tag($this->added)).'</div>' : '';
+  }
 
-	public function getPreviewHTML():string {
-		$locked = $this->owner_id !== null && $this->private;
+  /**
+   * Retruns preview image link
+   *
+   * @return string
+   * @see CGUtils::renderPreviewSVG()
+   */
+  public function getPreviewURL():string {
+    $path = str_replace('#', $this->id, CGUtils::PREVIEW_SVG_PATH);
 
-		if ($this->isPrivate(true))
-			$preview = "<span class='typcn typcn-".($locked?'lock-closed':'time').' color-'.($locked?'orange':'darkblue')."'></span> ";
-		else {
-			$preview = $this->getPreviewURL();
-			$preview = "<img src='$preview' class='preview' alt=''>";
-		}
+    return "/cg/v/{$this->id}p.svg?t=".CoreUtils::filemtime($path);
+  }
 
-		return $preview;
-	}
+  public function getPreviewHTML():string {
+    $locked = $this->owner_id !== null && $this->private;
 
-	/**
-	 * @see CGUtils::renderCMFacingSVG()
-	 *
-	 * @param string $facing
-	 * @param bool   $ts
-	 *
-	 * @return string
-	 */
-	public function getFacingSVGURL(?string $facing = null, bool $ts = true){
-		if ($facing === null)
-			$facing = 'left';
-		$path = str_replace(['#','@'],[$this->id, $facing],CGUtils::CMDIR_SVG_PATH);
-		return "/cg/v/{$this->id}f.svg?facing=$facing".
-			($ts?'&t='.CoreUtils::filemtime($path):'').
-			(!empty($_GET['token']) ? "&token={$_GET['token']}" : '');
-	}
+    if ($this->isPrivate(true))
+      $preview = "<span class='typcn typcn-".($locked ? 'lock-closed' : 'time').' color-'.($locked ? 'orange' : 'darkblue')."'></span> ";
+    else {
+      $preview = $this->getPreviewURL();
+      $preview = "<img src='$preview' class='preview' alt=''>";
+    }
 
-	/**
-	 * Get a link to this appearance
-	 *
-	 * Because redirects take care of setting & enforcing the guide
-	 * and owner data in the URL we can skip that for short sharing links.
-	 *
-	 * @param bool $sharing
-	 *
-	 * @return string
-	 */
-	public function toURL($sharing = false):string {
-		$safe_label = $this->getURLSafeLabel();
-		$pcg = $this->owner_id !== null;
-		$owner = !$pcg || $sharing ? '' : $this->owner->toURL();
-		$guide = $pcg || $sharing ? '' : ($this->ishuman ? 'eqg' : 'pony').'/';
-		return "$owner/cg/{$guide}v/{$this->id}-$safe_label";
-	}
+    return $preview;
+  }
 
-	public function toAnchor():string {
-		return "<a href='{$this->toURL()}'>{$this->label}</a>";
-	}
+  /**
+   * @param string $facing
+   * @param bool   $ts
+   *
+   * @return string
+   * @see CGUtils::renderCMFacingSVG()
+   */
+  public function getFacingSVGURL(?string $facing = null, bool $ts = true) {
+    if ($facing === null)
+      $facing = 'left';
+    $path = str_replace(['#', '@'], [$this->id, $facing], CGUtils::CMDIR_SVG_PATH);
 
-	public function toAnchorWithPreview():string {
-		return "<a href='{$this->toURL()}'>{$this->getPreviewHTML()}<span>{$this->label}</span></a>";
-	}
+    return "/cg/v/{$this->id}f.svg?facing=$facing".
+      ($ts ? '&t='.CoreUtils::filemtime($path) : '').
+      (!empty($_GET['token']) ? "&token={$_GET['token']}" : '');
+  }
 
-	/**
-	 * @param Tag $tag
-	 *
-	 * @return bool Indicates whether the passed tag is used on the appearance
-	 */
-	public function is_tagged(Tag $tag):bool {
-		return Tagged::is($tag, $this);
-	}
+  /**
+   * Get a link to this appearance
+   * Because redirects take care of setting & enforcing the guide
+   * and owner data in the URL we can skip that for short sharing links.
+   *
+   * @param bool $sharing
+   *
+   * @return string
+   */
+  public function toURL($sharing = false):string {
+    $safe_label = $this->getURLSafeLabel();
+    $pcg = $this->owner_id !== null;
+    $owner = !$pcg || $sharing ? '' : $this->owner->toURL();
+    $guide = $pcg || $sharing ? '' : ($this->ishuman ? 'eqg' : 'pony').'/';
 
-	public function getRelatedHTML():string {
-		return Twig::$env->render('appearances/_related.html.twig', [
-			'appearance' => $this,
-		]);
-	}
+    return "$owner/cg/{$guide}v/{$this->id}-$safe_label";
+  }
 
-	/**
-	 * Re-index the appearance in ElasticSearch
-	 */
-	public function reindex(){
-		// We don't want to index private appearances
-		if ($this->owner_id !== null)
-			return;
+  public function toAnchor():string {
+    return "<a href='{$this->toURL()}'>{$this->label}</a>";
+  }
 
-		$this->updateIndex();
-	}
+  public function toAnchorWithPreview():string {
+    return "<a href='{$this->toURL()}'>{$this->getPreviewHTML()}<span>{$this->label}</span></a>";
+  }
 
-	public function updateIndex(){
-		try {
-			CoreUtils::elasticClient()->update($this->toElasticArray(false, true));
-		}
-		catch (ElasticNoNodesAvailableException|ElasticServerErrorResponseException $e){
-			CoreUtils::error_log("ElasticSearch server was down when server attempted to index appearance {$this->id}");
-		}
-		catch (ElasticMissing404Exception $e){
-			CoreUtils::elasticClient()->update($this->toElasticArray(false));
-		}
-	}
+  /**
+   * @param Tag $tag
+   *
+   * @return bool Indicates whether the passed tag is used on the appearance
+   */
+  public function is_tagged(Tag $tag):bool {
+    return Tagged::is($tag, $this);
+  }
 
-	public function getElasticMeta(){
-		return array_merge(CGUtils::ELASTIC_BASE,[
-			'type' => 'entry',
-			'id' => $this->id,
-		]);
-	}
+  public function getRelatedHTML():string {
+    return Twig::$env->render('appearances/_related.html.twig', [
+      'appearance' => $this,
+    ]);
+  }
 
-	public function getElasticBody(){
-		$tags = Tags::getFor($this->id, null, true, true);
-		$tag_names = [];
-		$tag_ids = [];
-		foreach ($tags as $k => $tag){
-			$tag_names[] = $tag->name;
-			$tag_ids[] = $tag->id;
-		}
-		$synonym_tags = Tag::synonyms_of($tag_ids);
-		foreach ($synonym_tags as $tag)
-			$tag_names[] = $tag->name;
-		return [
-			'label' => $this->label,
-			'order' => $this->order,
-			'private' => $this->private,
-			'ishuman' => $this->ishuman,
-			'tags' =>  $tag_names,
-		];
-	}
+  /**
+   * Re-index the appearance in ElasticSearch
+   */
+  public function reindex() {
+    // We don't want to index private appearances
+    if ($this->owner_id !== null)
+      return;
 
-	public function toElasticArray(bool $no_body = false, bool $update = false):array {
-		$params = $this->getElasticMeta();
-		if ($no_body)
-			return $params;
-		$params['body'] = $this->getElasticBody();
-		if ($update)
-			$params['body'] = [
-				'doc' => $params['body'],
-				'upsert' => $params['body'],
-			];
-		return $params;
-	}
+    $this->updateIndex();
+  }
 
-	public function clearRelations(){
-		RelatedAppearance::delete_all(['conditions' => [
-			'source_id = :id OR target_id = :id',
-			['id' => $this->id],
-		]]);
-	}
+  public function updateIndex() {
+    try {
+      CoreUtils::elasticClient()->update($this->toElasticArray(false, true));
+    }
+    catch (ElasticNoNodesAvailableException|ElasticServerErrorResponseException $e){
+      CoreUtils::error_log("ElasticSearch server was down when server attempted to index appearance {$this->id}");
+    }
+    catch (ElasticMissing404Exception $e){
+      CoreUtils::elasticClient()->update($this->toElasticArray(false));
+    }
+  }
 
-	public const STATIC_RELEVANT_COLORS = [
-		[
-			'hex' => '#D8D8D8',
-			'label' => 'Mannequin | Outline',
-			'mandatory' => false,
-		],
-		[
-            'hex' => '#E6E6E6',
-            'label' => 'Mannequin | Fill',
-			'mandatory' => false,
-		],
-		[
-            'hex' => '#BFBFBF',
-            'label' => 'Mannequin | Shadow Outline',
-			'mandatory' => false,
-		],
-		[
-            'hex' => '#CCCCCC',
-            'label' => 'Mannequin | Shdow Fill',
-			'mandatory' => false,
-		]
-	];
-	public function getSpriteRelevantColors():array {
-		$Colors = [];
-		foreach ([0, $this->id] as $AppearanceID){
-			$ColorGroups = ColorGroup::find_all_by_appearance_id($AppearanceID);
-			uasort($ColorGroups, function(ColorGroup $a, ColorGroup $b){
-				return $a->order <=> $b->order;
-			});
-			$SortedColorGroups = [];
-			foreach ($ColorGroups as $cg)
-				$SortedColorGroups[$cg->id] = $cg;
+  public function getElasticMeta() {
+    return array_merge(CGUtils::ELASTIC_BASE, [
+      'type' => 'entry',
+      'id' => $this->id,
+    ]);
+  }
 
-			$AllColors = CGUtils::getColorsForEach($ColorGroups);
-			if ($AllColors !== null && \count($AllColors) > 0){
-				foreach ($AllColors as $cg){
-					/** @var $cg Color[] */
-					foreach ($cg as $c)
-						$Colors[] = [
-							'hex' => $c->hex,
-							'label' => $SortedColorGroups[$c->group_id]->label.' | '.$c->label,
-							'mandatory' => $AppearanceID !== 0,
-						];
-				}
-			}
-		}
-		if ($this->owner_id === null)
-			$Colors = array_merge($Colors, self::STATIC_RELEVANT_COLORS);
+  public function getElasticBody() {
+    $tags = Tags::getFor($this->id, null, true, true);
+    $tag_names = [];
+    $tag_ids = [];
+    foreach ($tags as $k => $tag){
+      $tag_names[] = $tag->name;
+      $tag_ids[] = $tag->id;
+    }
+    $synonym_tags = Tag::synonyms_of($tag_ids);
+    foreach ($synonym_tags as $tag)
+      $tag_names[] = $tag->name;
 
-		return [ $Colors, $ColorGroups ?? null, $AllColors ?? null];
-	}
+    return [
+      'label' => $this->label,
+      'order' => $this->order,
+      'private' => $this->private,
+      'ishuman' => $this->ishuman,
+      'tags' => $tag_names,
+    ];
+  }
 
-	public function spriteHasColorIssues():bool {
-		if (empty($this->getSpriteURL()))
-			return false;
+  public function toElasticArray(bool $no_body = false, bool $update = false):array {
+    $params = $this->getElasticMeta();
+    if ($no_body)
+      return $params;
+    $params['body'] = $this->getElasticBody();
+    if ($update)
+      $params['body'] = [
+        'doc' => $params['body'],
+        'upsert' => $params['body'],
+      ];
 
-		/** @var $SpriteColors int[] */
-		$SpriteColors = array_flip(CGUtils::getSpriteImageMap($this->id)['colors']);
+    return $params;
+  }
 
-		foreach ($this->getSpriteRelevantColors()[0] as $c){
-			if ($c['mandatory'] && !isset($SpriteColors[$c['hex']]))
-				return true;
-		}
+  public function clearRelations() {
+    RelatedAppearance::delete_all(['conditions' => [
+      'source_id = :id OR target_id = :id',
+      ['id' => $this->id],
+    ]]);
+  }
 
-		return false;
-	}
+  public const STATIC_RELEVANT_COLORS = [
+    [
+      'hex' => '#D8D8D8',
+      'label' => 'Mannequin | Outline',
+      'mandatory' => false,
+    ],
+    [
+      'hex' => '#E6E6E6',
+      'label' => 'Mannequin | Fill',
+      'mandatory' => false,
+    ],
+    [
+      'hex' => '#BFBFBF',
+      'label' => 'Mannequin | Shadow Outline',
+      'mandatory' => false,
+    ],
+    [
+      'hex' => '#CCCCCC',
+      'label' => 'Mannequin | Shdow Fill',
+      'mandatory' => false,
+    ],
+  ];
 
-	public function checkSpriteColors():bool {
-		$check_who = $this->owner_id ?? Appearances::SPRITE_NAG_USERID;
-		$has_color_issues = $this->spriteHasColorIssues();
-		$old_notifs = Appearances::getSpriteColorIssueNotifications($this->id, $check_who);
-		if ($has_color_issues && empty($old_notifs))
-			Notification::send($check_who, 'sprite-colors', ['appearance_id' => $this->id]);
-		else if (!$has_color_issues && !empty($old_notifs))
-			Appearances::clearSpriteColorIssueNotifications($old_notifs);
+  public function getSpriteRelevantColors():array {
+    $Colors = [];
+    foreach ([0, $this->id] as $AppearanceID){
+      $ColorGroups = ColorGroup::find_all_by_appearance_id($AppearanceID);
+      uasort($ColorGroups, function (ColorGroup $a, ColorGroup $b) {
+        return $a->order <=> $b->order;
+      });
+      $SortedColorGroups = [];
+      foreach ($ColorGroups as $cg)
+        $SortedColorGroups[$cg->id] = $cg;
 
-		return $has_color_issues;
-	}
+      $AllColors = CGUtils::getColorsForEach($ColorGroups);
+      if ($AllColors !== null && \count($AllColors) > 0){
+        foreach ($AllColors as $cg){
+          /** @var $cg Color[] */
+          foreach ($cg as $c)
+            $Colors[] = [
+              'hex' => $c->hex,
+              'label' => $SortedColorGroups[$c->group_id]->label.' | '.$c->label,
+              'mandatory' => $AppearanceID !== 0,
+            ];
+        }
+      }
+    }
+    if ($this->owner_id === null)
+      $Colors = array_merge($Colors, self::STATIC_RELEVANT_COLORS);
 
-	/**
-	 * @param bool $treatHexNullAsEmpty
-	 *
-	 * @return bool
-	 */
-	public function hasColors(bool $treatHexNullAsEmpty = false):bool {
-		$hexnull = $treatHexNullAsEmpty?' AND hex IS NOT NULL':'';
-		return (DB::$instance->querySingle(
-			"SELECT count(*) as cnt FROM colors
+    return [$Colors, $ColorGroups ?? null, $AllColors ?? null];
+  }
+
+  public function spriteHasColorIssues():bool {
+    if (empty($this->getSpriteURL()))
+      return false;
+
+    /** @var $SpriteColors int[] */
+    $SpriteColors = array_flip(CGUtils::getSpriteImageMap($this->id)['colors']);
+
+    foreach ($this->getSpriteRelevantColors()[0] as $c){
+      if ($c['mandatory'] && !isset($SpriteColors[$c['hex']]))
+        return true;
+    }
+
+    return false;
+  }
+
+  public function checkSpriteColors():bool {
+    $check_who = $this->owner_id ?? Appearances::SPRITE_NAG_USERID;
+    $has_color_issues = $this->spriteHasColorIssues();
+    $old_notifs = Appearances::getSpriteColorIssueNotifications($this->id, $check_who);
+    if ($has_color_issues && empty($old_notifs))
+      Notification::send($check_who, 'sprite-colors', ['appearance_id' => $this->id]);
+    else if (!$has_color_issues && !empty($old_notifs))
+      Appearances::clearSpriteColorIssueNotifications($old_notifs);
+
+    return $has_color_issues;
+  }
+
+  /**
+   * @param bool $treatHexNullAsEmpty
+   *
+   * @return bool
+   */
+  public function hasColors(bool $treatHexNullAsEmpty = false):bool {
+    $hexnull = $treatHexNullAsEmpty ? ' AND hex IS NOT NULL' : '';
+
+    return (DB::$instance->querySingle(
+          "SELECT count(*) as cnt FROM colors
 			WHERE group_id IN (SELECT group_id FROM color_groups WHERE appearance_id = ?)$hexnull", [$this->id])['cnt'] ?? 0) > 0;
-	}
+  }
 
-	public const
-		PONY_TEMPLATE = [
-			'Coat' => [
-				'Outline',
-				'Fill',
-				'Shadow Outline',
-				'Shadow Fill',
-			],
-			'Mane & Tail' => [
-				'Outline',
-				'Fill',
-			],
-			'Iris' => [
-				'Gradient Top',
-				'Gradient Middle',
-				'Gradient Bottom',
-				'Highlight Top',
-				'Highlight Bottom',
-			],
-			'Cutie Mark' => [
-				'Fill 1',
-				'Fill 2',
-			],
-			'Magic' => [
-				'Aura',
-			],
-		],
-		HUMAN_TEMPLATE = [
-			'Skin' => [
-				'Outline',
-				'Fill',
-			],
-			'Hair' => [
-				'Outline',
-				'Fill',
-			],
-			'Eyes' => [
-				'Gradient Top',
-				'Gradient Middle',
-				'Gradient Bottom',
-				'Highlight Top',
-				'Highlight Bottom',
-				'Eyebrows',
-			],
-		];
+  public const
+    PONY_TEMPLATE = [
+    'Coat' => [
+      'Outline',
+      'Fill',
+      'Shadow Outline',
+      'Shadow Fill',
+    ],
+    'Mane & Tail' => [
+      'Outline',
+      'Fill',
+    ],
+    'Iris' => [
+      'Gradient Top',
+      'Gradient Middle',
+      'Gradient Bottom',
+      'Highlight Top',
+      'Highlight Bottom',
+    ],
+    'Cutie Mark' => [
+      'Fill 1',
+      'Fill 2',
+    ],
+    'Magic' => [
+      'Aura',
+    ],
+  ],
+    HUMAN_TEMPLATE = [
+    'Skin' => [
+      'Outline',
+      'Fill',
+    ],
+    'Hair' => [
+      'Outline',
+      'Fill',
+    ],
+    'Eyes' => [
+      'Gradient Top',
+      'Gradient Middle',
+      'Gradient Bottom',
+      'Highlight Top',
+      'Highlight Bottom',
+      'Eyebrows',
+    ],
+  ];
 
-	/**
-	 * Apply pre-defined template to an appearance
-	 *
-	 * @return self
-	 */
-	public function applyTemplate():self {
-		if (ColorGroup::exists([ 'conditions' => ['appearance_id = ?', $this->id] ]))
-			throw new \RuntimeException('Template can only be applied to empty appearances');
+  /**
+   * Apply pre-defined template to an appearance
+   *
+   * @return self
+   */
+  public function applyTemplate():self {
+    if (ColorGroup::exists(['conditions' => ['appearance_id = ?', $this->id]]))
+      throw new \RuntimeException('Template can only be applied to empty appearances');
 
-		/** @var $Scheme string[][] */
-		$Scheme = $this->ishuman
-			? self::HUMAN_TEMPLATE
-			: self::PONY_TEMPLATE;
+    /** @var $Scheme string[][] */
+    $Scheme = $this->ishuman
+      ? self::HUMAN_TEMPLATE
+      : self::PONY_TEMPLATE;
 
-		$cgi = 1;
-		foreach ($Scheme as $GroupName => $ColorNames){
-			/** @var $Group ColorGroup */
-			$Group = ColorGroup::create([
-				'appearance_id' => $this->id,
-				'label' => $GroupName,
-				'order' => $cgi++,
-			]);
-			$GroupID = $Group->id;
-			if (!$GroupID)
-				throw new \RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::$instance->getLastError(), ': '));
+    $cgi = 1;
+    foreach ($Scheme as $GroupName => $ColorNames){
+      /** @var $Group ColorGroup */
+      $Group = ColorGroup::create([
+        'appearance_id' => $this->id,
+        'label' => $GroupName,
+        'order' => $cgi++,
+      ]);
+      $GroupID = $Group->id;
+      if (!$GroupID)
+        throw new \RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::$instance->getLastError(), ': '));
 
-			$ci = 1;
-			foreach ($ColorNames as $label){
-				if (!(new Color([
-					'group_id' => $GroupID,
-					'label' => $label,
-					'order' => $ci++,
-				]))->save()) throw new \RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::$instance->getLastError(), ': '));
-			}
-		}
+      $ci = 1;
+      foreach ($ColorNames as $label){
+        if (
+        !(new Color([
+          'group_id' => $GroupID,
+          'label' => $label,
+          'order' => $ci++,
+        ]))->save()
+        ) throw new \RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::$instance->getLastError(), ': '));
+      }
+    }
 
-		return $this;
-	}
+    return $this;
+  }
 
-	public const CLEAR_ALL = [
-		self::CLEAR_PALETTE,
-		self::CLEAR_PREVIEW,
-		self::CLEAR_CM,
-		self::CLEAR_CMDIR,
-		self::CLEAR_SPRITE,
-		self::CLEAR_SPRITE_600,
-		self::CLEAR_SPRITE_SVG,
-		self::CLEAR_SPRITE_PREVIEW,
-	];
-	public const
-		CLEAR_PALETTE        = 'palette.png',
-		CLEAR_PREVIEW        = 'preview.svg',
-		CLEAR_CM             = '&cutiemark',
-		CLEAR_CMDIR          = 'cmdir-*.svg',
-		CLEAR_SPRITE         = 'sprite.png',
-		CLEAR_SPRITE_600     = 'sprite-600.png',
-		CLEAR_SPRITE_SVG     = 'sprite.svg',
-		CLEAR_SPRITE_PREVIEW = 'sprite-preview.png.txt',
-		CLEAR_SPRITE_MAP     = 'linedata.json.gz';
+  public const CLEAR_ALL = [
+    self::CLEAR_PALETTE,
+    self::CLEAR_PREVIEW,
+    self::CLEAR_CM,
+    self::CLEAR_CMDIR,
+    self::CLEAR_SPRITE,
+    self::CLEAR_SPRITE_600,
+    self::CLEAR_SPRITE_SVG,
+    self::CLEAR_SPRITE_PREVIEW,
+  ];
+  public const
+    CLEAR_PALETTE = 'palette.png',
+    CLEAR_PREVIEW = 'preview.svg',
+    CLEAR_CM = '&cutiemark',
+    CLEAR_CMDIR = 'cmdir-*.svg',
+    CLEAR_SPRITE = 'sprite.png',
+    CLEAR_SPRITE_600 = 'sprite-600.png',
+    CLEAR_SPRITE_SVG = 'sprite.svg',
+    CLEAR_SPRITE_PREVIEW = 'sprite-preview.png.txt',
+    CLEAR_SPRITE_MAP = 'linedata.json.gz';
 
-	/**
-	 * Deletes rendered images of an appearance (forcing its re-generation)
-	 *
-	 * @param array $which
-	 *
-	 * @return bool
-	 */
-	public function clearRenderedImages(array $which = self::CLEAR_ALL):bool {
-		$success = [];
-		$clear_cm_pos = array_search(self::CLEAR_CM, $which, true);
-		if ($clear_cm_pos !== false){
-			array_splice($which, $clear_cm_pos, 1);
-			foreach ($this->cutiemarks as $cm){
-				$fpath = $cm->getRenderedFilePath();
-				$success[] = CoreUtils::deleteFile($fpath);
-			}
-		}
-		foreach ($which as $suffix){
-			$path = FSPATH."cg_render/appearance/{$this->id}/$suffix";
-			if (!CoreUtils::contains($path, '*'))
-				$success[] = CoreUtils::deleteFile($path);
-			else {
-				foreach (glob($path) as $file)
-					$success[] = CoreUtils::deleteFile($file);
-			}
-		}
-		return !\in_array(false, $success, true);
-	}
+  /**
+   * Deletes rendered images of an appearance (forcing its re-generation)
+   *
+   * @param array $which
+   *
+   * @return bool
+   */
+  public function clearRenderedImages(array $which = self::CLEAR_ALL):bool {
+    $success = [];
+    $clear_cm_pos = array_search(self::CLEAR_CM, $which, true);
+    if ($clear_cm_pos !== false){
+      array_splice($which, $clear_cm_pos, 1);
+      foreach ($this->cutiemarks as $cm){
+        $fpath = $cm->getRenderedFilePath();
+        $success[] = CoreUtils::deleteFile($fpath);
+      }
+    }
+    foreach ($which as $suffix){
+      $path = FSPATH."cg_render/appearance/{$this->id}/$suffix";
+      if (!CoreUtils::contains($path, '*'))
+        $success[] = CoreUtils::deleteFile($path);
+      else {
+        foreach (glob($path) as $file)
+          $success[] = CoreUtils::deleteFile($file);
+      }
+    }
 
-	public const DEFAULT_COLOR_MAPPING = [
-		'Coat Outline' => '#0D0D0D',
-		'Coat Shadow Outline' => '#000000',
-		'Coat Fill' => '#2B2B2B',
-		'Coat Shadow Fill' => '#171717',
-		'Mane & Tail Outline' => '#333333',
-		'Mane & Tail Fill' => '#5E5E5E',
-	];
-	public function getColorMapping($DefaultColorMapping){
-		$colors = DB::$instance->query(
-			'SELECT cg.label as cglabel, c.label as clabel, c.hex
+    return !\in_array(false, $success, true);
+  }
+
+  public const DEFAULT_COLOR_MAPPING = [
+    'Coat Outline' => '#0D0D0D',
+    'Coat Shadow Outline' => '#000000',
+    'Coat Fill' => '#2B2B2B',
+    'Coat Shadow Fill' => '#171717',
+    'Mane & Tail Outline' => '#333333',
+    'Mane & Tail Fill' => '#5E5E5E',
+  ];
+
+  public function getColorMapping($DefaultColorMapping) {
+    $colors = DB::$instance->query(
+      'SELECT cg.label as cglabel, c.label as clabel, c.hex
 			FROM color_groups cg
 			LEFT JOIN colors c on c.group_id = cg.id
 			WHERE cg.appearance_id = ?
 			ORDER BY cg.order, c.label', [$this->id]);
 
-		$color_mapping = [];
-		foreach ($colors as $row){
-			$cglabel = preg_replace(new RegExp('^(Costume|Dress)$'),'Coat',$row['cglabel']);
-			$cglabel = preg_replace(new RegExp('^(Coat|Mane & Tail) \([^)]+\)$'),'$1',$cglabel);
-			$eye = $row['cglabel'] === 'Iris';
-			$colorlabel = preg_replace(new RegExp('^(?:(?:(?:Purple|Yellow|Red)\s)?(?:Main|First|Normal'.(!$eye?'|Gradient(?:\s(?:Light|(?:\d+\s)?(?:Top|Botom)))?\s':'').'))?(.+?)(?:\s\d+)?(?:/.*)?$'),'$1', $row['clabel']);
-			$label = "$cglabel $colorlabel";
-			if (isset($DefaultColorMapping[$label]) && !isset($color_mapping[$label]))
-				$color_mapping[$label] = $row['hex'];
-		}
-		if (!isset($color_mapping['Coat Shadow Outline']) && isset($color_mapping['Coat Outline']))
-			$color_mapping['Coat Shadow Outline'] = $color_mapping['Coat Outline'];
-		if (!isset($color_mapping['Coat Shadow Fill']) && isset($color_mapping['Coat Fill']))
-			$color_mapping['Coat Shadow Fill'] = $color_mapping['Coat Fill'];
+    $color_mapping = [];
+    foreach ($colors as $row){
+      $cglabel = preg_replace(new RegExp('^(Costume|Dress)$'), 'Coat', $row['cglabel']);
+      $cglabel = preg_replace(new RegExp('^(Coat|Mane & Tail) \([^)]+\)$'), '$1', $cglabel);
+      $eye = $row['cglabel'] === 'Iris';
+      $colorlabel = preg_replace(new RegExp('^(?:(?:(?:Purple|Yellow|Red)\s)?(?:Main|First|Normal'.(!$eye
+          ? '|Gradient(?:\s(?:Light|(?:\d+\s)?(?:Top|Botom)))?\s' : '').'))?(.+?)(?:\s\d+)?(?:/.*)?$'), '$1', $row['clabel']);
+      $label = "$cglabel $colorlabel";
+      if (isset($DefaultColorMapping[$label]) && !isset($color_mapping[$label]))
+        $color_mapping[$label] = $row['hex'];
+    }
+    if (!isset($color_mapping['Coat Shadow Outline']) && isset($color_mapping['Coat Outline']))
+      $color_mapping['Coat Shadow Outline'] = $color_mapping['Coat Outline'];
+    if (!isset($color_mapping['Coat Shadow Fill']) && isset($color_mapping['Coat Fill']))
+      $color_mapping['Coat Shadow Fill'] = $color_mapping['Coat Fill'];
 
-		return $color_mapping;
-	}
+    return $color_mapping;
+  }
 
-	public function render_notes(){
-		if ($this->notes_src === null)
-			$this->notes_rend = null;
-		else $this->notes_rend = self::_processNotes($this->notes_src);
-	}
+  public function render_notes() {
+    if ($this->notes_src === null)
+      $this->notes_rend = null;
+    else $this->notes_rend = self::_processNotes($this->notes_src);
+  }
 
-	public function hidden(bool $ignoreStaff = false):bool {
-		return $this->owner_id !== null && $this->private && $this->isPrivate($ignoreStaff);
-	}
+  public function hidden(bool $ignoreStaff = false):bool {
+    return $this->owner_id !== null && $this->private && $this->isPrivate($ignoreStaff);
+  }
 
-	public function getTagsAsText(?bool $synonyms = null, string $separator = ', '){
-		if ($synonyms === null)
-			$synonyms = Permission::sufficient('staff');
-		$tags = Tags::getFor($this->id, null, $synonyms);
-		return Tags::getList($tags, $separator);
-	}
+  public function getTagsAsText(?bool $synonyms = null, string $separator = ', ') {
+    if ($synonyms === null)
+      $synonyms = Permission::sufficient('staff');
+    $tags = Tags::getFor($this->id, null, $synonyms);
 
-	public function processTagChanges(string $old_tags, string $new_tags, bool $eqg){
-		$old = array_map([CoreUtils::class, 'trim'], explode(',', $old_tags));
-		$new = array_map([CoreUtils::class, 'trim'], explode(',', $new_tags));
-		$added = array_diff($new, $old);
-		$removed = array_diff($old, $new);
+    return Tags::getList($tags, $separator);
+  }
 
-		if (!empty($removed)){
-			$removed_tags = DB::$instance->disableAutoClass()->where('name', $removed)->get('tags', null, 'id, name');
-			$removed_tags = array_reduce($removed_tags, function ($acc, $el){
-				$acc[$el['id']] = $el['name'];
-				return $acc;
-			}, []);
-			$removed_tag_ids = array_keys($removed_tags);
-			if (!empty($removed_tag_ids))
-				DB::$instance->where('tag_id', $removed_tag_ids)->where('appearance_id', $this->id)->delete(Tagged::$table_name);
-			foreach ($removed_tags as $tag_id => $tag_name){
-				TagChange::record(false, $tag_id, $tag_name, $this->id);
-				Tags::updateUses($tag_id);
-			}
-		}
+  public function processTagChanges(string $old_tags, string $new_tags, bool $eqg) {
+    $old = array_map([CoreUtils::class, 'trim'], explode(',', $old_tags));
+    $new = array_map([CoreUtils::class, 'trim'], explode(',', $new_tags));
+    $added = array_diff($new, $old);
+    $removed = array_diff($old, $new);
 
-		foreach ($added as $name){
-			$_REQUEST['tag_name'] = CoreUtils::trim($name);
-			if (empty($_REQUEST['tag_name']))
-				continue;
+    if (!empty($removed)){
+      $removed_tags = DB::$instance->disableAutoClass()->where('name', $removed)->get('tags', null, 'id, name');
+      $removed_tags = array_reduce($removed_tags, function ($acc, $el) {
+        $acc[$el['id']] = $el['name'];
 
-			$tag_name = CGUtils::validateTagName('tag_name');
-			$tag_type = null;
+        return $acc;
+      }, []);
+      $removed_tag_ids = array_keys($removed_tags);
+      if (!empty($removed_tag_ids))
+        DB::$instance->where('tag_id', $removed_tag_ids)->where('appearance_id', $this->id)->delete(Tagged::$table_name);
+      foreach ($removed_tags as $tag_id => $tag_name){
+        TagChange::record(false, $tag_id, $tag_name, $this->id);
+        Tags::updateUses($tag_id);
+      }
+    }
 
-			$tag = Tags::getActual($tag_name, 'name');
-			if (empty($tag))
-				$tag = Tag::create([
-					'name' => $tag_name,
-					'type' => $tag_type,
-				]);
+    foreach ($added as $name){
+      $_REQUEST['tag_name'] = CoreUtils::trim($name);
+      if (empty($_REQUEST['tag_name']))
+        continue;
 
-			$this->addTag($tag);
-			if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$eqg?'eqg':'pony'][$tag->id]))
-				Appearances::getSortReorder($eqg);
-		}
-	}
+      $tag_name = CGUtils::validateTagName('tag_name');
+      $tag_type = null;
 
-	/**
-	 * @param Tag  $tag
-	 * @param bool $update_uses
-	 *
-	 * @return self
-	 */
-	public function addTag(Tag $tag, bool $update_uses = true):self {
-		try {
-			$created = Tagged::make($tag->id, $this->id)->save();
-		}
-		catch (\ActiveRecord\DatabaseException $e){
-			// Relation already exists, moving on
-			if (CoreUtils::contains($e->getMessage(), 'duplicate key value violates unique constraint "tagged_pkey"')){
-				return $this;
-			}
+      $tag = Tags::getActual($tag_name, 'name');
+      if (empty($tag))
+        $tag = Tag::create([
+          'name' => $tag_name,
+          'type' => $tag_type,
+        ]);
 
-			$created = false;
-		}
-		if (!$created){
-			CoreUtils::error_log(__METHOD__.": Failed to add tag {$tag->name} (#{$tag->id}) to appearance {$this->label} (#{$this->id}), skipping");
-			return $this;
-		}
-		TagChange::record(true, $tag->id, $tag->name, $this->id);
-		if ($update_uses)
-			$tag->updateUses();
+      $this->addTag($tag);
+      if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$eqg ? 'eqg' : 'pony'][$tag->id]))
+        Appearances::getSortReorder($eqg);
+    }
+  }
 
-		return $this;
-	}
+  /**
+   * @param Tag  $tag
+   * @param bool $update_uses
+   *
+   * @return self
+   */
+  public function addTag(Tag $tag, bool $update_uses = true):self {
+    try {
+      $created = Tagged::make($tag->id, $this->id)->save();
+    }
+    catch (\ActiveRecord\DatabaseException $e){
+      // Relation already exists, moving on
+      if (CoreUtils::contains($e->getMessage(), 'duplicate key value violates unique constraint "tagged_pkey"')){
+        return $this;
+      }
 
-	public function getSpriteFilePath(){
-		return CGUtils::getSpriteFilePath($this->id);
-	}
+      $created = false;
+    }
+    if (!$created){
+      CoreUtils::error_log(__METHOD__.": Failed to add tag {$tag->name} (#{$tag->id}) to appearance {$this->label} (#{$this->id}), skipping");
 
-	public function deleteSprite(?string $path = null, bool $silent = false){
-		if (!CoreUtils::deleteFile($path ?? $this->getSpriteFilePath())){
-			if ($silent)
-				return;
-			Response::fail('File could not be deleted');
-		}
-		$this->sprite_hash = null;
-		$this->save();
-		$this->clearRenderedImages();
-		if ($this->owner_id === null)
-			Appearances::clearSpriteColorIssueNotifications($this->id, 'del', null);
-	}
+      return $this;
+    }
+    TagChange::record(true, $tag->id, $tag->name, $this->id);
+    if ($update_uses)
+      $tag->updateUses();
 
-	public static function checkCreatePermission(User $user, bool $personal){
-		if (!$personal){
-			if (!$user->perm('staff'))
-				Response::fail("You don't have permission to add appearances to the official Color Guide");
-		}
-		else {
-			$availPoints = $user->getPCGAvailablePoints(false);
-			if ($availPoints < 10){
-				$remain = Users::calculatePersonalCGNextSlot($user->getPCGAppearanceCount());
-				Response::fail("You don't have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request',$remain).'. Visit <a href="/u">your profile</a> and click the <strong class="color-darkblue"><span class="typcn typcn-info-large"></span> What?</strong> button next to the Personal Color Guide heading for more information.');
-			}
-			if (!UserPrefs::get('a_pcgmake', $user))
-				Response::fail(Appearances::PCG_APPEARANCE_MAKE_DISABLED);
-		}
-	}
+    return $this;
+  }
 
-	public function checkManagePermission(User $user){
-		if ($user->id === $this->owner_id || $user->perm('staff'))
-			return true;
+  public function getSpriteFilePath() {
+    return CGUtils::getSpriteFilePath($this->id);
+  }
 
-		if (CoreUtils::isJSONExpected())
-			Response::fail();
-		else CoreUtils::noPerm();
-	}
+  public function deleteSprite(?string $path = null, bool $silent = false) {
+    if (!CoreUtils::deleteFile($path ?? $this->getSpriteFilePath())){
+      if ($silent)
+        return;
+      Response::fail('File could not be deleted');
+    }
+    $this->sprite_hash = null;
+    $this->save();
+    $this->clearRenderedImages();
+    if ($this->owner_id === null)
+      Appearances::clearSpriteColorIssueNotifications($this->id, 'del', null);
+  }
 
-	public function getShareURL(bool $can_see_token = false):string {
-		return rtrim(ABSPATH,'/').$this->toURL(true).($can_see_token && $this->private ? "?token={$this->token}" : '');
-	}
+  public static function checkCreatePermission(User $user, bool $personal) {
+    if (!$personal){
+      if (!$user->perm('staff'))
+        Response::fail("You don't have permission to add appearances to the official Color Guide");
+    }
+    else {
+      $availPoints = $user->getPCGAvailablePoints(false);
+      if ($availPoints < 10){
+        $remain = Users::calculatePersonalCGNextSlot($user->getPCGAppearanceCount());
+        Response::fail("You don't have enough slots to create another appearance. Delete other ones or finish $remain more ".CoreUtils::makePlural('request', $remain).'. Visit <a href="/u">your profile</a> and click the <strong class="color-darkblue"><span class="typcn typcn-info-large"></span> What?</strong> button next to the Personal Color Guide heading for more information.');
+      }
+      if (!UserPrefs::get('a_pcgmake', $user))
+        Response::fail(Appearances::PCG_APPEARANCE_MAKE_DISABLED);
+    }
+  }
 
-	public function hasTags():bool {
-		return DB::$instance->where('appearance_id', $this->id)->has('tagged');
-	}
+  public function checkManagePermission(User $user) {
+    if ($user->id === $this->owner_id || $user->perm('staff'))
+      return true;
 
-	/**
-	 * For Twig
-	 * @return bool
-	 */
-	public function getProtected():bool {
-		return $this->protected;
-	}
+    if (CoreUtils::isJSONExpected())
+      Response::fail();
+    else CoreUtils::noPerm();
+  }
 
-	/**
-	 * For Twig
-	 * @return Cutiemark[]
-	 */
-	public function getCutiemarks():array {
-		return $this->cutiemarks;
-	}
+  public function getShareURL(bool $can_see_token = false):string {
+    return rtrim(ABSPATH, '/').$this->toURL(true).($can_see_token && $this->private ? "?token={$this->token}" : '');
+  }
 
-	public function getPreviewImage(int $size = self::SPRITE_SIZES['SOURCE']) {
-		return $this->getSpriteURL($size, $this->getPreviewURL());
-	}
+  public function hasTags():bool {
+    return DB::$instance->where('appearance_id', $this->id)->has('tagged');
+  }
+
+  /**
+   * For Twig
+   *
+   * @return bool
+   */
+  public function getProtected():bool {
+    return $this->protected;
+  }
+
+  /**
+   * For Twig
+   *
+   * @return Cutiemark[]
+   */
+  public function getCutiemarks():array {
+    return $this->cutiemarks;
+  }
+
+  public function getPreviewImage(int $size = self::SPRITE_SIZES['SOURCE']) {
+    return $this->getSpriteURL($size, $this->getPreviewURL());
+  }
 }

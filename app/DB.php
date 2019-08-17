@@ -3,6 +3,6 @@
 namespace App;
 
 class DB {
-	/** @var PostgresDbWrapper */
-	public static $instance;
+  /** @var PostgresDbWrapper */
+  public static $instance;
 }

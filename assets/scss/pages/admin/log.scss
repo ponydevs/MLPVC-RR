@@ -1,244 +1,277 @@
 @import "../../vars";
+
 $TableHeadingFontSize: 16px;
 
-@media all and (min-width: $Breakpoint){
-	#content > #filter-form {
-		.entry-type, .username {
-			font-size: inherit;
-			border: 0;
-			border-bottom: 2px solid $NDarkBlue;
-			font-weight: bold;
-			padding-left: 0;
-			padding-right: 0;
-			text-align: center;
-			text-align-last: center;
-			background: transparent;
-		}
+@media all and (min-width: $Breakpoint) {
+  #content > #filter-form {
+    .entry-type, .username {
+      font-size: inherit;
+      border: 0;
+      border-bottom: 2px solid $NDarkBlue;
+      font-weight: bold;
+      padding-left: 0;
+      padding-right: 0;
+      text-align: center;
+      text-align-last: center;
+      background: transparent;
+    }
 
-		.username {
-			width: 375px;
-		}
+    .username {
+      width: 375px;
+    }
 
-		.entry-type { text-transform: lowercase }
+    .entry-type {
+      text-transform: lowercase
+    }
 
-		.entry-type > * {
-			font-size: 14px;
-			font-weight: normal;
-			text-transform: initial;
-		}
-	}
+    .entry-type > * {
+      font-size: 14px;
+      font-weight: normal;
+      text-transform: initial;
+    }
+  }
 }
+
 // Mobile-only
-@media all and (max-width: $Breakpoint){
-	.expand-section {
-		display: block;
-		width: calc(100% - 10px);
-	}
-	.expandable-section {
-		border-top-right-radius: 0 !important;
-	}
-	#logs tr {
-		> .timestamp {
-			text-align: center;
-			vertical-align: middle;
-			width: auto !important;
-			padding: 4px;
+@media all and (max-width: $Breakpoint) {
+  .expand-section {
+    display: block;
+    width: calc(100% - 10px);
+  }
+  .expandable-section {
+    border-top-right-radius: 0 !important;
+  }
+  #logs tr {
+    > .timestamp {
+      text-align: center;
+      vertical-align: middle;
+      width: auto !important;
+      padding: 4px;
 
-			time { display: none !important }
-			.dynt-el {
-				font-size: .9em !important;
-				@include link;
-			}
+      time {
+        display: none !important
+      }
 
-			&:not(td) {
-				font-size: 0;
+      .dynt-el {
+        font-size: .9em !important;
+        @include link;
+      }
 
-				&:before {
-					content: "When";
-					font-size: $TableHeadingFontSize;
-				}
-			}
-		}
-		> .reftype {
-			width: 100% !important;
-			padding: 4px !important;
-		}
-	}
-	#content > #filter-form {
-		.entry-type, .username {
-			display: block;
-			margin: 5px auto;
-		}
-	}
+      &:not(td) {
+        font-size: 0;
+
+        &:before {
+          content: "When";
+          font-size: $TableHeadingFontSize;
+        }
+      }
+    }
+
+    > .reftype {
+      width: 100% !important;
+      padding: 4px !important;
+    }
+  }
+  #content > #filter-form {
+    .entry-type, .username {
+      display: block;
+      margin: 5px auto;
+    }
+  }
 }
-@media all and (min-width: 500px){
-	#dialogContent .modal-ip {
-		display: none;
-	}
+
+@media all and (min-width: 500px) {
+  #dialogContent .modal-ip {
+    display: none;
+  }
 }
-@media all and (max-width: 500px){
-	#logs tr > {
-		.ip, .entryid { display: none }
-	}
+
+@media all and (max-width: 500px) {
+  #logs tr > {
+    .ip, .entryid {
+      display: none
+    }
+  }
 }
 
 #content {
-	> #filter-form {
-		text-align: center;
-		margin: 0 0 10px;
+  > #filter-form {
+    text-align: center;
+    margin: 0 0 10px;
 
-		button {
-			margin: 0;
-		}
-		.username {
-			font-family: $monospace;
-		}
-	}
+    button {
+      margin: 0;
+    }
+
+    .username {
+      font-family: $monospace;
+    }
+  }
 }
 
 #logs {
-	width: 100%;
+  width: 100%;
 
-	tr td {
-		&.entryid {
-			width: 5%;
-			text-align: center;
-		}
-		&.timestamp {
-			width: 28%;
+  tr td {
+    &.entryid {
+      width: 5%;
+      text-align: center;
+    }
 
-			time, .dynt-el { display: block }
-			.dynt-el {
-				font-style: italic;
-				font-size: .8em;
-			}
-		}
-		&.ip {
-			width: 27%;
+    &.timestamp {
+      width: 28%;
 
-			a {
-				margin-right: 4px;
-			}
-		}
-		&.reftype {
-			width: 40%;
-			padding: 12px;
-		}
-	}
-	thead th {
-		font-size: $TableHeadingFontSize;
-	}
-	tbody .entryid {
-		font-size: 1.6em;
-	}
+      time, .dynt-el {
+        display: block
+      }
+
+      .dynt-el {
+        font-style: italic;
+        font-size: .8em;
+      }
+    }
+
+    &.ip {
+      width: 27%;
+
+      a {
+        margin-right: 4px;
+      }
+    }
+
+    &.reftype {
+      width: 40%;
+      padding: 12px;
+    }
+  }
+
+  thead th {
+    font-size: $TableHeadingFontSize;
+  }
+
+  tbody .entryid {
+    font-size: 1.6em;
+  }
 }
-$unexpanded: rgba(0,0,0,.1);
-$expanded: rgba(0,0,0,.05);
+
+$unexpanded: rgba(0, 0, 0, .1);
+$expanded: rgba(0, 0, 0, .05);
 .expand-section {
-	display: inline-block;
-	background-color: $unexpanded;
-	border-radius: 5px;
-	padding: 3px 5px;
-	cursor: pointer;
-	user-select: none;
+  display: inline-block;
+  background-color: $unexpanded;
+  border-radius: 5px;
+  padding: 3px 5px;
+  cursor: pointer;
+  user-select: none;
 
-	transition-property: background-color, border-radius;
-	transition-duration: .5s;
+  transition-property: background-color, border-radius;
+  transition-duration: .5s;
 
-	&:before {
-		font-size: 1.2em;
-	}
-	&.typcn-minus {
-		border-bottom-left-radius: 0;
-		border-bottom-right-radius: 0;
+  &:before {
+    font-size: 1.2em;
+  }
 
-		background-color: $expanded;
-	}
+  &.typcn-minus {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+
+    background-color: $expanded;
+  }
 }
+
 .expandable-section {
-	padding: 10px;
-	background-color: $expanded;
-	border-radius: 0 8px 8px 8px;
+  padding: 10px;
+  background-color: $expanded;
+  border-radius: 0 8px 8px 8px;
 
-	> div {
-		&:not(:last-child){
-			margin-bottom: 5px;
-		}
+  > div {
+    &:not(:last-child) {
+      margin-bottom: 5px;
+    }
 
-		i { font-size: .8em }
+    i {
+      font-size: .8em
+    }
 
-		.view-switch {
-			margin: 0 7px 0 0;
-			text-transform: uppercase;
-			font-size: 12px;
-			font-family: $monospace;
-			text-align: center;
-			width: 45px;
-			line-height: 1em;
-			padding: 2px 2px;
+    .view-switch {
+      margin: 0 7px 0 0;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-family: $monospace;
+      text-align: center;
+      width: 45px;
+      line-height: 1em;
+      padding: 2px 2px;
 
-			&, & + .log-diff {
-				vertical-align: baseline;
-			}
-		}
+      &, & + .log-diff {
+        vertical-align: baseline;
+      }
+    }
 
-		.log-diff {
-			border: 1px solid black;
-			background: #fff;
-			white-space: pre-wrap;
+    .log-diff {
+      border: 1px solid black;
+      background: #fff;
+      white-space: pre-wrap;
 
-			&.empty {
-				overflow: hidden !important;
+      &.empty {
+        overflow: hidden !important;
 
-				&:before {
-					color: $NDarkBlue;
-					content: "empty";
-					font-style: italic;
-					font-family: $RegularFont;
-				}
-			}
+        &:before {
+          color: $NDarkBlue;
+          content: "empty";
+          font-style: italic;
+          font-family: $RegularFont;
+        }
+      }
 
-			ins, del {
-				text-decoration: none;
-			}
+      ins, del {
+        text-decoration: none;
+      }
 
-			&:not(.no-colors){
-				ins { background: desaturate(lighten($NGreen, 40), 20) }
-				del { background: desaturate(lighten($NRed,   40), 20) }
-			}
-		}
-		.log-diff.inline {
-			display: inline;
-			padding: 2px 3px;
-		}
-		.log-diff.block {
-			display: block;
-			overflow: auto;
-			padding: 3px;
-			font-family: $monospace;
-			margin-top: 5px;
-			max-width: 600px;
-			width: 100%;
+      &:not(.no-colors) {
+        ins {
+          background: desaturate(lighten($NGreen, 40), 20)
+        }
 
-			&.empty:before {
-				display: block;
-				text-align: center;
-				padding: 1px 0;
-			}
+        del {
+          background: desaturate(lighten($NRed, 40), 20)
+        }
+      }
+    }
 
-			&.smaller {
-				font-size: 14px;
-			}
-		}
-	}
+    .log-diff.inline {
+      display: inline;
+      padding: 2px 3px;
+    }
 
-	pre {
-		margin: 0;
-		max-width: 400px;
-		overflow: auto;
-	}
+    .log-diff.block {
+      display: block;
+      overflow: auto;
+      padding: 3px;
+      font-family: $monospace;
+      margin-top: 5px;
+      max-width: 600px;
+      width: 100%;
 
-	img {
-		max-width: 200px;
-	}
+      &.empty:before {
+        display: block;
+        text-align: center;
+        padding: 1px 0;
+      }
+
+      &.smaller {
+        font-size: 14px;
+      }
+    }
+  }
+
+  pre {
+    margin: 0;
+    max-width: 400px;
+    overflow: auto;
+  }
+
+  img {
+    max-width: 200px;
+  }
 }

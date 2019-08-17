@@ -5,79 +5,80 @@ namespace App;
 use App\Models\GlobalSetting;
 
 class GlobalSettings {
-	public const DEFAULTS = [
-		'reservation_rules' => '',
-		'about_reservations' => '',
-		'dev_role_label' => 'developer',
-	];
+  public const DEFAULTS = [
+    'reservation_rules' => '',
+    'about_reservations' => '',
+    'dev_role_label' => 'developer',
+  ];
 
-	/**
-	 * Gets a global cofiguration item's value
-	 *
-	 * @param string $key
-	 *
-	 * @return mixed
-	 */
-	public static function get(string $key){
-		$q = GlobalSetting::find($key);
-		return isset($q->value) ? $q->value : static::DEFAULTS[$key];
-	}
+  /**
+   * Gets a global cofiguration item's value
+   *
+   * @param string $key
+   *
+   * @return mixed
+   */
+  public static function get(string $key) {
+    $q = GlobalSetting::find($key);
 
-	/**
-	 * Sets a global cofiguration item's value
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 *
-	 * @return bool
-	 */
-	public static function set(string $key, $value):bool {
-		if (!isset(static::DEFAULTS[$key]))
-			Response::fail("Key $key is not allowed");
-		$default = static::DEFAULTS[$key];
+    return isset($q->value) ? $q->value : static::DEFAULTS[$key];
+  }
 
-		if (GlobalSetting::exists($key)){
-			$setting = GlobalSetting::find($key);
-			if ($value == $default)
-				return $setting->delete();
-			else return $setting->update_attributes(['value' => $value]);
-		}
-		else if ($value != $default)
-			return (new GlobalSetting([
-				'key' => $key,
-				'value' => $value,
-			]))->save();
-		else return true;
-	}
+  /**
+   * Sets a global cofiguration item's value
+   *
+   * @param string $key
+   * @param mixed  $value
+   *
+   * @return bool
+   */
+  public static function set(string $key, $value):bool {
+    if (!isset(static::DEFAULTS[$key]))
+      Response::fail("Key $key is not allowed");
+    $default = static::DEFAULTS[$key];
 
-	/**
-	 * Processes a configuration item's new value
-	 *
-	 * @param string $key
-	 *
-	 * @return mixed
-	 */
-	public static function process(string $key){
-		$value = CoreUtils::trim($_REQUEST['value']);
+    if (GlobalSetting::exists($key)){
+      $setting = GlobalSetting::find($key);
+      if ($value == $default)
+        return $setting->delete();
+      else return $setting->update_attributes(['value' => $value]);
+    }
+    else if ($value != $default)
+      return (new GlobalSetting([
+        'key' => $key,
+        'value' => $value,
+      ]))->save();
+    else return true;
+  }
 
-		if ($value === '')
-			return null;
+  /**
+   * Processes a configuration item's new value
+   *
+   * @param string $key
+   *
+   * @return mixed
+   */
+  public static function process(string $key) {
+    $value = CoreUtils::trim($_REQUEST['value']);
 
-		switch ($key){
-			case 'reservation_rules':
-			case 'about_reservations':
-				$value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules'? ['li', 'ol'] : ['p']);
-			break;
+    if ($value === '')
+      return null;
 
-			case 'dev_role_label':
-				if (Permission::insufficient('developer'))
-					Response::fail("You cannot change the $key setting");
+    switch ($key){
+      case 'reservation_rules':
+      case 'about_reservations':
+        $value = CoreUtils::sanitizeHtml($value, $key === 'reservation_rules' ? ['li', 'ol'] : ['p']);
+      break;
 
-				if (empty($value) || !isset(Permission::ROLES_ASSOC[$value]))
-					throw new \RuntimeException('The specified role is invalid');
-			break;
-		}
+      case 'dev_role_label':
+        if (Permission::insufficient('developer'))
+          Response::fail("You cannot change the $key setting");
 
-		return $value;
-	}
+        if (empty($value) || !isset(Permission::ROLES_ASSOC[$value]))
+          throw new \RuntimeException('The specified role is invalid');
+      break;
+    }
+
+    return $value;
+  }
 }

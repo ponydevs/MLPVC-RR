@@ -4,34 +4,34 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-{% set is_staff = permission('staff') %}
-{% set colspan = is_staff ? ' colspan="2"' : '' %}
-{% set refresher = is_staff ? " <button class='typcn typcn-arrow-sync refresh-all' title='Refresh usage data on this page'></button>" : '' %}
-{% set thead %}
-	<tr>
-		<th class="tid">ID</th>
-		<th class="name"{{ colspan }}>Name</th>
-		<th class="title">Description</th>
-		<th class="type">Type</th>
-		<th class="uses">Uses{{ refresher }}</th>
-	</tr>
-{% endset %}
-<div id="content">
-	<h1>{{ heading }}</h1>
-	<p>Displaying {{ pagination.itemsPerPage }} items/page</p>
-	<div class='align-center button-block'>
-		<a class='btn link typcn typcn-arrow-back' href="/cg">Back to Color Guide</a>
-		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
-	</div>
-	{{ pagination }}
-	<table id="tags">
-		<thead>{{ thead }}</thead>
-		{% include 'colorguide/_tag_list.html.twig' %}
-		<tfoot>{{ thead }}</tfoot>
-	</table>
-	{{ pagination }}
-</div>
-{{ export_vars({
-	'TAG_TYPES_ASSOC': constant('App\\Tags::TAG_TYPES')
-}) }}
+  {% set is_staff = permission('staff') %}
+  {% set colspan = is_staff ? ' colspan="2"' : '' %}
+  {% set refresher = is_staff ? " <button class='typcn typcn-arrow-sync refresh-all' title='Refresh usage data on this page'></button>" : '' %}
+  {% set thead %}
+    <tr>
+      <th class="tid">ID</th>
+      <th class="name"{{ colspan }}>Name</th>
+      <th class="title">Description</th>
+      <th class="type">Type</th>
+      <th class="uses">Uses{{ refresher }}</th>
+    </tr>
+  {% endset %}
+  <div id="content">
+    <h1>{{ heading }}</h1>
+    <p>Displaying {{ pagination.itemsPerPage }} items/page</p>
+    <div class='align-center button-block'>
+      <a class='btn link typcn typcn-arrow-back' href="/cg">Back to Color Guide</a>
+      <a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
+    </div>
+    {{ pagination }}
+    <table id="tags">
+      <thead>{{ thead }}</thead>
+      {% include 'colorguide/_tag_list.html.twig' %}
+      <tfoot>{{ thead }}</tfoot>
+    </table>
+    {{ pagination }}
+  </div>
+  {{ export_vars({
+    'TAG_TYPES_ASSOC': constant('App\\Tags::TAG_TYPES')
+  }) }}
 {% endblock %}

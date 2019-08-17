@@ -1,51 +1,83 @@
 #copy-notify {
-	position: fixed;
-	right: 10px;
-	bottom: 10px;
-	display: block;
-	padding: 10px;
-	border: 1px solid;
-	color: $NGreen;
-	background-color: $NGreenBG;
-	opacity: 0;
-	z-index: 22000;
-	font-size: 28px;
-	border-radius: 10px;
-	pointer-events: none;
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  display: block;
+  padding: 10px;
+  border: 1px solid;
+  color: $NGreen;
+  background-color: $NGreenBG;
+  opacity: 0;
+  z-index: 22000;
+  font-size: 28px;
+  border-radius: 10px;
+  pointer-events: none;
 
-	&.fail {
-		color: $NRed;
-		background-color: $NRedBG;
-	}
+  &.fail {
+    color: $NRed;
+    background-color: $NRedBG;
+  }
 }
-.hidden, datalist, template, .datastore { display: none !important }
-.faded { opacity: .6 !important }
-.unreadable { font-size: 0 }
+
+.hidden, datalist, template, .datastore {
+  display: none !important
+}
+
+.faded {
+  opacity: .6 !important
+}
+
+.unreadable {
+  font-size: 0
+}
+
 .star-info {
-	cursor: help;
-	color: black;
-	transform: rotate(5deg);
-	font-weight: bold;
+  cursor: help;
+  color: black;
+  transform: rotate(5deg);
+  font-weight: bold;
 }
+
 .responsive-table {
-	overflow-x: auto;
+  overflow-x: auto;
 }
-:focus { outline: 0 }
-a > img { border: 0 }
-.cursor-help, time[datetime][title] { cursor: help }
-small { font-size: .75em }
+
+:focus {
+  outline: 0
+}
+
+a > img {
+  border: 0
+}
+
+.cursor-help, time[datetime][title] {
+  cursor: help
+}
+
+small {
+  font-size: .75em
+}
+
 strong.typcn:before, span.typcn:not(:empty):before, em.typcn:before,
 button:not(:empty):before, .btn:not(:empty):before {
-	margin-right: 0.3125em;
+  margin-right: 0.3125em;
 }
+
 img.avatar {
-	width: $AvatarSize;
-	height: $AvatarSize;
+  width: $AvatarSize;
+  height: $AvatarSize;
 }
-.resp-embed-wrap { @extend %resp-embed-wrap }
-.responsive-embed { @extend %responsive-embed }
+
+.resp-embed-wrap {
+  @extend %resp-embed-wrap
+}
+
+.responsive-embed {
+  @extend %responsive-embed
+}
+
 .xdebug-error {
-	&, & * {
-		font-size: 18px !important;
-	}
+  &, & * {
+    font-size: 18px !important;
+  }
 }

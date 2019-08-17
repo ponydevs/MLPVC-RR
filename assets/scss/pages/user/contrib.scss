@@ -1,96 +1,98 @@
 @import "../../vars";
 
 #contribs {
-	list-style: none;
-	padding: 0;
-	margin: 0 auto 10px;
-	min-width: 50%;
-	max-width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 10px;
+  min-width: 50%;
+  max-width: 100%;
 
-	td, th {
-		padding: 10px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		vertical-align: middle;
-	}
+  td, th {
+    padding: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
 
-	td {
-		text-align: center;
-	}
+  td {
+    text-align: center;
+  }
 
-	td > em {
-		display: block;
-		opacity: .7;
-	}
+  td > em {
+    display: block;
+    opacity: .7;
+  }
 
-	.typcn-tick, .typcn-times, .missing-time {
-		font-size: 2em;
-	}
-	.typcn-times, .missing-time {
-		color: #888;
-	}
+  .typcn-tick, .typcn-times, .missing-time {
+    font-size: 2em;
+  }
+
+  .typcn-times, .missing-time {
+    color: #888;
+  }
 }
 
 td.by-at .typcn {
-	position: relative;
-	top: -2px;
+  position: relative;
+  top: -2px;
 }
 
 %flexible-link {
-	display: flex;
-	flex-flow: column nowrap;
-	justify-content: space-around;
-	align-items: center;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: center;
 
-	> img {
-		flex: 0 0 100%;
-		margin-bottom: 10px;
-		max-height: 64px;
-		max-width: 64px * 16 / 9;
-	}
-	> span {
-		flex: 1 1 auto;
-		display: block;
-		max-width: 256px;
+  > img {
+    flex: 0 0 100%;
+    margin-bottom: 10px;
+    max-height: 64px;
+    max-width: 64px * 16 / 9;
+  }
+
+  > span {
+    flex: 1 1 auto;
+    display: block;
+    max-width: 256px;
     white-space: normal;
     text-align: center;
-	}
+  }
 }
 
 .pony-link > a {
-	@extend %flexible-link;
+  @extend %flexible-link;
 
-	> img {
-		height: 1.8em;
-		border: 1px solid currentColor;
-	}
+  > img {
+    height: 1.8em;
+    border: 1px solid currentColor;
+  }
 }
 
 .deviation-link {
-	@extend %flexible-link;
+  @extend %flexible-link;
 
-	> img {
-		border: 2px solid $DeviationBorder;
-		background: url("/img/transparency.svg") repeat center;
-		background-size: 16px;
-	}
+  > img {
+    border: 2px solid $DeviationBorder;
+    background: url("/img/transparency.svg") repeat center;
+    background-size: 16px;
+  }
 }
 
 .post-link {
-	@extend %flexible-link;
+  @extend %flexible-link;
 
-	> img {
-		border: 1px solid black;
-		background: url("/img/transparency.svg") repeat center;
-		background-size: 16px;
-		overflow: hidden;
-	}
+  > img {
+    border: 1px solid black;
+    background: url("/img/transparency.svg") repeat center;
+    background-size: 16px;
+    overflow: hidden;
+  }
 }
 
 .deviation-promise {
-	@include loading-indicator(96px, 'roll');
-	width: 256px;
+  @include loading-indicator(96px, 'roll');
+  width: 256px;
 
-	margin: 0 auto;
+  margin: 0 auto;
 }

@@ -1,37 +1,41 @@
 {# @var shows \App\Models\Show[] #}
 {# @var are_episodes bool #}
 {% spaceless %}
-{% if is_staff is not defined %}
-	{% set is_staff = permission('staff') %}
-{% endif %}
-{% if shows is empty %}
-<tr class='empty align-center'><td colspan='3'><em>There are no {{ are_episodes ? 'episodes' : 'entries' }} to display</em></td></tr>
-{% else %}
-{% for show in shows %}
-<tr data-id='{{ show.id }}' data-type='{{ show.type }}'>
-	{% if show.type == 'episode' %}
-	<td class='season' rowspan='2'>{{ show.season }}</td>
-	<td class='episode' rowspan='2'>{{ show.episode }}{% if show.twoparter %}-{{ show.episode + 1 }}{% endif %}</td>
-	{% else %}
-	<td class='no' rowspan='2'>{{ show.no }}</td>
-	{% endif %}
-	<td class='title'>
-		{% if show.isLatest %}
-		<span class="typcn typcn-home" title="Currently visible on the homepage"></span>
-		{% endif %}
-		{% if not show.get_aired %}
-		<span class="typcn typcn-chart-pie" title="{{ constant('App\\ShowHelper::VALID_TYPES')[show.type] }} didn't air yet, voting disabled"></span>
-		{% endif %}
-		<a href="{{ show.toURL }}">{{ show.title | escape }}</a>
-		{% if is_staff %}
-		<span class='admin-controls'>
+  {% if is_staff is not defined %}
+    {% set is_staff = permission('staff') %}
+  {% endif %}
+  {% if shows is empty %}
+    <tr class='empty align-center'>
+      <td colspan='3'><em>There are no {{ are_episodes ? 'episodes' : 'entries' }} to display</em></td>
+    </tr>
+  {% else %}
+    {% for show in shows %}
+      <tr data-id='{{ show.id }}' data-type='{{ show.type }}'>
+        {% if show.type == 'episode' %}
+          <td class='season' rowspan='2'>{{ show.season }}</td>
+          <td class='episode' rowspan='2'>{{ show.episode }}{% if show.twoparter %}-{{ show.episode + 1 }}{% endif %}</td>
+        {% else %}
+          <td class='no' rowspan='2'>{{ show.no }}</td>
+        {% endif %}
+        <td class='title'>
+          {% if show.isLatest %}
+            <span class="typcn typcn-home" title="Currently visible on the homepage"></span>
+          {% endif %}
+          {% if not show.get_aired %}
+            <span class="typcn typcn-chart-pie" title="{{ constant('App\\ShowHelper::VALID_TYPES')[show.type] }} didn't air yet, voting disabled"></span>
+          {% endif %}
+          <a href="{{ show.toURL }}">{{ show.title | escape }}</a>
+          {% if is_staff %}
+            <span class='admin-controls'>
 			<button class='edit-show typcn typcn-pencil blue' title='Edit {{ show.type }}'></button>
 			<button class='delete-show typcn typcn-times red' title='Delete {{ show.type }}'></button>
 		</span>
-		{% endif  %}
-	</td>
-</tr>
-<tr><td class='airs'>{{ time_tag(show.airs, constant('App\\Time::TAG_EXTENDED'), constant('App\\Time::TAG_STATIC_DYNTIME')) }}</td></tr>
-{% endfor %}
-{% endif %}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class='airs'>{{ time_tag(show.airs, constant('App\\Time::TAG_EXTENDED'), constant('App\\Time::TAG_STATIC_DYNTIME')) }}</td>
+      </tr>
+    {% endfor %}
+  {% endif %}
 {% endspaceless %}

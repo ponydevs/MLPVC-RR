@@ -2,12 +2,12 @@
 <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=2">
 {% include 'layout/_opengraph.html.twig' %}
 {% if canonical_url is defined %}
-<link rel='canonical' href='{{ canonical_url | apos_encode }}'>
+  <link rel='canonical' href='{{ canonical_url | apos_encode }}'>
 {% endif %}
 <meta name="format-detection" content="telephone=no">
 <meta name="referrer" content="origin">
 {% include 'layout/_favicons.html.twig' %}
 {% if robots is defined and not robots %}
-<meta name='robots' content='noindex'>
+  <meta name='robots' content='noindex'>
 {% endif %}
 {% include 'layout/_styles.html.twig' %}

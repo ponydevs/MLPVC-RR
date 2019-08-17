@@ -1,71 +1,77 @@
 @import "../../vars";
 
 #history-entries {
-	margin: 10px auto;
-	border-collapse: collapse;
-	text-align: center;
+  margin: 10px auto;
+  border-collapse: collapse;
+  text-align: center;
 
-	th, td {
-		padding: 5px 10px;
-	}
-	tbody {
-		border: 2px solid black;
+  th, td {
+    padding: 5px 10px;
+  }
 
-		tr.change-pos {
-			background: $NGreenBG;
-			color: $NGreen;
-		}
-		tr.change-neg {
-			background: $NRedBG;
-			color: $NRed;
-		}
+  tbody {
+    border: 2px solid black;
 
-		td {
-			&.amt {
-				font-family: $monospace;
-			}
-			pre {
-				text-align: left;
-				font-size: 14px;
-			}
-			a {
-				> * {
-					    vertical-align: text-top;
-				}
-				> .preview {
-					display: inline-block;
-					border: 1px solid black;
-					width: 1em;
-					height: 1em;
-					margin-right: .4em;
-					box-sizing: border-box;
-				}
-			}
-		}
-	}
+    tr.change-pos {
+      background: $NGreenBG;
+      color: $NGreen;
+    }
+
+    tr.change-neg {
+      background: $NRedBG;
+      color: $NRed;
+    }
+
+    td {
+      &.amt {
+        font-family: $monospace;
+      }
+
+      pre {
+        text-align: left;
+        font-size: 14px;
+      }
+
+      a {
+        > * {
+          vertical-align: text-top;
+        }
+
+        > .preview {
+          display: inline-block;
+          border: 1px solid black;
+          width: 1em;
+          height: 1em;
+          margin-right: .4em;
+          box-sizing: border-box;
+        }
+      }
+    }
+  }
 }
 
 #refund-gifts-form {
-	table {
-		width: 100%;
-		border-collapse: collapse;
+  table {
+    width: 100%;
+    border-collapse: collapse;
 
-		th, td {
-			border: 1px solid;
-			padding: 10px;
-		}
+    th, td {
+      border: 1px solid;
+      padding: 10px;
+    }
 
-		.refund {
-			text-align: center;
-			transition: background-color .1s linear;
-			will-change: background-color;
+    .refund {
+      text-align: center;
+      transition: background-color .1s linear;
+      will-change: background-color;
 
-			&.unselected {
-				background: $NRedBG;
-			}
-			&.selected {
-				background: $NGreenBG;
-			}
-		}
-	}
+      &.unselected {
+        background: $NRedBG;
+      }
+
+      &.selected {
+        background: $NGreenBG;
+      }
+    }
+  }
 }

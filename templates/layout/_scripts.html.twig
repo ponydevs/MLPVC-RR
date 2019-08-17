@@ -1,14 +1,14 @@
 {% if js_libs is defined %}{{ js_libs }}{% endif %}
-<script nonce="{{ constant('CSP_NONCE') }}">$.API = { API_PATH: "{{ constant('PRIVATE_API_PATH') }}" }</script>
+<script nonce="{{ constant('CSP_NONCE') }}">$.API = { API_PATH: "{{ constant('PRIVATE_API_PATH') }}" };</script>
 {% if default_js %}
-{% if ws_server_host is defined %}
-<script src="https://{{ ws_server_host }}/socket.io/socket.io.js" id="wss"></script>
-{% endif %}
-{{  export_vars({
-	'PRINTABLE_ASCII_PATTERN': constant('PRINTABLE_ASCII_PATTERN'),
-	'signedIn': signed_in,
-}) -}}
+  {% if ws_server_host is defined %}
+    <script src="https://{{ ws_server_host }}/socket.io/socket.io.js" id="wss"></script>
+  {% endif %}
+  {{ export_vars({
+    'PRINTABLE_ASCII_PATTERN': constant('PRINTABLE_ASCII_PATTERN'),
+    'signedIn': signed_in,
+  }) -}}
 {% endif %}
 {% for url in js %}
-<script src='{{ url }}'></script>
+  <script src='{{ url }}'></script>
 {% endfor %}

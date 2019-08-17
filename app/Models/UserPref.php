@@ -10,29 +10,29 @@ namespace App\Models;
  * @method static UserPref find_by_user_id_and_key(string $user_id, string $key)
  */
 class UserPref extends NSModel {
-	public static $primary_key = ['user_id', 'key'];
+  public static $primary_key = ['user_id', 'key'];
 
-	public static $belongs_to = [
-		['user'],
-	];
+  public static $belongs_to = [
+    ['user'],
+  ];
 
-	/**
-	 * @param string $key
-	 * @param User   $user
-	 *
-	 * @return bool
-	 */
-	public static function has(string $key, User $user){
-		return self::exists(['user_id' => $user->id, 'key' => $key]);
-	}
+  /**
+   * @param string $key
+   * @param User   $user
+   *
+   * @return bool
+   */
+  public static function has(string $key, User $user) {
+    return self::exists(['user_id' => $user->id, 'key' => $key]);
+  }
 
-	/**
-	 * @param string $key
-	 * @param User   $user
-	 *
-	 * @return UserPref|null
-	 */
-	public static function find_for(string $key, User $user){
-		return self::find_by_user_id_and_key($user->id, $key);
-	}
+  /**
+   * @param string $key
+   * @param User   $user
+   *
+   * @return UserPref|null
+   */
+  public static function find_for(string $key, User $user) {
+    return self::find_by_user_id_and_key($user->id, $key);
+  }
 }

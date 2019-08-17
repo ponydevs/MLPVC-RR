@@ -3,17 +3,17 @@
 {# @var input string #}
 {# @var map array #}
 {% spaceless %}
-<form {% if signed_in %}action="/user/{{ current_user.id }}/preference/{{ setting_name }}"{% endif %}>
-	<label>
-		{% set content = map.options.desc %}
-		{% if map.type == 'checkbox' %}
-			{{ input ~ ' ' ~ content }}
-		{% else %}
-			{{ content ~ ' ' ~ input }}
-		{% endif %}
-		{% if can_save %}
-		<button class="save typcn typcn-tick green" disabled>Save</button>
-		{% endif %}
-	</label>
-</form>
+  <form {% if signed_in %}action="/user/{{ current_user.id }}/preference/{{ setting_name }}"{% endif %}>
+    <label>
+      {% set content = map.options.desc %}
+      {% if map.type == 'checkbox' %}
+        {{ input ~ ' ' ~ content }}
+      {% else %}
+        {{ content ~ ' ' ~ input }}
+      {% endif %}
+      {% if can_save %}
+        <button class="save typcn typcn-tick green" disabled>Save</button>
+      {% endif %}
+    </label>
+  </form>
 {% endspaceless %}

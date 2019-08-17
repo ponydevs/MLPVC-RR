@@ -1,63 +1,69 @@
 #ctxmenu {
-	display: none;
-	position: absolute;
-	z-index: 20000;
+  display: none;
+  position: absolute;
+  z-index: 20000;
 
-	border: 1px solid rgba(0,0,0,.3);
-	background-color: rgba(0,0,0,.8);
-	box-shadow: 2px 2px 5px rgba(0,0,0,.5);
+  border: 1px solid rgba(0, 0, 0, .3);
+  background-color: rgba(0, 0, 0, .8);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
 
-	margin: 0;
-	padding: 5px;
+  margin: 0;
+  padding: 5px;
 
-	list-style: none;
+  list-style: none;
 
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 
-	cursor: default;
+  cursor: default;
 
-	li {
-		display: block;
+  li {
+    display: block;
 
-		&:first-child, &.sep {
-			color: rgba(255,255,255,.5);
-			font-size: 14px;
+    &:first-child, &.sep {
+      color: rgba(255, 255, 255, .5);
+      font-size: 14px;
 
-			&:not(:last-child){
-				border-bottom: 1px solid;
-				margin-bottom: 3px;
-			}
-		}
-		&:not(:last-child):not(.sep) { padding-bottom: 3px }
-		&.sep:last-child { display: none }
+      &:not(:last-child) {
+        border-bottom: 1px solid;
+        margin-bottom: 3px;
+      }
+    }
 
-		a {
-			display: block;
-			padding: 2px;
-			margin: 0;
-			font-size: 12px;
-			border: 1px solid transparent;
-			background-color: rgba(255,255,255,0);
-			border-radius: 3px;
-			color: darken(white, 10);
-			text-decoration: none;
-			cursor: pointer;
+    &:not(:last-child):not(.sep) {
+      padding-bottom: 3px
+    }
 
-			&:hover {
-				background-color: rgba(255,255,255,.2);
-				border: 1px solid rgba(255,255,255,.6);
-			}
+    &.sep:last-child {
+      display: none
+    }
 
-			&.default {
-				color: #fff;
-				font-weight: bold;
-			}
+    a {
+      display: block;
+      padding: 2px;
+      margin: 0;
+      font-size: 12px;
+      border: 1px solid transparent;
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 3px;
+      color: darken(white, 10%);
+      text-decoration: none;
+      cursor: pointer;
 
-			&:before {
-				margin-right: 3px;
-			}
-		}
-	}
+      &:hover {
+        background-color: rgba(255, 255, 255, .2);
+        border: 1px solid rgba(255, 255, 255, .6);
+      }
+
+      &.default {
+        color: #fff;
+        font-weight: bold;
+      }
+
+      &:before {
+        margin-right: 3px;
+      }
+    }
+  }
 }

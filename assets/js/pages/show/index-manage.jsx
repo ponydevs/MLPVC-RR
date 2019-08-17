@@ -1,34 +1,34 @@
-(function(){
-	'use strict';
+(function() {
+  'use strict';
 
-	let $tables = $('#content').find('table'),
-		SHOW_TYPES = window.SHOW_TYPES;
-	/*!
-	 * Timezone data string taken from:
-	 * http://momentjs.com/downloads/moment-timezone-with-data.js
-	 * version 0.4.1 by Tim Wood, licensed MIT
-	 */
-	moment.tz.add("America/Los_Angeles|PST PDT PWT PPT|80 70 70 70|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261q0 1nX0 11B0 1nX0 SgN0 8x10 iy0 5Wp0 1Vb0 3dB0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0");
+  let $tables = $('#content').find('table'),
+    SHOW_TYPES = window.SHOW_TYPES;
+  /*!
+   * Timezone data string taken from:
+   * http://momentjs.com/downloads/moment-timezone-with-data.js
+   * version 0.4.1 by Tim Wood, licensed MIT
+   */
+  moment.tz.add('America/Los_Angeles|PST PDT PWT PPT|80 70 70 70|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261q0 1nX0 11B0 1nX0 SgN0 8x10 iy0 5Wp0 1Vb0 3dB0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0');
 
-	const setSat830 = ts => moment.tz(ts, "America/Los_Angeles").set({ day: 'Saturday', h: 8, m: 30, s: 0 }).local();
-	let saturday = setSat830(new Date());
-	const sat_date = $.momentToYMD(saturday);
-	const sat_time = $.momentToHM(saturday);
-	const sat_day = saturday.format('dddd');
+  const setSat830 = ts => moment.tz(ts, 'America/Los_Angeles').set({ day: 'Saturday', h: 8, m: 30, s: 0 }).local();
+  let saturday = setSat830(new Date());
+  const sat_date = $.momentToYMD(saturday);
+  const sat_time = $.momentToHM(saturday);
+  const sat_day = saturday.format('dddd');
 
-	let EP_TITLE_REGEX = window.EP_TITLE_REGEX;
+  let EP_TITLE_REGEX = window.EP_TITLE_REGEX;
 
-	function EpisodeForm(id){
-		const typeOptions = [];
-		$.each(SHOW_TYPES, (type, name) => {
-			if (type === 'episode')
-				return '';
+  function EpisodeForm(id) {
+    const typeOptions = [];
+    $.each(SHOW_TYPES, (type, name) => {
+      if (type === 'episode')
+        return '';
 
 
-			typeOptions.push(`<option value="${type}">${name}</option>`);
-		});
-		let $form = $.mk('form').attr('id', id).append(
-			`<div class="label episode-only">
+      typeOptions.push(`<option value="${type}">${name}</option>`);
+    });
+    let $form = $.mk('form').attr('id', id).append(
+      `<div class="label episode-only">
 				<span>Season, Episode & Overall #</span>
 				<div class=input-group-3>
 					<input type="number" min="1" max="9" name="season" placeholder="Season #" required>
@@ -54,18 +54,18 @@
 				<span>Overall number</span>
 				<input type="number" min="1" name="no" placeholder="Overall #" required>
 			</div>`,
-			$.mk('label').append(
-				'<span>Title (5-35 chars.)</span>',
-				$.mk('input').attr({
-					type: 'text',
-					minlength: 5,
-					name: 'title',
-					placeholder: 'Title',
-					autocomplete: 'off',
-					required: true,
-				}).patternAttr(EP_TITLE_REGEX)
-			),
-			`<div class="notice info align-center movie-only">
+      $.mk('label').append(
+        '<span>Title (5-35 chars.)</span>',
+        $.mk('input').attr({
+          type: 'text',
+          minlength: 5,
+          name: 'title',
+          placeholder: 'Title',
+          autocomplete: 'off',
+          required: true,
+        }).patternAttr(EP_TITLE_REGEX),
+      ),
+      `<div class="notice info align-center movie-only">
 				<p>Include "Equestria Girls: " if applicable. Prefixes don't count towards the character limit.</p>
 			</div>
 			<div class="label">
@@ -81,169 +81,171 @@
 			<div class="label">
 				<span>Notes (optional, raw HTML, 1000 chars. max)</span>
 				<div class="code-editor"></div>
-			</div>`
-		);
+			</div>`,
+    );
 
-		$.mk('button').attr('class','episode-only').text('Set time to '+sat_time+' this '+sat_day).on('click', function(e){
-			e.preventDefault();
-			$(this).parents('form').find('input[name="airdate"]').val(sat_date).next().val(sat_time);
-		}).appendTo($form.children('.button-here'));
+    $.mk('button').attr('class', 'episode-only').text('Set time to ' + sat_time + ' this ' + sat_day).on('click', function(e) {
+      e.preventDefault();
+      $(this).parents('form').find('input[name="airdate"]').val(sat_date).next().val(sat_time);
+    }).appendTo($form.children('.button-here'));
 
-		return $form;
-	}
-	let $AddEpFormTemplate = new EpisodeForm('addep'),
-		$EditEpFormTemplate = new EpisodeForm('editep');
+    return $form;
+  }
 
-	$('#add-episode, #add-show').on('click', function(e){
-		e.preventDefault();
+  let $AddEpFormTemplate = new EpisodeForm('addep'),
+    $EditEpFormTemplate = new EpisodeForm('editep');
 
-		const is_episode = /episode/.test(this.id);
-		let $AddEpForm = $AddEpFormTemplate.clone(true, true);
-		$AddEpForm.find(is_episode ? '.movie-only' : '.episode-only').remove();
+  $('#add-episode, #add-show').on('click', function(e) {
+    e.preventDefault();
 
-		if (is_episode)
-			$AddEpForm.prepend(
-				$.mk('div').attr('class','align-center').html(
-					$.mk('button').attr('class','typcn typcn-flash blue').text('Pre-fill based on last added').on('click', e => {
-						const
-							$this = $(e.target),
-							$form = $this.closest('form');
+    const is_episode = /episode/.test(this.id);
+    let $AddEpForm = $AddEpFormTemplate.clone(true, true);
+    $AddEpForm.find(is_episode ? '.movie-only' : '.episode-only').remove();
 
-						$this.disable();
+    if (is_episode)
+      $AddEpForm.prepend(
+        $.mk('div').attr('class', 'align-center').html(
+          $.mk('button').attr('class', 'typcn typcn-flash blue').text('Pre-fill based on last added').on('click', e => {
+            const
+              $this = $(e.target),
+              $form = $this.closest('form');
 
-						$.API.get('/show/prefill', function(){
-							if (!this.status) return $.Dialog.fail(false, this.message);
+            $this.disable();
 
-							let airs = setSat830(this.airday);
-							$.each({
-								airdate: $.momentToYMD(airs),
-								airtime: $.momentToHM(airs),
-								episode: this.episode,
-								season: this.season,
-								no: this.no,
-							}, (name, value) => {
-								$form.find(`[name=${name}]`).val(value);
-							});
-						}).always(function(){
-							$this.enable();
-						});
-					})
-				)
-			);
+            $.API.get('/show/prefill', function() {
+              if (!this.status) return $.Dialog.fail(false, this.message);
 
-		$.Dialog.request($(this).text(), $AddEpForm,'Add', function($form){
-			let notesEditor = $.renderCodeMirror({
-				$el: $form.find('.code-editor'),
-				mode: 'html',
-			});
+              let airs = setSat830(this.airday);
+              $.each({
+                airdate: $.momentToYMD(airs),
+                airtime: $.momentToHM(airs),
+                episode: this.episode,
+                season: this.season,
+                no: this.no,
+              }, (name, value) => {
+                $form.find(`[name=${name}]`).val(value);
+              });
+            }).always(function() {
+              $this.enable();
+            });
+          }),
+        ),
+      );
 
-			$form.on('submit', function(e){
-				e.preventDefault();
-				let airdate = $form.find('input[name=airdate]').disable().val(),
-					airtime = $form.find('input[name=airtime]').disable().val(),
-					airs = $.mkMoment(airdate, airtime).toISOString(),
-					data = $(this).mkData({ airs });
-				data.notes = notesEditor.getValue();
+    $.Dialog.request($(this).text(), $AddEpForm, 'Add', function($form) {
+      let notesEditor = $.renderCodeMirror({
+        $el: $form.find('.code-editor'),
+        mode: 'html',
+      });
 
-				const what = is_episode ? 'episode' : 'show entry';
-				$.Dialog.wait(false, `Adding ${what} to database`);
+      $form.on('submit', function(e) {
+        e.preventDefault();
+        let airdate = $form.find('input[name=airdate]').disable().val(),
+          airtime = $form.find('input[name=airtime]').disable().val(),
+          airs = $.mkMoment(airdate, airtime).toISOString(),
+          data = $(this).mkData({ airs });
+        data.notes = notesEditor.getValue();
 
-				$.API.post('/show', data, function(){
-					if (!this.status) return $.Dialog.fail(false, this.message);
+        const what = is_episode ? 'episode' : 'show entry';
+        $.Dialog.wait(false, `Adding ${what} to database`);
 
-					$.Dialog.wait(false, `Opening ${what} page`, true);
+        $.API.post('/show', data, function() {
+          if (!this.status) return $.Dialog.fail(false, this.message);
 
-					$.Navigation.visit(this.url);
-				});
-			});
-		});
-	});
+          $.Dialog.wait(false, `Opening ${what} page`, true);
 
-	function EditEp(e){
-		e.preventDefault();
+          $.Navigation.visit(this.url);
+        });
+      });
+    });
+  });
 
-		let $this = $(this),
-			EpisodePage = Boolean($this.attr('id')),
-			id = EpisodePage
-				? window.SHOW_ID
-				: $this.closest('tr').attr('data-id');
+  function EditEp(e) {
+    e.preventDefault();
 
-		$.Dialog.wait(`Editing show entry #${id}`);
+    let $this = $(this),
+      EpisodePage = Boolean($this.attr('id')),
+      id = EpisodePage
+        ? window.SHOW_ID
+        : $this.closest('tr').attr('data-id');
 
-		const endpoint = `/show/${id}`;
-		$.API.get(endpoint, function(){
-			if (!this.status) return $.Dialog.fail(false,this.message);
+    $.Dialog.wait(`Editing show entry #${id}`);
 
-			const { show } = this;
+    const endpoint = `/show/${id}`;
+    $.API.get(endpoint, function() {
+      if (!this.status) return $.Dialog.fail(false, this.message);
 
-			const isEpisode = show.season !== null;
+      const { show } = this;
 
-			let $EditEpForm = $EditEpFormTemplate.clone(true, true);
-			$EditEpForm.find(isEpisode ? '.movie-only' : '.episode-only').remove();
+      const isEpisode = show.season !== null;
 
-			if (isEpisode)
-				$EditEpForm.find('input[name=twoparter]').prop('checked',!!show.twoparter);
-			delete show.twoparter;
+      let $EditEpForm = $EditEpFormTemplate.clone(true, true);
+      $EditEpForm.find(isEpisode ? '.movie-only' : '.episode-only').remove();
 
-			let d = moment(show.airs);
-			show.airdate = $.momentToYMD(d);
-			show.airtime = $.momentToHM(d);
+      if (isEpisode)
+        $EditEpForm.find('input[name=twoparter]').prop('checked', !!show.twoparter);
+      delete show.twoparter;
 
-			const notes = show.notes;
-			delete show.notes;
+      let d = moment(show.airs);
+      show.airdate = $.momentToYMD(d);
+      show.airtime = $.momentToHM(d);
 
-			$.each(show,function(k,v){
-				$EditEpForm.find(`:input[name=${k}]`).val(v);
-			});
+      const notes = show.notes;
+      delete show.notes;
 
-			$.Dialog.request(`Editing ${show.type} #${show.id}`, $EditEpForm,'Save', function($form){
-				let notesEditor = $.renderCodeMirror({
-					$el: $form.find('.code-editor'),
-					mode: 'html',
-					value: notes,
-				});
+      $.each(show, function(k, v) {
+        $EditEpForm.find(`:input[name=${k}]`).val(v);
+      });
 
-				$form.on('submit', function(e){
-					e.preventDefault();
+      $.Dialog.request(`Editing ${show.type} #${show.id}`, $EditEpForm, 'Save', function($form) {
+        let notesEditor = $.renderCodeMirror({
+          $el: $form.find('.code-editor'),
+          mode: 'html',
+          value: notes,
+        });
 
-					let data = $(this).mkData(),
-						d = $.mkMoment(data.airdate, data.airtime);
-					delete data.airdate;
-					delete data.airtime;
-					data.airs = d.toISOString();
-					data.notes = notesEditor.getValue();
+        $form.on('submit', function(e) {
+          e.preventDefault();
 
-					$.Dialog.wait(false, 'Saving changes');
+          let data = $(this).mkData(),
+            d = $.mkMoment(data.airdate, data.airtime);
+          delete data.airdate;
+          delete data.airtime;
+          data.airs = d.toISOString();
+          data.notes = notesEditor.getValue();
 
-					$.API.put(endpoint, data, function(){
-						if (!this.status) return $.Dialog.fail(false, this.message);
+          $.Dialog.wait(false, 'Saving changes');
 
-						$.Dialog.wait(false, 'Updating page', true);
-						$.Navigation.reload();
-					});
-				});
-			});
-		});
-	}
-	$content.on('click','#edit-show',EditEp);
-	$tables.on('click', '.edit-show', EditEp).on('click', '.delete-show', function(e){
-		e.preventDefault();
+          $.API.put(endpoint, data, function() {
+            if (!this.status) return $.Dialog.fail(false, this.message);
 
-		let $this = $(this),
-			$tr = $this.closest('tr'),
-			id = $tr.attr('data-id'),
-			type = $tr.attr('data-type');
+            $.Dialog.wait(false, 'Updating page', true);
+            $.Navigation.reload();
+          });
+        });
+      });
+    });
+  }
 
-		$.Dialog.confirm(`Deleting ${type} #${id}`,`<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the ${type}, too.</p><p>Are you sure you want to delete it?</p>`, function(sure){
-			if (!sure) return;
+  $content.on('click', '#edit-show', EditEp);
+  $tables.on('click', '.edit-show', EditEp).on('click', '.delete-show', function(e) {
+    e.preventDefault();
 
-			$.Dialog.wait(false, 'Removing episode');
+    let $this = $(this),
+      $tr = $this.closest('tr'),
+      id = $tr.attr('data-id'),
+      type = $tr.attr('data-type');
 
-			$.API.delete(`/show/${id}`, function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
+    $.Dialog.confirm(`Deleting ${type} #${id}`, `<p>This will remove <strong>ALL</strong><ul><li>requests</li><li>reservations</li><li>video links</li><li>and votes</li></ul>associated with the ${type}, too.</p><p>Are you sure you want to delete it?</p>`, function(sure) {
+      if (!sure) return;
 
-				$.Navigation.reload(true);
-			});
-		});
-	});
+      $.Dialog.wait(false, 'Removing episode');
+
+      $.API.delete(`/show/${id}`, function() {
+        if (!this.status) return $.Dialog.fail(false, this.message);
+
+        $.Navigation.reload(true);
+      });
+    });
+  });
 })();

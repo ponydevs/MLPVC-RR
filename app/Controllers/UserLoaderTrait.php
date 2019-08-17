@@ -6,15 +6,16 @@ use App\CoreUtils;
 use App\Models\User;
 
 trait UserLoaderTrait {
-	/** @var User|null */
-	private $user;
-	private function load_user($params){
-		if (!isset($params['id']))
-			CoreUtils::notFound();
+  /** @var User|null */
+  private $user;
 
-		$this->user = User::find($params['id']);
+  private function load_user($params) {
+    if (!isset($params['id']))
+      CoreUtils::notFound();
 
-		if (empty($this->user))
-			CoreUtils::notFound();
-	}
+    $this->user = User::find($params['id']);
+
+    if (empty($this->user))
+      CoreUtils::notFound();
+  }
 }

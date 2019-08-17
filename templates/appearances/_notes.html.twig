@@ -5,11 +5,11 @@
 {# @var cm_link bool #}
 {% if wrap %}
 <div class='notes'>
-{% endif %}
-{{ notes }}
-{% if cm_link and cm_count > 0 %}
-<span>{{ make_plural('Cutie mark', cm_count) }} available</span>
-{% endif %}
-{% if wrap %}
+  {% endif %}
+  {{ notes }}
+  {% if cm_link and cm_count > 0 %}
+    <span>{{ make_plural('Cutie mark', cm_count) }} available</span>
+  {% endif %}
+  {% if wrap %}
 </div>
 {% endif %}

@@ -26,143 +26,152 @@ use App\Users;
  * @method static Cutiemark[] find_all_by_appearance_id(int $appearance_id)
  */
 class Cutiemark extends NSModel {
-	public static $table_name = 'cutiemarks';
+  public static $table_name = 'cutiemarks';
 
-	public static $belongs_to = [
-		['appearance'],
-	];
-	/** For Twig */
-	public function getAppearance():Appearance {
-		return $this->appearance;
-	}
+  public static $belongs_to = [
+    ['appearance'],
+  ];
 
-	public static $after_destroy = ['remove_files'];
+  /** For Twig */
+  public function getAppearance():Appearance {
+    return $this->appearance;
+  }
 
-	public function get_contributor_id(){
-		$attrval = $this->read_attribute('contributor_id');
-		if ($attrval === null && $this->favme !== null){
-			$deviation = DeviantArt::getCachedDeviation($this->favme);
-			if (!empty($deviation)){
-				$cont = Users::get($deviation->author, 'name');
-				if (!empty($cont)){
-					$this->contributor_id = $cont->id;
-					$this->save();
-					return $cont->id;
-				}
-			}
-		}
-		return $attrval;
-	}
+  public static $after_destroy = ['remove_files'];
 
-	public function get_contributor(){
-		return $this->contributor_id !== null ? User::find($this->contributor_id) : null;
-	}
-	/** For Twig */
-	public function getContributor():?User {
-		return $this->contributor;
-	}
+  public function get_contributor_id() {
+    $attrval = $this->read_attribute('contributor_id');
+    if ($attrval === null && $this->favme !== null){
+      $deviation = DeviantArt::getCachedDeviation($this->favme);
+      if (!empty($deviation)){
+        $cont = Users::get($deviation->author, 'name');
+        if (!empty($cont)){
+          $this->contributor_id = $cont->id;
+          $this->save();
 
-	public function getTokenizedFilePath(){
-		return FSPATH."cm_tokenized/{$this->id}.svg";
-	}
+          return $cont->id;
+        }
+      }
+    }
 
-	public const SOURCE_FOLDER = FSPATH.'cm_source/';
+    return $attrval;
+  }
 
-	public function getSourceFilePath(){
-		return self::SOURCE_FOLDER.$this->id.'.svg';
-	}
+  public function get_contributor() {
+    return $this->contributor_id !== null ? User::find($this->contributor_id) : null;
+  }
 
-	public function getRenderedFilePath(){
-		return FSPATH."cg_render/cutiemark/{$this->id}.svg";
-	}
+  /** For Twig */
+  public function getContributor():?User {
+    return $this->contributor;
+  }
 
-	public function getTokenizedFile():?string {
-		$tokenized_path = $this->getTokenizedFilePath();
-		$source_path = $this->getSourceFilePath();
-		$source_exists = file_exists($source_path);
-		if (file_exists($tokenized_path)){
-			if (!$source_exists){
-				CoreUtils::deleteFile($tokenized_path);
-				$this->appearance->clearRenderedImages([Appearance::CLEAR_CM]);
-				return null;
-			}
-			if (filemtime($tokenized_path) >= filemtime($source_path))
-				return File::get($tokenized_path);
-		}
+  public function getTokenizedFilePath() {
+    return FSPATH."cm_tokenized/{$this->id}.svg";
+  }
 
-		if (!$source_exists)
-			return null;
+  public const SOURCE_FOLDER = FSPATH.'cm_source/';
 
-		$data = File::get($source_path);
-		$data = CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($data), $this->appearance_id);
-		CoreUtils::createFoldersFor($tokenized_path);
-		File::put($tokenized_path, $data);
-		return $data;
-	}
+  public function getSourceFilePath() {
+    return self::SOURCE_FOLDER.$this->id.'.svg';
+  }
 
-	/**
-	 * @see CGUtils::renderCMSVG()
-	 * @return string|null
-	 */
-	public function getRenderedRelativeURL():?string {
-		return "/cg/cutiemark/{$this->id}.svg".(!empty($_GET['token']) ? "?token={$_GET['token']}" : '');
-	}
+  public function getRenderedFilePath() {
+    return FSPATH."cg_render/cutiemark/{$this->id}.svg";
+  }
 
-	/**
-	 * @see CGUtils::renderCMSVG()
-	 * @return string|null
-	 */
-	public function getRenderedURL():?string {
-		$token = !empty($_GET['token']) ? '&token='.urlencode($_GET['token']) : '';
-		return $this->getRenderedRelativeURL().'?t='.CoreUtils::filemtime($this->getRenderedFilePath()).$token;
-	}
+  public function getTokenizedFile():?string {
+    $tokenized_path = $this->getTokenizedFilePath();
+    $source_path = $this->getSourceFilePath();
+    $source_exists = file_exists($source_path);
+    if (file_exists($tokenized_path)){
+      if (!$source_exists){
+        CoreUtils::deleteFile($tokenized_path);
+        $this->appearance->clearRenderedImages([Appearance::CLEAR_CM]);
 
-	/**
-	 * @see CGUtils::renderCMFacingSVG()
-	 * @return string
-	 */
-	public function getFacingSVGURL(){
-		return $this->appearance->getFacingSVGURL($this->facing);
-	}
+        return null;
+      }
+      if (filemtime($tokenized_path) >= filemtime($source_path))
+        return File::get($tokenized_path);
+    }
 
-	public function getPreviewForAppearancePageListItem(){
-		$facing_svg = $this->getFacingSVGURL();
-		$preview = CoreUtils::aposEncode($this->getRenderedURL());
-		$rotate = $this->rotation !== 0 ? "transform:rotate({$this->rotation}deg)" : '';
-		return <<<HTML
+    if (!$source_exists)
+      return null;
+
+    $data = File::get($source_path);
+    $data = CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($data), $this->appearance_id);
+    CoreUtils::createFoldersFor($tokenized_path);
+    File::put($tokenized_path, $data);
+
+    return $data;
+  }
+
+  /**
+   * @return string|null
+   * @see CGUtils::renderCMSVG()
+   */
+  public function getRenderedRelativeURL():?string {
+    return "/cg/cutiemark/{$this->id}.svg".(!empty($_GET['token']) ? "?token={$_GET['token']}" : '');
+  }
+
+  /**
+   * @return string|null
+   * @see CGUtils::renderCMSVG()
+   */
+  public function getRenderedURL():?string {
+    $token = !empty($_GET['token']) ? '&token='.urlencode($_GET['token']) : '';
+
+    return $this->getRenderedRelativeURL().'?t='.CoreUtils::filemtime($this->getRenderedFilePath()).$token;
+  }
+
+  /**
+   * @return string
+   * @see CGUtils::renderCMFacingSVG()
+   */
+  public function getFacingSVGURL() {
+    return $this->appearance->getFacingSVGURL($this->facing);
+  }
+
+  public function getPreviewForAppearancePageListItem() {
+    $facing_svg = $this->getFacingSVGURL();
+    $preview = CoreUtils::aposEncode($this->getRenderedURL());
+    $rotate = $this->rotation !== 0 ? "transform:rotate({$this->rotation}deg)" : '';
+
+    return <<<HTML
 			<div class="preview" style="background-image:url('{$facing_svg}')">
 				<div class="img" style="background-image:url('{$preview}');$rotate"></div>
 			</div>
 			HTML;
+  }
 
-	}
+  public function canEdit():bool {
+    return Permission::sufficient('staff') || (Auth::$signed_in && $this->appearance->owner_id === Auth::$user->id);
+  }
 
-	public function canEdit():bool {
-		return Permission::sufficient('staff') || (Auth::$signed_in && $this->appearance->owner_id === Auth::$user->id);
-	}
+  public function getDownloadURL($source = false):string {
+    $url = new NSUriBuilder("/cg/cutiemark/download/{$this->id}");
+    if (!empty($_GET['token']))
+      $url->append_query_param('token', $_GET['token']);
+    if ($source)
+      $url->append_query_param('source', null);
 
-	public function getDownloadURL($source = false):string {
-		$url = new NSUriBuilder("/cg/cutiemark/download/{$this->id}");
-		if (!empty($_GET['token']))
-			$url->append_query_param('token', $_GET['token']);
-		if ($source)
-			$url->append_query_param('source', null);
-		return $url;
-	}
+    return $url;
+  }
 
-	public function to_js_response(){
-		$response = $this->to_array(['except' => ['contributor_id','favme']]);
-		if ($this->favme !== null)
-			$response['deviation'] = 'http://fav.me/'.$this->favme;
-		if ($this->contributor_id !== null)
-			$response['username'] = $this->contributor->name;
-		$response['rendered'] = $this->getRenderedURL();
-		return $response;
-	}
+  public function to_js_response() {
+    $response = $this->to_array(['except' => ['contributor_id', 'favme']]);
+    if ($this->favme !== null)
+      $response['deviation'] = 'http://fav.me/'.$this->favme;
+    if ($this->contributor_id !== null)
+      $response['username'] = $this->contributor->name;
+    $response['rendered'] = $this->getRenderedURL();
 
-	public function remove_files(){
-		CoreUtils::deleteFile($this->getSourceFilePath());
-		CoreUtils::deleteFile($this->getTokenizedFilePath());
-		CoreUtils::deleteFile($this->getRenderedFilePath());
-	}
+    return $response;
+  }
+
+  public function remove_files() {
+    CoreUtils::deleteFile($this->getSourceFilePath());
+    CoreUtils::deleteFile($this->getTokenizedFilePath());
+    CoreUtils::deleteFile($this->getRenderedFilePath());
+  }
 }

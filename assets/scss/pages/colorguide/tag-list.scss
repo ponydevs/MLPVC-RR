@@ -1,123 +1,149 @@
 @import "../../colorguide_vars";
 
-#content > p.links { margin: 0 0 5px }
+#content > p.links {
+  margin: 0 0 5px
+}
 
 #tags {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 17px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 17px;
 
-	tr {
-		th {
-			background: #fff;
-			border: 1px solid;
-			padding: 3px 0;
+  tr {
+    th {
+      background: #fff;
+      border: 1px solid;
+      padding: 3px 0;
 
-			body.theme-dark & {
-				background: #222;
-			}
-		}
-		td {
-			padding: 5px;
-			border: 1px solid;
+      body.theme-dark & {
+        background: #222;
+      }
+    }
 
-			&.tid {
-				width: 7.5%;
-				text-align: center;
-			}
-			&.name {
-				font-weight: bold;
+    td {
+      padding: 5px;
+      border: 1px solid;
 
-				a {
-					color: inherit !important;
-					text-decoration: underline !important;
+      &.tid {
+        width: 7.5%;
+        text-align: center;
+      }
 
-					.typcn { margin-right: 7px }
-				}
-			}
-			&.utils {
-				white-space: nowrap;
+      &.name {
+        font-weight: bold;
 
-				button:not(:last-child) {
-					margin-right: 5px;
-				}
-			}
-			&.type {
-				text-align: center;
-				&:empty:before {
-					content: "none";
-					font-size: .8em;
-					font-style: italic;
-					display: block;
-					opacity: .7;
-				}
-			}
-			&.uses {
-				width: 12%;
-				text-align: center;
+        a {
+          color: inherit !important;
+          text-decoration: underline !important;
 
-				button {
-					margin-left: 5px;
-				}
-			}
-		}
-		.uses > button {
-			vertical-align: middle !important;
-		}
-	}
-	tbody {
-		&:empty:before {
-			content: "No tags to display";
-			font-size: 1.4em;
-			font-style: italic;
-			display: block;
-			text-align: center;
-			padding: 10px;
-		}
+          .typcn {
+            margin-right: 7px
+          }
+        }
+      }
 
-		.tid { font-size: 1.3em }
+      &.utils {
+        white-space: nowrap;
 
-		tr {
-			button {
-				margin: 0;
-				padding: 3px;
-			}
-			&:not([class]) {
-				@include tag-style($TDefault);
-				@include tag-button-style($TDefault);
-			}
-			&.typ-cat {
-				@include tag-style($TCategory);
-				@include tag-button-style($TCategory);
-			}
-			&.typ-spec {
-				@include tag-style($TSpecies);
-				@include tag-button-style($TSpecies);
-			}
-			&.typ-gen {
-				@include tag-style($TGender);
-				@include tag-button-style($TGender);
-			}
-			&.typ-app {
-				@include tag-style($TClothing);
-				@include tag-button-style($TClothing);
-			}
-			&.typ-ep {
-				@include tag-style($TEpisode);
-				@include tag-button-style($TEpisode);
-			}
-			&.typ-char {
-				@include tag-style($TCharacter);
-				@include tag-button-style($TCharacter);
-			}
-			&.typ-warn {
-				@include tag-style($TWarning);
-				@include tag-button-style($TWarning);
-			}
+        button:not(:last-child) {
+          margin-right: 5px;
+        }
+      }
 
-			&:last-child td { border-bottom: 0 }
-		}
+      &.type {
+        text-align: center;
 
-		.entryid { font-size: 1.6em }
-	}
+        &:empty:before {
+          content: "none";
+          font-size: .8em;
+          font-style: italic;
+          display: block;
+          opacity: .7;
+        }
+      }
+
+      &.uses {
+        width: 12%;
+        text-align: center;
+
+        button {
+          margin-left: 5px;
+        }
+      }
+    }
+
+    .uses > button {
+      vertical-align: middle !important;
+    }
+  }
+
+  tbody {
+    &:empty:before {
+      content: "No tags to display";
+      font-size: 1.4em;
+      font-style: italic;
+      display: block;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .tid {
+      font-size: 1.3em
+    }
+
+    tr {
+      button {
+        margin: 0;
+        padding: 3px;
+      }
+
+      &:not([class]) {
+        @include tag-style($TDefault);
+        @include tag-button-style($TDefault);
+      }
+
+      &.typ-cat {
+        @include tag-style($TCategory);
+        @include tag-button-style($TCategory);
+      }
+
+      &.typ-spec {
+        @include tag-style($TSpecies);
+        @include tag-button-style($TSpecies);
+      }
+
+      &.typ-gen {
+        @include tag-style($TGender);
+        @include tag-button-style($TGender);
+      }
+
+      &.typ-app {
+        @include tag-style($TClothing);
+        @include tag-button-style($TClothing);
+      }
+
+      &.typ-ep {
+        @include tag-style($TEpisode);
+        @include tag-button-style($TEpisode);
+      }
+
+      &.typ-char {
+        @include tag-style($TCharacter);
+        @include tag-button-style($TCharacter);
+      }
+
+      &.typ-warn {
+        @include tag-style($TWarning);
+        @include tag-button-style($TWarning);
+      }
+
+      &:last-child td {
+        border-bottom: 0
+      }
+    }
+
+    .entryid {
+      font-size: 1.6em
+    }
+  }
 }

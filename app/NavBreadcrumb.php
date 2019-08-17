@@ -8,111 +8,112 @@ namespace App;
  * @see View::getBreadcrumb For rendering implementation
  */
 class NavBreadcrumb {
-	/** @var string */
-	private $name;
+  /** @var string */
+  private $name;
 
-	/** @var string|null */
-	private $link;
+  /** @var string|null */
+  private $link;
 
-	/** @var bool */
-	private $active, $enabled;
+  /** @var bool */
+  private $active, $enabled;
 
-	/** @var NavBreadcrumb */
-	private $child;
+  /** @var NavBreadcrumb */
+  private $child;
 
-	public function __construct(string $name, ?string $link = null, bool $active = false){
-		$this->name = $name;
-		$this->link = $link;
-		$this->enabled = $link !== null;
-		$this->active = $active;
-	}
+  public function __construct(string $name, ?string $link = null, bool $active = false) {
+    $this->name = $name;
+    $this->link = $link;
+    $this->enabled = $link !== null;
+    $this->active = $active;
+  }
 
-	public function setLink(?string $link, bool $enable = true){
-		$this->link = $link;
-		if ($enable)
-			$this->enabled = true;
+  public function setLink(?string $link, bool $enable = true) {
+    $this->link = $link;
+    if ($enable)
+      $this->enabled = true;
 
-		return $this;
-	}
+    return $this;
+  }
 
-	public function setActive(bool $value = true){
-		$this->active = $value;
+  public function setActive(bool $value = true) {
+    $this->active = $value;
 
-		return $this;
-	}
+    return $this;
+  }
 
-	public function setEnabled(bool $value){
-		$this->enabled = $value;
+  public function setEnabled(bool $value) {
+    $this->enabled = $value;
 
-		return $this;
-	}
+    return $this;
+  }
 
-	/**
-	 * @param string|NavBreadcrumb $ch
-	 * @param bool                 $activate Whether to set child as active
-	 *
-	 * @return self
-	 */
-	public function setChild($ch, bool $activate = false):NavBreadcrumb {
-		if (\is_string($ch)){
-			$ch = new self($ch);
-			$activate = true;
-		}
-		if ($activate === true)
-			$ch->setActive();
-		$this->child = $ch;
+  /**
+   * @param string|NavBreadcrumb $ch
+   * @param bool                 $activate Whether to set child as active
+   *
+   * @return self
+   */
+  public function setChild($ch, bool $activate = false):NavBreadcrumb {
+    if (\is_string($ch)){
+      $ch = new self($ch);
+      $activate = true;
+    }
+    if ($activate === true)
+      $ch->setActive();
+    $this->child = $ch;
 
-		return $this;
-	}
+    return $this;
+  }
 
-	/**
-	 * Returns the last breadcrumb in the chain to make appending easier
-	 *
-	 * @return self
-	 */
-	public function end():NavBreadcrumb {
-		$end = $this;
-		while ($end->child !== null)
-			$end = $end->child;
+  /**
+   * Returns the last breadcrumb in the chain to make appending easier
+   *
+   * @return self
+   */
+  public function end():NavBreadcrumb {
+    $end = $this;
+    while ($end->child !== null){
+      $end = $end->child;
+    }
 
-		return $end;
-	}
+    return $end;
+  }
 
-	public function getChild():?NavBreadcrumb {
-		return $this->child;
-	}
+  public function getChild():?NavBreadcrumb {
+    return $this->child;
+  }
 
-	public function toAnchor(int $position){
-		$extraAttributes = 'itemscope itemtype="http://schema.org/Thing" itemprop="item"';
-		if ($this->link){
-			$abspath = ABSPATH.\mb_substr($this->link, 1);
-			$extraAttributes .= " itemid='$abspath'";
-		}
-		$name = '<span itemprop="name">'.CoreUtils::escapeHTML($this->name).'</span>';
+  public function toAnchor(int $position) {
+    $extraAttributes = 'itemscope itemtype="http://schema.org/Thing" itemprop="item"';
+    if ($this->link){
+      $abspath = ABSPATH.\mb_substr($this->link, 1);
+      $extraAttributes .= " itemid='$abspath'";
+    }
+    $name = '<span itemprop="name">'.CoreUtils::escapeHTML($this->name).'</span>';
 
-		$HTML = $this->active
-			? "<strong $extraAttributes>$name</strong>"
-			: (
-				$this->enabled
-				? "<a href='{$this->link}' $extraAttributes>$name</a>"
-				: "<span $extraAttributes>$name</span>"
-			);
-		return "<li itemprop='itemListElement' itemscope itemtype='http://schema.org/ListItem'>$HTML<meta itemprop='position' content='$position'></li>";
-	}
+    $HTML = $this->active
+      ? "<strong $extraAttributes>$name</strong>"
+      : (
+      $this->enabled
+        ? "<a href='{$this->link}' $extraAttributes>$name</a>"
+        : "<span $extraAttributes>$name</span>"
+      );
 
-	public const DIV = '<li class="div">/</li>';
+    return "<li itemprop='itemListElement' itemscope itemtype='http://schema.org/ListItem'>$HTML<meta itemprop='position' content='$position'></li>";
+  }
 
-	public function __toString():string {
-		$position = 1;
-		$HTML = [];
-		$ptr = $this;
-		do {
-			$HTML[] = $ptr->toAnchor($position);
-			$ptr = $ptr->getChild();
-			$position++;
-		}
-		while ($ptr !== null);
+  public const DIV = '<li class="div">/</li>';
 
-		return self::DIV.implode(self::DIV, $HTML);
-	}
+  public function __toString():string {
+    $position = 1;
+    $HTML = [];
+    $ptr = $this;
+    do {
+      $HTML[] = $ptr->toAnchor($position);
+      $ptr = $ptr->getChild();
+      $position++;
+    } while ($ptr !== null);
+
+    return self::DIV.implode(self::DIV, $HTML);
+  }
 }

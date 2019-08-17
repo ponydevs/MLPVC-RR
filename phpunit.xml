@@ -7,11 +7,11 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false">
-    <testsuites>
-        <testsuite name="Test Suite">
-            <directory suffix="Test.php">tests</directory>
-        </testsuite>
-    </testsuites>
+	<testsuites>
+		<testsuite name="Test Suite">
+			<directory suffix="Test.php">tests</directory>
+		</testsuite>
+	</testsuites>
 	<php>
 		<server name="SERVER_NAME" value="mlpvector.lc"/>
 		<server name="REQUEST_METHOD" value="GET"/>

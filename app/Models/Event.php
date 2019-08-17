@@ -8,7 +8,6 @@ use App\DB;
 use App\DeviantArt;
 use App\Permission;
 use App\Time;
-use App\UserPrefs;
 
 /**
  * @property int          $id
@@ -32,126 +31,133 @@ use App\UserPrefs;
  * @method static Event find(...$args)
  */
 class Event extends NSModel implements Linkable {
-	public static $has_many = [
-		['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
-	];
-	public static $belongs_to = [
-		['creator', 'class' => 'User', 'foreign_key' => 'added_by'],
-		['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],
-	];
-	/** For Twig */
-	function getCreator(){
-		return $this->creator;
-	}
+  public static $has_many = [
+    ['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
+  ];
+  public static $belongs_to = [
+    ['creator', 'class' => 'User', 'foreign_key' => 'added_by'],
+    ['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],
+  ];
 
-	public const EVENT_TYPES = [
-		'collab' => 'Collaboration',
-		'contest' => 'Contest',
-	];
+  /** For Twig */
+  function getCreator() {
+    return $this->creator;
+  }
 
-	public const REGULAR_ENTRY_ROLES = ['user', 'member', 'staff'];
+  public const EVENT_TYPES = [
+    'collab' => 'Collaboration',
+    'contest' => 'Contest',
+  ];
 
-	public const SPECIAL_ENTRY_ROLES = [
-		'spec_discord' => 'Discord Server Members',
-	];
+  public const REGULAR_ENTRY_ROLES = ['user', 'member', 'staff'];
 
-	/**
-	 * @return Event[]
-	 */
-	public static function upcoming(){
-		return DB::$instance->where('starts_at > NOW()')
-			->orWhere('ends_at > NOW()')
-			->orderBy('starts_at')
-			->get('events');
-	}
+  public const SPECIAL_ENTRY_ROLES = [
+    'spec_discord' => 'Discord Server Members',
+  ];
 
-	public function toURL():string {
-		return "/event/{$this->id}-".$this->getSafeName();
-	}
-	public function toAnchor():string{
-		return "<a href='{$this->toURL()}'>$this->name</a>";
-	}
+  /**
+   * @return Event[]
+   */
+  public static function upcoming() {
+    return DB::$instance->where('starts_at > NOW()')
+      ->orWhere('ends_at > NOW()')
+      ->orderBy('starts_at')
+      ->get('events');
+  }
 
-	public function getSafeName():string {
-		return CoreUtils::makeUrlSafe($this->name);
-	}
+  public function toURL():string {
+    return "/event/{$this->id}-".$this->getSafeName();
+  }
 
-	public function checkCanEnter(User $user):bool {
-		switch ($this->entry_role){
-			case 'user':
-			case 'member':
-			case 'staff':
-				return $user->perm($this->entry_role);
-			case 'spec_discord':
-				return $user->isDiscordServerMember(true);
-			default:
-				throw new \RuntimeException("Unhandled entry role {$this->entry_role} on event #{$this->id}");
-		}
-	}
+  public function toAnchor():string {
+    return "<a href='{$this->toURL()}'>$this->name</a>";
+  }
 
-	public function checkCanVote(User $user):bool {
-		return !$this->hasEnded() && Permission::sufficient($this->vote_role, $user->role);
-	}
+  public function getSafeName():string {
+    return CoreUtils::makeUrlSafe($this->name);
+  }
 
-	public function hasStarted(?int $now = null){
-		return ($now??time()) >= strtotime($this->starts_at);
-	}
+  public function checkCanEnter(User $user):bool {
+    switch ($this->entry_role){
+      case 'user':
+      case 'member':
+      case 'staff':
+        return $user->perm($this->entry_role);
+      case 'spec_discord':
+        return $user->isDiscordServerMember(true);
+      default:
+        throw new \RuntimeException("Unhandled entry role {$this->entry_role} on event #{$this->id}");
+    }
+  }
 
-	public function hasEnded(?int $now = null){
-		return ($now??time()) >= strtotime($this->ends_at);
-	}
+  public function checkCanVote(User $user):bool {
+    return !$this->hasEnded() && Permission::sufficient($this->vote_role, $user->role);
+  }
 
-	public function isOngoing(){
-		return $this->hasStarted() && !$this->hasEnded();
-	}
+  public function hasStarted(?int $now = null) {
+    return ($now ?? time()) >= strtotime($this->starts_at);
+  }
 
-	public function getEntryRoleName():string {
-		return \in_array($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC[$this->entry_role]) : self::SPECIAL_ENTRY_ROLES[$this->entry_role];
-	}
+  public function hasEnded(?int $now = null) {
+    return ($now ?? time()) >= strtotime($this->ends_at);
+  }
 
-	public function isFinalized(){
-		return $this->type === 'collab' ? !empty($this->result_favme) : $this->hasEnded();
-	}
+  public function isOngoing() {
+    return $this->hasStarted() && !$this->hasEnded();
+  }
 
-	public function getEntriesHTML(bool $lazyload = false, bool $wrap = WRAP):string {
-		$HTML = '';
-		$Entries = $this->entries;
-		foreach ($Entries as $entry)
-			$HTML .= $entry->toListItemHTML($this, $lazyload);
-		return $wrap ? "<ul id='event-entries'>$HTML</ul>" : $HTML;
-	}
+  public function getEntryRoleName():string {
+    return \in_array($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC[$this->entry_role])
+      : self::SPECIAL_ENTRY_ROLES[$this->entry_role];
+  }
 
-	public function getWinnerHTML(bool $wrap = WRAP):string {
-		$HTML = '';
+  public function isFinalized() {
+    return $this->type === 'collab' ? !empty($this->result_favme) : $this->hasEnded();
+  }
 
-		if ($this->type === 'collab')
-			$HTML = '<div id="final-image"><div>'.DeviantArt::getCachedDeviation($this->result_favme)->toLinkWithPreview().'</div></div>';
-		else {
+  public function getEntriesHTML(bool $lazyload = false, bool $wrap = WRAP):string {
+    $HTML = '';
+    $Entries = $this->entries;
+    foreach ($Entries as $entry)
+      $HTML .= $entry->toListItemHTML($this, $lazyload);
 
-			/** @var $HighestScoringEntries EventEntry[] */
-			$HighestScoringEntries = DB::$instance->setModel(EventEntry::class)->query(
-				'SELECT * FROM event_entries 
+    return $wrap ? "<ul id='event-entries'>$HTML</ul>" : $HTML;
+  }
+
+  public function getWinnerHTML(bool $wrap = WRAP):string {
+    $HTML = '';
+
+    if ($this->type === 'collab')
+      $HTML = '<div id="final-image"><div>'.DeviantArt::getCachedDeviation($this->result_favme)->toLinkWithPreview().'</div></div>';
+    else {
+
+      /** @var $HighestScoringEntries EventEntry[] */
+      $HighestScoringEntries = DB::$instance->setModel(EventEntry::class)->query(
+        'SELECT * FROM event_entries 
 				WHERE event_id = ? AND score > 0 AND score = (SELECT MAX(score) FROM event_entries)
-				ORDER BY submitted_at ASC',[$this->id]);
+				ORDER BY submitted_at', [$this->id]);
 
-			if (empty($HighestScoringEntries))
-				$HTML .= "<div class='notice info'><span class='typcn typcn-times'></span> No entries match the win criteria, thus the event ended without a winner</div>";
-			else {
-				$HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner', \count($HighestScoringEntries),PREPEND_NUMBER).'.</p>';
-				foreach ($HighestScoringEntries as $entry){
-					$title = CoreUtils::escapeHTML($entry->title);
-					$preview = isset($entry->prev_full) ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>" : "<span class='title'>$title</span>";
-					$by = '<div>'.$entry->submitter->toAnchor(User::WITH_AVATAR).'</div>';
-					$HTML .= "<div class='winning-entry'>$preview$by</div>";
-				}
-			}
-		}
+      if (empty($HighestScoringEntries))
+        $HTML .= "<div class='notice info'><span class='typcn typcn-times'></span> No entries match the win criteria, thus the event ended without a winner</div>";
+      else {
+        $HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner', \count($HighestScoringEntries), PREPEND_NUMBER).'.</p>';
+        foreach ($HighestScoringEntries as $entry){
+          $title = CoreUtils::escapeHTML($entry->title);
+          $preview = isset($entry->prev_full)
+            ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>"
+            : "<span class='title'>$title</span>";
+          $by = '<div>'.$entry->submitter->toAnchor(User::WITH_AVATAR).'</div>';
+          $HTML .= "<div class='winning-entry'>$preview$by</div>";
+        }
+      }
+    }
 
-		return $wrap ? "<div id='results'>$HTML</div>" : $HTML;
-	}
+    return $wrap ? "<div id='results'>$HTML</div>" : $HTML;
+  }
 
-	public function getDurationString():string {
-		$diff = Time::difference($this->starts_at->getTimestamp(), $this->ends_at->getTimestamp());
-		return Time::differenceToString($diff, true);
-	}
+  public function getDurationString():string {
+    $diff = Time::difference($this->starts_at->getTimestamp(), $this->ends_at->getTimestamp());
+
+    return Time::differenceToString($diff, true);
+  }
 }

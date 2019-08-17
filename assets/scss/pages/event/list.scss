@@ -1,47 +1,51 @@
 #event-list {
-	padding: 0;
-	margin: 10px 0 0;
-	list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  list-style: none;
 
-	&:empty:before {
-		display: block;
-		content: "There are no events to display.";
-		font-size: 1.3em;
-		font-style: italic;
-		text-align: center;
-	}
+  &:empty:before {
+    display: block;
+    content: "There are no events to display.";
+    font-size: 1.3em;
+    font-style: italic;
+    text-align: center;
+  }
 
-	> li {
-		display: block;
-		padding: 10px;
-		color: #434343;
-		background-color: rgba(black,.03);
-		border: 1px solid rgba(black,.3);
+  > li {
+    display: block;
+    padding: 10px;
+    color: #434343;
+    background-color: rgba(black, .03);
+    border: 1px solid rgba(black, .3);
 
-		&:not(:last-child) { margin-bottom: 10px }
+    &:not(:last-child) {
+      margin-bottom: 10px
+    }
 
-		> strong {
-			display: block;
-			font-size: 1.5em;
+    > strong {
+      display: block;
+      font-size: 1.5em;
 
-			> * {
-				display: inline-block;
-				vertical-align: middle;
-			}
+      > * {
+        display: inline-block;
+        vertical-align: middle;
+      }
 
-			button, .btn { margin: 0 0 0 8px }
-		}
+      button, .btn {
+        margin: 0 0 0 8px
+      }
+    }
 
-		> .added {
-			display: block;
-			font-size: .8em;
-			margin-bottom: 10px;
-		}
+    > .added {
+      display: block;
+      font-size: .8em;
+      margin-bottom: 10px;
+    }
 
-		> ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-		}
-	}
+    > ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+  }
 }

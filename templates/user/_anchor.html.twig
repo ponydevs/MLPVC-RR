@@ -3,17 +3,17 @@
 {# @var enable_promises bool #}
 {# @var with_vector_app_icon bool #}
 {% spaceless %}
-<a href='{{ user.toURL }}' class='da-userlink local{{ with_avatar ? ' with-avatar provider-' ~ user.get_avatar_provider : '' }}'>
-	{% if with_avatar %}
-		{% if enable_promises %}
-		<div class='user-avatar-promise avatar image-promise' data-src='{{ user.get_avatar_url }}'></div>
-		{% else %}
-		<img src='{{ user.get_avatar_url }}' class='avatar' alt='avatar'>
-		{% endif %}
-	{% endif %}
-	<span class='name'>{{ user.name | escape }}</span>
-	{% if with_vector_app_icon %}
-	{{ user.vectorAppIcon }}
-	{% endif %}
-</a>
+  <a href='{{ user.toURL }}' class='da-userlink local{{ with_avatar ? ' with-avatar provider-' ~ user.get_avatar_provider : '' }}'>
+    {% if with_avatar %}
+      {% if enable_promises %}
+        <div class='user-avatar-promise avatar image-promise' data-src='{{ user.get_avatar_url }}'></div>
+      {% else %}
+        <img src='{{ user.get_avatar_url }}' class='avatar' alt='avatar'>
+      {% endif %}
+    {% endif %}
+    <span class='name'>{{ user.name | escape }}</span>
+    {% if with_vector_app_icon %}
+      {{ user.vectorAppIcon }}
+    {% endif %}
+  </a>
 {% endspaceless %}

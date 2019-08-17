@@ -1,33 +1,33 @@
 {# @var changes \App\Models\Logs\MajorChange[] #}
 {% spaceless %}
-{% set see_initiator = permission('staff') %}
-{% if wrap is not defined or wrap %}
-<table>
-	<thead>
-		<tr>
-			<th>Appearance</th>
-			<th class="reason">Reason</th>
-			<th>When?</th>
-		</tr>
-	</thead>
-	<tbody id='changes'>
-{% endif %}
-{% if changes is not empty %}
-	{% for c in changes %}
-		<tr>
-			<td class="pony-link">{{ c.appearance.toAnchorWithPreview }}</td>
-			<td class="reason">{{ c.reason }}</td>
-			<td class="by-at">
-				<div class="when"><span class="typcn typcn-time"></span> {{ time_tag(c.get_log.timestamp) }}</div>
-				{% if see_initiator %}
-				<div class='by'><span class='typcn typcn-user'></span> {{ c.get_log.actor.toAnchor }}</div>
-				{% endif %}
-			</td>
-		</tr>
-	{% endfor %}
-{% endif %}
-{% if wrap is not defined or wrap %}
-	</tbody>
-</table>
-{% endif %}
+  {% set see_initiator = permission('staff') %}
+  {% if wrap is not defined or wrap %}
+    <table>
+    <thead>
+    <tr>
+      <th>Appearance</th>
+      <th class="reason">Reason</th>
+      <th>When?</th>
+    </tr>
+    </thead>
+    <tbody id='changes'>
+  {% endif %}
+  {% if changes is not empty %}
+    {% for c in changes %}
+      <tr>
+        <td class="pony-link">{{ c.appearance.toAnchorWithPreview }}</td>
+        <td class="reason">{{ c.reason }}</td>
+        <td class="by-at">
+          <div class="when"><span class="typcn typcn-time"></span> {{ time_tag(c.get_log.timestamp) }}</div>
+          {% if see_initiator %}
+            <div class='by'><span class='typcn typcn-user'></span> {{ c.get_log.actor.toAnchor }}</div>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  {% endif %}
+  {% if wrap is not defined or wrap %}
+    </tbody>
+    </table>
+  {% endif %}
 {% endspaceless %}

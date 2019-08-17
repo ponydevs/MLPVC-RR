@@ -1,17 +1,17 @@
 {# @var related_shows \App\Models\Show[] #}
 {% spaceless %}
-{% set edit_button %}
-	{% if permission('staff') %}
-		<button class="typcn typcn-pencil darkblue edit-show-relations">Edit relations</button>
-	{% endif %}
-{% endset %}
+  {% set edit_button %}
+    {% if permission('staff') %}
+      <button class="typcn typcn-pencil darkblue edit-show-relations">Edit relations</button>
+    {% endif %}
+  {% endset %}
 {% endspaceless %}
 <section id="related-shows">
-	<h2><span class='typcn typcn-video'></span>Featured in</h2>
-	<p>
-		{%- for show in related_shows -%}
-			{{- show.toAnchor(show.formatTitle) }}{% if not loop.last %}, {% endif -%}
-		{%- endfor -%}
-	</p>
-	{{ edit_button }}
+  <h2><span class='typcn typcn-video'></span>Featured in</h2>
+  <p>
+    {%- for show in related_shows -%}
+      {{- show.toAnchor(show.formatTitle) }}{% if not loop.last %}, {% endif -%}
+    {%- endfor -%}
+  </p>
+  {{ edit_button }}
 </section>

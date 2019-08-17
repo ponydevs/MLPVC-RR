@@ -2,169 +2,185 @@
 @import "../../colorguide_vars";
 
 // Mobile
-@media all and (max-width: $Breakpoint){
-	#input-cont {
-		margin-top: 10px;
-	}
+@media all and (max-width: $Breakpoint) {
+  #input-cont {
+    margin-top: 10px;
+  }
 }
+
 // Desktop
-@media all and (min-width: $Breakpoint){
-	#content > .checker {
-		display: flex;
-		flex-flow: row nowrap;
-		align-items: center;
+@media all and (min-width: $Breakpoint) {
+  #content > .checker {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
 
-		> * {
-			max-height: 602px;
-			flex: 1 1 50%;
-			box-sizing: border-box;
-		}
+    > * {
+      max-height: 602px;
+      flex: 1 1 50%;
+      box-sizing: border-box;
+    }
 
-		#svg-cont {
-			margin-right: 10px;
-		}
+    #svg-cont {
+      margin-right: 10px;
+    }
 
-		#input-cont {
-			overflow-y: auto;
-		}
-	}
-	#input-cont td br { display: none }
+    #input-cont {
+      overflow-y: auto;
+    }
+  }
+  #input-cont td br {
+    display: none
+  }
 }
 
 #content {
-	#svg-cont {
-		border: 1px dashed rgba(black,.5);
-		background: url('/img/transparency.svg');
-		background-size: 16px;
+  #svg-cont {
+    border: 1px dashed rgba(black, .5);
+    background: url('/img/transparency.svg');
+    background-size: 16px;
 
-		&:empty:before {
-			content: '';
-			display: block;
-			margin: calc(300px - 40px) auto;
+    &:empty:before {
+      content: '';
+      display: block;
+      margin: calc(300px - 40px) auto;
 
-			@include loading-indicator(125px, 'gears');
-		}
+      @include loading-indicator(125px, 'gears');
+    }
 
-		svg {
-			max-height: 600px;
-			max-width: 100%;
-			shape-rendering: crispEdges;
+    svg {
+      max-height: 600px;
+      max-width: 100%;
+      shape-rendering: crispEdges;
 
-			.highlight {
-				&.bright {
-					animation: hl-bright .75s linear infinite;
+      .highlight {
+        &.bright {
+          animation: hl-bright .75s linear infinite;
 
-					@keyframes hl-bright {
-						50% { stroke: #000 }
-					}
-				}
-				&.dark {
-					animation: hl-dark .75s linear infinite;
+          @keyframes hl-bright {
+            50% {
+              stroke: #000
+            }
+          }
+        }
 
-					@keyframes hl-dark {
-						50% { stroke: #FFF }
-					}
-				}
-			}
-		}
-	}
+        &.dark {
+          animation: hl-dark .75s linear infinite;
 
-	#input-cont {
-		&:empty {
-			display: block;
-			@include loading-indicator(125px, 'gears');
-		}
+          @keyframes hl-dark {
+            50% {
+              stroke: #FFF
+            }
+          }
+        }
+      }
+    }
+  }
 
-		&:not(:empty):before {
-			content: "Color Bindings";
-			display: block;
-			font-size: 28px;
-			padding: 5px 0 10px;
-			text-align:center;
-			font-family: $cursive;
-			font-weight: normal;
-			color: #fff;
-			background: $HeaderBlue url('/img/grid-4x4.svg') repeat;
-			background-size: 4px;
-			border: 1px solid black;
-			border-bottom: 0;
-		}
+  #input-cont {
+    &:empty {
+      display: block;
+      @include loading-indicator(125px, 'gears');
+    }
 
-		> table {
-			border-collapse: collapse;
-			width: 100%;
-			table-layout: fixed;
+    &:not(:empty):before {
+      content: "Color Bindings";
+      display: block;
+      font-size: 28px;
+      padding: 5px 0 10px;
+      text-align: center;
+      font-family: $cursive;
+      font-weight: normal;
+      color: #fff;
+      background: $HeaderBlue url('/img/grid-4x4.svg') repeat;
+      background-size: 4px;
+      border: 1px solid black;
+      border-bottom: 0;
+    }
 
-			tr {
-				td {
-					color: black;
-					border: 1px solid currentColor;
-					transition: color .2s linear, border-color .2s linear, background-color .2s linear;
-				}
+    > table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: fixed;
 
-				&:hover, &.force-hover {
-					td {
-						color: $NOrange;
-						border-color: $NOrange;
+      tr {
+        td {
+          color: black;
+          border: 1px solid currentColor;
+          transition: color .2s linear, border-color .2s linear, background-color .2s linear;
+        }
 
-						&.label, &.color {
-							background-color: $NOrangeBG;
-						}
-					}
-				}
+        &:hover, &.force-hover {
+          td {
+            color: $NOrange;
+            border-color: $NOrange;
 
-				.color-preview {
-					width: 30px;
-					box-sizing: border-box;
+            &.label, &.color {
+              background-color: $NOrangeBG;
+            }
+          }
+        }
 
-					&.invalid { @include clrp-invalid(30px) }
-				}
-				.label, .color {
-					padding: 5px 7px;
-					background: #efefef;
-				}
-				.label ul {
-					padding: 0;
-					margin: 0;
-					list-style: inside;
-				}
-				.label.missing:before {
-					content: "MISSING";
-					color:red;
-					display: block;
-					font-weight: bold;
-					font-size: 18px;
-					animation: blink-mild 1s linear infinite;
+        .color-preview {
+          width: 30px;
+          box-sizing: border-box;
 
-					@keyframes blink-mild {
-						from, to {
-							opacity: .4;
-						}
-						50% { opacity: 1 }
-					}
-				}
-				.color {
-					font-family: $monospace;
-				}
-			}
-		}
-	}
+          &.invalid {
+            @include clrp-invalid(30px)
+          }
+        }
 
-	#colors {
-		@extend %colors-ul;
+        .label, .color {
+          padding: 5px 7px;
+          background: #efefef;
+        }
 
-		margin: 0;
+        .label ul {
+          padding: 0;
+          margin: 0;
+          list-style: inside;
+        }
 
-		.admin {
-			display: none !important;
-		}
+        .label.missing:before {
+          content: "MISSING";
+          color: red;
+          display: block;
+          font-weight: bold;
+          font-size: 18px;
+          animation: blink-mild 1s linear infinite;
 
-		li > .cat ~ .color-line > :first-child:not(:empty) {
-			cursor: default;
+          @keyframes blink-mild {
+            from, to {
+              opacity: .4;
+            }
+            50% {
+              opacity: 1
+            }
+          }
+        }
 
-			&:active {
-				transform: none;
-			}
-		}
-	}
+        .color {
+          font-family: $monospace;
+        }
+      }
+    }
+  }
+
+  #colors {
+    @extend %colors-ul;
+
+    margin: 0;
+
+    .admin {
+      display: none !important;
+    }
+
+    li > .cat ~ .color-line > :first-child:not(:empty) {
+      cursor: default;
+
+      &:active {
+        transform: none;
+      }
+    }
+  }
 }

@@ -6,25 +6,25 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-<div id="content">
-	<h1>{{ heading }}</h1>
-	<p>Displaying {{ pagination.itemsPerPage }} items/page</p>
+  <div id="content">
+    <h1>{{ heading }}</h1>
+    <p>Displaying {{ pagination.itemsPerPage }} items/page</p>
 
-	<div class="align-center button-block">
-		<a href="{{ user.toURL }}" class="btn link typcn typcn-user">Profile page</a>
-		{% if permission('developer') %}
-		<button class="orange typcn typcn-refresh" id="recalc-button">Recalculate</button>
-		{% endif %}
-		{% if permission('staff') %}
-		<button class="blue typcn typcn-gift" id="pending-gifts-button">Pending gifts</button>
-		{% endif %}
-	</div>
-	{{ pagination }}
-	{{ pcg_slot_history }}
-	{{ pagination }}
-</div>
-{{ export_vars({
-	'username': user.name,
-	'userId': user.id,
-}) }}
+    <div class="align-center button-block">
+      <a href="{{ user.toURL }}" class="btn link typcn typcn-user">Profile page</a>
+      {% if permission('developer') %}
+        <button class="orange typcn typcn-refresh" id="recalc-button">Recalculate</button>
+      {% endif %}
+      {% if permission('staff') %}
+        <button class="blue typcn typcn-gift" id="pending-gifts-button">Pending gifts</button>
+      {% endif %}
+    </div>
+    {{ pagination }}
+    {{ pcg_slot_history }}
+    {{ pagination }}
+  </div>
+  {{ export_vars({
+    'username': user.name,
+    'userId': user.id,
+  }) }}
 {% endblock %}

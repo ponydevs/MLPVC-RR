@@ -1,6 +1,6 @@
 {# @var site_notices \App\Models\Notice[] #}
 {% if site_notices is defined and site_notices is not empty %}
-{% for notice in site_notices %}
-<div class='notice {{ notice.type }}'>{{ notice.message_html }}</div>
-{% endfor %}
+  {% for notice in site_notices %}
+    <div class='notice {{ notice.type }}'>{{ notice.message_html }}</div>
+  {% endfor %}
 {% endif %}

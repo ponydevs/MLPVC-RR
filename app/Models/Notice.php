@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
-use App\CoreUtils;
 
 /**
  * @property string   id
@@ -16,20 +15,20 @@ use App\CoreUtils;
  * @method static Notice|Notice[] find(...$args)
  */
 class Notice extends NSModel {
-	const VALID_TYPES = [
-		'info' => 'Informational (blue)',
-		'success' => 'Success (green)',
-		'fail' => 'Failure (red)',
-		'warn' => 'Warning (orange)',
-		'caution' => 'Caution (yellow)',
-	];
+  const VALID_TYPES = [
+    'info' => 'Informational (blue)',
+    'success' => 'Success (green)',
+    'fail' => 'Failure (red)',
+    'warn' => 'Warning (orange)',
+    'caution' => 'Caution (yellow)',
+  ];
 
-	/**
-	 * @return Notice[]
-	 */
-	public static function list(){
-		return self::find('all', [
-			'conditions' => 'hide_after > now()'
-		]);
-	}
+  /**
+   * @return Notice[]
+   */
+  public static function list() {
+    return self::find('all', [
+      'conditions' => 'hide_after > now()',
+    ]);
+  }
 }

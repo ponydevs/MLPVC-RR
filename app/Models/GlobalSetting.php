@@ -8,5 +8,5 @@ namespace App\Models;
  * @method static GlobalSetting|GlobalSetting[] find(...$args)
  */
 class GlobalSetting extends NSModel {
-	public static $primary_key = 'key';
+  public static $primary_key = 'key';
 }

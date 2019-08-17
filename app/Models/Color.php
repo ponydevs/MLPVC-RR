@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\Model;
-
 /**
  * @property int        $id
  * @property int        $group_id
@@ -20,56 +18,57 @@ use ActiveRecord\Model;
  * @method static Color[] find_all_by_group_id(int $group_id)
  */
 class Color extends OrderedModel {
-	public static $table_name = 'colors';
+  public static $table_name = 'colors';
 
-	public static $belongs_to = [
-		['color_group', 'foreign_key' => 'group_id'],
-	];
+  public static $belongs_to = [
+    ['color_group', 'foreign_key' => 'group_id'],
+  ];
 
-	public static $after_save = ['update_dependant_colors'];
+  public static $after_save = ['update_dependant_colors'];
 
-	public function get_appearance_id(){
-		return $this->color_group->appearance_id;
-	}
+  public function get_appearance_id() {
+    return $this->color_group->appearance_id;
+  }
 
-	public function get_appearance(){
-		return $this->color_group->appearance;
-	}
+  public function get_appearance() {
+    return $this->color_group->appearance;
+  }
 
-	public function get_linked(){
-		return $this->linked_to === null ? null : self::find($this->linked_to);
-	}
+  public function get_linked() {
+    return $this->linked_to === null ? null : self::find($this->linked_to);
+  }
 
-	/** @inheritdoc */
-	public function assign_order(){
-		if ($this->order !== null)
-			return;
+  /** @inheritdoc */
+  public function assign_order() {
+    if ($this->order !== null)
+      return;
 
-		$LastColor = self::find('first',[
-			'conditions' => [ 'group_id' => $this->group_id ],
-			'order' => '"order" desc',
-		]);
-		$this->order = !empty($LastColor->order) ? $LastColor->order+1 : 1;
-	}
+    $LastColor = self::find('first', [
+      'conditions' => ['group_id' => $this->group_id],
+      'order' => '"order" desc',
+    ]);
+    $this->order = !empty($LastColor->order) ? $LastColor->order + 1 : 1;
+  }
 
-	/**
-	 * Make sure appearance_id is filtered somehow in the $opts array
-	 *
-	 * @inheritdoc
-	 */
-	public static function in_order(array $opts = []){
-		self::addOrderOption($opts);
-		return self::find('all', $opts);
-	}
+  /**
+   * Make sure appearance_id is filtered somehow in the $opts array
+   *
+   * @inheritdoc
+   */
+  public static function in_order(array $opts = []) {
+    self::addOrderOption($opts);
 
-	public function get_dependant_colors(){
-		return self::find('all', ['conditions' => ['linked_to = ?', $this->id]]);
-	}
+    return self::find('all', $opts);
+  }
 
-	public function update_dependant_colors(){
-		foreach ($this->dependant_colors as $item){
-			$item->hex = $this->hex;
-			$item->save();
-		}
-	}
+  public function get_dependant_colors() {
+    return self::find('all', ['conditions' => ['linked_to = ?', $this->id]]);
+  }
+
+  public function update_dependant_colors() {
+    foreach ($this->dependant_colors as $item){
+      $item->hex = $this->hex;
+      $item->save();
+    }
+  }
 }

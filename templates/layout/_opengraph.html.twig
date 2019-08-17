@@ -1,20 +1,20 @@
 {% if og is defined %}
-<title>{{ og.title | escape }}</title>
-    {%- for k, v in og -%}
-<meta property='og:{{ k | apos_encode }}' content='{{ v | apos_encode }}'>
-{% endfor -%}
-	{% if og.tags is defined -%}
-		{%- set tags = ',' ~ og.tags -%}
-	{%- else -%}
-		{%- set tags = '' -%}
-	{%- endif %}
-{%- if og['description'] is defined -%}
-<meta name="description" content="{{ og['description'] | apos_encode }}">
-{%- endif -%}
-<meta name="keywords" content="mlp,my little pony,mlp:fim,friendship is magic,vector,vector club,vector requests,illustrator,inkscape,mlp episodes,mlp movie{{ tags | apos_encode }}">
-{%- if og['image'] is defined -%}
-<link rel="image_src" href="{{ og['image'] | apos_encode }}">
-{%- endif -%}
-<meta property="og:type" content="website">
-<meta property="og:locale" content="en_US">
+  <title>{{ og.title | escape }}</title>
+  {%- for k, v in og -%}
+    <meta property='og:{{ k | apos_encode }}' content='{{ v | apos_encode }}'>
+  {% endfor -%}
+  {% if og.tags is defined -%}
+    {%- set tags = ',' ~ og.tags -%}
+  {%- else -%}
+    {%- set tags = '' -%}
+  {%- endif %}
+  {%- if og['description'] is defined -%}
+    <meta name="description" content="{{ og['description'] | apos_encode }}">
+  {%- endif -%}
+  <meta name="keywords" content="mlp,my little pony,mlp:fim,friendship is magic,vector,vector club,vector requests,illustrator,inkscape,mlp episodes,mlp movie{{ tags | apos_encode }}">
+  {%- if og['image'] is defined -%}
+    <link rel="image_src" href="{{ og['image'] | apos_encode }}">
+  {%- endif -%}
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
 {% endif %}

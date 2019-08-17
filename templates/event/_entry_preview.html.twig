@@ -2,16 +2,16 @@
 {# @var preview string #}
 {# @var file_type string #}
 {% spaceless %}
-<div class='preview'>
-	<a href='{{ fullsize }}' target='_blank' rel='noopener'>
-		<img src='{{ preview }}' alt='event entry preview'>
-	</a>
-	{% if file_type is not empty %}
-		{% if file_type == 'zip' %}
-			<span class='file-type'>svg<span class="star-info" title="ZIP archives are assumed to be SVG files">*</span></span>
-		{% else %}
-			<span class='file-type'>{{ file_type }}</span>
-		{% endif %}
-	{% endif %}
-</div>
+  <div class='preview'>
+    <a href='{{ fullsize }}' target='_blank' rel='noopener'>
+      <img src='{{ preview }}' alt='event entry preview'>
+    </a>
+    {% if file_type is not empty %}
+      {% if file_type == 'zip' %}
+        <span class='file-type'>svg<span class="star-info" title="ZIP archives are assumed to be SVG files">*</span></span>
+      {% else %}
+        <span class='file-type'>{{ file_type }}</span>
+      {% endif %}
+    {% endif %}
+  </div>
 {% endspaceless %}

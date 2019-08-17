@@ -1,21 +1,21 @@
 {# @controller \App\Models\Appearance::getRelatedHTML #}
 {# @var appearance \App\Models\Appearance #}
 {% spaceless %}
-{% set edit_button %}
-	{% if permission('staff') %}
-		<button class="typcn typcn-pencil darkblue edit-appearance-relations">Edit relations</button>
-	{% endif %}
-{% endset %}
-{% set count = appearance.related_appearances | length %}
-{% if count > 0 or permission('staff') %}
-<section class='related'>
-	<h2>Related appearances</h2>
-	<ul>
-	{% for r in appearance.related_appearances %}
-		<li>{{ r.target.toAnchorWithPreview }}</li>
-	{% endfor %}
-	</ul>
-	{{ edit_button }}
-</section>
-{% endif %}
+  {% set edit_button %}
+    {% if permission('staff') %}
+      <button class="typcn typcn-pencil darkblue edit-appearance-relations">Edit relations</button>
+    {% endif %}
+  {% endset %}
+  {% set count = appearance.related_appearances | length %}
+  {% if count > 0 or permission('staff') %}
+    <section class='related'>
+      <h2>Related appearances</h2>
+      <ul>
+        {% for r in appearance.related_appearances %}
+          <li>{{ r.target.toAnchorWithPreview }}</li>
+        {% endfor %}
+      </ul>
+      {{ edit_button }}
+    </section>
+  {% endif %}
 {% endspaceless %}

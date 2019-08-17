@@ -18,6 +18,6 @@ require CONFPATH.'routes/index.php';
 /** @var $match array */
 $match = $router->match($safe_uri);
 if (!isset($match['target']))
-	CoreUtils::notFound();
+  CoreUtils::notFound();
 RouteHelper::processHandler($match['target'], $match['params']);
 

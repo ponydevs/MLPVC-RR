@@ -9,15 +9,15 @@ use App\RegExp;
 
 ini_set('max_execution_time', '0');
 
-$SpriteDir = new \DirectoryIterator(SPRITE_PATH);
+$SpriteDir = new DirectoryIterator(SPRITE_PATH);
 foreach ($SpriteDir as $item){
-	if ($item->isDot())
-		continue;
+  if ($item->isDot())
+    continue;
 
-	$id = (int)preg_replace(new RegExp('\..+$'),'',$item->getFilename());
-	$Appearance = Appearance::find($id);
-	if (empty($Appearance))
-		continue;
+  $id = (int)preg_replace(new RegExp('\..+$'), '', $item->getFilename());
+  $Appearance = Appearance::find($id);
+  if (empty($Appearance))
+    continue;
 
-	$Appearance->checkSpriteColors();
+  $Appearance->checkSpriteColors();
 }

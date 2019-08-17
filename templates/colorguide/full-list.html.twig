@@ -9,35 +9,35 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-{% set eqg_path = eqg ? '/eqg' : '' %}
-<div id="content" class="section-container">
-	<h1>Complete {{ eqg ? 'EQG Character' : 'Pony' }} List</h1>
-	<p>Sorted <select id="sort-by" name="sort_by" data-base-url="/cg{{ eqg_path }}/full">
-		{% for value, name in constant('App\\Controllers\\ColorGuideController::FULL_LIST_ORDER') %}
-		<option value='{{ value }}'{{ sort_by == value ? ' selected' : '' }}>{{ name }}</option>
-		{% endfor %}
-	</select></p>
+  {% set eqg_path = eqg ? '/eqg' : '' %}
+  <div id="content" class="section-container">
+    <h1>Complete {{ eqg ? 'EQG Character' : 'Pony' }} List</h1>
+    <p>Sorted <select id="sort-by" name="sort_by" data-base-url="/cg{{ eqg_path }}/full">
+        {% for value, name in constant('App\\Controllers\\ColorGuideController::FULL_LIST_ORDER') %}
+          <option value='{{ value }}'{{ sort_by == value ? ' selected' : '' }}>{{ name }}</option>
+        {% endfor %}
+      </select></p>
 
-	<div class='align-center button-block'>
-		<a class='btn link typcn typcn-arrow-back' href="/cg{{ eqg_path }}">Back to {{ eqg ? 'EQG ' : '' }}Color Guide</a>
-		{% if permission('staff') %}
-		<button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"{{ sort_by != 'relevance' ? ' disabled' : '' }}>Re-order</button>
-		<button class='red typcn typcn-times hidden' id="guide-reorder-cancel">Cancel</button>
-		{% endif %}
-		<a class='btn link typcn typcn-world' href="/cg{{ eqg ? '' : '/eqg' }}/full{{ sort_by != 'relevance' ? ('?sort_by=' ~ sort_by) : '' }}">List of {{ eqg ? 'Ponies' : 'Equestria Girls' }}</a>
-		<a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
-		<a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
-	</div>
+    <div class='align-center button-block'>
+      <a class='btn link typcn typcn-arrow-back' href="/cg{{ eqg_path }}">Back to {{ eqg ? 'EQG ' : '' }}Color Guide</a>
+      {% if permission('staff') %}
+        <button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"{{ sort_by != 'relevance' ? ' disabled' : '' }}>Re-order</button>
+        <button class='red typcn typcn-times hidden' id="guide-reorder-cancel">Cancel</button>
+      {% endif %}
+      <a class='btn link typcn typcn-world' href="/cg{{ eqg ? '' : '/eqg' }}/full{{ sort_by != 'relevance' ? ('?sort_by=' ~ sort_by) : '' }}">List of {{ eqg ? 'Ponies' : 'Equestria Girls' }}</a>
+      <a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
+      <a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
+    </div>
 
-	{{ full_list }}
-</div>
+    {{ full_list }}
+  </div>
 
-{{ export_vars({ 'EQG': eqg }) }}
-{% if is_staff %}
-	{{ export_vars({
-		'TAG_TYPES_ASSOC': constant('App\\Tags::TAG_TYPES'),
-		'MAX_SIZE': max_upload_size,
-		'HEX_COLOR_PATTERN': hex_color_pattern,
-	}) }}
-{% endif %}
+  {{ export_vars({ 'EQG': eqg }) }}
+  {% if is_staff %}
+    {{ export_vars({
+      'TAG_TYPES_ASSOC': constant('App\\Tags::TAG_TYPES'),
+      'MAX_SIZE': max_upload_size,
+      'HEX_COLOR_PATTERN': hex_color_pattern,
+    }) }}
+  {% endif %}
 {% endblock %}

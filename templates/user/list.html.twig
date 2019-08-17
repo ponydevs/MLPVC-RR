@@ -3,21 +3,21 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-<div id="content">
-	<h1>{{ title }}</h1>
-	<p>List of all users in the database</p>
+  <div id="content">
+    <h1>{{ title }}</h1>
+    <p>List of all users in the database</p>
 
-	{% spaceless %}
-	<div id="users" class="section-container">
-	{% if sections is not null %}
-		{% for section in sections %}
-<section>
-	<h2>{{ section[0] }}</h2>
-	<div>{{ section[1] }}</div>
-</section>
-		{% endfor %}
-	{% endif %}
-	</div>
-	{% endspaceless %}
-</div>
+    {% spaceless %}
+      <div id="users" class="section-container">
+        {% if sections is not null %}
+          {% for section in sections %}
+            <section>
+              <h2>{{ section[0] }}</h2>
+              <div>{{ section[1] }}</div>
+            </section>
+          {% endfor %}
+        {% endif %}
+      </div>
+    {% endspaceless %}
+  </div>
 {% endblock %}

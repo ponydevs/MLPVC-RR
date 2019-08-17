@@ -1,29 +1,37 @@
 .section-container > section {
-	&:not(:last-child) { margin-bottom: 15px }
+  &:not(:last-child) {
+    margin-bottom: 15px
+  }
 
-	> h2 {
-		font-size: 1.3em;
-		margin: 0 0 8px;
-		font-family: $cursive;
+  > h2 {
+    font-size: 1.3em;
+    margin: 0 0 8px;
+    font-family: $cursive;
 
-		.typcn { margin-right: 7px }
+    .typcn {
+      margin-right: 7px
+    }
 
-		.btn, button {
-			vertical-align: baseline;
-			padding: 2px;
-			margin: 0;
-		}
-	}
-	p {
-		margin: 0;
+    .btn, button {
+      vertical-align: baseline;
+      padding: 2px;
+      margin: 0;
+    }
+  }
 
-		&:not(:last-child) {
-			margin-bottom: 5px;
-		}
-	}
-	> div > *:not(button) {
-		margin: 0 0 5px;
+  p {
+    margin: 0;
 
-		&:last-child { margin-bottom: 0 }
-	}
+    &:not(:last-child) {
+      margin-bottom: 5px;
+    }
+  }
+
+  > div > *:not(button) {
+    margin: 0 0 5px;
+
+    &:last-child {
+      margin-bottom: 0
+    }
+  }
 }

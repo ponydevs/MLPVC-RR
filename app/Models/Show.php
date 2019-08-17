@@ -6,12 +6,11 @@ use ActiveRecord\DateTime;
 use App\Auth;
 use App\CoreUtils;
 use App\DB;
-use App\ShowHelper;
 use App\Permission;
 use App\Posts;
 use App\Regexes;
 use App\RegExp;
-use App\Time;
+use App\ShowHelper;
 use App\TMDBHelper;
 use App\VideoProvider;
 
@@ -43,388 +42,406 @@ use App\VideoProvider;
  * @method static Show|Show[] find(...$params)
  */
 class Show extends NSModel implements Linkable {
-	public static $table_name = 'show';
+  public static $table_name = 'show';
 
-	public static $has_many = [
-		['videos', 'class' => 'ShowVideo', 'order' => 'provider asc, part asc'],
-		['show_appearances'],
-		['related_appearances', 'class' => 'Appearance', 'order' => 'label asc', 'through' => 'show_appearances']
-	];
-	/** For Twig */
-	public function getRelated_appearances():array {
-		return $this->related_appearances;
-	}
-	public static $belongs_to = [
-		['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
-	];
+  public static $has_many = [
+    ['videos', 'class' => 'ShowVideo', 'order' => 'provider asc, part asc'],
+    ['show_appearances'],
+    ['related_appearances', 'class' => 'Appearance', 'order' => 'label asc', 'through' => 'show_appearances'],
+  ];
 
-	public function get_is_episode():bool {
-		return $this->type === 'episode';
-	}
-	/** For Twig */
-	public function getIs_episode():bool {
-		return $this->is_episode;
-	}
+  /** For Twig */
+  public function getRelated_appearances():array {
+    return $this->related_appearances;
+  }
 
-	private function _normalizeScore($value):string {
-		return is_numeric($value) ? preg_replace('/^(\d+)\.0+$/','$1',number_format($value,1)) : '0';
-	}
+  public static $belongs_to = [
+    ['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
+  ];
 
-	public function get_score():string {
-		$attr = $this->read_attribute('score');
-		if (!is_numeric($attr))
-			$this->updateScore();
-		return $this->_normalizeScore($attr);
-	}
+  public function get_is_episode():bool {
+    return $this->type === 'episode';
+  }
 
-	public function set_score($score){
-		$this->assign_attribute('score', $this->_normalizeScore($score));
-	}
+  /** For Twig */
+  public function getIs_episode():bool {
+    return $this->is_episode;
+  }
 
-	public function get_displayed(){
-		return $this->isDisplayed();
-	}
+  private function _normalizeScore($value):string {
+    return is_numeric($value) ? preg_replace('/^(\d+)\.0+$/', '$1', number_format($value, 1)) : '0';
+  }
 
-	public function get_willairts(){
-		return $this->willHaveAiredBy();
-	}
+  public function get_score():string {
+    $attr = $this->read_attribute('score');
+    if (!is_numeric($attr))
+      $this->updateScore();
 
-	public function get_aired(){
-		return $this->hasAired();
-	}
+    return $this->_normalizeScore($attr);
+  }
 
-	public function get_willair(){
-		return gmdate('c', $this->willairts);
-	}
+  public function set_score($score) {
+    $this->assign_attribute('score', $this->_normalizeScore($score));
+  }
 
-	public function get_short_title(){
-		return ShowHelper::shortenTitlePrefix($this->title);
-	}
+  public function get_displayed() {
+    return $this->isDisplayed();
+  }
 
-	/**
-	 * @return Post[]|null
-	 */
-	public function getRequests(){
-		$requests = Posts::get($this->id, ONLY_REQUESTS, Permission::sufficient('staff'));
+  public function get_willairts() {
+    return $this->willHaveAiredBy();
+  }
 
-		$arranged = [
-			'finished' => [],
-			'unfinished' => [
-				'chr' => [],
-				'obj' => [],
-				'bg'  => [],
-			],
-		];
-		if (!empty($requests))
-			foreach ($requests as $req){
-				if ($req->finished)
-					$arranged['finished'][] = $req;
-				else $arranged['unfinished'][$req->type][] = $req;
-			}
+  public function get_aired() {
+    return $this->hasAired();
+  }
 
-		return $arranged;
-	}
+  public function get_willair() {
+    return gmdate('c', $this->willairts);
+  }
 
-	/**
-	 * @return Post[]|null
-	 */
-	public function getReservations(){
-		$reservations = Posts::get($this->id, ONLY_RESERVATIONS, Permission::sufficient('staff'));
+  public function get_short_title() {
+    return ShowHelper::shortenTitlePrefix($this->title);
+  }
 
-		$arranged = [
-			'unfinished' => [],
-			'finished' => [],
-		];
-		if (!empty($reservations))
-			foreach ($reservations as $res){
-				$k = ($res->finished?'':'un').'finished';
-				$arranged[$k][] = $res;
-			}
+  /**
+   * @return Post[]|null
+   */
+  public function getRequests() {
+    $requests = Posts::get($this->id, ONLY_REQUESTS, Permission::sufficient('staff'));
 
-		return $arranged;
-	}
+    $arranged = [
+      'finished' => [],
+      'unfinished' => [
+        'chr' => [],
+        'obj' => [],
+        'bg' => [],
+      ],
+    ];
+    if (!empty($requests))
+      foreach ($requests as $req){
+        if ($req->finished)
+          $arranged['finished'][] = $req;
+        else $arranged['unfinished'][$req->type][] = $req;
+      }
 
-	/**
-	 * @param bool $pad
-	 *
-	 * @return string
-	 */
-	public function getID(bool $pad = false):string {
-		if (!$this->is_episode)
-			return CoreUtils::capitalize($this->type).'#'.$this->id;
+    return $arranged;
+  }
 
-		$episode = $this->episode;
-		$season = $this->season;
+  /**
+   * @return Post[]|null
+   */
+  public function getReservations() {
+    $reservations = Posts::get($this->id, ONLY_RESERVATIONS, Permission::sufficient('staff'));
 
-		if ($pad){
-			$episode = CoreUtils::pad($episode).($this->twoparter ? '-'.CoreUtils::pad($episode+1) : '');
-			$season = CoreUtils::pad($season);
+    $arranged = [
+      'unfinished' => [],
+      'finished' => [],
+    ];
+    if (!empty($reservations))
+      foreach ($reservations as $res){
+        $k = ($res->finished ? '' : 'un').'finished';
+        $arranged[$k][] = $res;
+      }
 
-			return "S{$season} E{$episode}";
-		}
+    return $arranged;
+  }
 
-		if ($this->twoparter)
-			$episode = $episode.'-'.($episode+1);
-		return "S{$season}E{$episode}";
-	}
+  /**
+   * @param bool $pad
+   *
+   * @return string
+   */
+  public function getID(bool $pad = false):string {
+    if (!$this->is_episode)
+      return CoreUtils::capitalize($this->type).'#'.$this->id;
 
-	/**
-	 * Gets the number of posts bound to an episode
-	 *
-	 * @return int
-	 */
-	public function getPostCount():int {
-		return DB::$instance->where('show_id', $this->id)->count('posts');
-	}
+    $episode = $this->episode;
+    $season = $this->season;
 
-	/**
-	 * @return string
-	 */
-	public function safeTitle():string {
-		return CoreUtils::trim((new RegExp('-{2,}'))->replace('-', (new RegExp('[^a-z\d]','i'))->replace('-', $this->title)), false, '-');
-	}
+    if ($pad){
+      $episode = CoreUtils::pad($episode).($this->twoparter ? '-'.CoreUtils::pad($episode + 1) : '');
+      $season = CoreUtils::pad($season);
 
-	/**
-	 * @param Show $ep
-	 *
-	 * @return bool
-	 */
-	public function is(Show $ep):bool {
-		return $this->id === $ep->id;
-	}
+      return "S{$season} E{$episode}";
+    }
 
-	/**
-	 * @var Show
-	 */
-	private $latest_episode;
-	public function isLatest():bool {
-		if ($this->latest_episode === null)
-			$this->latest_episode = ShowHelper::getLatest();
-		return $this->is($this->latest_episode);
-	}
+    if ($this->twoparter)
+      $episode = $episode.'-'.($episode + 1);
 
-	/**
-	 * @param int $now Current time (for testing purposes)
-	 *
-	 * @return bool Indicates whether the episode is close enough to airing to be the home page
-	 */
-	public function isDisplayed($now = null):bool {
-		$airtime = strtotime($this->airs);
-		return strtotime('-24 hours', $airtime) < ($now ?? time());
-	}
+    return "S{$season}E{$episode}";
+  }
 
-	/**
-	 * @return int The timestamp after which the episode is considered to have aired & voting can be enabled
-	 */
-	public function willHaveAiredBy():int {
-		$airtime = $this->airs->getTimestamp();
-		if ($this->is_episode)
-			$add_minutes = $this->twoparter ? 60 : 30;
-		else $add_minutes = 120;
-		return strtotime("+{$add_minutes} minutes", $airtime);
-	}
+  /**
+   * Gets the number of posts bound to an episode
+   *
+   * @return int
+   */
+  public function getPostCount():int {
+    return DB::$instance->where('show_id', $this->id)->count('posts');
+  }
 
-	/**
-	 * @param int $now Current time (for testing purposes)
-	 *
-	 * @return bool True if willHaveAiredBy() is in the past
-	 */
-	public function hasAired($now = null):bool {
-		return $this->willairts < ($now ?? time());
-	}
+  /**
+   * @return string
+   */
+  public function safeTitle():string {
+    return CoreUtils::trim((new RegExp('-{2,}'))->replace('-', (new RegExp('[^a-z\d]', 'i'))->replace('-', $this->title)), false, '-');
+  }
 
-	/**
-	 * Turns an 'episode' database row into a readable title
-	 *
-	 * @param bool        $returnArray Whether to return as an array instead of string
-	 * @param string      $arrayKey
-	 *
-	 * @return string|array
-	 */
-	public function formatTitle($returnArray = false, $arrayKey = null){
-		if ($returnArray === AS_ARRAY) {
-			$arr = [
-				'id' => $this->getID(),
-				'season' => $this->season ?? null,
-				'episode' => $this->episode ?? null,
-				'title' => isset($this->title) ? CoreUtils::escapeHTML($this->title) : null,
-			];
+  /**
+   * @param Show $ep
+   *
+   * @return bool
+   */
+  public function is(Show $ep):bool {
+    return $this->id === $ep->id;
+  }
 
-			if (!empty($arrayKey))
-				return $arr[$arrayKey] ?? null;
-			else return $arr;
-		}
+  /**
+   * @var Show
+   */
+  private $latest_episode;
 
-		if (!$this->is_episode)
-			return $this->title;
+  public function isLatest():bool {
+    if ($this->latest_episode === null)
+      $this->latest_episode = ShowHelper::getLatest();
 
-		return $this->getID(true).': '.$this->title;
-	}
+    return $this->is($this->latest_episode);
+  }
 
-	public function toURL():string {
-		if ($this->is_episode)
-			return '/episode/'.$this->getID();
-		return "/{$this->type}/{$this->id}".(!empty($this->title)?'-'.$this->safeTitle():'');
-	}
+  /**
+   * @param int $now Current time (for testing purposes)
+   *
+   * @return bool Indicates whether the episode is close enough to airing to be the home page
+   */
+  public function isDisplayed($now = null):bool {
+    $airtime = strtotime($this->airs);
 
-	public function toAnchor(?string $text = null):string {
-		if (empty($text))
-			$text = $this->getID();
-		return "<a href='{$this->toURL()}'>$text</a>";
-	}
+    return strtotime('-24 hours', $airtime) < ($now ?? time());
+  }
 
-	public function updateScore(){
-		$Score = DB::$instance->where('show_id', $this->id)->disableAutoClass()->getOne(ShowVote::$table_name,'AVG(vote) as score');
-		$this->score = !empty($Score['score']) ? $Score['score'] : 0;
-		$this->save();
-	}
+  /**
+   * @return int The timestamp after which the episode is considered to have aired & voting can be enabled
+   */
+  public function willHaveAiredBy():int {
+    $airtime = $this->airs->getTimestamp();
+    if ($this->is_episode)
+      $add_minutes = $this->twoparter ? 60 : 30;
+    else $add_minutes = 120;
 
-	/**
-	 * Extracts the season and episode numbers from the episode ID string
-	 * Examples:
-	 *   "S1E1" => {season:1,episode:1}
-	 *   "S01E01" => {season:1,episode:1}
-	 *   "S1E1-2" => {season:1,episode:1,twoparter:true}
-	 *   "S01E01-02" => {season:1,episode:1,twoparter:true}
-	 *
-	 * @param string $id
-	 * @return null|array
-	 */
-	public static function parseID($id){
-		if (empty($id))
-			return null;
+    return strtotime("+{$add_minutes} minutes", $airtime);
+  }
 
-		if (preg_match(Regexes::$episode_id, $id, $match))
-			return [
-				'season' => \intval($match[1], 10),
-				'episode' => \intval($match[2], 10),
-				'twoparter' => !empty($match[3]),
-			];
-		else if (preg_match(Regexes::$movie_id, $id, $match))
-			return [
-				'season' => 0,
-				'episode' => \intval($match[1], 10),
-				'twoparter' => false,
-			];
-		else return null;
-	}
+  /**
+   * @param int $now Current time (for testing purposes)
+   *
+   * @return bool True if willHaveAiredBy() is in the past
+   */
+  public function hasAired($now = null):bool {
+    return $this->willairts < ($now ?? time());
+  }
 
-	/**
-	 * Gets the rating given to the episode by the user, or null if not voted
-	 *
-	 * @param User $user
-	 *
-	 * @return ShowVote|null
-	 */
-	public function getUserVote(?User $user = null):?ShowVote {
-		if ($user === null && Auth::$signed_in)
-			$user = Auth::$user;
-		return ShowVote::find_for($this, $user);
-	}
+  /**
+   * Turns an 'episode' database row into a readable title
+   *
+   * @param bool   $returnArray Whether to return as an array instead of string
+   * @param string $arrayKey
+   *
+   * @return string|array
+   */
+  public function formatTitle($returnArray = false, $arrayKey = null) {
+    if ($returnArray === AS_ARRAY){
+      $arr = [
+        'id' => $this->getID(),
+        'season' => $this->season ?? null,
+        'episode' => $this->episode ?? null,
+        'title' => isset($this->title) ? CoreUtils::escapeHTML($this->title) : null,
+      ];
 
-	public const
-		PREVIOUS = '<',
-		NEXT = '>';
-	/**
-	 * @param string $dir Expects self::PREVIOUS or self::NEXT
-	 *
-	 * @return Show|null
-	 */
-	private function _getAdjacent($dir):?Show {
-		$is = $this->is_episode ? '=' : '!=';
-		$col = $this->is_episode ? 'no' : 'episode';
-		return self::find('first', [
-			'conditions' => [
-				"type $is 'episode' AND $col $dir ?",
-				$this->{$col}
-			],
-			'order' => "$col ".($dir === self::NEXT ? 'asc' : 'desc'),
-			'limit' => 1,
-		]);
-	}
+      if (!empty($arrayKey))
+        return $arr[$arrayKey] ?? null;
+      else return $arr;
+    }
 
-	/**
-	 * Get the previous episode based on overall episode number
-	 *
-	 * @return Show|null
-	 */
-	public function getPrevious():?Show {
-		return $this->_getAdjacent(self::PREVIOUS);
-	}
+    if (!$this->is_episode)
+      return $this->title;
 
-	/**
-	 * Get the previous episode based on overall episode number
-	 *
-	 * @return Show|null
-	 */
-	public function getNext():?Show {
-		return $this->_getAdjacent(self::NEXT);
-	}
+    return $this->getID(true).': '.$this->title;
+  }
 
-	/**
-	 * Get a user's vote for this episode
-	 * Accepts a single array containing values
-	 *  for the keys 'season' and 'episode'
-	 * Return's the user's vote entry from the DB
-	 *
-	 * @param User $user
-	 *
-	 * @return ShowVote|null
-	 */
-	public function getVoteOf(?User $user = null):?ShowVote {
-		if ($user === null) return null;
-		return ShowVote::find_for($this, $user);
-	}
+  public function toURL():string {
+    if ($this->is_episode)
+      return '/episode/'.$this->getID();
 
-	/**
-	 * Get video embed HTML for an episode
-	 *
-	 * @return array
-	 */
-	public function getVideoEmbeds():array {
-		$parts = 0;
-		$embed = '';
-		if (\count($this->videos) > 0){
-			$Videos = [];
-			foreach ($this->videos as $v)
-				$Videos[$v->provider][$v->part] = $v;
-			// YouTube embed preferred
-			$Videos = !empty($Videos['yt']) ? $Videos['yt'] : ($Videos['dm'] ?? $Videos['sv'] ?? $Videos['mg']);
-			/** @var $Videos ShowVideo[] */
+    return "/{$this->type}/{$this->id}".(!empty($this->title) ? '-'.$this->safeTitle() : '');
+  }
 
-			$parts = \count($Videos);
-			foreach ($Videos as $v)
-				$embed .= "<div class='responsive-embed".($this->twoparter && $v->part!==1?' hidden':'')."'>".VideoProvider::getEmbed($v).'</div>';
-		}
-		return [
-			'parts' => $parts,
-			'html' => $embed
-		];
-	}
+  public function toAnchor(?string $text = null):string {
+    if (empty($text))
+      $text = $this->getID();
 
-	/**
-	 * Get synopses for the episode from TMDb
-	 *
-	 * @return array[]
-	 */
-	public function getSynopses():array {
-		$client = TMDBHelper::getClient();
-		$show_id = TMDBHelper::getShowId();
-		$ep_data = TMDBHelper::getEpisodes($client, $this);
-		$synopses = [];
-		foreach ($ep_data as $item){
-			$append = [
-				'id' => $item['id'],
-				'overview' => $item['overview'],
-				'url' => "https://www.themoviedb.org/tv/{$show_id}/season/{$item['season_number']}/episode/{$item['episode_number']}",
-			];
+    return "<a href='{$this->toURL()}'>$text</a>";
+  }
 
-			if (!empty($item['still_path'])){
-				$append['image'] = TMDBHelper::getImageUrl($client, $item['still_path']);
-			}
+  public function updateScore() {
+    $Score = DB::$instance->where('show_id', $this->id)->disableAutoClass()->getOne(ShowVote::$table_name, 'AVG(vote) as score');
+    $this->score = !empty($Score['score']) ? $Score['score'] : 0;
+    $this->save();
+  }
 
-			$synopses[] = $append;
-		}
-		return $synopses;
-	}
+  /**
+   * Extracts the season and episode numbers from the episode ID string
+   * Examples:
+   *   "S1E1" => {season:1,episode:1}
+   *   "S01E01" => {season:1,episode:1}
+   *   "S1E1-2" => {season:1,episode:1,twoparter:true}
+   *   "S01E01-02" => {season:1,episode:1,twoparter:true}
+   *
+   * @param string $id
+   *
+   * @return null|array
+   */
+  public static function parseID($id) {
+    if (empty($id))
+      return null;
+
+    if (preg_match(Regexes::$episode_id, $id, $match))
+      return [
+        'season' => \intval($match[1], 10),
+        'episode' => \intval($match[2], 10),
+        'twoparter' => !empty($match[3]),
+      ];
+    else if (preg_match(Regexes::$movie_id, $id, $match))
+      return [
+        'season' => 0,
+        'episode' => \intval($match[1], 10),
+        'twoparter' => false,
+      ];
+    else return null;
+  }
+
+  /**
+   * Gets the rating given to the episode by the user, or null if not voted
+   *
+   * @param User $user
+   *
+   * @return ShowVote|null
+   */
+  public function getUserVote(?User $user = null):?ShowVote {
+    if ($user === null && Auth::$signed_in)
+      $user = Auth::$user;
+
+    return ShowVote::find_for($this, $user);
+  }
+
+  public const
+    PREVIOUS = '<',
+    NEXT = '>';
+
+  /**
+   * @param string $dir Expects self::PREVIOUS or self::NEXT
+   *
+   * @return Show|null
+   */
+  private function _getAdjacent($dir):?Show {
+    $is = $this->is_episode ? '=' : '!=';
+    $col = $this->is_episode ? 'no' : 'episode';
+
+    return self::find('first', [
+      'conditions' => [
+        "type $is 'episode' AND $col $dir ?",
+        $this->{$col},
+      ],
+      'order' => "$col ".($dir === self::NEXT ? 'asc' : 'desc'),
+      'limit' => 1,
+    ]);
+  }
+
+  /**
+   * Get the previous episode based on overall episode number
+   *
+   * @return Show|null
+   */
+  public function getPrevious():?Show {
+    return $this->_getAdjacent(self::PREVIOUS);
+  }
+
+  /**
+   * Get the previous episode based on overall episode number
+   *
+   * @return Show|null
+   */
+  public function getNext():?Show {
+    return $this->_getAdjacent(self::NEXT);
+  }
+
+  /**
+   * Get a user's vote for this episode
+   * Accepts a single array containing values
+   *  for the keys 'season' and 'episode'
+   * Return's the user's vote entry from the DB
+   *
+   * @param User $user
+   *
+   * @return ShowVote|null
+   */
+  public function getVoteOf(?User $user = null):?ShowVote {
+    if ($user === null) return null;
+
+    return ShowVote::find_for($this, $user);
+  }
+
+  /**
+   * Get video embed HTML for an episode
+   *
+   * @return array
+   */
+  public function getVideoEmbeds():array {
+    $parts = 0;
+    $embed = '';
+    if (\count($this->videos) > 0){
+      $Videos = [];
+      foreach ($this->videos as $v)
+        $Videos[$v->provider][$v->part] = $v;
+      // YouTube embed preferred
+      $Videos = !empty($Videos['yt']) ? $Videos['yt'] : ($Videos['dm'] ?? $Videos['sv'] ?? $Videos['mg']);
+      /** @var $Videos ShowVideo[] */
+
+      $parts = \count($Videos);
+      foreach ($Videos as $v)
+        $embed .= "<div class='responsive-embed".($this->twoparter && $v->part !== 1 ? ' hidden' : '')."'>".VideoProvider::getEmbed($v).'</div>';
+    }
+
+    return [
+      'parts' => $parts,
+      'html' => $embed,
+    ];
+  }
+
+  /**
+   * Get synopses for the episode from TMDb
+   *
+   * @return array[]
+   */
+  public function getSynopses():array {
+    $client = TMDBHelper::getClient();
+    $show_id = TMDBHelper::getShowId();
+    $ep_data = TMDBHelper::getEpisodes($client, $this);
+    $synopses = [];
+    foreach ($ep_data as $item){
+      $append = [
+        'id' => $item['id'],
+        'overview' => $item['overview'],
+        'url' => "https://www.themoviedb.org/tv/{$show_id}/season/{$item['season_number']}/episode/{$item['episode_number']}",
+      ];
+
+      if (!empty($item['still_path'])){
+        $append['image'] = TMDBHelper::getImageUrl($client, $item['still_path']);
+      }
+
+      $synopses[] = $append;
+    }
+
+    return $synopses;
+  }
 }

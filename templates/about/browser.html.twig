@@ -4,27 +4,27 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-<div id="content" class="section-container">
-{% if browser.browser_class is defined and browser.browser_class is not empty %}
-	<div class="browser-{{ browser.browser_class }}"></div>
-{% endif %}
-	<h1>{{ ((browser.browser_name ?? 'Unknown browser') ~ ' ' ~ (browser.browser_ver ?? '')) | trim }}</h1>
-	<p>{{ browser.platform is not empty ? "on #{browser.platform}" : 'Unknown platform' }}</p>
+  <div id="content" class="section-container">
+    {% if browser.browser_class is defined and browser.browser_class is not empty %}
+      <div class="browser-{{ browser.browser_class }}"></div>
+    {% endif %}
+    <h1>{{ ((browser.browser_name ?? 'Unknown browser') ~ ' ' ~ (browser.browser_ver ?? '')) | trim }}</h1>
+    <p>{{ browser.platform is not empty ? "on #{browser.platform}" : 'Unknown platform' }}</p>
 
-{% if session is not empty %}
-	<div class="notice warn">
-		<p>You're debugging session <strong>{{ session.id }}</strong> (belongs to {{ session.user.toAnchor }})</p>
-	</div>
-{% endif %}
+    {% if session is not empty %}
+      <div class="notice warn">
+        <p>You're debugging session <strong>{{ session.id }}</strong> (belongs to {{ session.user.toAnchor }})</p>
+      </div>
+    {% endif %}
 
-	<div class="notice info">
-		<label>Browser recognition testing page</label>
-		<p>The following page is used to make sure that the site's browser detection script works as it should. If you're seeing a browser and/or operating system that's different from what you're currently using, please <a class='send-feedback'>let us know.</a></p>
-	</div>
+    <div class="notice info">
+      <label>Browser recognition testing page</label>
+      <p>The following page is used to make sure that the site's browser detection script works as it should. If you're seeing a browser and/or operating system that's different from what you're currently using, please <a class='send-feedback'>let us know.</a></p>
+    </div>
 
-	<section>
-		<h2>Your User Agent string</h2>
-		<p><code>{{ (browser.user_agent is empty ? '<empty>' : browser.user_agent) | escape }}</code></p>
-	</section>
-</div>
+    <section>
+      <h2>Your User Agent string</h2>
+      <p><code>{{ (browser.user_agent is empty ? '<empty>' : browser.user_agent) | escape }}</code></p>
+    </section>
+  </div>
 {% endblock %}

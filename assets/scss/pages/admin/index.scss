@@ -2,55 +2,61 @@
 @import "../../components/optional/post-list";
 
 #content {
-	> section {
-		&.mass-approve {
-			@media all and (max-width: $Breakpoint){
-				display: none;
-			}
-			.textarea {
-				width: 200px;
-				height: 2em;
-				line-height: 1em;
-				border: 1px solid black;
-				background: white;
-				overflow: hidden;
-				padding: 10px;
-				cursor: text;
-				font-family: $monospace;
+  > section {
+    &.mass-approve {
+      @media all and (max-width: $Breakpoint) {
+        display: none;
+      }
 
-				&:before {
-					content: "Paste here";
-					position: absolute;
-					color: rgba(black, .5);
-				}
+      .textarea {
+        width: 200px;
+        height: 2em;
+        line-height: 1em;
+        border: 1px solid black;
+        background: white;
+        overflow: hidden;
+        padding: 10px;
+        cursor: text;
+        font-family: $monospace;
 
-				> * { display: none }
-			}
-		}
-		&.elastic-status pre {
-			overflow: auto;
-		}
-		&.recent-posts {
-			> div:empty:before {
-				content: "No recent posts to display.";
-				display: block;
-				font-style: italic;
-				padding: 10px;
-			}
-			ul {
-				@extend %post-ul;
-				margin-bottom: 0;
+        &:before {
+          content: "Paste here";
+          position: absolute;
+          color: rgba(black, .5);
+        }
 
-				&:empty:before {
-					content: "No recent posts to show";
-					font-style: italic;
-				}
+        > * {
+          display: none
+        }
+      }
+    }
 
-				li .reserver .da-userlink .name {
-					font-size: 16px;
-					vertical-align: middle;
-				}
-			}
-		}
-	}
+    &.elastic-status pre {
+      overflow: auto;
+    }
+
+    &.recent-posts {
+      > div:empty:before {
+        content: "No recent posts to display.";
+        display: block;
+        font-style: italic;
+        padding: 10px;
+      }
+
+      ul {
+        @extend %post-ul;
+        margin-bottom: 0;
+
+        &:empty:before {
+          content: "No recent posts to show";
+          font-style: italic;
+        }
+
+        li .reserver .da-userlink .name {
+          font-size: 16px;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
 }

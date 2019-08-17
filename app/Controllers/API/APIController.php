@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers\API;
+
 use App\Controllers\Controller;
 
 /**
@@ -8,7 +9,8 @@ use App\Controllers\Controller;
  *   @OA\Info(
  *     title="MLP Vector Club API",
  *     version="0.1",
- *     description="A work-in-progress API that will eventually allow programmatic access to all features of the [MLPVector.Club](https://mlpvector.club/) website.",
+ *     description="A work-in-progress API that will eventually allow programmatic access to all features of the
+ *     [MLPVector.Club](https://mlpvector.club/) website.",
  *     @OA\License(name="MIT"),
  *     @OA\Contact(name="David Joseph Guzsik", url="https://seinopsys.hu", email="seinopsys@gmail.com"),
  *   ),
@@ -18,7 +20,6 @@ use App\Controllers\Controller;
  *   @OA\Tag(name="appearances", description="Working with entries in the color guide"),
  *   @OA\Tag(name="server info", description="For diagnostic or informational data")
  * )
- *
  * @OA\Schema(
  *   schema="ServerResponse",
  *   required={
@@ -36,7 +37,6 @@ use App\Controllers\Controller;
  *     description="A translation key pointing to a message that explains the outcome of the request, typically used for errors"
  *   ),
  * )
- *
  * @OA\Schema(
  *   schema="PageNumber",
  *   type="integer",
@@ -44,45 +44,38 @@ use App\Controllers\Controller;
  *   default=1,
  *   description="A query parameter used for specifying which page is currently being displayed"
  * )
- *
  * @OA\Schema(
  *   schema="File",
  *   type="string",
  *   format="binary",
  * )
- *
  * @OA\Schema(
  *   schema="BooleanTrue",
  *   type="boolean",
  *   enum={true}
  * )
- *
  * @OA\Schema(
  *   schema="BooleanFalse",
  *   type="boolean",
  *   enum={false}
  * )
- *
  * @OA\Schema(
  *   schema="QueryString",
  *   type="string",
  *   default=""
  * )
- *
  * @OA\Schema(
  *   schema="OneBasedId",
  *   type="integer",
  *   minimum=1,
  *   example=1
  * )
- *
  * @OA\Schema(
  *   schema="ZeroBasedId",
  *   type="integer",
  *   minimum=0,
  *   example=1
  * )
- *
  * @OA\Schema(
  *   schema="PageData",
  *   required={
@@ -121,7 +114,6 @@ use App\Controllers\Controller;
  *     ),
  *   ),
  * )
- *
  * @OA\Schema(
  *   schema="PagedServerResponse",
  *   allOf={

@@ -2,361 +2,383 @@
 @import "../../components/optional/no-ui-slider";
 
 %colorful-input-wrap {
-	background: url('/img/transparency.svg') repeat;
-	background-size: 16px;
-	padding: 0;
+  background: url('/img/transparency.svg') repeat;
+  background-size: 16px;
+  padding: 0;
 
-	input {
-		display: block;
-		width: 150px;
-		height: 100%;
-		border-width: 0;
-		background: transparent;
-		font-family: $monospace;
-		font-size: 18px;
-		text-align: center;
-		box-sizing: border-box;
-	}
+  input {
+    display: block;
+    width: 150px;
+    height: 100%;
+    border-width: 0;
+    background: transparent;
+    font-family: $monospace;
+    font-size: 18px;
+    text-align: center;
+    box-sizing: border-box;
+  }
 }
 
 #overlay .select-color > :last-child, #filter-override-color-wrap, #color-select > div {
-	display: inline-block;
-	@extend %colorful-input-wrap;
+  display: inline-block;
+  @extend %colorful-input-wrap;
 
-	input {
-		display: inline-block;
-		border: 1px solid black;
-		font-size: 16px;
-		font-family: $RegularFont;
-	}
+  input {
+    display: inline-block;
+    border: 1px solid black;
+    font-size: 16px;
+    font-family: $RegularFont;
+  }
 }
 
 #controls {
-	margin: 20px 0;
-	display: flex;
-	flex-flow: row wrap;
-	max-height: 60vh;
-	overflow: hidden;
-	border: 1px solid rgba(0,0,0,.2);
+  margin: 20px 0;
+  display: flex;
+  flex-flow: row wrap;
+  max-height: 60vh;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, .2);
 
-	> *:first-child {
-		border-right: inherit;
-	}
+  > *:first-child {
+    border-right: inherit;
+  }
 
-	> .section {
-		flex: 1;
-		border-width: 1px 1px 0 0;
-		background: rgba(0,0,0,.03);
-		box-sizing: border-box;
-		display: block;
-		padding: 5px;
-		overflow-y: auto;
+  > .section {
+    flex: 1;
+    border-width: 1px 1px 0 0;
+    background: rgba(0, 0, 0, .03);
+    box-sizing: border-box;
+    display: block;
+    padding: 5px;
+    overflow-y: auto;
 
-		&:first-child {
-			display: flex;
-			flex-flow: row wrap;
-			align-items: stretch;
-			padding: 0;
+    &:first-child {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: stretch;
+      padding: 0;
 
-			> * {
-				border-width: 1px;
-			}
-		}
+      > * {
+        border-width: 1px;
+      }
+    }
 
-		> div {
-			padding: 8px;
+    > div {
+      padding: 8px;
 
-			h2 {
-				margin: 0 0 10px;
-			}
-		}
-	}
+      h2 {
+        margin: 0 0 10px;
+      }
+    }
+  }
 }
+
 #known-colors {
-	flex-basis: 100% !important;
+  flex-basis: 100% !important;
 
-	td.color-cell {
-		@extend %colorful-input-wrap;
-	}
+  td.color-cell {
+    @extend %colorful-input-wrap;
+  }
 
-	table {
-		border-collapse: collapse;
-		background: white;
+  table {
+    border-collapse: collapse;
+    background: white;
 
-		button {
-			margin: 0;
-			display: inline;
-		}
-	}
-	td, th {
-		border: 1px solid black;
-	}
-	th {
-		padding: 6px;
-	}
-	td.actions button:not(:last-child) {
-		margin-right: 1px;
-	}
+    button {
+      margin: 0;
+      display: inline;
+    }
+  }
+
+  td, th {
+    border: 1px solid black;
+  }
+
+  th {
+    padding: 6px;
+  }
+
+  td.actions button:not(:last-child) {
+    margin-right: 1px;
+  }
 }
+
 #filter-type {
-	flex: 1 1 auto;
-	select {
-		background: #fff;
-		font-size: 18px;
-	}
+  flex: 1 1 auto;
+
+  select {
+    background: #fff;
+    font-size: 18px;
+  }
 }
+
 #sensitivity {
-	flex-basis: 100% !important;
+  flex-basis: 100% !important;
 
-	h2 > .display {
-		font-weight: normal;
-		margin-left: 1em;
+  h2 > .display {
+    font-weight: normal;
+    margin-left: 1em;
 
-		&:empty {
-			display: none;
-		}
-	}
+    &:empty {
+      display: none;
+    }
+  }
 
-	.noUi-target {
-		width: 95%;
-		margin: 0 2.5%;
-	}
+  .noUi-target {
+    width: 95%;
+    margin: 0 2.5%;
+  }
 }
+
 #reverse-what {
-	flex: 1 1 50%;
-	user-select: none;
+  flex: 1 1 50%;
+  user-select: none;
 
-	label {
-		> input {
-			display: none;
+  label {
+    > input {
+      display: none;
 
-			&:checked + span {
-				background: #fff;
-				border-color: #000;
-			}
-		}
-		> span {
-			display: inline-block;
-			padding: 5px;
-			margin: 5px;
-			border: 1px solid #ccc;
-			background: #eee;
-			cursor: pointer;
-		}
-	}
+      &:checked + span {
+        background: #fff;
+        border-color: #000;
+      }
+    }
+
+    > span {
+      display: inline-block;
+      padding: 5px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      background: #eee;
+      cursor: pointer;
+    }
+  }
 }
+
 #image-select {
-	flex: 1 1 50%;
-	button {
-		margin: 1px 0 0;
-	}
+  flex: 1 1 50%;
+
+  button {
+    margin: 1px 0 0;
+  }
 }
+
 #color-select {
-	flex: 1 1 50%;
+  flex: 1 1 50%;
 }
+
 #overlay {
-	label {
-		display: block;
+  label {
+    display: block;
 
-		&:not(:last-child) {
-			margin-bottom: 10px;
-		}
+    &:not(:last-child) {
+      margin-bottom: 10px;
+    }
 
-		&.select-color input {
-			width: 200px !important;
-		}
-	}
+    &.select-color input {
+      width: 200px !important;
+    }
+  }
 }
+
 #filter-candidates {
-	flex: 1 1 auto;
-	> ul {
-		display: flex;
-		flex-flow: row wrap;
-		padding: 0;
-		margin: 10px 0 0;
+  flex: 1 1 auto;
 
-		&:empty:before {
-			content: "None";
-			font-style: italic;
-		}
+  > ul {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+    margin: 10px 0 0;
 
-		> li {
-			display: block;
-			padding: 5px 7px;
-			border: 1px solid gray;
-			cursor: pointer;
-			position: relative;
-			background-color: #fff;
+    &:empty:before {
+      content: "None";
+      font-style: italic;
+    }
 
-			&:not(.selected) {
-				margin: 5px;
-			}
-			&.selected {
-				margin: 4px;
-				border-width: 2px;
-				border-color: $DefaultUIColor;
+    > li {
+      display: block;
+      padding: 5px 7px;
+      border: 1px solid gray;
+      cursor: pointer;
+      position: relative;
+      background-color: #fff;
 
-				&:after {
-					content: "";
-					display: block;
-					position: absolute;
-					top: 0;
-					right: 0;
-					width: 0;
-					height: 0;
-					border-style: solid;
-					border-width: 0 18px 18px 0;
-					border-color: transparent $DefaultUIColor transparent transparent;
-				}
-			}
+      &:not(.selected) {
+        margin: 5px;
+      }
 
-			.color {
-				display: flex;
-				flex-flow: row nowrap;
-				align-items: center;
-				height: auto;
+      &.selected {
+        margin: 4px;
+        border-width: 2px;
+        border-color: $DefaultUIColor;
 
-				.color-preview {
-					flex: 1 0 auto;
-					display: inline-block;
-					$size: 70px;
-					width: $size;
-					height: $size;
-					background: url('/img/transparency.svg');
-					background-size: 16px;
-					border: 1px solid black;
-					box-sizing: border-box;
-					margin-right: .4em;
+        &:after {
+          content: "";
+          display: block;
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 0;
+          height: 0;
+          border-style: solid;
+          border-width: 0 18px 18px 0;
+          border-color: transparent $DefaultUIColor transparent transparent;
+        }
+      }
 
-					> span {
-						display: block;
-						width: 100%;
-						height: 100%;
-					}
-				}
+      .color {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        height: auto;
 
-				.color-rgba {
-					flex: 1;
-					display: flex;
-					flex-flow: column nowrap;
-					align-items: flex-start;
-					justify-content: space-between;
+        .color-preview {
+          flex: 1 0 auto;
+          display: inline-block;
+          $size: 70px;
+          width: $size;
+          height: $size;
+          background: url('/img/transparency.svg');
+          background-size: 16px;
+          border: 1px solid black;
+          box-sizing: border-box;
+          margin-right: .4em;
 
-					> * {
-						flex: 1;
-						white-space: nowrap;
+          > span {
+            display: block;
+            width: 100%;
+            height: 100%;
+          }
+        }
 
-						span, strong {
-							font-family: $monospace;
-						}
-					}
-				}
-			}
+        .color-rgba {
+          flex: 1;
+          display: flex;
+          flex-flow: column nowrap;
+          align-items: flex-start;
+          justify-content: space-between;
 
-			.pairs {
-				display: flex;
-				flex-flow: row wrap;
-				padding: 0;
-				margin: 5px 0 0;
+          > * {
+            flex: 1;
+            white-space: nowrap;
 
-				> li {
-					display: flex;
-					flex-flow: row nowrap;
-					$border: 1px;
-					border: 1px solid black;
-					$margin: 2px;
-					flex: 0 1 calc(50% - #{$margin*2 + $border*2});
-					margin: $margin;
-					background-image: url("/img/transparency.svg");
-					background-size: 8px;
+            span, strong {
+              font-family: $monospace;
+            }
+          }
+        }
+      }
 
-					> span {
-						display: block;
-						flex: 1 1 50%;
-						height: 8px;
-					}
-				}
-			}
-		}
-	}
+      .pairs {
+        display: flex;
+        flex-flow: row wrap;
+        padding: 0;
+        margin: 5px 0 0;
+
+        > li {
+          display: flex;
+          flex-flow: row nowrap;
+          $border: 1px;
+          border: 1px solid black;
+          $margin: 2px;
+          flex: 0 1 calc(50% - #{$margin*2 + $border*2});
+          margin: $margin;
+          background-image: url("/img/transparency.svg");
+          background-size: 8px;
+
+          > span {
+            display: block;
+            flex: 1 1 50%;
+            height: 8px;
+          }
+        }
+      }
+    }
+  }
 }
+
 #filter-override {
-	flex: 1 1 auto;
+  flex: 1 1 auto;
 
-	> div:not(:last-child) {
-		margin-bottom: 10px;
-	}
+  > div:not(:last-child) {
+    margin-bottom: 10px;
+  }
 
-	.flex {
-		display: flex;
-		flex-flow: row nowrap;
-		align-items: center;
+  .flex {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
 
-		> :not(:last-child) {
-			margin-right: 20px;
-		}
+    > :not(:last-child) {
+      margin-right: 20px;
+    }
 
-		input {
-			font-size: 18px;
-		}
-	}
+    input {
+      font-size: 18px;
+    }
+  }
 
-	#filter-override-color {
-		font-family: $monospace;
-		width: 100px;
-	}
-	#filter-override-opacity {
-		text-align: center;
-		width: 50px;
-	}
+  #filter-override-color {
+    font-family: $monospace;
+    width: 100px;
+  }
+
+  #filter-override-opacity {
+    text-align: center;
+    width: 50px;
+  }
 }
+
 #preview-wrap {
-	max-width: 75%;
-	margin: 0 auto;
+  max-width: 75%;
+  margin: 0 auto;
 }
+
 #preview {
-	@extend %responsive-embed-parent;
+  @extend %responsive-embed-parent;
 
-	&:before, > * {
-		@extend %responsive-embed-childs-pseudo;
-	}
-	> :not(#freezing) {
-		@extend %responsive-embed-childs;
-	}
+  &:before, > * {
+    @extend %responsive-embed-childs-pseudo;
+  }
 
-	&:before {
-		z-index: 1;
-		border: 1px dashed black;
-	}
+  > :not(#freezing) {
+    @extend %responsive-embed-childs;
+  }
 
-	canvas {
-		max-height: 100%;
-	}
+  &:before {
+    z-index: 1;
+    border: 1px dashed black;
+  }
 
-	#freezing {
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: 3;
-		width: 100%;
-		height: 100%;
-		background: rgba(white, .7);
-		color: #000;
+  canvas {
+    max-height: 100%;
+  }
 
-		&:before {
-			display: block;
-			content: "Applying filter reversal\2026\0AYour browser/tab may freeze temporarily";
-			white-space: pre-wrap;
-			font-size: 50px;
-			text-align: center;
-			padding: 20px;
-		}
-	}
+  #freezing {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    background: rgba(white, .7);
+    color: #000;
 
-	#preview-overlay {
-		z-index: 2;
-	}
-	#preview-image {
-		z-index: 1;
-	}
+    &:before {
+      display: block;
+      content: "Applying filter reversal\2026\0AYour browser/tab may freeze temporarily";
+      white-space: pre-wrap;
+      font-size: 50px;
+      text-align: center;
+      padding: 20px;
+    }
+  }
+
+  #preview-overlay {
+    z-index: 2;
+  }
+
+  #preview-image {
+    z-index: 1;
+  }
 }

@@ -1,33 +1,37 @@
 @import "../../vars";
 
 #content {
-	> img {
-		width: 100%;
-		max-width: 200px;
-		margin: 0 auto 10px;
-		display: block;
-	}
-	> h1 + p {
-			font-size: 1.4em;
-			margin: 0 0 20px;
-	}
-	> section {
-		&.what-s-this-site- {
-			text-align: justify;
-		}
+  > img {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto 10px;
+    display: block;
+  }
 
-		&.attributions {
-			ul {
-				margin: 5px 0;
-			}
-		}
+  > h1 + p {
+    font-size: 1.4em;
+    margin: 0 0 20px;
+  }
 
-		&:not(:last-child){
-			margin-bottom: 10px;
-		}
-	}
+  > section {
+    &.what-s-this-site- {
+      text-align: justify;
+    }
+
+    &.attributions {
+      ul {
+        margin: 5px 0;
+      }
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 10px;
+    }
+  }
 }
 
 #supported-providers {
-	q { font-style: italic }
+  q {
+    font-style: italic
+  }
 }

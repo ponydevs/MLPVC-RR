@@ -1,89 +1,112 @@
 @import "../../vars";
 
 #content {
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: space-around;
-	padding: 5px;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  padding: 5px;
 
-	.sidebyside {
-		display: block;
-		flex: 1 1 50%;
-		padding: 5px;
-		box-sizing: border-box;
-	}
-	h1 + .actions {
-		text-align: center;
+  .sidebyside {
+    display: block;
+    flex: 1 1 50%;
+    padding: 5px;
+    box-sizing: border-box;
+  }
 
-		&, & + .pagination:empty {
-			& + table{
-				margin-top: 10px;
-			}
-		}
-	}
-	table {
-		padding: 0;
-		margin: 0 auto;
-		border-collapse: collapse;
-		font-size: 18px;
-		box-sizing: border-box;
+  h1 + .actions {
+    text-align: center;
 
-		thead th {
-			padding: 2px 6px;
+    &, & + .pagination:empty {
+      & + table {
+        margin-top: 10px;
+      }
+    }
+  }
 
-			@media all and (max-width: $Breakpoint){
-				.mobile-hide { display: none }
-			}
-		}
-		tbody {
-			tr {
-				border: 2px solid black;
-				padding: 3px;
-				margin-bottom: 10px;
+  table {
+    padding: 0;
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-size: 18px;
+    box-sizing: border-box;
 
-				&:not(.empty) {
-					&:nth-child(odd) { border-bottom: 0 }
-					&:nth-child(even) { border-top: 0 }
-				}
-			}
-			td {
-				padding: 5px;
-				color: rgba(0,0,0,.7);
-			}
-			.season, .episode, .no {
-				text-align: center;
-				font-size: 1.7em;
-				padding: 7px;
-				border-bottom: 2px solid black;
-			}
-			.airs { padding-top: 0 }
-			.title, .airs { text-align: center }
-			.title {
-				padding: 5px 10px;
+    thead th {
+      padding: 2px 6px;
 
-				> :not(:first-child) {
-					margin-left: 8px;
-				}
+      @media all and (max-width: $Breakpoint) {
+        .mobile-hide {
+          display: none
+        }
+      }
+    }
 
-				> span.typcn { cursor: help }
-				a {
-					display: inline-block;
-					margin-left: 5px;
-					text-decoration: none;
-					border-radius: 3px;
+    tbody {
+      tr {
+        border: 2px solid black;
+        padding: 3px;
+        margin-bottom: 10px;
 
-					@media all and (max-width: $Breakpoint){
-						display: block;
+        &:not(.empty) {
+          &:nth-child(odd) {
+            border-bottom: 0
+          }
 
-						+ .admin-controls button {
-							padding: 2px;
-						}
-					}
-				}
-			}
-			button {
-				vertical-align: middle;
-			}
-		}
-	}
+          &:nth-child(even) {
+            border-top: 0
+          }
+        }
+      }
+
+      td {
+        padding: 5px;
+        color: rgba(0, 0, 0, .7);
+      }
+
+      .season, .episode, .no {
+        text-align: center;
+        font-size: 1.7em;
+        padding: 7px;
+        border-bottom: 2px solid black;
+      }
+
+      .airs {
+        padding-top: 0
+      }
+
+      .title, .airs {
+        text-align: center
+      }
+
+      .title {
+        padding: 5px 10px;
+
+        > :not(:first-child) {
+          margin-left: 8px;
+        }
+
+        > span.typcn {
+          cursor: help
+        }
+
+        a {
+          display: inline-block;
+          margin-left: 5px;
+          text-decoration: none;
+          border-radius: 3px;
+
+          @media all and (max-width: $Breakpoint) {
+            display: block;
+
+            + .admin-controls button {
+              padding: 2px;
+            }
+          }
+        }
+      }
+
+      button {
+        vertical-align: middle;
+      }
+    }
+  }
 }

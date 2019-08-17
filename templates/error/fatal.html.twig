@@ -5,36 +5,36 @@
 {% set current_user = null %}
 {% set current_session = null %}
 {% if err_cause == 'db' %}
-	{% set title = 'Database connection error' %}
+  {% set title = 'Database connection error' %}
 {% elseif err_cause == 'config' %}
-	{% set title = 'Configuration problem' %}
+  {% set title = 'Configuration problem' %}
 {% elseif err_cause == 'maintenance' %}
-	{% set title = 'Website Maintenance' %}
+  {% set title = 'Website Maintenance' %}
 {% endif %}
 {% if title is defined %}
-	{% set og = { title: title } %}
+  {% set og = { title: title } %}
 {% endif %}
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-<div id="content">
-	<h1>{{ title }}</h1>
-	{% if err_cause == 'db' %}
-		<p>Could not connect to database on {{ env('DB_HOST') }}</p>
+  <div id="content">
+    <h1>{{ title }}</h1>
+    {% if err_cause == 'db' %}
+      <p>Could not connect to database on {{ env('DB_HOST') }}</p>
 
-		<div class='notice info align-center'>
-			<p><span class="typcn typcn-info-large"></span> The database of our website cannot be reached. Hopefully this is just a temporary issue and everything will be back to normal soon. Sorry for the inconvenience. <a class="send-feedback">Notify the developer</a></p>
-		</div>
-	{% elseif err_cause == 'config' %}
-		<p>A required extension/setting is missing</p>
-		<div class='notice info align-center'>
-			<p><span class="typcn typcn-info-large"></span> One of the site's core modules have not been installed yet. This usually happens after a software upgrade/reinstall and is just a temporary issue, no data has been lost and everything will be back to normal very soon. Sorry for the inconvenience. <a class="send-feedback">Notify the developer</a></p>
-		</div>
-	{% elseif err_cause == 'maintenance' %}
-	<p>Started {{ time_tag(env('MAINTENANCE_START')) }}</p>
-	<div class='notice info align-center'>
-		<p><span class="typcn typcn-info-large"></span> The developer is currently performing some actions that require the site to be temporarily offline. We'll be back up and running as soon as possible, thank you for your understanding.</p>
-	</div>
-	{% endif %}
-</div>
+      <div class='notice info align-center'>
+        <p><span class="typcn typcn-info-large"></span> The database of our website cannot be reached. Hopefully this is just a temporary issue and everything will be back to normal soon. Sorry for the inconvenience. <a class="send-feedback">Notify the developer</a></p>
+      </div>
+    {% elseif err_cause == 'config' %}
+      <p>A required extension/setting is missing</p>
+      <div class='notice info align-center'>
+        <p><span class="typcn typcn-info-large"></span> One of the site's core modules have not been installed yet. This usually happens after a software upgrade/reinstall and is just a temporary issue, no data has been lost and everything will be back to normal very soon. Sorry for the inconvenience. <a class="send-feedback">Notify the developer</a></p>
+      </div>
+    {% elseif err_cause == 'maintenance' %}
+      <p>Started {{ time_tag(env('MAINTENANCE_START')) }}</p>
+      <div class='notice info align-center'>
+        <p><span class="typcn typcn-info-large"></span> The developer is currently performing some actions that require the site to be temporarily offline. We'll be back up and running as soon as possible, thank you for your understanding.</p>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}

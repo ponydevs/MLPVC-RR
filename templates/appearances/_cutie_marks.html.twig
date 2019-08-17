@@ -1,38 +1,38 @@
 {# @var cutie_marks \App\Models\Cutiemark[] #}
 {# @var wrap bool #}
 {% spaceless %}
-{% if wrap %}
-<ul id='pony-cm-list'>
-{% endif %}
-{% for cm in cutie_marks %}
-	{% set can_edit = cm.canEdit %}
-	{% set facing = cm.facing is not null ? 'Facing ' ~ (cm.facing | capitalize) : 'Symmetrical' %}
-	{% set has_label = cm.label is not null %}
-	{% set id_span = can_edit ? "<span class='cm-id'>#{cm.id}</span> " : '' %}
-	<li class='pony-cm' id='cm{{ cm.id }}'>
-		{% if has_label %}
-		<span class='title'>{{ id_span ~ (cm.label | escape) }}</span>
-		<span class='subtitle'>{{ facing }}</span>
-		{% else %}
-		<span class='title'>{{ id_span ~ facing }}</span>
-		{% endif %}
-		{{ cm.previewForAppearancePageListItem }}
-		<div class="dl-links">
-			<a href='{{ cm.downloadURL }}' class='btn link typcn typcn-download'>SVG</a>
-			{% if can_edit %}
-				{% set who = (cm.appearance.owner_id is not null ? 'Owner and ' : '') ~ 'Staff' %}
-				<a href='{{ cm.downloadURL(true) }}' class='btn orange typcn typcn-download' title='Download the original file as uploaded ({{ who }} only)'></a>
-			{% endif %}
-			{% if cm.favme is not null %}
-			<a href='http://fav.me/{{ cm.favme }}' class='btn btn-da typcn'>Source</a>
-			{% endif %}
-		</div>
-		{% if cm.contributor is not null %}
-		<span class='made-by'>By {{ cm.contributor.toAnchor(constant('App\\Models\\User::WITH_AVATAR')) }}</span>
-		{% endif %}
-	</li>
-{% endfor %}
-{% if wrap %}
-</ul>
-{% endif %}
+  {% if wrap %}
+    <ul id='pony-cm-list'>
+  {% endif %}
+  {% for cm in cutie_marks %}
+    {% set can_edit = cm.canEdit %}
+    {% set facing = cm.facing is not null ? 'Facing ' ~ (cm.facing | capitalize) : 'Symmetrical' %}
+    {% set has_label = cm.label is not null %}
+    {% set id_span = can_edit ? "<span class='cm-id'>#{cm.id}</span> " : '' %}
+    <li class='pony-cm' id='cm{{ cm.id }}'>
+      {% if has_label %}
+        <span class='title'>{{ id_span ~ (cm.label | escape) }}</span>
+        <span class='subtitle'>{{ facing }}</span>
+      {% else %}
+        <span class='title'>{{ id_span ~ facing }}</span>
+      {% endif %}
+      {{ cm.previewForAppearancePageListItem }}
+      <div class="dl-links">
+        <a href='{{ cm.downloadURL }}' class='btn link typcn typcn-download'>SVG</a>
+        {% if can_edit %}
+          {% set who = (cm.appearance.owner_id is not null ? 'Owner and ' : '') ~ 'Staff' %}
+          <a href='{{ cm.downloadURL(true) }}' class='btn orange typcn typcn-download' title='Download the original file as uploaded ({{ who }} only)'></a>
+        {% endif %}
+        {% if cm.favme is not null %}
+          <a href='http://fav.me/{{ cm.favme }}' class='btn btn-da typcn'>Source</a>
+        {% endif %}
+      </div>
+      {% if cm.contributor is not null %}
+        <span class='made-by'>By {{ cm.contributor.toAnchor(constant('App\\Models\\User::WITH_AVATAR')) }}</span>
+      {% endif %}
+    </li>
+  {% endfor %}
+  {% if wrap %}
+    </ul>
+  {% endif %}
 {% endspaceless %}

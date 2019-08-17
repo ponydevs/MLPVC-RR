@@ -1,12 +1,12 @@
 /* global DOMStringList */
-(function(){
-	'use strict';
+(function() {
+  'use strict';
 
-	// Mass-aprove posts
-	(function(){
-		$('#bulk-how').on('click',function(){
-			$.Dialog.info('How to approve posts in bulk',
-				`<p>This tool is easier to use than you would think. Here's how it works:</p>
+  // Mass-aprove posts
+  (function() {
+    $('#bulk-how').on('click', function() {
+      $.Dialog.info('How to approve posts in bulk',
+        `<p>This tool is easier to use than you would think. Here's how it works:</p>
 				<ol>
 					<li>
 						If you have the group watched, visit <a href="https://www.deviantart.com/notifications/#view=groupdeviations%3A17450764" target="_blank" rel='noopener'>this link</a><br>
@@ -19,157 +19,161 @@
 					<li>Repeat these steps if there are multiple pages of results.</li>
 				</ol>
 				<p>The script will look for any deviation links in the HTML code of the page, which it then sends over to the server to mark them as approved if they were used to finish posts on the site.</p>`);
-		});
-		// Paste Handling Code based on http://stackoverflow.com/a/6804718/1344955
-		$('.mass-approve').children('.textarea').on('paste', function(e){
-			let types, pastedData, savedContent, editableDiv = this;
-			if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.types && e.originalEvent.clipboardData.getData){
-				types = e.originalEvent.clipboardData.types;
-				if (((types instanceof DOMStringList) && types.contains("text/html")) || (types.indexOf && types.indexOf('text/html') !== -1)){
-					pastedData = e.originalEvent.clipboardData.getData('text/html');
-					processPaste(pastedData);
-					e.target.innerHTML = '';
-					e.stopPropagation();
-					e.preventDefault();
-					return false;
-				}
-			}
-			savedContent = document.createDocumentFragment();
-			while (editableDiv.childNodes.length > 0){
-				savedContent.appendChild(editableDiv.childNodes[0]);
-			}
-			(function waitForPastedData(elem, savedContent){
-				if (elem.childNodes && elem.childNodes.length > 0){
-					let pastedData = elem.innerHTML;
-					elem.innerHTML = "";
-					elem.appendChild(savedContent);
-					processPaste(pastedData);
-				}
-				else setTimeout(function(){ waitForPastedData(elem, savedContent) }, 20);
-			})(editableDiv, savedContent);
-			return true;
-		});
+    });
+    // Paste Handling Code based on http://stackoverflow.com/a/6804718/1344955
+    $('.mass-approve').children('.textarea').on('paste', function(e) {
+      let types, pastedData, savedContent, editableDiv = this;
+      if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.types && e.originalEvent.clipboardData.getData){
+        types = e.originalEvent.clipboardData.types;
+        if (((types instanceof DOMStringList) && types.contains('text/html')) || (types.indexOf && types.indexOf('text/html') !== -1)){
+          pastedData = e.originalEvent.clipboardData.getData('text/html');
+          processPaste(pastedData);
+          e.target.innerHTML = '';
+          e.stopPropagation();
+          e.preventDefault();
+          return false;
+        }
+      }
+      savedContent = document.createDocumentFragment();
+      while (editableDiv.childNodes.length > 0){
+        savedContent.appendChild(editableDiv.childNodes[0]);
+      }
+      (function waitForPastedData(elem, savedContent) {
+        if (elem.childNodes && elem.childNodes.length > 0){
+          let pastedData = elem.innerHTML;
+          elem.innerHTML = '';
+          elem.appendChild(savedContent);
+          processPaste(pastedData);
+        }
+        else setTimeout(function() {
+          waitForPastedData(elem, savedContent);
+        }, 20);
+      })(editableDiv, savedContent);
+      return true;
+    });
 
-		const $recentPostsUL = $('.recent-posts ul');
-		let deviationRegex = /(?:[A-Za-z\-\d]+\.)?deviantart\.com\/(?:[A-Za-z\-\d]+\/)?art\/(?:[A-Za-z\-\d]+-)?(\d+)|fav\.me\/d([a-z\d]{6,})/g,
-			deviationRegexLocal = /\/(?:[A-Za-z\-\d]+-)?(\d+)$/,
-			favmeRegexLocal = /fav\.me\/d([a-z\d]{6,})/;
-		function processPaste(pastedData){
-			pastedData = pastedData.replace(/<img[^>]+>/g,'').match(deviationRegex);
-			let deviationIDs = {};
+    const $recentPostsUL = $('.recent-posts ul');
+    let deviationRegex = /(?:[A-Za-z\-\d]+\.)?deviantart\.com\/(?:[A-Za-z\-\d]+\/)?art\/(?:[A-Za-z\-\d]+-)?(\d+)|fav\.me\/d([a-z\d]{6,})/g,
+      deviationRegexLocal = /\/(?:[A-Za-z\-\d]+-)?(\d+)$/,
+      favmeRegexLocal = /fav\.me\/d([a-z\d]{6,})/;
 
-			$.each(pastedData, (_, el) => {
-				let match = el.match(deviationRegexLocal);
-				if (match && typeof deviationIDs[match[1]] === 'undefined'){
-					deviationIDs[match[1]] = true;
-					return;
-				}
-				match = el.match(favmeRegexLocal);
-				if (match){
-					let id = parseInt(match[1], 36);
-					if (typeof deviationIDs[id] === 'undefined')
-						deviationIDs[id] = true;
-				}
-			});
+    function processPaste(pastedData) {
+      pastedData = pastedData.replace(/<img[^>]+>/g, '').match(deviationRegex);
+      let deviationIDs = {};
 
-			let deviationIDArray = Object.keys(deviationIDs);
-			if (!deviationIDArray)
-				return $.Dialog.fail('No deviations found on the pasted page.');
+      $.each(pastedData, (_, el) => {
+        let match = el.match(deviationRegexLocal);
+        if (match && typeof deviationIDs[match[1]] === 'undefined'){
+          deviationIDs[match[1]] = true;
+          return;
+        }
+        match = el.match(favmeRegexLocal);
+        if (match){
+          let id = parseInt(match[1], 36);
+          if (typeof deviationIDs[id] === 'undefined')
+            deviationIDs[id] = true;
+        }
+      });
 
-			$.Dialog.wait('Bulk approve posts', `Attempting to approve ${deviationIDArray.length} post${deviationIDArray.length!==1?'s':''}`);
+      let deviationIDArray = Object.keys(deviationIDs);
+      if (!deviationIDArray)
+        return $.Dialog.fail('No deviations found on the pasted page.');
 
-			const ids = deviationIDArray.join(',');
+      $.Dialog.wait('Bulk approve posts', `Attempting to approve ${deviationIDArray.length} post${deviationIDArray.length !== 1 ? 's' : ''}`);
 
-			$.API.post('/admin/mass-approve', { ids }, function(){
-				if (!this.status) return $.Dialog.fail(false, this.message);
+      const ids = deviationIDArray.join(',');
 
-				if (this.html){
-					$recentPostsUL.html(this.html);
-					reobserve();
-				}
+      $.API.post('/admin/mass-approve', { ids }, function() {
+        if (!this.status) return $.Dialog.fail(false, this.message);
 
-				if (this.message)
-					$.Dialog.success(false, this.message, true);
-				else $.Dialog.close();
-			});
-		}
-	})();
+        if (this.html){
+          $recentPostsUL.html(this.html);
+          reobserve();
+        }
 
-	$('#clear-stat-cache').on('click', e => {
-		e.preventDefault();
+        if (this.message)
+          $.Dialog.success(false, this.message, true);
+        else $.Dialog.close();
+      });
+    }
+  })();
 
-		$.Dialog.wait('Clearing file stat cache');
+  $('#clear-stat-cache').on('click', e => {
+    e.preventDefault();
 
-		$.API.delete('/admin/stat-cache', function () {
-			if (!this.status) return $.Dialog.fail(false, this.message);
+    $.Dialog.wait('Clearing file stat cache');
 
-			if (this.message)
-				$.Dialog.success(false, this.message, true);
-			else $.Dialog.close();
-		});
-	});
+    $.API.delete('/admin/stat-cache', function() {
+      if (!this.status) return $.Dialog.fail(false, this.message);
 
-	const deviationIO = new IntersectionObserver(entries => {
-		entries.forEach(entry => {
-			if (!entry.isIntersecting)
-				return;
+      if (this.message)
+        $.Dialog.success(false, this.message, true);
+      else $.Dialog.close();
+    });
+  });
 
-			const el = entry.target;
-			deviationIO.unobserve(el);
+  const deviationIO = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting)
+        return;
 
-			const
-				postID = el.dataset.postId,
-				viewonly = el.dataset.viewonly;
+      const el = entry.target;
+      deviationIO.unobserve(el);
 
-			$.API.get(`/post/${postID}/lazyload`,{viewonly},function(){
-				if (!this.status) return $.Dialog.fail(`Cannot load post ${postID}`, this.message);
+      const
+        postID = el.dataset.postId,
+        viewonly = el.dataset.viewonly;
 
-				$.loadImages(this.html).then(function(resp){
-					$(el).closest('.image').replaceWith(resp.$el);
-				});
-			});
-		});
-	});
-	const imageIO = new IntersectionObserver(entries => {
-		entries.forEach(entry => {
-			if (!entry.isIntersecting)
-				return;
+      $.API.get(`/post/${postID}/lazyload`, { viewonly }, function() {
+        if (!this.status) return $.Dialog.fail(`Cannot load post ${postID}`, this.message);
 
-			const el = entry.target;
-			deviationIO.unobserve(el);
+        $.loadImages(this.html).then(function(resp) {
+          $(el).closest('.image').replaceWith(resp.$el);
+        });
+      });
+    });
+  });
+  const imageIO = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting)
+        return;
 
-			const
-				$link = $.mk('a'),
-				image = new Image();
-			image.src = el.dataset.src;
-			$link.attr('href', el.dataset.href).append(image);
+      const el = entry.target;
+      deviationIO.unobserve(el);
 
-			$(image).on('load', function(){
-				$(el).closest('.image').html($link);
-			});
-		});
-	});
-	const avatarIO = new IntersectionObserver(entries => {
-		entries.forEach(entry => {
-			if (!entry.isIntersecting)
-				return;
+      const
+        $link = $.mk('a'),
+        image = new Image();
+      image.src = el.dataset.src;
+      $link.attr('href', el.dataset.href).append(image);
 
-			const el = entry.target;
-			avatarIO.unobserve(el);
+      $(image).on('load', function() {
+        $(el).closest('.image').html($link);
+      });
+    });
+  });
+  const avatarIO = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting)
+        return;
 
-			const image = new Image();
-			image.src = el.dataset.src;
-			image.classList = 'avatar';
-			$(image).on('load', function(){
-				$(el).replaceWith(image);
-			});
-		});
-	});
+      const el = entry.target;
+      avatarIO.unobserve(el);
 
-	function reobserve(){
-		$('.post-deviation-promise').each((_, el) => deviationIO.observe(el));
-		$('.post-image-promise').each((_, el) => imageIO.observe(el));
-		$('.user-avatar-promise').each((_, el) => avatarIO.observe(el));
-	}
-	reobserve();
+      const image = new Image();
+      image.src = el.dataset.src;
+      image.classList = 'avatar';
+      $(image).on('load', function() {
+        $(el).replaceWith(image);
+      });
+    });
+  });
+
+  function reobserve() {
+    $('.post-deviation-promise').each((_, el) => deviationIO.observe(el));
+    $('.post-image-promise').each((_, el) => imageIO.observe(el));
+    $('.user-avatar-promise').each((_, el) => avatarIO.observe(el));
+  }
+
+  reobserve();
 })();

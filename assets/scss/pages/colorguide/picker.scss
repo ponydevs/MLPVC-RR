@@ -1,44 +1,49 @@
 @import "../../vars";
+
 html, body {
-	height: 100%;
-	overflow: hidden;
+  height: 100%;
+  overflow: hidden;
 }
+
 #main {
-	height: calc(100% - #{$HeaderHeight + $FooterHeight});
-	padding-top: 0;
-	padding-right: 0;
-	padding-bottom: 0;
+  height: calc(100% - #{$HeaderHeight + $FooterHeight});
+  padding-top: 0;
+  padding-right: 0;
+  padding-bottom: 0;
 
-	@media all and (min-width: $SidebarBreakpoint){
-		padding-left: $SidebarWidth;
-	}
-	@media all and (max-width: $SidebarBreakpoint){
-		padding-left: 0;
-	}
+  @media all and (min-width: $SidebarBreakpoint) {
+    padding-left: $SidebarWidth;
+  }
+  @media all and (max-width: $SidebarBreakpoint) {
+    padding-left: 0;
+  }
 }
+
 #content {
-	border: 0;
-	background: transparent;
-	border-radius: 0;
-	position: relative;
-	height: 100%;
-	width: 100%;
-	padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  padding: 0;
 }
-#above-content {
-	display: none;
-}
-#picker-frame {
-	position: absolute;
-	top: 0;
-	left: 0;
-	height: 100%;
-	width: 100%;
-	background: $PickerUIBackground;
-	box-sizing: border-box;
-	border: 0;
 
-	@media all and (min-width: $SidebarBreakpoint) {
-		border-left: 1px solid $PickerUIBorders;
-	}
+#above-content {
+  display: none;
+}
+
+#picker-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: $PickerUIBackground;
+  box-sizing: border-box;
+  border: 0;
+
+  @media all and (min-width: $SidebarBreakpoint) {
+    border-left: 1px solid $PickerUIBorders;
+  }
 }

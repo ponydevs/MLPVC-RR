@@ -1,42 +1,42 @@
 {# @var user \App\Models\User #}
 {# @var same_user bool #}
 {% if list_pcgs %}
-<section class='personal-cg'>
-	{% set privacy = same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL')[section_is_private ? 'staff' : 'public'] %}
-	{% set what_btn = same_user ? ' <button class="personal-cg-say-what typcn typcn-info-large darkblue">What?</button>' : '' %}
-	<h2>{{ privacy }}Personal Color Guide{{ what_btn }}</h2>
+  <section class='personal-cg'>
+    {% set privacy = same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL')[section_is_private ? 'staff' : 'public'] %}
+    {% set what_btn = same_user ? ' <button class="personal-cg-say-what typcn typcn-info-large darkblue">What?</button>' : '' %}
+    <h2>{{ privacy }}Personal Color Guide{{ what_btn }}</h2>
 
-	{% set show_private = same_user or is_staff %}
-	{% if show_private %}
-		{% set This_user = same_user ? 'You' : 'This user' %}
-		{% set has = same_user ? 'have' : 'has' %}
-		{% set avail_points = user.getPCGAvailablePoints(false) %}
-		{% set remain_points = 10-(avail_points % 10) %}
-		{% set n_slots = make_plural('remaining slot', (avail_points/10)|round(0, 'floor'), constant('PREPEND_NUMBER')) %}
-		{% set iz = same_user ? 'are' : 'is' %}
-		{% set n_approved_requests = make_plural('approved request', remain_points, constant('PREPEND_NUMBER')) %}
-		<div class='personal-cg-progress'><p>{{ This_user }} {{ has }} {{ n_slots }} and {{ iz }} {{ n_approved_requests }} away from getting another.</p></div>
-	{% endif %}
+    {% set show_private = same_user or is_staff %}
+    {% if show_private %}
+      {% set This_user = same_user ? 'You' : 'This user' %}
+      {% set has = same_user ? 'have' : 'has' %}
+      {% set avail_points = user.getPCGAvailablePoints(false) %}
+      {% set remain_points = 10-(avail_points % 10) %}
+      {% set n_slots = make_plural('remaining slot', (avail_points/10)|round(0, 'floor'), constant('PREPEND_NUMBER')) %}
+      {% set iz = same_user ? 'are' : 'is' %}
+      {% set n_approved_requests = make_plural('approved request', remain_points, constant('PREPEND_NUMBER')) %}
+      <div class='personal-cg-progress'><p>{{ This_user }} {{ has }} {{ n_slots }} and {{ iz }} {{ n_approved_requests }} away from getting another.</p></div>
+    {% endif %}
 
-	{% set has_pcg = (personal_color_guides | length) > 0 %}
-	{% if same_user or has_pcg %}
-	<div class='personal-cg-appearances'>
-		{% if has_pcg %}
-			{% for p in personal_color_guides %}
-				{# @var p \App\Models\Appearance #}
-				<li>{{ p.toAnchorWithPreview }}</li>
-			{% endfor %}
-		{% else %}
-			You haven't added any appearances to your Personal Color Guide yet.
-		{% endif %}
-	</div>
-	{% endif %}
+    {% set has_pcg = (personal_color_guides | length) > 0 %}
+    {% if same_user or has_pcg %}
+      <div class='personal-cg-appearances'>
+        {% if has_pcg %}
+          {% for p in personal_color_guides %}
+            {# @var p \App\Models\Appearance #}
+            <li>{{ p.toAnchorWithPreview }}</li>
+          {% endfor %}
+        {% else %}
+          You haven't added any appearances to your Personal Color Guide yet.
+        {% endif %}
+      </div>
+    {% endif %}
 
-<div class="button-block">
-	<a href='/@{{ user.name }}/cg' class='btn link typcn typcn-arrow-forward'>{{ same_user ? 'Manage' : 'View' }} Personal Color Guide</a>
-	{{ user.getPCGPointHistoryButtonHTML(show_private) }}
-	{{ user.getPCGSlotGiftButtonHTML }}
-	{{ user.getPCGPointGiveButtonHTML }}
-</div>
-</section>
+    <div class="button-block">
+      <a href='/@{{ user.name }}/cg' class='btn link typcn typcn-arrow-forward'>{{ same_user ? 'Manage' : 'View' }} Personal Color Guide</a>
+      {{ user.getPCGPointHistoryButtonHTML(show_private) }}
+      {{ user.getPCGSlotGiftButtonHTML }}
+      {{ user.getPCGPointGiveButtonHTML }}
+    </div>
+  </section>
 {% endif %}

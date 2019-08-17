@@ -1,123 +1,139 @@
 .notice {
-	display: block;
-	margin: 0;
-	border: 2px solid;
-	border-radius: 7px;
-	color: grayscale($NBlue);
-	background-color: grayscale($NBlueBG);
-	padding: 7.5px;
-	font-size: 16px;
+  display: block;
+  margin: 0;
+  border: 2px solid;
+  border-radius: 7px;
+  color: grayscale($NBlue);
+  background-color: grayscale($NBlueBG);
+  padding: 7.5px;
+  font-size: 16px;
 
-	button, .btn {
-		font-size: .9em;
-		padding: 0 2px;
-		margin: 0 3px;
-		vertical-align: baseline;
-	}
+  button, .btn {
+    font-size: .9em;
+    padding: 0 2px;
+    margin: 0 3px;
+    vertical-align: baseline;
+  }
 
-	&:not(:last-child) { margin-bottom: 10px }
-	&.info {
-		color: $NBlue;
-		background-color: $NBlueBG;
+  &:not(:last-child) {
+    margin-bottom: 10px
+  }
 
-		button, .btn {
-			color: $NBlueBG;
-			background-color: $NBlue;
-		}
-	}
-	&.reload {
-		color: $NLavender;
-		background-color: $NLavenderBG;
+  &.info {
+    color: $NBlue;
+    background-color: $NBlueBG;
 
-		button, .btn {
-			color: $NLavenderBG;
-			background-color: $NLavender;
-		}
-	}
-	&.success {
-		color: $NGreen;
-		background-color: $NGreenBG;
+    button, .btn {
+      color: $NBlueBG;
+      background-color: $NBlue;
+    }
+  }
 
-		button, .btn {
-			color: $NGreenBG;
-			background-color: $NGreen;
-		}
-	}
-	&.fail {
-		color: $NRed;
-		background-color: $NRedBG;
+  &.reload {
+    color: $NLavender;
+    background-color: $NLavenderBG;
 
-		button, .btn {
-			color: $NRedBG;
-			background-color: $NRed;
-		}
-	}
-	&.warn {
-		color: $NOrange;
-		background-color: $NOrangeBG;
+    button, .btn {
+      color: $NLavenderBG;
+      background-color: $NLavender;
+    }
+  }
 
-		button, .btn {
-			color: $NOrangeBG;
-			background-color: $NOrange;
-		}
-	}
-	&.caution {
-		color: $NYellow;
-		background-color: $NYellowBG;
+  &.success {
+    color: $NGreen;
+    background-color: $NGreenBG;
 
-		button, .btn {
-			color: $NYellowBG;
-			background-color: $NYellow;
-		}
-	}
+    button, .btn {
+      color: $NGreenBG;
+      background-color: $NGreen;
+    }
+  }
 
-	> label:first-child {
-		display: block;
-		font-weight: bold;
+  &.fail {
+    color: $NRed;
+    background-color: $NRedBG;
 
-		&:not(:last-child) {
-			padding-bottom: 5px;
-			margin-bottom: 10px;
-			border-bottom: 2px solid;
-		}
+    button, .btn {
+      color: $NRedBG;
+      background-color: $NRed;
+    }
+  }
 
-		> button, > .btn {
-			margin: 0;
-			font-weight: normal;
+  &.warn {
+    color: $NOrange;
+    background-color: $NOrangeBG;
 
-			&:not(:empty){
-				padding: 1px 3px;
+    button, .btn {
+      color: $NOrangeBG;
+      background-color: $NOrange;
+    }
+  }
 
-				&:before {
-					margin-right: 3px;
-				}
-			}
+  &.caution {
+    color: $NYellow;
+    background-color: $NYellowBG;
 
-			&:empty {
-				padding: 0;
-			}
-		}
-	}
-	> p {
-		margin: 0 !important;
+    button, .btn {
+      color: $NYellowBG;
+      background-color: $NYellow;
+    }
+  }
 
-		&:not(:last-child) { margin-bottom: 5px !important }
+  > label:first-child {
+    display: block;
+    font-weight: bold;
 
-		time { border-bottom: 1px dashed }
+    &:not(:last-child) {
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid;
+    }
 
-		> button, > .btn {
-			margin: 1px;
-			vertical-align: baseline;
-			font-size: .92em;
-			padding: 0 1px;
-		}
-	}
-	> hr {
-		border-width: 0;
-		border-top-width: inherit;
-		border-style: solid;
-		border-color: initial !important;
+    > button, > .btn {
+      margin: 0;
+      font-weight: normal;
 
-		&:first-child { display: none }
-	}
+      &:not(:empty) {
+        padding: 1px 3px;
+
+        &:before {
+          margin-right: 3px;
+        }
+      }
+
+      &:empty {
+        padding: 0;
+      }
+    }
+  }
+
+  > p {
+    margin: 0 !important;
+
+    &:not(:last-child) {
+      margin-bottom: 5px !important
+    }
+
+    time {
+      border-bottom: 1px dashed
+    }
+
+    > button, > .btn {
+      margin: 1px;
+      vertical-align: baseline;
+      font-size: .92em;
+      padding: 0 1px;
+    }
+  }
+
+  > hr {
+    border-width: 0;
+    border-top-width: inherit;
+    border-style: solid;
+    border-color: initial !important;
+
+    &:first-child {
+      display: none
+    }
+  }
 }

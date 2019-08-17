@@ -3,35 +3,35 @@
 {# @var current_user \App\Models\User #}
 {% set can_request = permission('user') and user_pref('a_postreq', current_user) %}
 <section id="requests" class="posts">
-	<div class="unfinished">
-		{% set make_request = can_request ? '<button id="request-btn" class="green">Make a request</button>' : '' %}
-		<h2>List of Requests{{ make_request }}</h2>
-		{# @var posts \App\Models\Post[] #}
-		{% for g, posts in arranged.unfinished %}
-			<div class='group' id='group-{{ g }}'>
-				<h3>{{ constant('App\\Models\\Post::REQUEST_TYPES')[g] }}</h3>
-				<ul>
-				{%- if posts is not empty %}
-					{% for post in posts %}
-						{{ post.li(false, false, lazyload ?? false) }}
-					{% endfor %}
-				{% endif -%}
-				</ul>
-			</div>
-		{% endfor %}
-	</div>
-	<div class="finished">
-		<h2>Finished Requests</h2>
-		<ul>
-		{%- if arranged.finished is not empty %}
-			{% for post in arranged.finished %}
-				{# @var post \App\Models\Post #}
-				{{ post.li(false, false, lazyload ?? false) }}
-			{% endfor %}
-		{% endif -%}
-		</ul>
-	</div>
-	{% if can_request %}
-		{% include 'show/_post_form.html.twig' with {'kind':'request'} %}
-	{% endif %}
+  <div class="unfinished">
+    {% set make_request = can_request ? '<button id="request-btn" class="green">Make a request</button>' : '' %}
+    <h2>List of Requests{{ make_request }}</h2>
+    {# @var posts \App\Models\Post[] #}
+    {% for g, posts in arranged.unfinished %}
+      <div class='group' id='group-{{ g }}'>
+        <h3>{{ constant('App\\Models\\Post::REQUEST_TYPES')[g] }}</h3>
+        <ul>
+          {%- if posts is not empty %}
+            {% for post in posts %}
+              {{ post.li(false, false, lazyload ?? false) }}
+            {% endfor %}
+          {% endif -%}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="finished">
+    <h2>Finished Requests</h2>
+    <ul>
+      {%- if arranged.finished is not empty %}
+        {% for post in arranged.finished %}
+          {# @var post \App\Models\Post #}
+          {{ post.li(false, false, lazyload ?? false) }}
+        {% endfor %}
+      {% endif -%}
+    </ul>
+  </div>
+  {% if can_request %}
+    {% include 'show/_post_form.html.twig' with {'kind':'request'} %}
+  {% endif %}
 </section>

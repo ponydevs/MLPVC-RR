@@ -3,58 +3,58 @@
 {# @var total_pending int #}
 {# @var posts \App\Models\Post[] #}
 {% if staff_visiting_member or same_user %}
-{% set gamble = total_pending < constant('App\\Users::RESERVATION_LIMIT') and same_user ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb"><span>Suggestion</span></button>' : '' %}
-<section class='pending-reservations'>
-	<h2>{{ constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').staff }}Pending reservations{{ gamble }}</h2>
+  {% set gamble = total_pending < constant('App\\Users::RESERVATION_LIMIT') and same_user ? ' <button id="suggestion" class="btn orange typcn typcn-lightbulb"><span>Suggestion</span></button>' : '' %}
+  <section class='pending-reservations'>
+    <h2>{{ constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').staff }}Pending reservations{{ gamble }}</h2>
 
-	{% if user_is_member %}
-		{% spaceless %}
-		{% set pending_count_readable = has_pending ? "<strong>#{total_pending}</strong>" : 'no' %}
-		<span>
+    {% if user_is_member %}
+      {% spaceless %}
+        {% set pending_count_readable = has_pending ? "<strong>#{total_pending}</strong>" : 'no' %}
+        <span>
 			{{ same_user ? 'You have' : 'This user has' }} {{ pending_count_readable }} pending {{ make_plural('reservation', total_pending) }}
-			{%- if has_pending %}
+          {%- if has_pending %}
 				which ha{{ total_pending != 1 ? 've' : 's' }}n't been marked as finished yet
 			{%- endif %}.
 			{% if same_user %}
-				Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your pending reservations.
-			{%- endif %}
+        Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your pending reservations.
+      {%- endif %}
 		</span>
-		{% endspaceless %}
+      {% endspaceless %}
 
-		{% if posts is defined and posts is not empty %}
-			<ul>
-			{% for post in posts %}{% spaceless %}
-				{% set request_reserved = post.get_is_request and post.reserved_at is not empty %}
-				<li>
-					<div class='image screencap'>
-						<a href='{{ post.toURL }}'><img src='{{ post.preview }}'></a>
-					</div>
-					{% if post.label is not empty %}
-						<span class='label'>{{ post.processLabel }}</span>
-					{% endif %}
-					{% endspaceless %}
-					<em>{{ request_reserved ? 'Reserved' : 'Posted' }} under {{ post.toAnchor }} {{ time_tag(request_reserved ? post.reserved_at : post.get_posted_at) }}</em>
-					{% spaceless %}
-					{% if post.isOverdue %}
-					{{ constant('App\\Models\\Post::CONTESTABLE') }}
-					{% endif %}
-					{% if post.broken %}
-					{{ constant('App\\Models\\Post::BROKEN') }}
-					{% endif %}
-					<div>
-						{% if post.broken %}
-						<button class='darkblue typcn typcn-spanner fix'>Fix</button>
-						{% endif %}
-						<a href='{{ post.toURL }}' class='btn blue typcn typcn-arrow-forward'>View</a>
-						<button class='red typcn typcn-user-delete cancel'>Cancel</button>
-					</div>
-				</li>
-			{% endspaceless %}{% endfor %}
-			</ul>
-		{% endif %}
-	{% else %}
-	<p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>
-	{% endif %}
+      {% if posts is defined and posts is not empty %}
+        <ul>
+          {% for post in posts %}{% spaceless %}
+            {% set request_reserved = post.get_is_request and post.reserved_at is not empty %}
+            <li>
+            <div class='image screencap'>
+              <a href='{{ post.toURL }}'><img src='{{ post.preview }}'></a>
+            </div>
+            {% if post.label is not empty %}
+              <span class='label'>{{ post.processLabel }}</span>
+            {% endif %}
+          {% endspaceless %}
+            <em>{{ request_reserved ? 'Reserved' : 'Posted' }} under {{ post.toAnchor }} {{ time_tag(request_reserved ? post.reserved_at : post.get_posted_at) }}</em>
+            {% spaceless %}
+              {% if post.isOverdue %}
+                {{ constant('App\\Models\\Post::CONTESTABLE') }}
+              {% endif %}
+              {% if post.broken %}
+                {{ constant('App\\Models\\Post::BROKEN') }}
+              {% endif %}
+              <div>
+                {% if post.broken %}
+                  <button class='darkblue typcn typcn-spanner fix'>Fix</button>
+                {% endif %}
+                <a href='{{ post.toURL }}' class='btn blue typcn typcn-arrow-forward'>View</a>
+                <button class='red typcn typcn-user-delete cancel'>Cancel</button>
+              </div>
+              </li>
+            {% endspaceless %}{% endfor %}
+        </ul>
+      {% endif %}
+    {% else %}
+      <p>Reservations are a way to allow Club Members to claim requests on the site as well as claim screenshots of their own, in order to reduce duplicate submissions to the group. You can use the button above to get random requests from the site that you can draw as practice, or to potentially submit along with your application to the club.</p>
+    {% endif %}
 
-</section>
+  </section>
 {% endif %}

@@ -4,15 +4,15 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-<div id="content">
-	<h1>{{ title }}</h1>
+  <div id="content">
+    <h1>{{ title }}</h1>
 
-	<div class="notice fail">
-		{% set responses = constant('App\\DeviantArt::OAUTH_RESPONSE') %}
-		<p>There was a(n) <strong>{{ err | escape }}</strong> error while trying to authenticate with DeviantArt{% if responses[err] is defined and responses[err] is not empty %}; {{ responses[err] }}{% endif %}.</p>
-		{% if errdesc is not empty %}
-		<p>Additional details: {{ errdesc | escape }}</p>
-		{% endif %}
-	</div>
-</div>
+    <div class="notice fail">
+      {% set responses = constant('App\\DeviantArt::OAUTH_RESPONSE') %}
+      <p>There was a(n) <strong>{{ err | escape }}</strong> error while trying to authenticate with DeviantArt{% if responses[err] is defined and responses[err] is not empty %}; {{ responses[err] }}{% endif %}.</p>
+      {% if errdesc is not empty %}
+        <p>Additional details: {{ errdesc | escape }}</p>
+      {% endif %}
+    </div>
+  </div>
 {% endblock %}

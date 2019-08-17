@@ -1,260 +1,312 @@
 %post-ul {
-	@media all and (max-width: $Breakpoint){
-		text-align: center;
+  @media all and (max-width: $Breakpoint) {
+    text-align: center;
 
-		li {
-			box-sizing: border-box;
-			width: 100%;
+    li {
+      box-sizing: border-box;
+      width: 100%;
 
-			&:not(:last-child){
-				margin-bottom: 10px;
-			}
+      &:not(:last-child) {
+        margin-bottom: 10px;
+      }
 
-			.image > a {
-				max-width: 100%;
-				box-sizing: border-box;
+      .image > a {
+        max-width: 100%;
+        box-sizing: border-box;
 
-				img {
-					display: block;
-					max-height: 150px;
-					max-width: 100%;
-				}
-			}
-			> a .deviation {
-				margin: 0 auto 10px;
-			}
-		}
-	}
-	@media all and (min-width: $Breakpoint){
-		&:empty { margin-left: 30px }
+        img {
+          display: block;
+          max-height: 150px;
+          max-width: 100%;
+        }
+      }
 
-		li {
-			margin: 5px;
+      > a .deviation {
+        margin: 0 auto 10px;
+      }
+    }
+  }
+  @media all and (min-width: $Breakpoint) {
+    &:empty {
+      margin-left: 30px
+    }
 
-			.image img {
-				max-height: 150px;
+    li {
+      margin: 5px;
+
+      .image img {
+        max-height: 150px;
         max-width: 300px;
-			}
-		}
-	}
+      }
+    }
+  }
 
-	padding: 0;
-	margin: 15px 0 20px 0;
-	list-style: none;
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: flex-start;
+  padding: 0;
+  margin: 15px 0 20px 0;
+  list-style: none;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
 
-	li {
-		padding: 10px;
-		color: #434343;
-		background-color: rgba(0,0,0,.07);
-		border: 1px solid rgba(0,0,0,.2);
-		font-size: 12px;
-		font-family: 'Verdana', sans-serif;
-		flex: 1 0 auto;
-		text-align: center;
-		transition: background-color .3s, border-color .3s;
+  li {
+    padding: 10px;
+    color: #434343;
+    background-color: rgba(0, 0, 0, .07);
+    border: 1px solid rgba(0, 0, 0, .2);
+    font-size: 12px;
+    font-family: 'Verdana', sans-serif;
+    flex: 1 0 auto;
+    text-align: center;
+    transition: background-color .3s, border-color .3s;
 
-		&.highlight {
-			background-color: rgba($HeaderBlue,.15) !important;
-			border: 1px solid rgba($HeaderBlue,.3) !important;
-		}
+    &.highlight {
+      background-color: rgba($HeaderBlue, .15) !important;
+      border: 1px solid rgba($HeaderBlue, .3) !important;
+    }
 
-		&.admin-break {
-			position: relative;
-			color: rgb(67, 33, 0);
-			background-color: rgba(127,65,0,.1);
-			border-color: rgba(127,65,0,.3);
-		}
+    &.admin-break {
+      position: relative;
+      color: rgb(67, 33, 0);
+      background-color: rgba(127, 65, 0, .1);
+      border-color: rgba(127, 65, 0, .3);
+    }
 
-		> * {
-			display: block;
-			vertical-align: bottom;
-			margin-left: auto;
-			margin-right: auto;
-		}
+    > * {
+      display: block;
+      vertical-align: bottom;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-		> .info-line {
-			margin-bottom: 2px;
-		}
-		> .image {
-			$DeviationBorderWidth: 2px;
-			&.deviation {
-				&.error {
-					color: $NOrange;
-					border: 2px solid;
-					padding: 58px 10px;
-					background: $NOrangeBG;
-					margin-bottom: 10px;
-					font-size: 1.3em;
-				}
-				img {
-					border: $DeviationBorderWidth solid $DeviationBorder;
-					background-color: rgba($NOrange, .05);
-				}
+    > .info-line {
+      margin-bottom: 2px;
+    }
 
-				.post-deviation-promise {
-					@include loading-indicator(154px, 'roll', .3);
+    > .image {
+      $DeviationBorderWidth: 2px;
 
-					margin: 0 auto 10px;
-				}
-			}
-			&.screencap {
-				.post-image-promise {
-					@include loading-indicator(152px, 'roll', .3);
-					width: 268px;
+      &.deviation {
+        &.error {
+          color: $NOrange;
+          border: 2px solid;
+          padding: 58px 10px;
+          background: $NOrangeBG;
+          margin-bottom: 10px;
+          font-size: 1.3em;
+        }
 
-					margin: 0 auto 10px;
-				}
-				> a {
-					border: 1px solid;
-				}
-			}
-			&:not(.error) > a {
-				font-size: 0;
-				margin-bottom: 10px;
-				color: inherit;
-				display: inline-block;
-				background: url('/img/transparency.svg');
-				background-size: 16px;
-			}
-			&.error > a {
-				font-size: 16px;
-				display: block;
-				margin-bottom: 5px;
-			}
-			&.approved > a {
-				position: relative;
+        img {
+          border: $DeviationBorderWidth solid $DeviationBorder;
+          background-color: rgba($NOrange, .05);
+        }
 
-				$imageSize: 40px;
-				.approved-info {
-			    position: absolute;
-			    left: $DeviationBorderWidth;
-			    bottom: $DeviationBorderWidth;
-			    cursor: help;
-			    width: $imageSize;
-			    height: $imageSize;
-			    background: url('/img/approved.svg?v=2') no-repeat center;
-			    background-size: $imageSize;
-				}
-				> img {
-					background-color: rgba($DeviationBorder, .05);
-				}
-			}
-		}
-		> .label {
-			font-size: 1.2em;
-			font-style: italic;
-			max-width: 266px;
-			margin-bottom: 5px;
+        .post-deviation-promise {
+          @include loading-indicator(154px, 'roll', .3);
 
-			&:not(.noquotes){
-				&:before  { content: '\201c' }
-				&:after { content: '\201d' }
-			}
+          margin: 0 auto 10px;
+        }
+      }
 
-			.intensify {
-				display: inline-block;
-				animation: intensify .2s linear infinite;
+      &.screencap {
+        .post-image-promise {
+          @include loading-indicator(152px, 'roll', .3);
+          width: 268px;
 
-				&:before { content: '[' }
-				&:after { content: ']' }
+          margin: 0 auto 10px;
+        }
 
-				@keyframes intensify {
-					$translateAmount: 0.5px;
-					0%   { transform: translateX( #{$translateAmount}) translateY(                   0) }
-					20%  { transform: translateX(-#{$translateAmount}) translateY( #{$translateAmount}) }
-					40%  { transform: translateX( #{$translateAmount}) translateY( #{$translateAmount}) }
-					60%  { transform: translateX(                   0) translateY(-#{$translateAmount}) }
-					80%  { transform: translateX(-#{$translateAmount}) translateY( #{$translateAmount}) }
-					100% { transform: translateX(-#{$translateAmount}) translateY(-#{$translateAmount}) }
-				}
-			}
-		}
-		$reserver-height: 40px;
-		.reserver, .reserve-request {
-			height: $reserver-height;
-		}
-		> .reserve-request {
-			font-size: 16px;
-			line-height: 40px;
-			height: 40px;
-			margin: 5px auto 0;
-			opacity: 1 !important;
-			padding: 0 5px;
-			color: #666;
+        > a {
+          border: 1px solid;
+        }
+      }
 
-			@extend %reserve-button;
-		}
-		.contest-note {
-			cursor: help;
-		}
-		.reserver {
-			display: inline-block;
-			margin-top: 5px;
-			font-size: 0;
-			position: relative;
-			text-align: left;
+      &:not(.error) > a {
+        font-size: 0;
+        margin-bottom: 10px;
+        color: inherit;
+        display: inline-block;
+        background: url('/img/transparency.svg');
+        background-size: 16px;
+      }
 
-			.da-userlink {
-				height: 100%;
-				position: relative;
-				z-index: 2;
-				min-width: 125px;
-				overflow: hidden;
-				box-sizing: border-box;
-				display: flex;
-				flex-flow: row nowrap;
-				align-items: flex-end;
+      &.error > a {
+        font-size: 16px;
+        display: block;
+        margin-bottom: 5px;
+      }
 
-				&.local.provider-discord {
-					padding-right: 7px;
-					$radius: $reserver-height / 2;
-					border-radius: $radius;
+      &.approved > a {
+        position: relative;
 
-					.avatar {
-						border-top-right-radius: $radius;
-						border-bottom-right-radius: $radius;
-					}
-				}
+        $imageSize: 40px;
 
-				> * {
-					margin-right: 5px;
-					display: block;
-				}
-				.avatar {
-					height: 40px;
-					width: 40px;
-					flex: 0 0 40px;
+        .approved-info {
+          position: absolute;
+          left: $DeviationBorderWidth;
+          bottom: $DeviationBorderWidth;
+          cursor: help;
+          width: $imageSize;
+          height: $imageSize;
+          background: url('/img/approved.svg?v=2') no-repeat center;
+          background-size: $imageSize;
+        }
 
-					&.user-avatar-promise {
-						@include loading-indicator(40px, 'roll');
-					}
-				}
-				.name {
-					flex: 1 1 auto;
-					text-align: center;
-					font-size: 16px;
-					vertical-align: bottom;
-					line-height: 40px;
-				}
-			}
-		}
-		.actions {
-			white-space: nowrap;
-			margin-top: 5px;
+        > img {
+          background-color: rgba($DeviationBorder, .05);
+        }
+      }
+    }
 
-			&:empty { display: none }
+    > .label {
+      font-size: 1.2em;
+      font-style: italic;
+      max-width: 266px;
+      margin-bottom: 5px;
 
-			button {
-				display: inline-block;
-				font-size: 1.2em;
-			}
-		}
-	}
-	&:empty:before { content: "None yet." }
+      &:not(.noquotes) {
+        &:before {
+          content: '\201c'
+        }
+
+        &:after {
+          content: '\201d'
+        }
+      }
+
+      .intensify {
+        display: inline-block;
+        animation: intensify .2s linear infinite;
+
+        &:before {
+          content: '['
+        }
+
+        &:after {
+          content: ']'
+        }
+
+        @keyframes intensify {
+          $translateAmount: 0.5px;
+          0% {
+            transform: translateX(#{$translateAmount}) translateY(0)
+          }
+          20% {
+            transform: translateX(-#{$translateAmount}) translateY(#{$translateAmount})
+          }
+          40% {
+            transform: translateX(#{$translateAmount}) translateY(#{$translateAmount})
+          }
+          60% {
+            transform: translateX(0) translateY(-#{$translateAmount})
+          }
+          80% {
+            transform: translateX(-#{$translateAmount}) translateY(#{$translateAmount})
+          }
+          100% {
+            transform: translateX(-#{$translateAmount}) translateY(-#{$translateAmount})
+          }
+        }
+      }
+    }
+
+    $reserver-height: 40px;
+
+    .reserver, .reserve-request {
+      height: $reserver-height;
+    }
+
+    > .reserve-request {
+      font-size: 16px;
+      line-height: 40px;
+      height: 40px;
+      margin: 5px auto 0;
+      opacity: 1 !important;
+      padding: 0 5px;
+      color: #666;
+
+      @extend %reserve-button;
+    }
+
+    .contest-note {
+      cursor: help;
+    }
+
+    .reserver {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 0;
+      position: relative;
+      text-align: left;
+
+      .da-userlink {
+        height: 100%;
+        position: relative;
+        z-index: 2;
+        min-width: 125px;
+        overflow: hidden;
+        box-sizing: border-box;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: flex-end;
+
+        &.local.provider-discord {
+          padding-right: 7px;
+          $radius: $reserver-height / 2;
+          border-radius: $radius;
+
+          .avatar {
+            border-top-right-radius: $radius;
+            border-bottom-right-radius: $radius;
+          }
+        }
+
+        > * {
+          margin-right: 5px;
+          display: block;
+        }
+
+        .avatar {
+          height: 40px;
+          width: 40px;
+          flex: 0 0 40px;
+
+          &.user-avatar-promise {
+            @include loading-indicator(40px, 'roll');
+          }
+        }
+
+        .name {
+          flex: 1 1 auto;
+          text-align: center;
+          font-size: 16px;
+          vertical-align: bottom;
+          line-height: 40px;
+        }
+      }
+    }
+
+    .actions {
+      white-space: nowrap;
+      margin-top: 5px;
+
+      &:empty {
+        display: none
+      }
+
+      button {
+        display: inline-block;
+        font-size: 1.2em;
+      }
+    }
+  }
+
+  &:empty:before {
+    content: "None yet."
+  }
 }
+
 %post-ul-fluidbox {
-	li .image > a .fluidbox__wrap { max-width: inherit }
+  li .image > a .fluidbox__wrap {
+    max-width: inherit
+  }
 }
