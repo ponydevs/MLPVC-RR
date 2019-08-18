@@ -9,9 +9,10 @@ CoreUtils::generateApiSchema(CoreUtils::env('PRODUCTION'));
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Swagger UI</title>
+  <title>MLP Vector Club OpenAPI Documentation</title>
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3/swagger-ui.css">
   <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=2">
 </head>
 
 <body>
