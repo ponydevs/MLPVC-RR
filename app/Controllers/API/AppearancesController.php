@@ -114,23 +114,30 @@ class AppearancesController extends APIController {
    *   )
    * )
    * @OA\Schema(
-   *   schema="Appearance",
+   *   schema="ListOfColorGroups",
    *   type="object",
-   *   description="Represents an entry in the color guide",
+   *   description="Array of color groups under the `colorGroups` key",
    *   required={
    *     "colorGroups"
    *   },
    *   additionalProperties=false,
-   *   allOf={
-   *     @OA\Schema(ref="#/components/schemas/SlimAppearance")
-   *   },
    *   @OA\Property(
    *     property="colorGroups",
    *     type="array",
    *     minItems=0,
    *     @OA\Items(ref="#/components/schemas/ColorGroup"),
-   *     description="Array of color groups belogning to this appearance (may be an empty array)."
+   *    description="Array of color groups belonging to an appearance (may be an empty array)."
    *   )
+   * )
+   * @OA\Schema(
+   *   schema="Appearance",
+   *   type="object",
+   *   description="Represents an entry in the color guide",
+   *   additionalProperties=false,
+   *   allOf={
+   *     @OA\Schema(ref="#/components/schemas/SlimAppearance"),
+   *     @OA\Schema(ref="#/components/schemas/ListOfColorGroups")
+   *   }
    * )
    * @param Appearance $a
    * @param bool       $with_previews
@@ -152,15 +159,19 @@ class AppearancesController extends APIController {
       'sprite' => self::mapSprite($a, $with_previews),
       'hasCutieMarks' => \count($a->cutiemarks) !== 0,
     ];
-    if (!$compact){
-      $colors = CGUtils::getColorsForEach($a->color_groups);
-      $color_groups = array_map(function (ColorGroup $cg) use ($colors) {
-        return self::mapColorGroup($cg, $colors);
-      }, $a->color_groups);
-      $appearance['colorGroups'] = $color_groups;
-    }
+    if (!$compact)
+      $appearance['colorGroups'] = self::_getColorGroups($a);
 
     return $appearance;
+  }
+
+  private static function _getColorGroups(Appearance $a):array {
+    $colors = CGUtils::getColorsForEach($a->color_groups);
+    $color_groups = array_map(function (ColorGroup $cg) use ($colors) {
+      return self::mapColorGroup($cg, $colors);
+    }, $a->color_groups);
+
+    return $color_groups;
   }
 
   /**
@@ -313,6 +324,13 @@ class AppearancesController extends APIController {
    *     format="#RRGGBB",
    *     description="The color value in uppercase hexadecimal form, including a # prefix",
    *     example="#6181B6"
+   *   ),
+   *   @OA\Property(
+   *     property="linkedTo",
+   *     type="object",
+   *     nullable=true,
+   *     ref="#/components/schemas/Color",
+   *     example=null
    *   ),
    * )
    * @param Color $c
@@ -508,6 +526,59 @@ class AppearancesController extends APIController {
     ], $cache_key, $cache_time);
   }
 
+  private static function _resolveAppearance(array $params):Appearance {
+    $id = \intval($params['id'], 10);
+    $appearance = Appearance::find($id);
+    if (empty($appearance)){
+      HTTP::statusCode(404);
+      Response::fail('COLOR_GUIDE.APPEARANCE_NOT_FOUND');
+    }
+    return $appearance;
+  }
+
+  private static function _handlePrivateAppearanceCheck(Appearance $appearance):Appearance {
+    if ($appearance->private){
+      // TODO check for token param and allow if correct
+      HTTP::statusCode(403);
+      Response::fail('COLOR_GUIDE.APPEARANCE_PRIVATE');
+    }
+  }
+
+  /**
+   * @OA\Get(
+   *   path="/appearances/{id}/color-groups",
+   *   description="Get all color groups associated with an appearance",
+   *   tags={"color guide", "appearances"},
+   *   @OA\Parameter(
+   *     in="path",
+   *     name="id",
+   *     required=true,
+   *     @OA\Schema(ref="#/components/schemas/ZeroBasedId")
+   *   ),
+   *   @OA\Response(
+   *     response="200",
+   *     description="OK",
+   *     @OA\JsonContent(
+   *       allOf={
+   *         @OA\Schema(ref="#/components/schemas/ServerResponse"),
+   *         @OA\Schema(ref="#/components/schemas/ListOfColorGroups")
+   *       }
+   *     )
+   *   )
+   * )
+   * @param array $params
+   */
+  function getColorGroups(array $params) {
+    if ($this->action !== 'GET')
+      CoreUtils::notAllowed();
+
+    $appearance = self::_resolveAppearance($params);
+
+    self::_handlePrivateAppearanceCheck($appearance);
+
+    Response::done(['colorGroups' => self::_getColorGroups($appearance)]);
+  }
+
   /**
    * @OA\Schema(
    *   schema="SpriteSize",
@@ -535,11 +606,7 @@ class AppearancesController extends APIController {
    *     in="path",
    *     name="id",
    *     required=true,
-   *     schema={
-   *       "type"="integer",
-   *       "minimum"=0,
-   *       "example"=3
-   *     }
+   *     @OA\Schema(ref="#/components/schemas/ZeroBasedId")
    *   ),
    *   @OA\Parameter(
    *     in="query",
@@ -573,6 +640,15 @@ class AppearancesController extends APIController {
    *         @OA\Schema(ref="#/components/schemas/ServerResponse")
    *       }
    *     )
+   *   ),
+   *   @OA\Response(
+   *     response="403",
+   *     description="You don't have permission to access this resource",
+   *     @OA\JsonContent(
+   *       allOf={
+   *         @OA\Schema(ref="#/components/schemas/ServerResponse")
+   *       }
+   *     )
    *   )
    * )
    * @param array $params
@@ -581,18 +657,9 @@ class AppearancesController extends APIController {
     if ($this->action !== 'GET')
       CoreUtils::notAllowed();
 
-    $id = \intval($params['id'], 10);
-    $appearance = Appearance::find($id);
-    if (empty($appearance)){
-      HTTP::statusCode(404);
-      Response::fail('COLOR_GUIDE.APPEARANCE_NOT_FOUND');
-    }
+    $appearance = self::_resolveAppearance($params);
 
-    if ($appearance->private){
-      // TODO check for token param and allow if correct
-      HTTP::statusCode(403);
-      Response::fail('COLOR_GUIDE.APPEARANCE_PRIVATE');
-    }
+    self::_handlePrivateAppearanceCheck($appearance);
 
     CGUtils::renderSpritePNG($this->path, $appearance->id, $_GET['size'] ?? null);
   }
