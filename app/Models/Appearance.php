@@ -261,13 +261,13 @@ class Appearance extends NSModel implements Linkable {
         ? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(ShowHelper::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY, 'title'))).'</a>'
         : "<strong>{$a[0]}</strong>";
     }, $notes);
-    $notes = preg_replace_callback('/(?:^|[^\\\\])(?:#(\d+))(\'s?)?\b/', function ($a) {
+    $notes = preg_replace_callback('/(^|[^\\\\])(?:#(\d+))(\'s?)?\b/', function ($a) {
 
-      $appearance = DB::$instance->where('id', $a[1])->getOne('appearances');
+      $appearance = DB::$instance->where('id', $a[2])->getOne('appearances');
 
       return (
       !empty($appearance)
-        ? "<a href='/cg/v/{$appearance->id}'>{$appearance->label}</a>".(!empty($a[2]) ? CoreUtils::posess($appearance->label, true) : '')
+        ? "{$a[1]}<a href='/cg/v/{$appearance->id}'>{$appearance->label}</a>".(!empty($a[3]) ? CoreUtils::posess($appearance->label, true) : '')
         : (string)$a[0]
       );
     }, $notes);
