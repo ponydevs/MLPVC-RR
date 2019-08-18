@@ -536,7 +536,7 @@ class AppearancesController extends APIController {
     return $appearance;
   }
 
-  private static function _handlePrivateAppearanceCheck(Appearance $appearance):Appearance {
+  private static function _handlePrivateAppearanceCheck(Appearance $appearance):void {
     if ($appearance->private){
       // TODO check for token param and allow if correct
       HTTP::statusCode(403);
