@@ -114,6 +114,18 @@ class Appearance extends NSModel implements Linkable {
     return $this->id < 1;
   }
 
+  public function get_notes_rend():?string {
+    if (empty($this->notes_src))
+      return $this->notes_src;
+
+    if ($this->read_attribute('notes_rend') === null){
+      $this->notes_rend = self::_processNotes($this->notes_src);
+      $this->save();
+    }
+
+    return $this->read_attribute('notes_rend');
+  }
+
   public function getPaletteFilePath() {
     return FSPATH."cg_render/appearance/{$this->id}/palette.png";
   }
@@ -251,16 +263,16 @@ class Appearance extends NSModel implements Linkable {
     }, $notes);
     $notes = preg_replace_callback('/(?:^|[^\\\\])(?:#(\d+))(\'s?)?\b/', function ($a) {
 
-      $Appearance = DB::$instance->where('id', $a[1])->getOne('appearances');
+      $appearance = DB::$instance->where('id', $a[1])->getOne('appearances');
 
       return (
-      !empty($Appearance)
-        ? "<a href='/cg/v/{$Appearance->id}'>{$Appearance->label}</a>".(!empty($a[2]) ? CoreUtils::posess($Appearance->label, true) : '')
+      !empty($appearance)
+        ? "<a href='/cg/v/{$appearance->id}'>{$appearance->label}</a>".(!empty($a[2]) ? CoreUtils::posess($appearance->label, true) : '')
         : (string)$a[0]
       );
     }, $notes);
 
-    return nl2br(str_replace('\#', '#', $notes));
+    return str_replace('\#', '#', $notes);
   }
 
   /**
@@ -273,11 +285,7 @@ class Appearance extends NSModel implements Linkable {
    */
   public function getNotesHTML(bool $wrap = WRAP, bool $cm_link = true):string {
     if (!empty($this->notes_src)){
-      if ($this->notes_rend === null){
-        $this->notes_rend = self::_processNotes($this->notes_src);
-        $this->save();
-      }
-      $notes = "<span>{$this->notes_rend}</span>";
+      $notes = "<span class='notes-text'>{$this->notes_rend}</span>";
     }
     else $notes = '';
     $cm_count = Cutiemark::count(['appearance_id' => $this->id]);

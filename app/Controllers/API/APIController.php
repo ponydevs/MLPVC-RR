@@ -3,14 +3,14 @@
 namespace App\Controllers\API;
 
 use App\Controllers\Controller;
+use App\CoreUtils;
 
 /**
  * @OA\OpenApi(
  *   @OA\Info(
  *     title="MLP Vector Club API",
  *     version="0.1",
- *     description="A work-in-progress API that will eventually allow programmatic access to all features of the
- *     [MLPVector.Club](https://mlpvector.club/) website.",
+ *     description="A work-in-progress API that will eventually allow programmatic access to all features of the [MLPVector.Club](https://mlpvector.club/) website.",
  *     @OA\License(name="MIT"),
  *     @OA\Contact(name="David Joseph Guzsik", url="https://seinopsys.hu", email="seinopsys@gmail.com"),
  *   ),
@@ -48,16 +48,6 @@ use App\Controllers\Controller;
  *   schema="File",
  *   type="string",
  *   format="binary",
- * )
- * @OA\Schema(
- *   schema="BooleanTrue",
- *   type="boolean",
- *   enum={true}
- * )
- * @OA\Schema(
- *   schema="BooleanFalse",
- *   type="boolean",
- *   enum={false}
  * )
  * @OA\Schema(
  *   schema="QueryString",
@@ -123,4 +113,8 @@ use App\Controllers\Controller;
  * )
  */
 class APIController extends Controller {
+  public function __construct() {
+    CoreUtils::removeCSPHeaders();
+    parent::__construct();
+  }
 }

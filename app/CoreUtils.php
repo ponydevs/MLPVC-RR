@@ -1471,4 +1471,60 @@ class CoreUtils {
     self::createFoldersFor($output_path);
     $openapi->saveAs($output_path, 'json');
   }
+
+  public static function generateCacheKey(int $version, ...$args) {
+    $args[] = "v$version";
+
+    return implode('_', array_map(function ($arg) {
+      switch (\gettype($arg)){
+        case 'boolean':
+          return $arg ? 't' : 'f';
+        case 'double':
+        case 'float':
+        case 'integer':
+          return (string)$arg;
+        case 'NULL':
+          return 'null';
+        case 'string':
+          return str_replace(' ', '_', $arg);
+      }
+    }, $args));
+  }
+
+  public const CSP_HEADER_NAMES = [
+    'Content-Security-Policy',
+    'X-Content-Security-Policy',
+    'X-WebKit-CSP',
+  ];
+
+  public static function outputCSPHeaders():void {
+    if (!self::env('CSP_ENABLED'))
+      return;
+
+    $csp_header = implode(';', [
+      'default-src '.self::env('CSP_DEFAULT_SRC'),
+      'script-src '.self::env('CSP_SCRIPT_SRC').' '.self::env('WS_SERVER_HOST')." 'nonce-".CSP_NONCE."'",
+      'object-src '.self::env('CSP_OBJECT_SRC'),
+      'style-src '.self::env('CSP_STYLE_SRC'),
+      'img-src '.self::env('CSP_IMG_SRC'),
+      'manifest-src '.self::env('CSP_MANIFEST_SRC'),
+      'media-src '.self::env('CSP_MEDIA_SRC'),
+      'frame-src '.self::env('CSP_FRAME_SRC'),
+      'font-src '.self::env('CSP_FONT_SRC'),
+      'connect-src '.self::env('CSP_CONNECT_SRC').' '.self::env('WS_SERVER_HOST').' wss://'.self::env('WS_SERVER_HOST'),
+      'report-uri '.self::env('CSP_REPORT_URI'),
+    ]);
+    foreach (self::CSP_HEADER_NAMES as $header_name) {
+      header("$header_name: $csp_header");
+    }
+  }
+
+  public static function removeCSPHeaders():void {
+    if (!self::env('CSP_ENABLED'))
+      return;
+
+    foreach (self::CSP_HEADER_NAMES as $header_name) {
+      header_remove($header_name);
+    }
+  }
 }

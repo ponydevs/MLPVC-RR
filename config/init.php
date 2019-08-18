@@ -20,25 +20,7 @@ use App\NavBreadcrumb;
 use App\RedisHelper;
 use App\Twig;
 
-if (CoreUtils::env('CSP_ENABLED')){
-  $csp_header = implode(';', [
-    'default-src '.CoreUtils::env('CSP_DEFAULT_SRC'),
-    'script-src '.CoreUtils::env('CSP_SCRIPT_SRC').' '.CoreUtils::env('WS_SERVER_HOST')." 'nonce-".CSP_NONCE."'",
-    'object-src '.CoreUtils::env('CSP_OBJECT_SRC'),
-    'style-src '.CoreUtils::env('CSP_STYLE_SRC'),
-    'img-src '.CoreUtils::env('CSP_IMG_SRC'),
-    'manifest-src '.CoreUtils::env('CSP_MANIFEST_SRC'),
-    'media-src '.CoreUtils::env('CSP_MEDIA_SRC'),
-    'frame-src '.CoreUtils::env('CSP_FRAME_SRC'),
-    'font-src '.CoreUtils::env('CSP_FONT_SRC'),
-    'connect-src '.CoreUtils::env('CSP_CONNECT_SRC').' '.CoreUtils::env('WS_SERVER_HOST').' wss://'.CoreUtils::env('WS_SERVER_HOST'),
-    'report-uri '.CoreUtils::env('CSP_REPORT_URI'),
-  ]);
-  header("Content-Security-Policy: $csp_header");
-  header("X-Content-Security-Policy: $csp_header");
-  header("X-WebKit-CSP: $csp_header");
-  unset($csp_header);
-}
+CoreUtils::outputCSPHeaders();
 
 function fatal_error(string $cause, ?Throwable $e = null) {
   HTTP::statusCode(503);

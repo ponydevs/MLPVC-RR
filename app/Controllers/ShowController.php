@@ -131,9 +131,7 @@ class ShowController extends Controller {
 
     switch ($this->action){
       case 'GET':
-        Response::done([
-          'show' => $this->show->to_array(),
-        ]);
+        Response::done([ 'show' => $this->show->to_array() ]);
       break;
       case 'POST':
       case 'PUT':

@@ -170,6 +170,10 @@
       > .notes {
         margin-top: 6px;
 
+        .notes-text {
+          white-space: pre-wrap;
+        }
+
         &:empty {
           display: none
         }

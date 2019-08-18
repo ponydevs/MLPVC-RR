@@ -256,4 +256,14 @@ class CoreUtilsTest extends TestCase {
     self::assertEquals(10, CoreUtils::tsDiff(new ActiveRecord\DateTime('2018-10-21T11:40:20', new DateTimeZone('UTC')), $now));
     self::assertEquals(-10, CoreUtils::tsDiff(new ActiveRecord\DateTime('2018-10-21T11:40:40', new DateTimeZone('UTC')), $now));
   }
+
+  public function testGenerateCacheKey() {
+    self::assertEquals('apple_f_v1', CoreUtils::generateCacheKey(1, 'apple', false));
+    self::assertEquals('apple_f_f_f_f_v2', CoreUtils::generateCacheKey(2, 'apple', false, false, false, false));
+    self::assertEquals('f_apple_t_v3', CoreUtils::generateCacheKey(3, false, 'apple', true));
+    self::assertEquals('apple_5.2_v1', CoreUtils::generateCacheKey(1, 'apple', 5.2));
+    self::assertEquals('apple_300_v1', CoreUtils::generateCacheKey(1, 'apple', 300));
+    self::assertEquals('what_the_f_v1', CoreUtils::generateCacheKey(1, 'what', 'the', false));
+    self::assertEquals('in_the_name_of_null_v1', CoreUtils::generateCacheKey(1, 'in the name of', null));
+  }
 }

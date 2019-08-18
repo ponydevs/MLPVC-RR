@@ -4,15 +4,33 @@ namespace App\Controllers\API;
 
 use App\CGUtils;
 use App\CoreUtils;
+use App\DB;
 use App\HTTP;
 use App\Models\Appearance;
 use App\Models\Color;
 use App\Models\ColorGroup;
+use App\Models\Tag;
 use App\Pagination;
+use App\RedisHelper;
 use App\Response;
+use App\Tags;
 use OpenApi\Annotations as OA;
 
 /**
+ * @OA\Schema(
+ *   schema="SlimAppearanceList",
+ *   type="object",
+ *   description="An array of less resource intensive appearances under the appearances key",
+ *   required={
+ *     "appearances"
+ *   },
+ *   additionalProperties=false,
+ *   @OA\Property(
+ *     property="appearances",
+ *     type="array",
+ *     @OA\Items(ref="#/components/schemas/SlimAppearance")
+ *   )
+ * )
  * @OA\Schema(
  *   schema="AppearanceList",
  *   type="object",
@@ -28,23 +46,31 @@ use OpenApi\Annotations as OA;
  *   )
  * )
  * @OA\Schema(
- *     schema="Order",
- *     type="number",
- *     description="Used for displaying items in a specific order. The API guarantees that array return values are sorted in ascending order based on this property."
+ *   schema="PreviewsIndicator",
+ *   type="boolean",
+ *   enum={true},
+ *   description="Optional parameter that indicates whether you would like to get preview image data with the request. Typically unneccessary unless you want to display a temporary image while the larger image loads."
+ * )
+ * @OA\Schema(
+ *   schema="Order",
+ *   type="number",
+ *   description="Used for displaying items in a specific order. The API guarantees that array return values are sorted in ascending order based on this property."
  * )
  */
 class AppearancesController extends APIController {
   /**
    * @OA\Schema(
-   *   schema="Appearance",
+   *   schema="SlimAppearance",
    *   type="object",
-   *   description="Represents an entry in the color guide",
+   *   description="A less heavy version of the regular Appearance schema",
    *   required={
    *     "id",
    *     "label",
    *     "added",
    *     "notes",
-   *     "sprite"
+   *     "tags",
+   *     "sprite",
+   *     "hasCutieMarks"
    *   },
    *   additionalProperties=false,
    *   @OA\Property(
@@ -70,6 +96,12 @@ class AppearancesController extends APIController {
    *     example="Far legs use darker colors. Based on <strong>S2E21</strong>."
    *   ),
    *   @OA\Property(
+   *     property="tags",
+   *     type="array",
+   *     minItems=0,
+   *     @OA\Items(ref="#/components/schemas/SlimGuideTag")
+   *   ),
+   *   @OA\Property(
    *     property="sprite",
    *     nullable=true,
    *     ref="#/components/schemas/Sprite",
@@ -79,7 +111,19 @@ class AppearancesController extends APIController {
    *     property="hasCutieMarks",
    *     type="boolean",
    *     description="Indicates whether there are any cutie marks tied to this appearance"
-   *   ),
+   *   )
+   * )
+   * @OA\Schema(
+   *   schema="Appearance",
+   *   type="object",
+   *   description="Represents an entry in the color guide",
+   *   required={
+   *     "colorGroups"
+   *   },
+   *   additionalProperties=false,
+   *   allOf={
+   *     @OA\Schema(ref="#/components/schemas/SlimAppearance")
+   *   },
    *   @OA\Property(
    *     property="colorGroups",
    *     type="array",
@@ -90,23 +134,61 @@ class AppearancesController extends APIController {
    * )
    * @param Appearance $a
    * @param bool       $with_previews
+   * @param bool       $compact
    *
    * @return array
    */
-  static function mapAppearance(Appearance $a, bool $with_previews) {
-    $colors = CGUtils::getColorsForEach($a->color_groups);
-    $color_groups = array_map(function (ColorGroup $cg) use ($colors) {
-      return self::mapColorGroup($cg, $colors);
-    }, $a->color_groups);
+  static function mapAppearance(Appearance $a, bool $with_previews, bool $compact = false) {
+    $tags = array_map(function (Tag $t) {
+      return self::mapTag($t);
+    }, Tags::getFor($a->id, null, true, true));
 
-    return [
+    $appearance = [
       'id' => $a->id,
       'label' => $a->label,
       'added' => gmdate('c', $a->added->getTimestamp()),
       'notes' => $a->notes_rend,
+      'tags' => $tags,
       'sprite' => self::mapSprite($a, $with_previews),
       'hasCutieMarks' => \count($a->cutiemarks) !== 0,
-      'colorGroups' => $color_groups,
+    ];
+    if (!$compact){
+      $colors = CGUtils::getColorsForEach($a->color_groups);
+      $color_groups = array_map(function (ColorGroup $cg) use ($colors) {
+        return self::mapColorGroup($cg, $colors);
+      }, $a->color_groups);
+      $appearance['colorGroups'] = $color_groups;
+    }
+
+    return $appearance;
+  }
+
+  /**
+   * @OA\Schema(
+   *   schema="SlimGuideTag",
+   *   type="object",
+   *   @OA\Property(
+   *     property="id",
+   *     ref="#/components/schemas/OneBasedId"
+   *   ),
+   *   @OA\Property(
+   *     property="name",
+   *     type="string",
+   *     minLength=1,
+   *     maxLength=255,
+   *     example="mane six",
+   *     description="Tag name (all lowercase)"
+   *   )
+   * )
+   * @param Tag $t
+   *
+   * @return array
+   */
+  static function mapTag(Tag $t) {
+    return [
+      'id' => $t->id,
+      'name' => $t->name,
+      'type' => $t->type,
     ];
   }
 
@@ -265,11 +347,12 @@ class AppearancesController extends APIController {
    * )
    * @OA\Get(
    *   path="/appearances",
-   *   description="Allows querying the full library of public appearances",
+   *   description="Allows querying the full library of public appearances (forced pagination)",
    *   tags={"color guide", "appearances"},
    *   @OA\Parameter(
    *     in="query",
    *     name="guide",
+   *     required=true,
    *     @OA\Schema(ref="#/components/schemas/GuideName"),
    *     description="Determines the guide to search in"
    *   ),
@@ -298,8 +381,7 @@ class AppearancesController extends APIController {
    *     in="query",
    *     name="previews",
    *     required=false,
-   *     @OA\Schema(ref="#/components/schemas/BooleanTrue"),
-   *     description="Optional parameter that indicates whether you would like to get preview image data with the request. Typically unneccessary unless you want to display a temporary image while the larger image loads."
+   *     @OA\Schema(ref="#/components/schemas/PreviewsIndicator")
    *   ),
    *   @OA\Response(
    *     response="200",
@@ -343,6 +425,87 @@ class AppearancesController extends APIController {
       'appearances' => $results,
       'pagination' => CoreUtils::paginationForApi($pagination),
     ]);
+  }
+
+  /**
+   * @OA\Schema(
+   *   schema="CacheIndicator",
+   *   required={
+   *     "cachedOn",
+   *     "cachedFor"
+   *   },
+   *   additionalProperties=false,
+   *   @OA\Property(
+   *     property="cachedOn",
+   *     type="string",
+   *     format="date-time",
+   *     description="Indicates when a cached resource was last updated with fresh data"
+   *   ),
+   *   @OA\Property(
+   *     property="cachedFor",
+   *     type="number",
+   *     minimum=1,
+   *     example="3600",
+   *     description="How long the data is cached for (in seconds)"
+   *   )
+   * )
+   * @OA\Get(
+   *   path="/appearances/all",
+   *   description="Get a list of every appearance in the database (without color group data)",
+   *   tags={"color guide", "appearances"},
+   *   @OA\Parameter(
+   *     in="query",
+   *     name="guide",
+   *     required=true,
+   *     @OA\Schema(ref="#/components/schemas/GuideName"),
+   *     description="Determines the guide to search in"
+   *   ),
+   *   @OA\Parameter(
+   *     in="query",
+   *     name="previews",
+   *     required=false,
+   *     @OA\Schema(ref="#/components/schemas/PreviewsIndicator")
+   *   ),
+   *   @OA\Response(
+   *     response="200",
+   *     description="OK",
+   *     @OA\JsonContent(
+   *       allOf={
+   *         @OA\Schema(ref="#/components/schemas/ServerResponse"),
+   *         @OA\Schema(ref="#/components/schemas/SlimAppearanceList"),
+   *         @OA\Schema(ref="#/components/schemas/CacheIndicator")
+   *       }
+   *     )
+   *   )
+   * )
+   */
+  function queryAll() {
+    if ($this->action !== 'GET')
+      CoreUtils::notAllowed();
+
+    $guide_name = $_GET['guide'] ?? null;
+    $with_previews = ($_GET['previews'] ?? null) === 'true';
+    if (!isset(CGUtils::GUIDE_MAP[$guide_name])){
+      HTTP::statusCode(400);
+      Response::fail('COLOR_GUIDE.INVALID_GUIDE_NAME');
+    }
+    $eqg = $guide_name === 'eqg';
+
+    $cache_time = 600;
+    $cache_key = CoreUtils::generateCacheKey(1, 'all appearances', $guide_name, $with_previews);
+    $cached_data = RedisHelper::get($cache_key);
+    if ($cached_data !== null)
+      Response::doneCached($cached_data);
+
+    /** @var $appearances Appearance[] */
+    $appearances = DB::$instance->where('ishuman', $eqg)->get(Appearance::$table_name);
+
+    $results = array_map(function (Appearance $a) use ($with_previews) {
+      return self::mapAppearance($a, $with_previews, true);
+    }, $appearances);
+    Response::done([
+      'appearances' => $results,
+    ], $cache_key, $cache_time);
   }
 
   /**
