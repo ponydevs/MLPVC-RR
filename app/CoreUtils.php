@@ -1514,6 +1514,7 @@ class CoreUtils {
       'connect-src '.self::env('CSP_CONNECT_SRC').' '.self::env('WS_SERVER_HOST').' wss://'.self::env('WS_SERVER_HOST'),
       'frame-ancestors '.self::env('CSP_FRAME_ANCESTORS'),
       'form-action '.self::env('CSP_FRAME_ANCESTORS'),
+      'base-uri '.self::env('CSP_BASE_URI'),
       'report-uri '.self::env('CSP_REPORT_URI'),
     ]);
     foreach (self::CSP_HEADER_NAMES as $header_name) {
