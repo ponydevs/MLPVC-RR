@@ -6,6 +6,9 @@ use App\CoreUtils;
 use App\HTTP;
 use App\Response;
 
+/**
+ * AboutController
+ */
 class AboutController extends APIController {
   /**
    * @OA\Schema(

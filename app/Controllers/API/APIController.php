@@ -35,7 +35,7 @@ use App\CoreUtils;
  *     property="message",
  *     type="string",
  *     description="A translation key pointing to a message that explains the outcome of the request, typically used for errors"
- *   ),
+ *   )
  * )
  * @OA\Schema(
  *   schema="PageNumber",
@@ -111,6 +111,10 @@ use App\CoreUtils;
  *     @OA\Schema(ref="#/components/schemas/PageData")
  *   }
  * )
+ */
+
+/**
+ * This controller handles all new API communication
  */
 class APIController extends Controller {
   public function __construct() {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dadfefb55dc71a8e86fb7879c878af29",
+    "content-hash": "ce1e22ea65a4e078cd5910007a707bb6",
     "packages": [
         {
             "name": "airmanbzh/php-html-generator",
@@ -6767,7 +6767,8 @@
         "ext-pdo_sqlite": "*",
         "ext-redis": "*",
         "ext-xml": "*",
-        "ext-zlib": "*"
+        "ext-zlib": "*",
+        "ext-posix": "*"
     },
     "platform-dev": []
 }

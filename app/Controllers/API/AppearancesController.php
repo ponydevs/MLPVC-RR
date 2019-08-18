@@ -57,6 +57,10 @@ use OpenApi\Annotations as OA;
  *   description="Used for displaying items in a specific order. The API guarantees that array return values are sorted in ascending order based on this property."
  * )
  */
+
+/**
+ * AppearancesController
+ */
 class AppearancesController extends APIController {
   /**
    * @OA\Schema(

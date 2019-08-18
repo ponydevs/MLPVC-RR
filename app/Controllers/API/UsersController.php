@@ -49,6 +49,10 @@ use App\Response;
  *   )
  * )
  */
+
+/**
+ * UsersController
+ */
 class UsersController extends APIController {
   /**
    * @OA\Schema(
