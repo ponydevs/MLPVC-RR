@@ -71,7 +71,7 @@ class ColorGroupController extends ColorGuideController {
           ]))->out();
           $params['id'] = $ponyid;
           $this->load_appearance($params);
-          $this->appearance->checkManagePermission(Auth::$user);
+          $this->appearance->enforceManagePermission();
           $this->colorgroup = new ColorGroup();
           $this->colorgroup->appearance_id = $ponyid;
         }
