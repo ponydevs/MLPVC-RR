@@ -340,8 +340,11 @@ class DeviantArt {
     if (empty($makeDev) && !empty($User)){
       $clubmember = $User->isClubMember();
       $permmember = Permission::sufficient('member', $User->role);
-      if ($clubmember && !$permmember)
-        $User->updateRole(self::getClubRole($User));
+      if ($clubmember && !$permmember) {
+        $club_role = self::getClubRole($User);
+        if ($club_role !== null)
+          $User->updateRole($club_role);
+      }
       else if (!$clubmember && $permmember)
         $User->updateRole('user');
     }
@@ -467,6 +470,9 @@ class DeviantArt {
    * @return null|string
    */
   public static function getClubRoleByName(string $username):?string {
+    // Temporarily disabled
+    return null;
+
     $usernames = self::getMemberList();
 
     return $usernames[$username] ?? null;
