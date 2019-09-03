@@ -978,13 +978,11 @@ class Appearance extends NSModel implements Linkable {
     }
   }
 
-  public function checkManagePermission(User $user) {
-    if ($user->id === $this->owner_id || $user->perm('staff'))
+  public function checkManagePermission($user) {
+    if ($user instanceof User && ($user->id === $this->owner_id || $user->perm('staff')))
       return true;
 
-    if (CoreUtils::isJSONExpected())
-      Response::fail();
-    else CoreUtils::noPerm();
+    CoreUtils::noPerm();
   }
 
   public function getShareURL(bool $can_see_token = false):string {
