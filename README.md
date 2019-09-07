@@ -1,4 +1,8 @@
-# MLPVC-RR [![Build Status](https://travis-ci.org/SeinopSys/MLPVC-RR.svg?branch=master)](https://travis-ci.org/SeinopSys/MLPVC-RR)
+# Winterchilla [![Build Status](https://travis-ci.org/MLP-VectorClub/Winterchilla.svg?branch=master)](https://travis-ci.org/MLP-VectorClub/Winterchilla)
+
+PHP-rendered classic web app powering the MLP Vector Club's website since 2015.
+
+> &ldquo;When the sun goes down, it transforms into a giant, monstrous version of itself.&rdquo;<br>*&mdash; [Source](https://mlp.fandom.com/wiki/Creatures#Winterchilla)*
 
 ## Attributions
 

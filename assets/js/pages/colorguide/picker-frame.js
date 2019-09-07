@@ -1,4 +1,4 @@
-/* Color Picker | by @SeinopSys + Trildar & Masem | for gh:ponydevs/MLPVC-RR */
+/* Color Picker | by @SeinopSys + Trildar & Masem | for gh:MLP-VectorClub/Winterchilla */
 (function($, undefined) {
   'use strict';
 

@@ -1,4 +1,4 @@
-# Contributing to MLPVC-RR
+# Contributing
 
 ## Contributions are welcome, but not expected
 
@@ -10,7 +10,7 @@ I wanted to be as transparent as I could be to signify that I'm not doing this i
 
 The lack of this explanation along with my immaturity has caused some confusion during the time I got my first set of contributions, which made me outright "ban" them to the best of my ability. However, as the years passed I've gradually become more familiar with what "open source" truly means, and I realized that being so conservative might not be the best path going forward.
 
-In addition to the reasons above, due to the fact that setting the development environment up is quite a lengthy process I wouldn't expect anyone to go through all the trouble just to be able to help out, so that's why I would rather encourage you to [submit an issue](https://github.com/ponydevs/MLPVC-RR/issues/new) instead if you have any feature ideas or bug reports, and I'll see what I can do. If you do take your time to write up something useful, be it an issue or a PR, and your suggestions/changes makes it into the project, I'll be sure include your name in a dedicated section at the end of [README.md](README.md#thanks-to) as a way to thank you for your work (unless you explicitly ask me not to).
+In addition to the reasons above, due to the fact that setting the development environment up is quite a lengthy process I wouldn't expect anyone to go through all the trouble just to be able to help out, so that's why I would rather encourage you to [submit an issue](https://github.com/MLP-VectorClub/Winterchilla/issues/new) instead if you have any feature ideas or bug reports, and I'll see what I can do. If you do take your time to write up something useful, be it an issue or a PR, and your suggestions/changes makes it into the project, I'll be sure include your name in a dedicated section at the end of [README.md](README.md#thanks-to) as a way to thank you for your work (unless you explicitly ask me not to).
 
 ## What you'll need
 
@@ -47,10 +47,10 @@ $ psql
 psql (9.6.3)
 Type "help" for help.
 
-postgres=# CREATE USER "mlpvc-rr" WITH LOGIN PASSWORD '<password>';
-postgres=# CREATE DATABASE "mlpvc-rr" WITH OWNER "mlpvc-rr";
-postgres=# \c "mlpvc-rr"
-postgres=# \i /var/www/MLPVC-RR/setup/create_extensions.pg.sql
+postgres=# CREATE USER "winterchilla" WITH LOGIN PASSWORD '<password>';
+postgres=# CREATE DATABASE "winterchilla" WITH OWNER "winterchilla";
+postgres=# \c "winterchilla"
+postgres=# \i /var/www/Winterchilla/setup/create_extensions.pg.sql
 postgres=# \q
 $ exit
 ```
@@ -97,7 +97,7 @@ The `php7.3-fpm` package is used used by the provided `setup/nginx.conf` configu
 Replace `domain.tld` with the domain of your choice, and change `/path/to/*` placeholders appropriately. `/path/to/www` is the `www` directory of this repository, and `/path/to/error.log` should point to a file in the `logs` directory. The site assumes that this isn't the only site running on your machine, so you'll have to add your domain to your `/etc/hosts` file (`C:\Windows\System32\drivers\etc\hosts` on Windows) on all machines where you want to reach the server from.
 
 ```
-$ cd /var/www/MLPVC-RR
+$ cd /var/www/Winterchilla
 $ dir
 composer.json    fs           LICENSE       package-lock.json  setup
 composer.lock    graphics     logs          phinx.php          tests
@@ -158,6 +158,6 @@ Host production.vps
 	Port <port>
 	User <user>
 	IdentityFile ~/.ssh/id_rsa
-$ git remote add production production.vps:/var/www/MLPVC-RR/
+$ git remote add production production.vps:/var/www/Winterchilla/
 $ git push production
 ```

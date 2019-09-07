@@ -1,4 +1,4 @@
-/* Context menu plugin | by @SeinopSys | for gh:ponydevs/MLPVC-RR | utilizes: http://stackoverflow.com/a/30255040/1344955 */
+/* Context menu plugin | by @SeinopSys | for gh:MLP-VectorClub/Winterchilla | utilizes: http://stackoverflow.com/a/30255040/1344955 */
 (function($) {
   'use strict';
   let $ctxmenu = $.mk('div').attr('id', 'ctxmenu');

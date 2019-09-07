@@ -9,9 +9,9 @@ install:
 services:
   - postgresql
 before_script:
-  - psql -c 'CREATE DATABASE "mlpvc-rr";' -U postgres
-  - psql -c "CREATE USER \"mlpvc-rr\" WITH LOGIN PASSWORD 'example-password'" -U postgres
-  - psql "mlpvc-rr" < ./setup/create_extensions.pg.sql
+  - psql -c 'CREATE DATABASE "winterchilla";' -U postgres
+  - psql -c "CREATE USER \"winterchilla\" WITH LOGIN PASSWORD 'example-password'" -U postgres
+  - psql "winterchilla" < ./setup/create_extensions.pg.sql
   - vendor/bin/phinx migrate
 dist: xenial
 addons:

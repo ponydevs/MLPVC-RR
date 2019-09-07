@@ -1,7 +1,6 @@
 {
-  "name": "mlpvc-rr",
+  "name": "winterchilla",
   "version": "1.0.0",
-  "description": "An automated system for handling requests & reservations, made for MLP-VectorClub",
   "homepage": "https://mlpvector.club",
   "dependencies": {
     "@babel/core": "^7.4.3",
@@ -44,9 +43,6 @@
   "author": "SeinopSys <seinopsys@gmail.com> (https://github.com/SeinopSys)",
   "license": "MIT",
   "private": true,
-  "engines": {
-    "yarn": "YARN NO LONGER USED - use npm instead."
-  },
   "scripts": {
     "build": "gulp default",
     "watch": "gulp watch",

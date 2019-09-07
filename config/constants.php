@@ -11,7 +11,7 @@ define('WS_LOCAL_ORIGIN', 'http://localhost');
 define('ABSPATH', ORIGIN.'/');
 require __DIR__.'/init/path-constants.php';
 define('POST_REQUEST', ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST');
-define('GITHUB_PROJECT_NAME', 'ponydevs/MLPVC-RR');
+define('GITHUB_PROJECT_NAME', 'MLP-VectorClub/Winterchilla');
 define('GITHUB_URL', 'https://github.com/'.GITHUB_PROJECT_NAME);
 define('SITE_TITLE', 'MLP Vector Club');
 define('SVGO_BINARY', PROJPATH.'node_modules/svgo/bin/svgo');
