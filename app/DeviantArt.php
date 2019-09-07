@@ -337,7 +337,8 @@ class DeviantArt {
     }
     else $User->update_attributes($UserData);
 
-    if (empty($makeDev) && !empty($User)){
+    // TODO Fix dynamic role assignment
+    /* if (empty($makeDev) && !empty($User)){
       $clubmember = $User->isClubMember();
       $permmember = Permission::sufficient('member', $User->role);
       if ($clubmember && !$permmember) {
@@ -347,7 +348,7 @@ class DeviantArt {
       }
       else if (!$clubmember && $permmember)
         $User->updateRole('user');
-    }
+    } */
 
     if ($refresh)
       Auth::$session->update_attributes($AuthData);
