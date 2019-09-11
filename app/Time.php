@@ -88,7 +88,7 @@ class Time {
   }
 
   public const
-    FORMAT_FULL = 'jS F Y, H:i:s T',
+    FORMAT_FULL = 'l, jS F Y, H:i:s T',
     FORMAT_READABLE = 'readable';
 
   /**

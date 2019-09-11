@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
+use App\Time;
 
 /**
  * @property string   id
@@ -30,5 +31,19 @@ class Notice extends NSModel {
     return self::find('all', [
       'conditions' => 'hide_after > now()',
     ]);
+  }
+
+  public function getMessage(): string {
+    $message = $this->message_html;
+    $message = preg_replace_callback('~@ts\(([^)]+)\)~', function($match){
+      $ts = strtotime($match[1]);
+      return sprintf(
+        '<span class="dynt-el">%s</span> (<time datetime="%s">%s</time>)',
+        Time::format($ts, Time::FORMAT_READABLE),
+        $match[1],
+        Time::format($ts, Time::FORMAT_FULL),
+      );
+    },$message);
+    return $message;
   }
 }
