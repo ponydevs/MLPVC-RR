@@ -7,8 +7,8 @@
       <img src='{{ preview }}' alt='event entry preview'>
     </a>
     {% if file_type is not empty %}
-      {% if file_type == 'zip' %}
-        <span class='file-type'>svg<span class="star-info" title="ZIP archives are assumed to be SVG files">*</span></span>
+      {% if file_type == 'zip' or file_type == 'rar' %}
+        <span class='file-type'>svg<span class="star-info" title="{{ file_type | upper }} archives are assumed to be SVG files">*</span></span>
       {% else %}
         <span class='file-type'>{{ file_type }}</span>
       {% endif %}
