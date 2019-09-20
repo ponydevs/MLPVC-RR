@@ -84,19 +84,23 @@ class NavBreadcrumb {
   }
 
   public function toAnchor(int $position) {
-    $extraAttributes = 'itemscope itemtype="http://schema.org/Thing" itemprop="item"';
+    $extra_attributes = 'itemscope itemtype="http://schema.org/Thing" itemprop="item"';
     if ($this->link){
-      $abspath = ABSPATH.\mb_substr($this->link, 1);
-      $extraAttributes .= " itemid='$abspath'";
+      $itemid = ABSPATH.\mb_substr($this->link, 1);
+    } else {
+      $itemid = md5($this->name);
+    }
+    if ($itemid) {
+      $extra_attributes .= sprintf(" itemid='%s'", CoreUtils::aposEncode($itemid));
     }
     $name = '<span itemprop="name">'.CoreUtils::escapeHTML($this->name).'</span>';
 
     $HTML = $this->active
-      ? "<strong $extraAttributes>$name</strong>"
+      ? "<strong $extra_attributes>$name</strong>"
       : (
       $this->enabled
-        ? "<a href='{$this->link}' $extraAttributes>$name</a>"
-        : "<span $extraAttributes>$name</span>"
+        ? "<a href='{$this->link}' $extra_attributes>$name</a>"
+        : "<span $extra_attributes>$name</span>"
       );
 
     return "<li itemprop='itemListElement' itemscope itemtype='http://schema.org/ListItem'>$HTML<meta itemprop='position' content='$position'></li>";
