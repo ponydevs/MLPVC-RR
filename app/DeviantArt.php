@@ -95,7 +95,7 @@ class DeviantArt {
 
       return null;
     }
-    if (preg_match(new RegExp('Content-Encoding:\s?gzip'), $responseHeaders))
+    if (preg_match(new RegExp('Content-Encoding:\s?gzip','i'), $responseHeaders))
       $response = gzdecode($response);
 
     return JSON::decode($response);
