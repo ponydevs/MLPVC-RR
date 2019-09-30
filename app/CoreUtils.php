@@ -604,13 +604,13 @@ class CoreUtils {
   /**
    * Sanitizes SVG that comes from user input
    *
-   * @param string     $dirty_svg SVG data coming from the user
-   * @param bool       $minify
-   * @param array|null $warnings
+   * @param string $dirty_svg SVG data coming from the user
+   * @param bool   $minify
+   * @param array  $warnings
    *
    * @return string Sanitized SVG code
    */
-  public static function sanitizeSvg(string $dirty_svg, bool $minify = true, ?array $warnings = null) {
+  public static function sanitizeSvg(string $dirty_svg, bool $minify = true, ?array &$warnings = null) {
     // Remove bogous HTML entities
     $dirty_svg = preg_replace(new RegExp('&ns_[a-z_]+;'), '', $dirty_svg);
     if ($minify)
@@ -646,6 +646,21 @@ class CoreUtils {
 
     $unifier = new \DOMDocument('1.0', 'UTF-8');
     $unifier->loadXML($sanitized);
+    if ($warnings !== null) {
+      $all_tags = $unifier->getElementsByTagName('*');
+      $transform_attr = false;
+      foreach ($all_tags as $tag){
+        /** @var $tag \DOMElement */
+        if (empty($tag->getAttribute('transform')))
+          continue;
+
+        $transform_attr = true;
+        break;
+      }
+      if ($transform_attr){
+        $warnings[] = 'File contains one or more transform attributes (extremely likely to cause incorrect rendering in Illustrator)';
+      }
+    }
     // Make sure we add the default colors of paths to the file to make them replaceable (unless they have a class)
     $paths = $unifier->getElementsByTagName('path');
     foreach ($paths as $path){

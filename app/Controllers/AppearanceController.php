@@ -1034,7 +1034,9 @@ class AppearanceController extends ColorGuideController {
 
     $warnings = [];
 
-    $svgel = CGUtils::untokenizeSvg(CGUtils::tokenizeSvg(CoreUtils::sanitizeSvg($svgdata), $this->appearance->id), $this->appearance->id, $warnings);
+    $sanitized_svg = CoreUtils::sanitizeSvg($svgdata, true, $warnings);
+    $tokenized_svg = CGUtils::tokenizeSvg($sanitized_svg, $this->appearance->id);
+    $svgel = CGUtils::untokenizeSvg($tokenized_svg, $this->appearance->id, $warnings);
 
     Response::done(['svgel' => $svgel, 'svgdata' => $svgdata, 'keep_dialog' => true, 'warnings' => $warnings]);
   }
