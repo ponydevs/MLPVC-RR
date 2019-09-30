@@ -604,12 +604,13 @@ class CoreUtils {
   /**
    * Sanitizes SVG that comes from user input
    *
-   * @param string $dirty_svg SVG data coming from the user
-   * @param bool   $minify
+   * @param string     $dirty_svg SVG data coming from the user
+   * @param bool       $minify
+   * @param array|null $warnings
    *
    * @return string Sanitized SVG code
    */
-  public static function sanitizeSvg(string $dirty_svg, bool $minify = true) {
+  public static function sanitizeSvg(string $dirty_svg, bool $minify = true, ?array $warnings = null) {
     // Remove bogous HTML entities
     $dirty_svg = preg_replace(new RegExp('&ns_[a-z_]+;'), '', $dirty_svg);
     if ($minify)
@@ -649,27 +650,39 @@ class CoreUtils {
     $paths = $unifier->getElementsByTagName('path');
     foreach ($paths as $path){
       /** @var $path \DOMElement */
-      $fillAttr = $path->getAttribute('fill');
-      $classAttr = $path->getAttribute('class');
-      if ($fillAttr === null && $classAttr === null)
+      $fill_attr = $path->getAttribute('fill');
+      $class_attr = $path->getAttribute('class');
+      if ($fill_attr === null && $class_attr === null)
         $path->setAttribute('fill', '#000');
     }
-    // Transform 1-stop linear gradients the same way Illustrator breaks them
-    $linearGradients = $unifier->getElementsByTagName('linearGradient');
-    foreach ($linearGradients as $grad){
+    // Fix 1-stop linear gradients that would otherwise break in Illustrator
+    $linear_gradients = $unifier->getElementsByTagName('linearGradient');
+    if ($warnings !== null) {
+      $single_stop_warnings = [];
+    }
+    foreach ($linear_gradients as $grad){
       /** @var $grad \DOMElement */
       if ($grad->childNodes->length !== 1)
         continue;
 
-      /** @var $stopColor \DOMElement */
-      $stopColor = $grad->childNodes->item(0)->cloneNode();
-      $stopColor->setAttribute('offset', 1 - $stopColor->getAttribute('offset'));
-      $stopColor->setAttribute('stop-color', '#000');
-      $grad->appendChild($stopColor);
-    }
-    $sanitized = $unifier->saveXML($unifier->documentElement, LIBXML_NOEMPTYTAG);
+      $original_stop_node = $grad->childNodes->item(0);
+      $original_stop_color = $original_stop_node->getAttribute('stop-color');
 
-    return $sanitized;
+      /** @var $stop_node \DOMElement */
+      $stop_node = $original_stop_node->cloneNode();
+      $stop_node->setAttribute('offset', 1 - $stop_node->getAttribute('offset'));
+      $stop_node->setAttribute('stop-color', $original_stop_color);
+      $grad->appendChild($stop_node);
+
+      if ($warnings !== null && !isset($single_stop_warnings[$original_stop_color])) {
+        $single_stop_warnings[$original_stop_color] = "Single-stop linear gradient found with color $original_stop_color which will break in Illustrator (this has been remedied by duplicating the color stop, but fixing the source file would be ideal)";
+      }
+    }
+    if (!empty($single_stop_warnings)) {
+      $warnings = array_merge($warnings, array_values($single_stop_warnings));
+    }
+
+    return $unifier->saveXML($unifier->documentElement, LIBXML_NOEMPTYTAG);
   }
 
   public static function validateSvg(string $svg_data) {

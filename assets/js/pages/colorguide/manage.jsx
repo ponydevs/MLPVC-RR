@@ -990,7 +990,7 @@
       this.$AddNewButton = $.mk('button').attr('class', 'green typcn typcn-plus').text('Add new cutie mark').on('click', e => {
         e.preventDefault();
 
-        this.$CMList.append(this.crateCutiemarkDataLi());
+        this.$CMList.append(this.createCutiemarkDataLi());
 
         this.$AddNewButton[this.$CMList.children().length >= 4 ? 'disable' : 'enable']();
       });
@@ -1010,14 +1010,12 @@
           $.mk('p').append(
             '<strong>Potential issues:</strong> ',
             '<button>File size issue</button>',
-            '<button>Inverted colors</button>',
             '<button>Gradients to black</button>',
             '<button>Blank space around</button>',
             '<button class="darkblue typcn typcn-minus" disabled>Close</button>',
           ),
           `<div class="issue-descriptions">
 						<p class="hidden">Generally vector files are very light (~10KB max.) so if your file exceeds 1 MB you will see an error. This can indicate that an embedded image (such as a screencap) was left inside the vector file.</p>
-						<p class="hidden">If you see any inverted colors that means those colors are not in the guide. Make sure the colors that are displayed incorrectly match the ones in the guide.</p>
 						<p class="hidden">If you see gradients to black throughout then those colors used Inkscape's Swatches feature and the site simulates how the vector would appear in Adobe Illustator. You'll have to change those colors to regular fills to avoid this.</p>
 						<div class="hidden">
 							<p>If the cutie mark has a lot of transparent space around it that means the canvas/artboard is not cropped properly. This is strongly recommended for optimal display on the site and to make it easier to reuse. To fix this:</p>
@@ -1031,6 +1029,9 @@
           $btn.disable().siblings().enable();
           $btn.parent().next().children().addClass('hidden').eq($btn.index() - 1).removeClass('hidden');
         }),
+        $.mk('div').attr('class', 'notice warn align-left hidden').html(
+          '<strong>The SVG sanitizer produced the following warnings:</strong><ul></ul>'
+        )
       ).on('submit', e => {
         e.preventDefault();
 
@@ -1094,13 +1095,13 @@
 
       if (data.cms.length){
         $.each(data.cms, (i, el) => {
-          this.$CMList.append(this.crateCutiemarkDataLi(el));
+          this.$CMList.append(this.createCutiemarkDataLi(el));
         });
         this.updateRanges();
         this.$BottomActionGroup.append(this.$DeleteButton);
       }
       else {
-        this.$CMList.append(this.crateCutiemarkDataLi());
+        this.$CMList.append(this.createCutiemarkDataLi());
       }
     }
 
@@ -1121,7 +1122,7 @@
       });
     }
 
-    crateCutiemarkDataLi(el) {
+    createCutiemarkDataLi(el) {
       const editing = typeof el !== 'undefined';
       if (!editing)
         el = {};
@@ -1287,13 +1288,26 @@
                       target: `${$.API.API_PATH}/cg/appearance/${this.appearance_id}/sanitize-svg`,
                       helper: true,
                     }).on('uz-uploadfinish', (_, data) => {
-                      if (data && data.svgel)
-                        $el.data({
-                          svgdata: data.svgdata,
-                          svgel: data.svgel,
-                        }).children('.svgcont').backgroundImageUrl(
-                          'data:image/svg+xml;utf8,' + encodeURI(data.svgel),
-                        );
+                      if (data){
+                        if (data.svgel) {
+                          $el.data({
+                            svgdata: data.svgdata,
+                            svgel: data.svgel,
+                          }).children('.svgcont').backgroundImageUrl(
+                            'data:image/svg+xml;utf8,' + encodeURIComponent(data.svgel),
+                          );
+                        }
+                        const $warningOutput = $el.closest('form').children('.notice.warn');
+                        if (data.warnings && data.warnings.length > 0) {
+                          $warningOutput.find('ul').replaceWith(
+                            $.mk('ul').append(
+                              ...data.warnings.map(message => $.mk('li').text(message))
+                            )
+                          );
+                          $warningOutput.removeClass('hidden');
+                        }
+                        else $warningOutput.addClass('hidden');
+                      }
                     });
                   }
                 }

@@ -930,14 +930,19 @@ class CGUtils {
    *
    * @param string $svg Image data
    * @param int    $appearance_id
+   * @param array  $warnings
    *
    * @return string Un-tokenized SVG file
    */
-  public static function untokenizeSvg(string $svg, int $appearance_id):string {
+  public static function untokenizeSvg(string $svg, int $appearance_id, ?array &$warnings = null):string {
     /** @var $cm_color_group ColorGroup */
     $cm_color_group = DB::$instance->where('label', 'Cutie Mark')->where('appearance_id', $appearance_id)->getOne(ColorGroup::$table_name);
     if (empty($cm_color_group))
       return $svg;
+
+    if ($warnings !== null) {
+      $color_warnings = [];
+    }
 
     $svg = preg_replace_callback(new RegExp('<!--@(\d+)(?:,([\d.]+))?-->'), static function ($match) {
       /** @var $dbcolor Color */
@@ -951,13 +956,19 @@ class CGUtils {
 
       return (string)$color;
     }, $svg);
-    $svg = preg_replace_callback(new RegExp('<!--#/([A-F\d]{8})-->'), static function ($match) {
-      $color = RGBAColor::parse("#{$match[1]}");
-      // This would restore the original color
-      //return (string) $color;
-      // Hopefully an inverted, transparent color will stand out
-      return (string)$color->setAlpha(.75)->invert();
+    $svg = preg_replace_callback(new RegExp('<!--#/([A-F\d]{8})-->'), static function ($match) use (&$warnings, &$color_warnings) {
+      $hex_without_hash = $match[1];
+      $color = RGBAColor::parse("#$hex_without_hash");
+
+      if ($warnings !== null && !isset($color_warnings[$hex_without_hash])) {
+        $color_warnings[$hex_without_hash] = "Unexpected color $color (not found in Cutie Mark color group)";
+      }
+      return (string) $color;
     }, $svg);
+
+    if (!empty($color_warnings)) {
+      $warnings = array_merge($warnings, array_values($color_warnings));
+    }
 
     return $svg;
   }
