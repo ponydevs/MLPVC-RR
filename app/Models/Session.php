@@ -79,7 +79,7 @@ class Session extends NSModel {
   private $_data;
 
   private function _serializeData() {
-    $this->data = JSON::encode($this->_data);
+    $this->data = JSON::encode($this->_data, JSON_FORCE_OBJECT);
     $this->save();
   }
 
@@ -106,11 +106,11 @@ class Session extends NSModel {
     $this->_serializeData();
   }
 
-  public function getData(string $key) {
+  public function getData(string $key, $default = null) {
     if ($this->_data === null)
       $this->_unserializeData();
 
-    return $this->_data[$key] ?? null;
+    return $this->_data[$key] ?? $default;
   }
 
   public function pullData(string $key) {

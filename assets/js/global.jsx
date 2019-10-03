@@ -558,22 +558,20 @@
   let $sessionUpdating = $('.logged-in.updating-session');
   if ($sessionUpdating.length){
     const sessionRefTitle = 'Session refresh issue';
-    let pollInterval = 1000, attempt = 0;
+    let pollInterval = 1000;
     setTimeout(function poll() {
       if ($sessionUpdating === null)
         return;
 
-      $.API.get(`/da-auth/status?attempt=${attempt++}`, function() {
+      $.API.get('/da-auth/status', function() {
         if ($sessionUpdating === null)
           return;
 
         if (!this.status) return $.Dialog.fail(sessionRefTitle, this.message);
 
         if (this.updating === true) {
-          if (this.retries_remaining > 0) {
-            pollInterval *= 1.1;
-            setTimeout(poll, pollInterval);
-          }
+          pollInterval *= 1.1;
+          setTimeout(poll, pollInterval);
           return;
         }
 

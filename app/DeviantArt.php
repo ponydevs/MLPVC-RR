@@ -356,8 +356,10 @@ class DeviantArt {
     else {
       Session::delete_all(['conditions' => ['user_id = ? AND scope != ?', $User->id, $AuthData['scope']]]);
       $update = array_merge($AuthData, ['user_id' => $User->id]);
-      if (Auth::$session !== null)
+      if (Auth::$session !== null){
         Auth::$session->update_attributes($update);
+        Auth::$session->unsetData('refresh_attempts');
+      }
       else Auth::$session = Session::create($update);
     }
 

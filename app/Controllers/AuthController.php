@@ -137,16 +137,18 @@ class AuthController extends Controller {
       CoreUtils::notAllowed();
 
     if (Auth::$signed_in && Auth::$session->updating){
-      $attempt_number = $_GET['attempt'] ?? '0';
-      $counter = is_numeric($attempt_number) ? (int) $attempt_number : 0;
+      $attempt_number = Auth::$session->getData('refresh_attempts', 0);
       $force_threshold = 5;
-      $immediate_refresh = is_numeric($counter) && $counter >= $force_threshold && Auth::$session->expired;
+      $immediate_refresh = $attempt_number >= $force_threshold && Auth::$session->expired;
       if (!$immediate_refresh) {
-        Response::done(['updating' => true, 'retries_remaining' => $force_threshold - $counter]);
+        Auth::$session->setData('refresh_attempts', $attempt_number + 1);
+        Response::done(['updating' => true, 'retries_remaining' => $force_threshold - $attempt_number]);
       }
 
       DeviantArt::gracefullyRefreshAccessTokenImmediately();
     }
+
+    Auth::$session->unsetData('refresh_attempts');
 
     Response::done([
       'deleted' => !Auth::$signed_in,
