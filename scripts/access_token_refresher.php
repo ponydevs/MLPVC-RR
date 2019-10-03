@@ -5,6 +5,8 @@ require __DIR__.'/../config/init/monolog.php';
 
 use App\Auth;
 use App\CoreUtils;
+use App\DeviantArt;
+use App\Models\Session;
 
 function dyn_log(string $message) {
   if (posix_isatty(STDOUT))
@@ -24,7 +26,7 @@ try {
     exit(2);
   }
 
-  Auth::$session = \App\Models\Session::find($session_id);
+  Auth::$session = Session::find($session_id);
   if (empty(Auth::$session)){
     dyn_log("Session not found for ID: $session_id");
     exit(3);
@@ -36,22 +38,7 @@ try {
   }
   Auth::$user = Auth::$session->user;
 
-  if (Auth::$session->expired){
-    try {
-      \App\DeviantArt::refreshAccessToken();
-    }
-    catch (Throwable $e){
-      $code = ($e instanceof \App\Exceptions\CURLRequestException ? 'HTTP ' : '').$e->getCode();
-      dyn_log('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} ($code)");
-      Auth::$session->delete();
-      Auth::$signed_in = false;
-      exit(5);
-    }
-  }
-
-  Auth::$signed_in = true;
-  Auth::$session->updating = false;
-  Auth::$session->save();
+  DeviantArt::gracefullyRefreshAccessTokenImmediately(AND_DIE);
 }
 catch (Throwable $e){
   dyn_log('Uncaught error: '.$e->getMessage());

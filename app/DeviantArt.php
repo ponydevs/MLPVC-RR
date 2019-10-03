@@ -10,6 +10,7 @@ use App\Models\User;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use RuntimeException;
 use SeinopSys\OAuth2\Client\Provider\DeviantArtProvider;
+use Throwable;
 
 class DeviantArt {
   // oAuth Error Response Messages \\
@@ -391,6 +392,29 @@ class DeviantArt {
    */
   public static function getAccessToken(string $code):?User {
     return self::_authRequest(false, $code);
+  }
+
+  public static function gracefullyRefreshAccessTokenImmediately(bool $die_on_failure = false): bool {
+    if (Auth::$session->expired){
+      try {
+        self::refreshAccessToken();
+      }
+      catch (Throwable $e){
+        $code = ($e instanceof CURLRequestException ? 'HTTP ' : '').$e->getCode();
+        dyn_log('Session refresh failed for '.Auth::$user->name.' ('.Auth::$user->id.") | {$e->getMessage()} ($code)");
+        Auth::$session->delete();
+        Auth::$signed_in = false;
+        Auth::$user = null;
+        if ($die_on_failure)
+          exit(5);
+        else return false;
+      }
+    }
+
+    Auth::$signed_in = true;
+    Auth::$session->updating = false;
+    Auth::$session->save();
+    return true;
   }
 
   public static function isImageAvailable(string $url, array $onlyFails = [], &$response_code = null):bool {

@@ -558,19 +558,24 @@
   let $sessionUpdating = $('.logged-in.updating-session');
   if ($sessionUpdating.length){
     const sessionRefTitle = 'Session refresh issue';
-    const pollInterval = 1000;
+    let pollInterval = 1000, attempt = 0;
     setTimeout(function poll() {
       if ($sessionUpdating === null)
         return;
 
-      $.API.get('/da-auth/status', function() {
+      $.API.get(`/da-auth/status?attempt=${attempt++}`, function() {
         if ($sessionUpdating === null)
           return;
 
         if (!this.status) return $.Dialog.fail(sessionRefTitle, this.message);
 
-        if (this.updating === true)
-          return setTimeout(poll, pollInterval);
+        if (this.updating === true) {
+          if (this.retries_remaining > 0) {
+            pollInterval *= 1.1;
+            setTimeout(poll, pollInterval);
+          }
+          return;
+        }
 
         if (this.deleted === true)
           $.Dialog.fail(sessionRefTitle, 'We couldn\'t refresh your DeviantArt session automatically so you have been signed out. Due to elements on the page assuming you are signed in some actions will not work as expected until the page is reloaded.');
