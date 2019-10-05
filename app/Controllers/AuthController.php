@@ -17,13 +17,18 @@ use App\Users;
 
 class AuthController extends Controller {
   public function begin() {
-    $authUrl = DeviantArt::OAuthProviderInstance()->getAuthorizationUrl([
-      'scope' => ['user', 'browse'],
+    $auth_url = DeviantArt::OAuthProviderInstance()->getAuthorizationUrl([
+      'scope' => ['user'],
     ]);
     if (isset($_GET['return']) && CoreUtils::isURLSafe($_GET['return']))
       Auth::$session->setData('return_url', $_GET['return']);
     Auth::$session->setData('da_state', DeviantArt::OAuthProviderInstance()->getState());
-    HTTP::softRedirect($authUrl, 'Creating session');
+    HTTP::softRedirect($auth_url, "Checking whether you're logged in");
+  }
+
+  public function softEnd() {
+    $query_string = ltrim($_SERVER['QUERY_STRING'], '?');
+    HTTP::softRedirect("/da-auth/end?$query_string", 'Creating session');
   }
 
   public function end() {

@@ -497,33 +497,33 @@
       $.Navigation.reload(true);
     };
     try {
-      popup = $.popupOpenCenter('/da-auth/begin', 'login', '450', '580');
+      popup = $.popupOpenCenter('/da-auth/begin', 'login', '1024', '768');
       opened = new Date();
     } catch (e){ /* ignore */
     }
     // http://stackoverflow.com/a/25643792
     let onWindowClosed = function() {
-      opened = null;
-
-      if (success)
+      if (success) {
+        opened = null;
         return;
-
-      if (document.cookie.indexOf('auth=') !== -1)
-        return window.__authCallback;
+      }
 
       // If the popup was open for less than Xms then try a redirect
       // Otherwise it was likely closed intentionally
       if (opened && (new Date()).getTime() - opened.getTime() < 4000){
+        opened = null;
         $.Dialog.confirm(false, 'Popup-based login failed.');
         redirect();
         return;
       }
 
+      opened = null;
       $.Dialog.close();
       $this.enable();
     };
     closeCheck = setInterval(function() {
       try {
+        console.log(popup.closed);
         if (!popup || popup.closed){
           clearInterval(closeCheck);
           onWindowClosed();

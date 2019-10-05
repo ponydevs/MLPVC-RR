@@ -51,7 +51,7 @@ $router->map('GET', '/[cg]/[guide:guide]?/tags/[i]?', 'TagController#list');
 $router->map('GET', '/[cg]/cutiemark/[i:id].svg', 'CutiemarkController#view');
 $router->map('GET', '/[cg]/cutiemark/download/[i:id][adi]?', 'CutiemarkController#download');
 # AuthController
-$router->map('GET', '/da-auth', 'AuthController#end');
+$router->map('GET', '/da-auth', 'AuthController#softEnd');
 $router->map('GET', '/da-auth/begin', 'AuthController#begin');
 $router->map('GET', '/da-auth/end', 'AuthController#end');
 # DiscordAuthController

@@ -162,8 +162,8 @@ class HTTP {
    */
   private static function _redirect(string $url, int $code):void {
     header("Location: $url", true, $code);
-    $urlenc = CoreUtils::aposEncode($url);
-    die("<h1>HTTP $code ".self::STATUS_CODES[$code]."</h1><p>Click <a href='$urlenc'>here</a> if you aren't redirected.</p>");
+    $url_enc = CoreUtils::aposEncode($url);
+    die("<h1>HTTP $code ".self::STATUS_CODES[$code]."</h1><p>Click <a href='$url_enc'>here</a> if you aren't redirected.</p>");
   }
 
   /**
