@@ -163,6 +163,9 @@ class PostTest extends TestCase {
     $post->label = 'Fluttershy (face-only)';
     $result = $post->processLabel();
     self::assertEquals('Fluttershy (<strong class="color-darkblue">face only</strong>)', $result, 'Transformation of "face-only" fails');
+    $post->label = 'All characters (separate vectors)';
+    $result = $post->processLabel();
+    self::assertEquals('All characters (<strong class="color-darkblue">separate vectors</strong>)', $result, 'Transformation of "separate vectors" fails');
 
     $post = new Post([
       'label' => 'Fluttershy\'s cottage',

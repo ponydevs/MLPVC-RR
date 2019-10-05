@@ -227,7 +227,21 @@
     let $previewIMG = $formImgPreview.children('img');
     if ($previewIMG.length === 0)
       $previewIMG = $(new Image()).appendTo($formImgPreview);
-    $(`#${kind}-btn`).on('click', function() {
+    const $kindBtn = $(`#${kind}-btn`);
+    $kindBtn.on('click', function() {
+      if ($kindBtn.hasClass('signed-out')) {
+        $.Dialog.confirm(`Make a ${kind}`, `You need to log in to make a ${kind}. Would you like to log in using your DeviantArt account now?`, confirmed => {
+          if (!confirmed)
+            return;
+
+          try {
+            sessionStorage.setItem(`make_${kind}`, 'true');
+          } catch (e) { /* ignore */ }
+          $('#signin').trigger('click');
+        });
+        return;
+      }
+
       if ($form.hasClass('hidden'))
         $form.removeClass('hidden');
 
@@ -235,6 +249,13 @@
         $formDescInput.focus();
       });
     });
+    try {
+      if (sessionStorage.getItem(`make_${kind}`) === 'true') {
+        sessionStorage.removeItem(`make_${kind}`);
+        $kindBtn.trigger('click');
+      }
+    } catch (e) { /* ignore */ }
+
     if (kind === 'reservation') $('#add-reservation-btn').on('click', function() {
       let $AddReservationForm = $.mk('form', 'add-reservation').html(
         `<div class="notice info">This feature should only be used when the vector was made before the episode was displayed here, and you just want to link the finished vector under the newly posted episode OR if this was a request, but the original image (screencap) is no longer available, only the finished vector.</div>
@@ -424,7 +445,7 @@
 
               if (view) return;
 
-              $(`#${kind}-btn`).trigger('click');
+              $kindBtn.trigger('click');
             });
             window.location.hash = '#' + id;
           }]);

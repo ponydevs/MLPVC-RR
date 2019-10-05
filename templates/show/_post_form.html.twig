@@ -9,6 +9,25 @@
       <span>{{ Type }} description ({{ optional }}3-255 chars)</span>
       <input type="text" name="label" pattern="^.{3,255}$" maxlength="255"{{ cond_requried }}>
     </label>
+    <div  class="notice info">
+      <p>
+        {%- if kind == 'request' -%}
+          For best results, include any of the following keywords that apply, so our members know how to fulfill your request.
+        {%- else -%}
+          Include any of the following keywords that apply, so the other members know which part of the image you plan to complete.
+        {%- endif %}
+          These words will be highlighted once your {{ kind }} is posted to make them stand out (parenthesis not required).
+        {% if kind == 'request' -%}
+          Please use a longer description to specify what you'd like instead of requesting the same image multiple times.
+        {%- endif -%}
+      </p>
+      <ul class="mb-0">
+        <li><strong>full body:</strong> For screenshots where the character(s) have their feet/tail obstructed by other objects or cut off by the frame, attempt to recreate the missing parts. Example: <em>Applejack (<strong class="color-darkblue">full body</strong>)</em></li>
+        <li><strong>face only:</strong> Only the face needs to be vectorized from the specific screenshot. Neck can be cut off or omitted entirely. Example: <em>Twilight's <strong class="color-darkblue">face only</strong></em></li>
+        <li><strong>full/entire scene:</strong> The entire screencap (including the background) should be vectorized, not just a specific character or an object. Example: <em>Pinkie Pie in a cave (<strong class="color-darkblue">full scene</strong>)</em></li>
+        <li><strong>separate vectors:</strong> When a screencap contains multiple characters/objects, provide separate vectors for each of them while filling in any details that might be obscured by each other. Be sure to include "full body" if details not obstructed by the other characters are also needed (e.g. legs cut off by the frame). Example: <em>The CMC (<strong class="color-darkblue">separate vectors</strong></em>)</li>
+      </ul>
+    </div>
     <label>
       <span>Image URL</span>
       <input type="text" name="image_url" pattern="^.{2,255}$" required>

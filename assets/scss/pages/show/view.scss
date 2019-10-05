@@ -412,51 +412,53 @@
     }
 
     &.posts {
-      ul {
-        @extend %post-ul;
-        @extend %post-ul-fluidbox;
+      .finished, .unfinished {
+        ul {
+          @extend %post-ul;
+          @extend %post-ul-fluidbox;
 
-        > .deleted, > .broken {
-          position: relative;
+          > .deleted, > .broken {
+            position: relative;
 
-          &, * {
-            cursor: pointer !important;
+            &, * {
+              cursor: pointer !important;
+            }
+
+            > * {
+              visibility: hidden !important;
+              transition: none !important;
+            }
+
+            &:before {
+              position: absolute;
+              top: calc(50% - .5em);
+              left: 0;
+              width: 100%;
+              color: inherit;
+              font-size: 100px;
+              line-height: 1em;
+              font-family: Typicons;
+            }
           }
 
-          > * {
-            visibility: hidden !important;
-            transition: none !important;
+          > .deleted {
+            border-color: $NRed !important;
+            color: $NRed !important;
+            background: $NRedBG !important;
+
+            &:before {
+              content: "\e123"
+            }
           }
 
-          &:before {
-            position: absolute;
-            top: calc(50% - .5em);
-            left: 0;
-            width: 100%;
-            color: inherit;
-            font-size: 100px;
-            line-height: 1em;
-            font-family: Typicons;
-          }
-        }
+          > .broken {
+            border-color: $NOrange !important;
+            color: $NOrange !important;
+            background: $NOrangeBG !important;
 
-        > .deleted {
-          border-color: $NRed !important;
-          color: $NRed !important;
-          background: $NRedBG !important;
-
-          &:before {
-            content: "\e123"
-          }
-        }
-
-        > .broken {
-          border-color: $NOrange !important;
-          color: $NOrange !important;
-          background: $NOrangeBG !important;
-
-          &:before {
-            content: "\e0cd"
+            &:before {
+              content: "\e0cd"
+            }
           }
         }
       }
@@ -491,7 +493,7 @@
 
       input {
         width: 100%;
-        max-width: 300px;
+        box-sizing: border-box;
       }
     }
 

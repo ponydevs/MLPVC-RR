@@ -4,7 +4,8 @@
 {% set can_request = permission('user') and user_pref('a_postreq', current_user) %}
 <section id="requests" class="posts">
   <div class="unfinished">
-    {% set make_request = can_request ? '<button id="request-btn" class="green">Make a request</button>' : '' %}
+    {% set signed_out_class = can_request or signed_in ? '' : ' signed-out' %}
+    {% set make_request = '<button id="request-btn" class="green' ~ signed_out_class ~ '">Make a request</button>' %}
     <h2>List of Requests{{ make_request }}</h2>
     {# @var posts \App\Models\Post[] #}
     {% for g, posts in arranged.unfinished %}
@@ -31,7 +32,5 @@
       {% endif -%}
     </ul>
   </div>
-  {% if can_request %}
-    {% include 'show/_post_form.html.twig' with {'kind':'request'} %}
-  {% endif %}
+  {% include 'show/_post_form.html.twig' with {'kind':'request'} %}
 </section>
