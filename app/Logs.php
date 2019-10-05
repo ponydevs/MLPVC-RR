@@ -32,6 +32,7 @@ class Logs {
     'da_namechange' => 'Username change detected',
     'video_broken' => 'Broken video removed',
     'cm_modify' => 'Appearance CM edited',
+    'cm_delete' => 'Appearance CM deleted',
     'post_break' => 'Post image broken',
     'post_fix' => 'Broken post restored',
     'staff_limits' => 'Account limitation changed',
@@ -279,8 +280,34 @@ class Logs {
         $olddata = !empty($data['olddata']) ? JSON::encode($data['olddata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '';
         $newdata = !empty($data['newdata']) ? JSON::encode($data['newdata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '';
         if ($olddata || $newdata){
-          $diff = self::diff($olddata, $newdata, 'block', new FineDiff\Granularity\Sentence());
-          $diff = preg_replace(new RegExp('([^/>])(d[a-z\d]{6,})'), '$1<a href="http://fav.me/$2">$2</a>', $diff);
+          $diff = self::diff($olddata, $newdata, 'block', new FineDiff\Granularity\Sentence(), function ($diff) {
+            return preg_replace(new RegExp('([^/>a-z\d])(d[a-z\d]{6,})'), '$1<a href="http://fav.me/$2">$2</a>', $diff);
+          });
+          $details[] = ['Metadata changes', $diff];
+        }
+      break;
+      case 'cm_delete':
+        $details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
+
+        if (isset($data['data'])){
+          $data['data'] = JSON::decode($data['data']);
+        }
+
+          foreach ($data['data'] as $k => $_){
+            foreach ($data['data'][$k] as $i => $v){
+              if (!isset($v) || $i === 'id'){
+                unset($data['data'][$k][$i]);
+                continue;
+              }
+            }
+          }
+
+        $olddata = !empty($data['data']) ? JSON::encode($data['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '';
+        $newdata = '';
+        if ($olddata || $newdata){
+          $diff = self::diff($olddata, $newdata, 'block', new FineDiff\Granularity\Sentence(), function ($diff) {
+            return preg_replace(new RegExp('([^/>a-z\d])(d[a-z\d]{6,})'), '$1<a href="http://fav.me/$2">$2</a>', $diff);
+          });
           $details[] = ['Metadata changes', $diff];
         }
       break;
@@ -484,12 +511,16 @@ class Logs {
     ]))->out();
   }
 
-  public static function diff(string $old, string $new, $type = 'inline', FineDiff\Granularity\Granularity $gran = null):string {
+  public static function diff(string $old, string $new, $type = 'inline', FineDiff\Granularity\Granularity $gran = null, ?callable $transformer = null):string {
     if (!isset($gran))
       $gran = new FineDiff\Granularity\Character;
     else if ($gran instanceof FineDiff\Granularity\Paragraph)
       $old .= "\n";
     $diff = str_replace('\n', "\n", (new FineDiff\Diff($gran))->render($old, $new));
+
+    if ($transformer !== null) {
+      $diff = $transformer($diff);
+    }
 
     return "<span class='btn darkblue view-switch' title='Left/Right click to change view mode'>diff</span><div class='log-diff $type'>$diff</div>";
   }

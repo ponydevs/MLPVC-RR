@@ -147,10 +147,10 @@
       state = $btn.attr('class').match(/\b(darkblue|green|red)\b/)[1],
       nextState;
 
-    for (let i = 0; i < viewStates.length; i++){
-      if (viewStates[i].className === state)
+    viewStates.forEach((viewState, i) => {
+      if (viewState.className === state)
         nextState = viewStates[i + (backwards ? -1 : 1)];
-    }
+    });
     if (typeof nextState === 'undefined')
       nextState = viewStates[backwards ? viewStates.length - 1 : 0];
 
