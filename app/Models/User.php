@@ -188,6 +188,9 @@ class User extends AbstractUser implements Linkable {
     $old_role = (string)$this->role;
     if ($old_role === 'developer'){
       $old_role = GlobalSettings::get('dev_role_label');
+      if ($old_role === $new_role) {
+        return true;
+      }
       $response = GlobalSettings::set('dev_role_label', $new_role);
     }
     else {
