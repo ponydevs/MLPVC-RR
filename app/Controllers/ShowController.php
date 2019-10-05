@@ -559,7 +559,7 @@ class ShowController extends Controller {
 
     $next_episode = DB::$instance->where('season is not null AND airs > now()')->orderBy('airs')->getOne(Show::$table_name);
     if (empty($next_episode))
-      Response::fail("The show is on hiatus, the next episode's title and air date is unknown.");
+      Response::fail("The show is on hiatus, the next episode's title and air date is unknown.", ['hiatus' => true]);
 
     Response::done($next_episode->to_array([
       'only' => ['episode', 'airs', 'season', 'title'],
