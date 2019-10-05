@@ -178,31 +178,37 @@ class User extends AbstractUser implements Linkable {
   /**
    * Update a user's role
    *
-   * @param string $newrole
+   * @param string $new_role
    * @param bool   $skip_log
    *
    * @return bool
    * @throws \RuntimeException
    */
-  public function updateRole(string $newrole, bool $skip_log = false):bool {
-    $oldrole = (string)$this->role;
-    $this->role = $newrole;
-    $response = $this->save();
+  public function updateRole(string $new_role, bool $skip_log = false):bool {
+    $old_role = (string)$this->role;
+    if ($old_role === 'developer'){
+      $old_role = GlobalSettings::get('dev_role_label');
+      $response = GlobalSettings::set('dev_role_label', $new_role);
+    }
+    else {
+      $this->role = $new_role;
+      $response = $this->save();
+    }
 
     if ($response && !$skip_log){
       Logs::logAction('rolechange', [
         'target' => $this->id,
-        'oldrole' => $oldrole,
-        'newrole' => $newrole,
+        'oldrole' => $old_role,
+        'newrole' => $new_role,
       ]);
     }
-    $oldrole_is_staff = Permission::sufficient('staff', $oldrole);
-    $newrole_is_staff = Permission::sufficient('staff', $newrole);
-    if ($oldrole_is_staff && !$newrole_is_staff){
+    $old_role_is_staff = Permission::sufficient('staff', $old_role);
+    $new_role_is_staff = Permission::sufficient('staff', $new_role);
+    if ($old_role_is_staff && !$new_role_is_staff){
       PCGSlotHistory::record($this->id, 'staff_leave');
       $this->syncPCGSlotCount();
     }
-    else if (!$oldrole_is_staff && $newrole_is_staff){
+    else if (!$old_role_is_staff && $new_role_is_staff){
       PCGSlotHistory::record($this->id, 'staff_join');
       $this->syncPCGSlotCount();
     }
@@ -703,5 +709,18 @@ class User extends AbstractUser implements Linkable {
 
   public function getOpenSubmissionsURL() {
     return "https://www.deviantart.com/mlp-vectorclub/messages/?log_type=1&instigator_module_type=21&instigator_username={$this->name}&bpp_status=3&display_order=desc";
+  }
+
+  public function assignCorrectRole(): bool {
+    $club_member = $this->isClubMember();
+    if ($club_member){
+      $club_role = DeviantArt::getClubRole($this);
+      if ($club_role !== $this->role)
+        return $this->updateRole($club_role);
+    }
+    else if (Permission::sufficient('member', $this->role))
+      return $this->updateRole('user');
+
+    return true;
   }
 }

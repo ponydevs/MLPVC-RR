@@ -231,7 +231,7 @@ class DeviantArt {
     catch (CURLRequestException $e){
       if ($e->getCode() === 404)
         throw new RuntimeException('Image not found. The URL may be incorrect or the image has been deleted.', 404);
-      else throw new RuntimeException("Image could not be retrieved; ".$e->getMessage(), $e->getCode());
+      else throw new RuntimeException('Image could not be retrieved; '.$e->getMessage(), $e->getCode());
     }
 
     return $data;
@@ -243,8 +243,8 @@ class DeviantArt {
     $provider = self::OAuthProviderInstance();
     try {
       if ($refresh)
-        $accessToken = $provider->getAccessToken('refresh_token', ['refresh_token' => $code]);
-      else $accessToken = $provider->getAccessToken('authorization_code', ['code' => $code, 'scope' => ['user', 'browse']]);
+        $access_token = $provider->getAccessToken('refresh_token', ['refresh_token' => $code]);
+      else $access_token = $provider->getAccessToken('authorization_code', ['code' => $code, 'scope' => ['user', 'browse']]);
     }
     catch (\TypeError $e){
       $trace = $e->getTrace();
@@ -284,78 +284,55 @@ class DeviantArt {
     }
 
     /** @noinspection PhpParamsInspection */
-    $userdata = $provider->getResourceOwner($accessToken)->toArray();
+    $da_user_data = $provider->getResourceOwner($access_token)->toArray();
+    $user_id = strtolower($da_user_data['userid']);
 
-    /** @var $User Models\User */
-    $User = User::find($userdata['userid']);
-    // TODO When re-implementing banning, this can be re-used
-    /* if (isset($User->role) && $User->role === 'ban'){
-      $_GET['error'] = 'user_banned';
-      $BanReason = DB::$instance
-        ->where('target', $User->id)
-        ->orderBy('entryid')
-        ->getOne('log__banish');
-      if (!empty($BanReason))
-        $_GET['error_description'] = $BanReason['reason'];
+    /** @var $user Models\User */
+    $user = User::find($user_id);
 
-      return null;
-    } */
-
-    $UserID = strtolower($userdata['userid']);
-    $UserData = [
-      'name' => $userdata['username'],
-      'avatar_url' => URL::makeHttps($userdata['usericon']),
+    $local_user_data = [
+      'name' => $da_user_data['username'],
+      'avatar_url' => URL::makeHttps($da_user_data['usericon']),
     ];
-    $AuthData = [
-      'access' => $accessToken->getToken(),
-      'refresh' => $accessToken->getRefreshToken(),
-      'expires' => date('c', $accessToken->getExpires()),
-      'scope' => $accessToken->getValues()['scope'],
+    $auth_data = [
+      'access' => $access_token->getToken(),
+      'refresh' => $access_token->getRefreshToken(),
+      'expires' => date('c', $access_token->getExpires()),
+      'scope' => $access_token->getValues()['scope'],
     ];
 
     if (!$refresh){
       $cookie = Session::generateCookie();
-      $AuthData['token'] = CoreUtils::sha256($cookie);
+      $auth_data['token'] = CoreUtils::sha256($cookie);
 
       $browser = CoreUtils::detectBrowser();
       foreach ($browser as $k => $v)
         if (!empty($v))
-          $AuthData[$k] = $v;
+          $auth_data[$k] = $v;
     }
 
-    if (empty($User)){
-      $MoreInfo = [
-        'id' => $UserID,
+    $first_user = false;
+    if (empty($user)){
+      $more_info = [
+        'id' => $user_id,
         'role' => 'user',
       ];
-      $makeDev = !DB::$instance->has('users');
-      if ($makeDev)
-        $MoreInfo['id'] = strtoupper($MoreInfo['id']);
-      $Insert = array_merge($UserData, $MoreInfo);
-      $User = User::create($Insert);
-      if ($makeDev)
-        $User->updateRole('developer');
-    }
-    else $User->update_attributes($UserData);
-
-    // TODO Fix dynamic role assignment
-    /* if (empty($makeDev) && !empty($User)){
-      $clubmember = $User->isClubMember();
-      $permmember = Permission::sufficient('member', $User->role);
-      if ($clubmember && !$permmember) {
-        $club_role = self::getClubRole($User);
-        if ($club_role !== null)
-          $User->updateRole($club_role);
+      $user = User::create(array_merge($local_user_data, $more_info));
+      if (User::count() === 1) {
+        $first_user = true;
+        $user->updateRole('developer');
       }
-      else if (!$clubmember && $permmember)
-        $User->updateRole('user');
-    } */
+    }
+    else $user->update_attributes($local_user_data);
+
+    if (!$first_user)
+      $user->assignCorrectRole();
 
     if ($refresh)
-      Auth::$session->update_attributes($AuthData);
+      Auth::$session->update_attributes($auth_data);
     else {
-      Session::delete_all(['conditions' => ['user_id = ? AND scope != ?', $User->id, $AuthData['scope']]]);
-      $update = array_merge($AuthData, ['user_id' => $User->id]);
+      Session::delete_all(['conditions' => ['user_id = ? AND scope != ?', $user->id, $auth_data['scope']]]);
+      $update = array_merge($auth_data, ['user_id' => $user->id]);
       if (Auth::$session !== null){
         Auth::$session->update_attributes($update);
         Auth::$session->unsetData('refresh_attempts');
@@ -363,11 +340,13 @@ class DeviantArt {
       else Auth::$session = Session::create($update);
     }
 
-    Session::delete_all(['conditions' => ["user_id = ? AND last_visit <= NOW() - INTERVAL '1 MONTH'", $User->id]]);
+    // Clear out old sessions
+    Session::delete_all(['conditions' => ["user_id = ? AND last_visit <= NOW() - INTERVAL '1 MONTH'", $user->id]]);
+
     if (!$refresh)
       Session::setCookie($cookie);
 
-    return $User ?? null;
+    return $user ?? null;
   }
 
   /**
@@ -430,7 +409,7 @@ class DeviantArt {
    * @return array [ 'username' => 'role', ... ]
    */
   public static function getMemberList():array {
-    $cache = CachedFile::init(FSPATH.'members.json.gz', Time::IN_SECONDS['minute'] * 10);
+    $cache = CachedFile::init(FSPATH.'members.json', Time::IN_SECONDS['minute'] * 10);
     if (!$cache->expired())
       return $cache->read();
 
@@ -450,9 +429,18 @@ class DeviantArt {
         $username = $node->lastChild->firstChild->textContent;
         $usernames[$username] = 'member';
       }
-      $xp = new \DOMXPath($dom);
-      $more = $xp->query('//ul[@class="pages"]/li[@class="next"]');
-      if ($more->length === 0 || $more->item(0)->firstChild->getAttribute('class') === 'disabled')
+      $more = null;
+      foreach ($dom->getElementsByTagName('li') as $li) {
+        /** @var \DOMElement $li */
+        $text = trim($li->textContent);
+        if ($text !== 'Next')
+          continue;
+
+        $more = $li;
+        break;
+      }
+      $class_attr = $more !== null ? $more->getAttribute('class') : '';
+      if (stripos($class_attr, 'disabled') !== false)
         break;
       $off += 100;
     }
@@ -465,16 +453,37 @@ class DeviantArt {
     $stafflist = str_replace('id="gmi-GAboutUsModule_Item"', '', $stafflist);
     $dom = new \DOMDocument('1.0', 'UTF-8');
     $dom->loadHTML($stafflist);
-    $xp = new \DOMXPath($dom);
-    $admins = $xp->query('//div[@id="aboutus"]//div[@class="user-name"]');
-    /** @var $revroles array */
-    $revroles = array_flip(Permission::ROLES_ASSOC);
+    /** @var \DOMElement[] $admins */
+    $admins = [];
+    foreach ($dom->getElementsByTagName('div') as $div){
+      if ($div->getAttribute('class') !== 'user-name')
+        continue;
+
+      $admins[] = $div;
+    }
+    /** @var $flipped_roles array */
+    $flipped_roles = array_flip(Permission::ROLES_ASSOC);
     foreach ($admins as $admin){
-      $username = $admin->childNodes->item(1)->firstChild->textContent;
-      $role = CoreUtils::makeSingular($admin->childNodes->item(3)->textContent);
-      if (!isset($revroles[$role]))
+      $role = null;
+      $username = null;
+      foreach ($admin->childNodes as $child) {
+        /** @var \DOMElement $child */
+        if ($child instanceof \DOMText || strtolower($child->nodeName) === 'br')
+          continue;
+
+        $class_attr = $child->getAttribute('class');
+        if ($class_attr === 'role') {
+          $role = CoreUtils::makeSingular($child->textContent);
+        } else if (stripos($class_attr, 'username-with-symbol') !== false) {
+          $username = $child->childNodes->item(0)->textContent;
+        }
+
+        if (isset($username, $role))
+          break;
+      }
+      if (!isset($flipped_roles[$role]))
         throw new RuntimeException("Role $role not reversible");
-      $usernames[$username] = $revroles[$role];
+      $usernames[$username] = $flipped_roles[$role];
     }
 
     $cache->update($usernames);
@@ -497,9 +506,6 @@ class DeviantArt {
    * @return null|string
    */
   public static function getClubRoleByName(string $username):?string {
-    // Temporarily disabled
-    return null;
-
     $usernames = self::getMemberList();
 
     return $usernames[$username] ?? null;

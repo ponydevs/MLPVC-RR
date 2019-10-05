@@ -8,13 +8,13 @@ class CachedFile {
     TYPE_JSON = 2,
     TYPE_LOCK = 3;
   /** @var string */
-  private $_path;
+  private $path;
   /** @var int */
-  private $_max_age, $_type;
+  private $max_age, $type;
   /** @var bool */
-  private $_gzip = false;
+  private $gzip = false;
   /** @var callable */
-  private $_expiry_check;
+  private $expiry_check;
 
   /**
    * @param string       $path    Path to the cache file
@@ -22,34 +22,34 @@ class CachedFile {
    *                              Passing a callable will run that instead when the expires() method is called
    */
   public function __construct(string $path, $max_age) {
-    $this->_path = $path;
+    $this->path = $path;
     if (\is_int($max_age))
-      $this->_max_age = $max_age;
+      $this->max_age = $max_age;
     else if (\is_callable($max_age))
-      $this->_expiry_check = $max_age;
+      $this->expiry_check = $max_age;
     else throw new \InvalidArgumentException(__METHOD__.' $max_age should be int or callable, '.\gettype($max_age).' given');
-    $this->_guessType();
+    $this->guessType();
   }
 
-  private function _guessType() {
-    $pathParts = explode('.', $this->_path);
-    $lastPart = strtolower(\array_slice($pathParts, -1, 1)[0]);
-    if ($lastPart === 'gz'){
-      $this->_gzip = true;
-      $ext = strtolower(\array_slice($pathParts, -2, 1)[0]);
+  private function guessType() {
+    $path_parts = explode('.', $this->path);
+    $last_part = strtolower(\array_slice($path_parts, -1, 1)[0]);
+    if ($last_part === 'gz'){
+      $this->gzip = true;
+      $ext = strtolower(\array_slice($path_parts, -2, 1)[0]);
     }
-    else $ext = $lastPart;
+    else $ext = $last_part;
     switch ($ext){
       case 'json':
-        $this->_type = self::TYPE_JSON;
+        $this->type = self::TYPE_JSON;
       break;
       case 'lock':
-        $this->_type = self::TYPE_LOCK;
+        $this->type = self::TYPE_LOCK;
         // Lock files cannot be compressed because they're empty
-        $this->_gzip = false;
+        $this->gzip = false;
       break;
       default:
-        $this->_type = self::TYPE_ANY;
+        $this->type = self::TYPE_ANY;
     }
   }
 
@@ -72,32 +72,32 @@ class CachedFile {
   }
 
   public function expired():bool {
-    if ($this->_max_age !== null)
-      return !file_exists($this->_path) || ($this->_max_age !== -1 && time() - filemtime($this->_path) > $this->_max_age);
-    else return (bool)($this->_expiry_check)($this->_path);
+    if ($this->max_age !== null)
+      return !file_exists($this->path) || ($this->max_age !== -1 && time() - filemtime($this->path) > $this->max_age);
+    else return (bool)($this->expiry_check)($this->path);
   }
 
   /**
    * Overwrites the cache file with the provided data
    *
-   * @param mixed $data Type depens on file type
+   * @param mixed $data Type depends on file type
    */
   public function update($data) {
-    switch ($this->_type){
+    switch ($this->type){
       case self::TYPE_JSON:
         $data = JSON::encode($data);
       break;
     }
 
-    CoreUtils::createFoldersFor($this->_path);
+    CoreUtils::createFoldersFor($this->path);
 
-    if ($this->_gzip){
-      $handle = gzopen($this->_path, 'w9');
+    if ($this->gzip){
+      $handle = gzopen($this->path, 'w9');
       gzwrite($handle, $data);
       gzclose($handle);
-      File::chmod($this->_path);
+      File::chmod($this->path);
     }
-    else File::put($this->_path, $data);
+    else File::put($this->path, $data);
   }
 
   /**
@@ -106,14 +106,14 @@ class CachedFile {
    * @return bool Whether the change was successful
    */
   public function bump() {
-    CoreUtils::createFoldersFor($this->_path);
-    if (!file_exists($this->_path)){
-      if ($this->_type !== self::TYPE_LOCK)
-        throw new \RuntimeException("Trying to bump non-existant non-lock file {$this->_path}, use ".__CLASS__.'->update instead!');
+    CoreUtils::createFoldersFor($this->path);
+    if (!file_exists($this->path)){
+      if ($this->type !== self::TYPE_LOCK)
+        throw new \RuntimeException("Trying to bump non-existant non-lock file {$this->path}, use ".__CLASS__.'->update instead!');
 
-      return File::put($this->_path, '') !== false;
+      return File::put($this->path, '') !== false;
     }
-    else return touch($this->_path) !== false;
+    else return touch($this->path) !== false;
   }
 
   /**
@@ -123,11 +123,11 @@ class CachedFile {
    * @return mixed
    */
   public function read() {
-    $data = $this->_gzip
-      ? CoreUtils::gzread($this->_path)
-      : File::get($this->_path);
+    $data = $this->gzip
+      ? CoreUtils::gzread($this->path)
+      : File::get($this->path);
 
-    switch ($this->_type){
+    switch ($this->type){
       case self::TYPE_JSON:
         $data = JSON::decode($data);
       break;

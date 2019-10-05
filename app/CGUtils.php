@@ -611,7 +611,7 @@ class CGUtils {
 
   public static function getSpriteImageMap($AppearanceID) {
     $png_path = SPRITE_PATH."$AppearanceID.png";
-    $map_file = new CachedFile(FSPATH."cg_render/appearance/$AppearanceID/linedata.json.gz", static function ($path) use ($png_path) {
+    $map_file = CachedFile::init(FSPATH."cg_render/appearance/$AppearanceID/linedata.json.gz", static function ($path) use ($png_path) {
       return !file_exists($path) || filemtime($path) < filemtime($png_path);
     });
     if (!$map_file->expired())

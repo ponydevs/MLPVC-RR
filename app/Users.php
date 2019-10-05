@@ -101,12 +101,9 @@ class Users {
 
       $db_user->name = $user_data['username'];
       $db_user->avatar_url = URL::makeHttps($user_data['usericon']);
+      $save_success = $db_user->assignCorrectRole();
 
-      $club_role = DeviantArt::getClubRoleByName($user_data['username']);
-      if (!empty($club_role))
-        $db_user->role = $club_role;
-
-      if (!$db_user->save())
+      if (!$save_success)
         throw new \RuntimeException('Saving user data failed'.(Permission::sufficient('developer') ? ': '.DB::$instance->getLastError() : ''));
 
       if (!$user_exists)
