@@ -279,9 +279,6 @@ class PersonalGuideController extends ColorGuideController {
   }
 
   public function pointsApi($params) {
-    if ($this->action !== 'GET')
-      CoreUtils::notAllowed();
-
     if (Permission::insufficient('staff'))
       Response::fail();
 
