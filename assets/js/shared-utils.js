@@ -715,8 +715,11 @@
     if (options === null)
       return this.data(sortableDataKey);
     else if (options === 'destroy'){
-      this.data(sortableDataKey).destroy();
-      this.removeData(sortableDataKey);
+      const data = this.data(sortableDataKey);
+      if (data) {
+        data.destroy();
+        this.removeData(sortableDataKey);
+      }
     }
 
     // eslint-disable-next-line new-cap
