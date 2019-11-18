@@ -182,9 +182,6 @@ class DiscordAuthController extends Controller {
   }
 
   public function botUpdate($params) {
-    if ($_SERVER['REMOTE_ADDR'] !== '127.0.0.1')
-      CoreUtils::notFound();
-
     if (!hash_equals(CoreUtils::env('WS_SERVER_KEY'), $_POST['key']))
       CoreUtils::noPerm();
 
