@@ -92,7 +92,8 @@
             continue;
         }
 
-        pixels.push(new Pixel(...imgData.data.slice(ptr, ptr + 4)));
+        const [r, g, b, a] = imgData.data.slice(ptr, ptr + 4);
+        pixels.push(new Pixel(r, g, b, a / 255));
       }
 
       return pixels;
@@ -123,7 +124,7 @@
         b += pixel.blue;
         a += pixel.alpha;
       });
-      return new Pixel(Math.round(r / l), Math.round(g / l), Math.round(b / l), Math.round((a / l) / 255));
+      return new Pixel(Math.round(r / l), Math.round(g / l), Math.round(b / l), Math.round(a / l));
     }
 
     #getImageData() {
@@ -1224,7 +1225,7 @@
       this._pickingSizeIncreaseInterval = undefined;
       this._$decreasePickingSize = $.mk('button').attr({
         'class': 'fa fa-minus-circle',
-        'data-info': 'Decrease picking area size (Down Arrow)',
+        'data-info': 'Decrease picking area size (Down Arrow). Hold Ctrl to decrease in steps of 1 instead of 5.',
       }).on('mousedown touchstart', e => {
         e.preventDefault();
 
@@ -1233,9 +1234,10 @@
           this._pickingSizeIncreaseInterval = undefined;
         }
         const square = !e.altKey;
-        this.decreasePickingSize(square, false);
+        const singleStep = e.ctrlKey;
+        this.decreasePickingSize(square, false, singleStep);
         this._pickingSizeDecreaseInterval = setInterval(() => {
-          this.decreasePickingSize(square, false);
+          this.decreasePickingSize(square, false, singleStep);
         }, 150);
       }).on('mouseup mouseleave touchend', () => {
         if (typeof this._pickingSizeDecreaseInterval === 'undefined')
@@ -1246,7 +1248,7 @@
       });
       this._$increasePickingSize = $.mk('button').attr({
         'class': 'fa fa-plus-circle',
-        'data-info': 'Increase picking area size (Up Arrow)',
+        'data-info': 'Increase picking area size (Up Arrow). Hold Ctrl to increase in steps of 1 instead of 5.',
       }).on('mousedown touchstart', e => {
         e.preventDefault();
 
@@ -1255,9 +1257,10 @@
           this._pickingSizeDecreaseInterval = undefined;
         }
         const square = !e.altKey;
-        this.increasePickingSize(square, false);
+        const singleStep = e.ctrlKey;
+        this.increasePickingSize(square, false, singleStep);
         this._pickingSizeIncreaseInterval = setInterval(() => {
-          this.increasePickingSize(square, false);
+          this.increasePickingSize(square, false, singleStep);
         }, 150);
       }).on('mouseup mouseleave touchend', () => {
         if (typeof this._pickingSizeIncreaseInterval === 'undefined')
@@ -1668,14 +1671,17 @@
       activeTab.savePickingSize(this._pickingAreaSize);
     }
 
-    decreasePickingSize(square, drawCursor = true) {
-      this.setPickingSize(this._pickingAreaSize - 5);
+    decreasePickingSize(square, drawCursor = true, singleStep = false) {
+      this.setPickingSize(this._pickingAreaSize - (singleStep ? 1 : 5));
       if (drawCursor)
         this.drawPickerCursor(square);
     }
 
-    increasePickingSize(square, drawCursor = true) {
-      this.setPickingSize(this._pickingAreaSize === 1 ? 5 : this._pickingAreaSize + 5);
+    increasePickingSize(square, drawCursor = true, singleStep = false) {
+      const newSize = singleStep
+        ? this._pickingAreaSize + 1
+        : (this._pickingAreaSize < 5 ? 5 : this._pickingAreaSize + 5);
+      this.setPickingSize(newSize);
       if (drawCursor)
         this.drawPickerCursor(square);
     }
@@ -1754,7 +1760,7 @@
           let avgColorBackground, avgColorString;
           if (hexOut){
             avgColorBackground = $.RGBAColor.fromRGB(avgColor).toString();
-            avgColorString = avgColorHex + (avgColor.alpha !== 255 ? ` @ ${$.roundTo((avgColor.alpha / 255) * 100, 2)}%` : '');
+            avgColorString = avgColorHex + (avgColor.alpha !== 1 ? ` @ ${$.roundTo((avgColor.alpha) * 100, 2)}%` : '');
           }
           else {
             avgColorBackground = $.RGBAColor.fromRGB(avgColor).toRGBString();
@@ -2276,16 +2282,16 @@
         ColorPicker.getInstance().switchTool(Tools.zoom);
         break;
       case Key.UpArrow:
-        if (e.ctrlKey || e.altKey)
+        if (e.altKey)
           return;
 
-        ColorPicker.getInstance().increasePickingSize(!e.altKey);
+        ColorPicker.getInstance().increasePickingSize(!e.altKey, true, e.ctrlKey);
         break;
       case Key.DownArrow:
-        if (e.ctrlKey || e.altKey)
+        if (e.altKey)
           return;
 
-        ColorPicker.getInstance().decreasePickingSize(!e.altKey);
+        ColorPicker.getInstance().decreasePickingSize(!e.altKey, true, e.ctrlKey);
         break;
       case Key.Delete:
         if (e.ctrlKey || e.altKey)
