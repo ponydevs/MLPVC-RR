@@ -18,7 +18,6 @@ define('SVGO_BINARY', PROJPATH.'node_modules/svgo/bin/svgo');
 define('DISCORD_INVITE_LINK', 'https://discord.gg/hrffb8k');
 define('CSP_NONCE', base64_encode(random_bytes(16)));
 define('API_SCHEMA_PATH', 'dist/api.json');
-define('PHP_ACTIVERECORD_AUTOLOAD_DISABLE', true);
 
 require __DIR__.'/init/env.php';
 
