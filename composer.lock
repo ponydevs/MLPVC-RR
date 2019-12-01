@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7295a298035e8af042fc78220b63d7b9",
+    "content-hash": "5b0f24710c5b7b2d5a11a46e6ec6eb87",
     "packages": [
         {
             "name": "airmanbzh/php-html-generator",

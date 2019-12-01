@@ -50,13 +50,13 @@
     "php-tmdb/api": "~2.1",
     "symfony/dotenv": "^4.1",
     "whichbrowser/parser": "^2.0",
-    "zircote/swagger-php": "^3.0"
+    "zircote/swagger-php": "^3.0",
+    "psr/log": "^1.1"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
     "phpunit/phpunit": "8.*",
-    "kint-php/kint": "^2.2",
-    "psr/log": "^1.1"
+    "kint-php/kint": "^2.2"
   },
   "autoload": {
     "psr-4": {
