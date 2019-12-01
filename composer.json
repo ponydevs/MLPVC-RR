@@ -50,13 +50,13 @@
     "php-tmdb/api": "~2.1",
     "symfony/dotenv": "^4.1",
     "whichbrowser/parser": "^2.0",
-    "zircote/swagger-php": "^3.0",
-    "psr/log": "^1.1"
+    "zircote/swagger-php": "^3.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
     "phpunit/phpunit": "8.*",
-    "kint-php/kint": "^2.2"
+    "kint-php/kint": "^2.2",
+    "psr/log": "^1.1"
   },
   "autoload": {
     "psr-4": {
@@ -68,5 +68,10 @@
       "type": "vcs",
       "url": "https://github.com/SeinopSys/php-activerecord"
     }
-  ]
+  ],
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  }
 }
