@@ -1558,4 +1558,10 @@ class CoreUtils {
       header_remove($header_name);
     }
   }
+
+  public static function logToTtyOrFile(string $path, string $message):void {
+    if (posix_isatty(STDOUT))
+      echo "$message\n";
+    else self::error_log(basename($path).": $message");
+  }
 }
