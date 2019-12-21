@@ -1,7 +1,5 @@
 <?php
 
-define('PHP_ACTIVERECORD_AUTOLOAD_DISABLE', true);
-
 require __DIR__.'/../config/init.php';
 
 use App\CoreUtils;
