@@ -207,7 +207,7 @@ class UserController extends Controller {
     if (Permission::insufficient($target_user->role))
       Response::fail('You can only modify the group of users who are in the same or a lower-level group than you');
 
-    $new_role = (new Input('newrole', 'role', [
+    $new_role = (new Input('value', 'role', [
       Input::CUSTOM_ERROR_MESSAGES => [
         Input::ERROR_MISSING => 'The new group is not specified',
         Input::ERROR_INVALID => 'The specified group (@value) does not exist',
