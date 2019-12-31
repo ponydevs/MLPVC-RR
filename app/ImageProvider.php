@@ -128,30 +128,30 @@ class ImageProvider {
         $this->_checkImageAllowed($this->fullsize);
       break;
       case 'derpibooru':
-        $Data = @File::get("http://derpibooru.org/$id.json");
+        $data = @File::get("http://derpibooru.org//api/v1/json/images/$id");
 
-        if (empty($Data))
+        if (empty($data))
           throw new \RuntimeException('The requested image could not be found on Derpibooru');
-        $Data = JSON::decode($Data);
+        $data = JSON::decode($data);
 
-        if (isset($Data['duplicate_of'])){
-          $this->setUrls($Data['duplicate_of']);
+        if (isset($data['duplicate_of'])){
+          $this->setUrls($data['duplicate_of']);
 
           return;
         }
 
-        if (!isset($Data['is_rendered'])){
-          CoreUtils::error_log("Invalid Derpibooru response for ID $id\n".var_export($Data, true));
+        if (!isset($data['is_rendered'])){
+          CoreUtils::error_log("Invalid Derpibooru response for ID $id\n".var_export($data, true));
           throw new \RuntimeException('Derpibooru returned an invalid API response. This issue has been logged, please <a class="send-feedback">remind us</a> to take a look.');
         }
 
-        if (!$Data['is_rendered'])
+        if (!$data['is_rendered'])
           throw new \RuntimeException("The image was found but it hasn't been rendered yet. Please wait for it to render and try again shortly.");
 
-        $this->fullsize = $Data['representations']['full'];
-        $this->preview = $Data['representations']['small'];
+        $this->fullsize = $data['representations']['full'];
+        $this->preview = $data['representations']['small'];
 
-        $this->_checkImageAllowed($this->fullsize, $Data['mime_type']);
+        $this->_checkImageAllowed($this->fullsize, $data['mime_type']);
       break;
       case 'puush':
         $path = "http://puu.sh/{$id}";
