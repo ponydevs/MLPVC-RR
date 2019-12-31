@@ -128,7 +128,7 @@ class ImageProvider {
         $this->_checkImageAllowed($this->fullsize);
       break;
       case 'derpibooru':
-        $data = @File::get("http://derpibooru.org//api/v1/json/images/$id");
+        $data = @File::get("http://derpibooru.org/api/v1/json/images/$id");
 
         if (empty($data))
           throw new \RuntimeException('The requested image could not be found on Derpibooru');
@@ -140,30 +140,18 @@ class ImageProvider {
           return;
         }
 
-        if (!isset($data['is_rendered'])){
+        if (!isset($data['processed'])){
           CoreUtils::error_log("Invalid Derpibooru response for ID $id\n".var_export($data, true));
           throw new \RuntimeException('Derpibooru returned an invalid API response. This issue has been logged, please <a class="send-feedback">remind us</a> to take a look.');
         }
 
-        if (!$data['is_rendered'])
+        if (!$data['processed'])
           throw new \RuntimeException("The image was found but it hasn't been rendered yet. Please wait for it to render and try again shortly.");
 
         $this->fullsize = $data['representations']['full'];
         $this->preview = $data['representations']['small'];
 
         $this->_checkImageAllowed($this->fullsize, $data['mime_type']);
-      break;
-      case 'puush':
-        $path = "http://puu.sh/{$id}";
-        $image = @File::get($path);
-
-        if (empty($image) || $image === 'That puush could not be found.')
-          throw new \RuntimeException('The requested image could not be found on Puu.sh');
-        if ($image === 'You do not have access to view that puush.')
-          throw new \RuntimeException('The requested image is a private Puu.sh and the token is missing from the URL');
-
-        $this->_checkImageAllowed($path);
-        $this->fullsize = $this->preview = $path;
       break;
       case 'dA':
       case 'fav.me':
