@@ -701,22 +701,23 @@ class CGUtils {
 
   /**
    * @param string      $CGPath
-   * @param int         $AppearanceID
+   * @param Appearance  $appearance
    * @param string|null $size
-   * @param bool        $pcg
    */
-  public static function renderSpritePNG($CGPath, $AppearanceID, bool $pcg, $size = null):void {
+  public static function renderSpritePNG($CGPath, $appearance, $size = null):void {
+    $appearance_id = $appearance->id;
+    $pcg = $appearance->owner_id !== null;
     if ($size !== null)
       $size = (int)$size;
     if (!\in_array($size, Appearance::SPRITE_SIZES, true))
       $size = 600;
     $outsize = $size === Appearance::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
 
-    $output_path = FSPATH."cg_render/appearance/{$AppearanceID}/sprite$outsize.png";
+    $output_path = FSPATH."cg_render/appearance/{$appearance_id}/sprite$outsize.png";
     if (file_exists($output_path))
       Image::outputPNGAPI(null, $output_path);
 
-    $map = self::getSpriteImageMap($AppearanceID, $pcg);
+    $map = self::getSpriteImageMap($appearance_id, $pcg);
 
     $size_factor = (int)round($size / 300);
     $png = Image::createTransparent($map['width'] * $size_factor, $map['height'] * $size_factor);

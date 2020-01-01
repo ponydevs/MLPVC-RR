@@ -665,7 +665,7 @@ class AppearancesController extends APIController {
 
     self::_handlePrivateAppearanceCheck($appearance);
 
-    CGUtils::renderSpritePNG($this->path, $appearance->id, $_GET['size'] ?? null);
+    CGUtils::renderSpritePNG($this->path, $appearance, $_GET['size'] ?? null);
   }
 
   /**
