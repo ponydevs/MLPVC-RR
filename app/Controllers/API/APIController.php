@@ -50,6 +50,11 @@ use App\CoreUtils;
  *   format="binary",
  * )
  * @OA\Schema(
+ *   schema="SVGFile",
+ *   type="string",
+ *   format="svg",
+ * )
+ * @OA\Schema(
  *   schema="QueryString",
  *   type="string",
  *   default=""

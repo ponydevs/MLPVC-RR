@@ -689,8 +689,7 @@ class AppearancesController extends APIController {
    *     description="The appearance preview image",
    *     @OA\MediaType(
    *       mediaType="image/svg+xml",
-   *       type="string",
-   *       format="svg",
+   *       @OA\Schema(ref="#/components/schemas/SVGFile")
    *     )
    *   ),
    *   @OA\Response(
