@@ -240,7 +240,7 @@ class AppearancesController extends APIController {
 
     $value = ['hash' => $a->sprite_hash];
     if ($with_preview)
-      $value['preview'] = CoreUtils::bin2dataUri(CGUtils::generateSpritePreview($a->id), 'image/png');
+      $value['preview'] = CoreUtils::bin2dataUri(CGUtils::generateSpritePreview($a->id, $a->owner_id !== null), 'image/png');
 
     return $value;
   }
@@ -666,5 +666,62 @@ class AppearancesController extends APIController {
     self::_handlePrivateAppearanceCheck($appearance);
 
     CGUtils::renderSpritePNG($this->path, $appearance->id, $_GET['size'] ?? null);
+  }
+
+  /**
+   * @OA\Get(
+   *   path="/appearances/{id}/preview",
+   *   description="Fetch the preview file associated with the appearance",
+   *   tags={"color guide", "appearances"},
+   *   @OA\Parameter(
+   *     in="path",
+   *     name="id",
+   *     required=true,
+   *     @OA\Schema(ref="#/components/schemas/ZeroBasedId")
+   *   ),
+   *   @OA\Parameter(
+   *     in="query",
+   *     name="token",
+   *     @OA\Schema(ref="#/components/schemas/AppearanceToken")
+   *   ),
+   *   @OA\Response(
+   *     response="200",
+   *     description="The appearance preview image",
+   *     @OA\MediaType(
+   *       mediaType="image/svg+xml",
+   *       type="string",
+   *       format="svg",
+   *     )
+   *   ),
+   *   @OA\Response(
+   *     response="404",
+   *     description="Appearance missing",
+   *     @OA\JsonContent(
+   *       allOf={
+   *         @OA\Schema(ref="#/components/schemas/ServerResponse")
+   *       }
+   *     )
+   *   ),
+   *   @OA\Response(
+   *     response="403",
+   *     description="You don't have permission to access this resource",
+   *     @OA\JsonContent(
+   *       allOf={
+   *         @OA\Schema(ref="#/components/schemas/ServerResponse")
+   *       }
+   *     )
+   *   )
+   * )
+   * @param array $params
+   */
+  function preview(array $params) {
+    if ($this->action !== 'GET')
+      CoreUtils::notAllowed();
+
+    $appearance = self::_resolveAppearance($params);
+
+    self::_handlePrivateAppearanceCheck($appearance);
+
+    CGUtils::renderPreviewSVG($appearance);
   }
 }

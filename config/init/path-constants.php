@@ -5,7 +5,8 @@ define('APPATH', PROJPATH.'public/');
 define('FSPATH', PROJPATH.'fs/');
 define('INCPATH', PROJPATH.'includes/');
 define('CONFPATH', PROJPATH.'config/');
-define('SPRITE_PATH', FSPATH.'sprites/');
+define('PUBLIC_SPRITE_PATH', FSPATH.'sprites/');
+define('PRIVATE_SPRITE_PATH', FSPATH.'sprites_pcg/');
 
 // Set new file & folder permissions \\
 define('FILE_PERM', 0660);

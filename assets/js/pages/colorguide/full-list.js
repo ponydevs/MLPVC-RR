@@ -32,18 +32,30 @@
       const el = entry.target;
       io.unobserve(el);
 
-      const img = new Image();
-      img.src = el.dataset.src;
-      $(img).on('load', function() {
-        if (el.classList.contains('border'))
-          img.classList.add('border');
-        $(el).replaceWith(img).css('opacity', 0).animate({ opacity: 1 }, 300);
-      });
+      (function redo(datasetKey) {
+        const isFallback = datasetKey === 'fallback';
+        const newUrl = el.dataset[datasetKey];
+        if (typeof newUrl !== 'string') {
+          console.error(`Cannot load url el.dataset[${datasetKey}] of`, el);
+          return;
+        }
+        const img = new Image();
+        img.src = newUrl;
+        $(img).on('load', function() {
+          if (el.classList.contains('border') || isFallback)
+            img.classList.add('border');
+          $(el).replaceWith(img).css('opacity', 0).animate({ opacity: 1 }, 300);
+        }).on('error', () => {
+          if (isFallback)
+            return;
+          redo('fallback');
+        });
+      })('src');
     });
   });
 
   function reobserve() {
-    $fullList.find('section > ul .image-promise').each((_, el) => io.observe(el));
+    $fullList.find('section > ul .appearance-preview-promise').each((_, el) => io.observe(el));
   }
 
   reobserve();

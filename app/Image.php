@@ -327,18 +327,27 @@ class Image {
    * @param string   $path
    */
   public static function outputPNGAPI($resource, $path):void {
-    self::_outputRaw($resource, $path, function ($fp, $fd) { imagepng($fd, $fp, 9, PNG_NO_FILTER); }, 'png');
+    self::_store($resource, $path, function ($fp, $fd) { imagepng($fd, $fp, 9, PNG_NO_FILTER); }, 'png', true);
   }
 
   /**
    * Output svg file to browser
    *
-   * @param string|null $svgdata
-   * @param string      $path
-   * @param string      $FileRelPath
+   * @param string|null $svg_data
+   * @param string      $file_path
+   * @param string      $file_rel_path
+   * @param bool        $output
    */
-  public static function outputSVG($svgdata, $path, $FileRelPath):void {
-    self::_output($svgdata, $path, $FileRelPath, function ($fp, $fd) { File::put($fp, $fd); }, 'svg+xml');
+  public static function outputSVG(?string $svg_data, string $file_path, string $file_rel_path, bool $output = true):void {
+    $writer = fn($fp, $fd) => File::put($fp, $fd);
+    $content_type = 'svg+xml';
+    if ($output) self::_output($svg_data, $file_path, $file_rel_path, $writer, $content_type);
+    else {
+      if ($svg_data === null)
+        throw new \Exception('$svg_data cannot be null when $output is false');
+      /** @var string $svg_data */
+      self::_store($svg_data, $file_path, $writer, $content_type, $output);
+    }
   }
 
   /**
@@ -363,7 +372,7 @@ class Image {
     $path_build->append_query_param('t', $last_modified);
 
     CoreUtils::fixPath($path_build, $remove_params);
-    self::_outputRaw($data, $file_path, $write_callback, $content_type);
+    self::_store($data, $file_path, $write_callback, $content_type, true);
   }
 
   /**
@@ -371,18 +380,27 @@ class Image {
    * @param string          $file_path
    * @param callable        $write_callback
    * @param string          $content_type
+   * @param bool            $output
+   *
+   * @throws \Exception
    */
-  private static function _outputRaw($data, $file_path, $write_callback, $content_type):void {
+  private static function _store($data, $file_path, $write_callback, $content_type, bool $output):void {
     $development = !CoreUtils::env('PRODUCTION');
     $last_modified = file_exists($file_path) ? filemtime($file_path) : time();
+    $data_is_not_null = $data !== null;
 
-    if ($data !== null){
+
+    if ($data_is_not_null){
       CoreUtils::createFoldersFor($file_path);
       $write_callback($file_path, $data);
       if (file_exists($file_path))
         File::chmod($file_path);
     }
-    else if ($development){
+
+    if (!$output)
+      return;
+
+    if (!$data_is_not_null && $development){
       $since = $_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? null;
       if ($since){
         $since_ts = strtotime($since);

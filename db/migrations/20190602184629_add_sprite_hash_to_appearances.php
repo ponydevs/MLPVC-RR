@@ -9,14 +9,21 @@ class AddSpriteHashToAppearances extends AbstractMigration {
       ->addColumn('sprite_hash', 'string', ['length' => 32, 'null' => true])
       ->update();
 
-    if (is_dir(SPRITE_PATH)){
-      foreach (new DirectoryIterator(SPRITE_PATH) as $file_info){
+    $iterator = function(DirectoryIterator $file_info) {
+      $filename = $file_info->getFilename();
+      $appearance_id = explode('.', $filename)[0];
+      $hash = CoreUtils::generateFileHash($file_info->getPathname());
+      $this->query("UPDATE appearances SET sprite_hash = '$hash' WHERE id = $appearance_id");
+    };
+
+    foreach ([PUBLIC_SPRITE_PATH, PRIVATE_SPRITE_PATH] as $path) {
+      if (!is_dir($path))
+        continue;
+
+      foreach (new DirectoryIterator($path) as $file_info){
         if ($file_info->isDot()) continue;
 
-        $filename = $file_info->getFilename();
-        $appearance_id = explode('.', $filename)[0];
-        $hash = CoreUtils::generateFileHash($file_info->getPathname());
-        $this->query("UPDATE appearances SET sprite_hash = '$hash' WHERE id = $appearance_id");
+        $iterator($file_info);
       }
     }
   }

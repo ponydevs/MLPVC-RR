@@ -78,6 +78,14 @@ class CGUtils {
    */
   public static function getFullListHTML(array $appearances, $order_by, bool $eqg, $wrap = WRAP):string {
     $HTML = '';
+    $char_tags = DB::$instance->query(
+        "SELECT t.name, tg.appearance_id FROM tags t
+				LEFT JOIN tagged tg ON tg.tag_id = t.id OR tg.tag_id = t.synonym_of
+				WHERE t.type = 'char'");
+		$indexed_char_tags = array_reduce($char_tags, function($acc, $tag) {
+		  $acc[$tag['appearance_id']][] = $tag['name'];
+      return $acc;
+		}, []);
     if (!empty($appearances)){
       $previews = !empty(UserPrefs::get('cg_fulllstprev'));
       switch ($order_by){
@@ -95,7 +103,7 @@ class CGUtils {
               $PrevFirstLetter = $FirstLetter;
               $HTML .= "<section><h2>$PrevFirstLetter</h2><ul>";
             }
-            self::_processFullListLink($p, $HTML, $previews);
+            self::_processFullListLink($p, $HTML, $indexed_char_tags[$p->id] ?? [], $previews);
           }
         break;
         case 'relevance':
@@ -107,7 +115,7 @@ class CGUtils {
             $HTML .= "<section><h2>$CategoryName<button class='sort-alpha blue typcn typcn-sort-alphabetically hidden' title='Sort this section alphabetically'></button></h2><ul>";
             /** @var $Sorted Appearance[][] */
             foreach ($Sorted[$Category] as $p)
-              self::_processFullListLink($p, $HTML, $previews);
+              self::_processFullListLink($p, $HTML, $indexed_char_tags[$p->id] ?? [], $previews);
             $HTML .= '</ul></section>';
           }
         break;
@@ -115,7 +123,7 @@ class CGUtils {
           $HTML .= "<section><ul class='justify'>";
           /** @var $Sorted Appearance[][] */
           foreach ($appearances as $p)
-            self::_processFullListLink($p, $HTML, $previews);
+            self::_processFullListLink($p, $HTML, $indexed_char_tags[$p->id] ?? [], $previews);
           $HTML .= '</ul></section>';
         break;
         default:
@@ -129,9 +137,10 @@ class CGUtils {
   /**
    * @param Appearance $appearance
    * @param string     $HTML
+   * @param string[]   $char_tags Contains the names of all characters tags on the appearance
    * @param bool       $previews
    */
-  private static function _processFullListLink(Appearance $appearance, &$HTML, bool $previews):void {
+  private static function _processFullListLink(Appearance $appearance, &$HTML, $char_tags, bool $previews):void {
     $sprite = '';
     $url = "/cg/v/{$appearance->id}-".$appearance->getURLSafeLabel();
     if (Permission::sufficient('staff')){
@@ -148,21 +157,19 @@ class CGUtils {
     }
 
     if ($previews){
+      $has_sprite = $appearance->hasSprite();
       $preview_url = $appearance->getPreviewURL();
-      $preview = $appearance->getSpriteURL(Appearance::SPRITE_SIZES['SOURCE'], $preview_url);
-      $class = $preview_url === $preview ? ' border' : '';
-      $preview = "<span class='image-promise$class' data-src='$preview'></span>";
-      $charTags = DB::$instance->query(
-        "SELECT t.name FROM tags t
-				LEFT JOIN tagged tg ON tg.tag_id = t.id OR tg.tag_id = t.synonym_of
-				WHERE tg.appearance_id = ? AND t.type = 'char'", [$appearance->id]);
-      if (!empty($charTags)){
+      $static_sprite_url = $appearance->getStaticSpriteURL();
+      $attributes = $has_sprite ? "data-src='$static_sprite_url' data-fallback='$preview_url'" : "data-src='$preview_url'";
+      $class = !$has_sprite ? ' border' : '';
+      $preview = "<span class='appearance-preview-promise$class' $attributes></span>";
+      if (!empty($char_tags)){
         $aka = [];
-        foreach ($charTags as $t){
-          if (CoreUtils::contains($appearance->label, $t['name'], false))
+        foreach ($char_tags as $t){
+          if (CoreUtils::contains($appearance->label, $t, false))
             continue;
 
-          $aka[] = $t['name'];
+          $aka[] = $t;
         }
         if (!empty($aka))
           $aka = '<span class="aka"><abbr title="Also known as">AKA</abbr> '.implode(', ', $aka).'</span>';
@@ -421,7 +428,7 @@ class CGUtils {
     $column_right_margin = 20;
 
     // Detect if sprite exists and adjust image size & define starting positions
-    $sprite_path = SPRITE_PATH."{$Appearance->id}.png";
+    $sprite_path = $Appearance->getSpriteFilePath()."{$Appearance->id}.png";
     $sprite_exists = file_exists($sprite_path);
     if ($sprite_exists){
       /** @var $sprite_size int[]|false */
@@ -609,8 +616,8 @@ class CGUtils {
     }
   }
 
-  public static function getSpriteImageMap($AppearanceID) {
-    $png_path = SPRITE_PATH."$AppearanceID.png";
+  public static function getSpriteImageMap($AppearanceID, $pcg) {
+    $png_path = self::getSpriteFilePath($AppearanceID, $pcg);
     $map_file = CachedFile::init(FSPATH."cg_render/appearance/$AppearanceID/linedata.json.gz", static function ($path) use ($png_path) {
       return !file_exists($path) || filemtime($path) < filemtime($png_path);
     });
@@ -696,10 +703,11 @@ class CGUtils {
    * @param string      $CGPath
    * @param int         $AppearanceID
    * @param string|null $size
+   * @param bool        $pcg
    */
-  public static function renderSpritePNG($CGPath, $AppearanceID, $size = null):void {
+  public static function renderSpritePNG($CGPath, $AppearanceID, bool $pcg, $size = null):void {
     if ($size !== null)
-      $size = \intval($size, 10);
+      $size = (int)$size;
     if (!\in_array($size, Appearance::SPRITE_SIZES, true))
       $size = 600;
     $outsize = $size === Appearance::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
@@ -708,7 +716,7 @@ class CGUtils {
     if (file_exists($output_path))
       Image::outputPNGAPI(null, $output_path);
 
-    $map = self::getSpriteImageMap($AppearanceID);
+    $map = self::getSpriteImageMap($AppearanceID, $pcg);
 
     $size_factor = (int)round($size / 300);
     $png = Image::createTransparent($map['width'] * $size_factor, $map['height'] * $size_factor);
@@ -721,13 +729,15 @@ class CGUtils {
     Image::outputPNGAPI($png, $output_path);
   }
 
-  public static function renderSpriteSVG($CGPath, $AppearanceID):void {
-    $map = self::getSpriteImageMap($AppearanceID);
+  public static function renderSpriteSVG($CGPath, Appearance $appearance):void {
+    $appearance_id = $appearance->id;
+    $pcg = $appearance->owner_id !== null;
+    $map = self::getSpriteImageMap($appearance_id, $pcg);
     if (empty($map))
       CoreUtils::notFound();
 
-    $output_path = FSPATH."cg_render/appearance/{$AppearanceID}/sprite.svg";
-    $file_rel_path = "$CGPath/v/{$AppearanceID}s.svg";
+    $output_path = FSPATH."cg_render/appearance/{$appearance_id}/sprite.svg";
+    $file_rel_path = "$CGPath/v/{$appearance_id}s.svg";
     if (file_exists($output_path))
       Image::outputSVG(null, $output_path, $file_rel_path);
 
@@ -758,16 +768,19 @@ class CGUtils {
     Image::outputSVG($svg, $output_path, $file_rel_path);
   }
 
-  public const PREVIEW_SVG_PATH = FSPATH.'cg_render/appearance/#/preview.svg';
+  public const PREVIEW_SVG_PATH = FSPATH.'appearance_previews/#.svg';
 
-  public static function renderPreviewSVG($CGPath, Appearance $Appearance):void {
-    $output_path = str_replace('#', $Appearance->id, self::PREVIEW_SVG_PATH);
-    $file_rel_path = "$CGPath/v/{$Appearance->id}p.svg";
-    if (file_exists($output_path))
+  public static function renderPreviewSVG(Appearance $Appearance, bool $output = true):void {
+    $preview_colors = self::colorsToHexes($Appearance->getPreviewColors());
+    $output_path = str_replace('#', self::hexesToFilename($preview_colors), self::PREVIEW_SVG_PATH);
+    $file_rel_path = "/img/appearance_previews/{$Appearance->id}.svg";
+    if (file_exists($output_path)) {
+      if (!$output)
+        return;
       Image::outputSVG(null, $output_path, $file_rel_path);
+    }
 
     $svg = '';
-    $preview_colors = $Appearance->preview_colors;
     $color_count = \count($preview_colors);
     switch ($color_count){
       case 0:
@@ -775,13 +788,13 @@ class CGUtils {
       break;
       case 1:
         $svg .= /** @lang XML */
-          "<rect x='0' y='0' width='2' height='2' fill='{$preview_colors[0]->hex}'/>";
+          "<rect x='0' y='0' width='2' height='2' fill='{$preview_colors[0]}'/>";
       break;
       case 3:
         $svg .= <<<SVG
-					<rect x='0' y='0' width='2' height='2' fill='{$preview_colors[0]['hex']}'/>
-					<rect x='0' y='1' width='1' height='1' fill='{$preview_colors[1]['hex']}'/>
-					<rect x='1' y='1' width='1' height='1' fill='{$preview_colors[2]['hex']}'/>
+					<rect x='0' y='0' width='2' height='2' fill='{$preview_colors[0]}'/>
+					<rect x='0' y='1' width='1' height='1' fill='{$preview_colors[1]}'/>
+					<rect x='1' y='1' width='1' height='1' fill='{$preview_colors[2]}'/>
 					SVG;
       break;
       case 2:
@@ -791,7 +804,7 @@ class CGUtils {
         foreach ($preview_colors as $c){
           $w = $x % 2 === 0 ? 2 : 1;
           $h = $y % 2 === 0 ? 2 : 1;
-          $svg .= "<rect x='$x' y='$y' width='$w' height='$h' fill='{$c->hex}'/>";
+          $svg .= "<rect x='$x' y='$y' width='$w' height='$h' fill='{$c}'/>";
           $x++;
           if ($x > 1){
             $x = 0;
@@ -808,7 +821,7 @@ class CGUtils {
     $svg = /** @lang XML */
       "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='.5 .5 1 1' enable-background='new 0 0 2 2' xml:space='preserve' preserveAspectRatio='xMidYMid slice'>$svg</svg>";
 
-    Image::outputSVG($svg, $output_path, $file_rel_path);
+    Image::outputSVG($svg, $output_path, $file_rel_path, $output);
   }
 
   /**
@@ -1320,15 +1333,16 @@ class CGUtils {
   }
 
   /**
-   * @param int $appearance_id
+   * @param int  $appearance_id
+   * @param bool $pcg
    *
    * @return string Binary data of the preview image
    */
-  static function generateSpritePreview(int $appearance_id):string {
+  static function generateSpritePreview(int $appearance_id, bool $pcg):string {
     $output_path = self::getSpritePreviewPath($appearance_id);
 
     if (!file_exists($output_path)){
-      $sprite_path = self::getSpriteFilePath($appearance_id);
+      $sprite_path = self::getSpriteFilePath($appearance_id, $pcg);
       if (!file_exists($sprite_path)){
         throw new \RuntimeException("Trying to get preview for non-exiting sprite file $sprite_path");
       }
@@ -1351,7 +1365,36 @@ class CGUtils {
     return file_get_contents($output_path);
   }
 
-  static function getSpriteFilePath(int $appearance_id):string {
-    return SPRITE_PATH."$appearance_id.png";
+  static function getSpriteFilePath(int $appearance_id, bool $pcg):string {
+    return ($pcg ? PRIVATE_SPRITE_PATH : PUBLIC_SPRITE_PATH)."$appearance_id.png";
+  }
+
+  /**
+   * @param Color[] $hexes Array of Color objects
+   *
+   * @return string[] Array of hex values
+   */
+  static function colorsToHexes(array $hexes):array {
+    return array_map(fn(Color $el) => $el->hex, $hexes);
+  }
+
+  /**
+   * @param string[]|Color[] $hexes Array of hex color values e.g. ["#AAAAAA", "#BBBBBB", "#CCCCCC"]
+   *
+   * @return string Concatenated color values in the format "AAAAAA_BBBBBB_CCCCCC"
+   */
+  static function hexesToFilename(array $hexes):string {
+    $output = [];
+    /** @var string|Color $color */
+    foreach ($hexes as $color){
+      if ($color instanceof Color)
+        $output[] = $color->hex;
+      else $output[] = $color;
+    }
+
+    if (empty($output))
+      return 'default';
+
+    return str_replace('#', '', implode('_', $output));
   }
 }

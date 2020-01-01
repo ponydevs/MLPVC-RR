@@ -41,7 +41,6 @@ use SeinopSys\RGBAColor;
  * @property ColorGroup[]        $color_groups        (Via relations)
  * @property User|null           $owner               (Via relations)
  * @property RelatedAppearance[] $related_appearances (Via relations)
- * @property Color[]             $preview_colors      (Via relations)
  * @property Tag[]               $tags                (Via relations)
  * @property Tagged[]            $tagged              (Via relations)
  * @property MajorChange[]       $major_changes       (Via relations)
@@ -88,11 +87,12 @@ class Appearance extends NSModel implements Linkable {
 
   public static $before_save = ['render_notes'];
 
-  /** @return Color[] */
-  public function get_preview_colors() {
-    if ($this->private)
-      return [];
-
+  /**
+   * Ensure that this is only called after user is authenticated as we would leak colors otherwise
+   *
+   * @return Color[]
+   */
+  public function getPreviewColors() {
     /** @var $arr Color[] */
     $arr = DB::$instance->setModel(Color::class)->query(
       'SELECT c.hex FROM colors c
@@ -196,6 +196,15 @@ class Appearance extends NSModel implements Linkable {
     }
 
     return $fallback;
+  }
+
+  public function getStaticSpriteURL() {
+    $url = new NSUriBuilder("/img/sprites/{$this->id}.png");
+    $sprite_hash = $this->sprite_hash ?? $this->regenerateSpriteHash();
+    if (!empty($sprite_hash))
+      $url->append_query_param('hash', $sprite_hash);
+
+    return (string)$url;
   }
 
   /**
@@ -439,9 +448,12 @@ class Appearance extends NSModel implements Linkable {
    * @see CGUtils::renderPreviewSVG()
    */
   public function getPreviewURL():string {
-    $path = str_replace('#', $this->id, CGUtils::PREVIEW_SVG_PATH);
-
-    return "/cg/v/{$this->id}p.svg?t=".CoreUtils::filemtime($path);
+    $colors = CGUtils::hexesToFilename(CGUtils::colorsToHexes($this->getPreviewColors()));
+    $path = str_replace('#', $colors, CGUtils::PREVIEW_SVG_PATH);
+    if (!file_exists($path))
+      CGUtils::renderPreviewSVG($this, false);
+    $relative_path = str_replace(FSPATH, '/img/', $path);
+    return "$relative_path?t=".CoreUtils::filemtime($path);
   }
 
   public function getPreviewHTML():string {
@@ -645,7 +657,7 @@ class Appearance extends NSModel implements Linkable {
       return false;
 
     /** @var $SpriteColors int[] */
-    $SpriteColors = array_flip(CGUtils::getSpriteImageMap($this->id)['colors']);
+    $SpriteColors = array_flip(CGUtils::getSpriteImageMap($this->id, $this->owner_id !== null)['colors']);
 
     foreach ($this->getSpriteRelevantColors()[0] as $c){
       if ($c['mandatory'] && !isset($SpriteColors[$c['hex']]))
@@ -946,7 +958,7 @@ class Appearance extends NSModel implements Linkable {
   }
 
   public function getSpriteFilePath() {
-    return CGUtils::getSpriteFilePath($this->id);
+    return CGUtils::getSpriteFilePath($this->id, $this->owner_id !== null);
   }
 
   public function deleteSprite(?string $path = null, bool $silent = false) {

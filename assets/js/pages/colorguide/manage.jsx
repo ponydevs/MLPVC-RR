@@ -57,7 +57,7 @@
 				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide ? 'you and staff' : 'staff'} can see added colors)</label>`,
       ),
     ponyEditorActions = {
-      selectiveWipe: data => e => {
+      selectiveWipe: (data, appearanceID) => e => {
         e.preventDefault();
 
         // TODO Add some toggleable explanations on what each option clears exactly
@@ -158,7 +158,7 @@
               $.mk('button')
                 .attr('class', 'orange typcn typcn-media-eject')
                 .text('Selective wipe')
-                .on('click', ponyEditorActions.selectiveWipe(data)),
+                .on('click', ponyEditorActions.selectiveWipe(data, appearanceID)),
               $.mk('button')
                 .attr({
                   'class': 'darkblue typcn typcn-pencil cg-cm-editor',

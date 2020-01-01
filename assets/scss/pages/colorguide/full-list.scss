@@ -89,13 +89,13 @@
             margin-right: .8em
           }
 
-          img, .image-promise {
+          img, .appearance-preview-promise {
             height: 100px;
             display: block;
             margin: 0 auto 10px;
           }
 
-          .image-promise {
+          .appearance-preview-promise {
             @include loading-indicator(100px, 'roll', .25);
           }
 

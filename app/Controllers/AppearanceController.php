@@ -134,9 +134,9 @@ class AppearanceController extends ColorGuideController {
       case 'svg':
         if (!empty($params['type'])) switch ($params['type']){
           case 's':
-            CGUtils::renderSpriteSVG($this->path, $this->appearance->id);
+            CGUtils::renderSpriteSVG($this->path, $this->appearance);
           case 'p':
-            CGUtils::renderPreviewSVG($this->path, $this->appearance);
+            CGUtils::renderPreviewSVG($this->appearance);
           case 'f':
             CGUtils::renderCMFacingSVG($this->path, $this->appearance);
           default:
@@ -350,7 +350,7 @@ class AppearanceController extends ColorGuideController {
           foreach ($tagged as $tag)
             $tag->updateUses();
 
-        $fpath = SPRITE_PATH."{$this->appearance->id}.png";
+        $fpath = $this->appearance->getSpriteFilePath();
         CoreUtils::deleteFile($fpath);
 
         $this->appearance->clearRenderedImages();
@@ -586,11 +586,12 @@ class AppearanceController extends ColorGuideController {
     $this->load_appearance($params);
     $this->appearance->enforceManagePermission();
 
-    if ($this->appearance->owner_id !== null)
+    $pcg = $this->appearance->owner_id !== null;
+    if ($pcg)
       $params['name'] = $this->appearance->owner->name;
     $this->_initialize($params);
 
-    $Map = CGUtils::getSpriteImageMap($this->appearance->id);
+    $Map = CGUtils::getSpriteImageMap($this->appearance->id, $pcg);
     if (empty($Map))
       CoreUtils::notFound();
 
