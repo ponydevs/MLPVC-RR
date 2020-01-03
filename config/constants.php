@@ -25,8 +25,8 @@ require __DIR__.'/init/env.php';
 # integer
 define('ONLY_REQUESTS', 1); // Posts::Get
 define('ONLY_RESERVATIONS', 2); // Posts::Get
-define('POSTGRES_INTEGER_MIN', -2147483648);
-define('POSTGRES_INTEGER_MAX', 2147483647);
+define('POSTGRES_INTEGER_MIN', -2_147_483_648);
+define('POSTGRES_INTEGER_MAX', 2_147_483_647);
 # string
 define('FULL_LOG_PATH', PROJPATH.'logs/'.CoreUtils::env('LOG_PATH'));
 define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');

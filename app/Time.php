@@ -7,10 +7,10 @@ use Moment\Moment;
 
 class Time {
   public const IN_SECONDS = [
-    'year' => 31557600,
-    'month' => 2592000,
-    'week' => 604800,
-    'day' => 86400,
+    'year' => 31_557_600,
+    'month' => 2_592_000,
+    'week' => 604_800,
+    'day' => 86_400,
     'hour' => 3600,
     'minute' => 60,
     'second' => 1,

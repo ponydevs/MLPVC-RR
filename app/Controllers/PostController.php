@@ -937,12 +937,12 @@ class PostController extends Controller {
       $id = \intval($params['id'], 36);
     }
 
-    if ($id > 2147483647 || $id < 1)
+    if ($id > POSTGRES_INTEGER_MAX || $id < 1)
       CoreUtils::notFound();
 
     /** @var $linked_post Post */
     $linked_post = DB::$instance->where($attr, $id)->getOne('posts');
-    if (empty($linked_post))
+    if ($linked_post === NULL)
       CoreUtils::notFound();
 
     ShowHelper::loadPage($linked_post->show, $linked_post);
