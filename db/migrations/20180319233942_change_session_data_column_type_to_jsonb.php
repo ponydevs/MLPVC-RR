@@ -4,16 +4,10 @@ use Phinx\Migration\AbstractMigration;
 
 class ChangeSessionDataColumnTypeToJsonb extends AbstractMigration {
   public function up() {
-    $this->table('sessions')
-      ->removeColumn('data')
-      ->addColumn('data', 'jsonb', ['null' => true])
-      ->update();
+    $this->query('ALTER COLUMN data TYPE jsonb;');
   }
 
   public function down() {
-    $this->table('sessions')
-      ->removeColumn('data')
-      ->addColumn('data', 'text', ['null' => true])
-      ->update();
+    $this->query('ALTER COLUMN data TYPE text;');
   }
 }
