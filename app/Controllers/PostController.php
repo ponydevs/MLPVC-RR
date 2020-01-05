@@ -312,9 +312,11 @@ class PostController extends Controller {
         $this->post->lock = false;
         $this->post->save();
 
-        PCGSlotHistory::record($this->post->reserved_by, 'post_unapproved', null, [
-          'id' => $this->post->id,
-        ]);
+        // Only deduct points if the reserver isn't also the requester
+        if ($this->post->reserved_by !== $this->post->requested_by)
+          PCGSlotHistory::record($this->post->reserved_by, 'post_unapproved', null, [
+            'id' => $this->post->id,
+          ]);
 
         Posts::sendUpdate($this->post);
 
