@@ -547,8 +547,6 @@ class CoreUtils {
   public static function exportVars(array $export):string {
     if (empty($export))
       return '';
-    /** @noinspection UnknownInspectionInspection */
-    /** @noinspection ES6ConvertVarToLetConst */
     foreach ($export as $name => $value){
       if ($value instanceof RegExp)
         $export[$name] = $value->jsExport();
@@ -820,7 +818,7 @@ class CoreUtils {
     if (!empty($commit_info)){
       [$commit_id, $commit_time] = explode(';', $commit_info);
       $data['commit_id'] = $commit_id;
-      $data['commit_time'] = Time::tag($commit_time);
+      $data['commit_time'] = $commit_time;
     }
 
     return $data;
@@ -970,7 +968,6 @@ class CoreUtils {
    */
   public static function detectBrowser($user_agent = null) {
     $return = ['user_agent' => !empty($user_agent) ? $user_agent : ($_SERVER['HTTP_USER_AGENT'] ?? '')];
-    /** @noinspection PhpComposerExtensionStubsInspection */
     $result = new \WhichBrowser\Parser($return['user_agent']);
     if (!empty($result->browser->name)){
       $return['browser_name'] = $result->browser->name;
