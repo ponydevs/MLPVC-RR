@@ -552,12 +552,14 @@ class Appearance extends NSModel implements Linkable {
 
   public function getElasticMeta() {
     return array_merge(CGUtils::ELASTIC_BASE, [
-      'type' => 'entry',
       'id' => $this->id,
     ]);
   }
 
   public function getElasticBody() {
+    if ($this->owner_id !== null)
+      throw new \RuntimeException('Attempt to get ElasticSearch body for private appearance');
+
     $tags = Tags::getFor($this->id, null, true, true);
     $tag_names = [];
     $tag_ids = [];
@@ -573,7 +575,7 @@ class Appearance extends NSModel implements Linkable {
       'label' => $this->label,
       'order' => $this->order,
       'private' => $this->private,
-      'ishuman' => $this->ishuman,
+      'guide' => $this->ishuman ? 'eqg' : 'pony',
       'tags' => $tag_names,
     ];
   }

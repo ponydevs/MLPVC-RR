@@ -121,9 +121,9 @@ class Appearances {
   }
 
   public static function reindex() {
-    $elasticClient = CoreUtils::elasticClient();
+    $elastic_client = CoreUtils::elasticClient();
     try {
-      $elasticClient->indices()->delete(CGUtils::ELASTIC_BASE);
+      $elastic_client->indices()->delete(CGUtils::ELASTIC_BASE);
     }
     catch (ElasticMissing404Exception $e){
       $message = JSON::decode($e->getMessage());
@@ -138,20 +138,17 @@ class Appearances {
     $params = array_merge(CGUtils::ELASTIC_BASE, [
       'body' => [
         'mappings' => [
-          'entry' => [
-            '_all' => ['enabled' => false],
-            'properties' => [
-              'label' => [
-                'type' => 'text',
-                'analyzer' => 'overkill',
-              ],
-              'order' => ['type' => 'integer'],
-              'ishuman' => ['type' => 'boolean'],
-              'private' => ['type' => 'boolean'],
-              'tags' => [
-                'type' => 'text',
-                'analyzer' => 'overkill',
-              ],
+          'properties' => [
+            'label' => [
+              'type' => 'text',
+              'analyzer' => 'overkill',
+            ],
+            'order' => ['type' => 'integer'],
+            'guide' => ['type' => 'keyword'],
+            'private' => ['type' => 'boolean'],
+            'tags' => [
+              'type' => 'text',
+              'analyzer' => 'overkill',
             ],
           ],
         ],
@@ -182,7 +179,7 @@ class Appearances {
       ],
     ]);
     try {
-      $sad = $elasticClient->indices()->create($params);
+      $sad = $elastic_client->indices()->create($params);
     }
     catch (ElasticBadRequest400Exception $e){
       Response::fail('Failed to create index:<br><pre>'.CoreUtils::escapeHTML(JSON::encode(JSON::decode($e->getMessage()), JSON_PRETTY_PRINT)).'</pre>');
@@ -199,7 +196,6 @@ class Appearances {
       $params['body'][] = [
         'index' => [
           '_index' => $meta['index'],
-          '_type' => $meta['type'],
           '_id' => $meta['id'],
         ],
       ];
@@ -207,12 +203,12 @@ class Appearances {
       $params['body'][] = $a->getElasticBody();
 
       if ($i % 100 === 0){
-        self::handleBulkError($elasticClient->bulk($params));
+        self::handleBulkError($elastic_client->bulk($params));
         $params = ['body' => []];
       }
     }
     if (!empty($params['body'])){
-      self::handleBulkError($elasticClient->bulk($params));
+      self::handleBulkError($elastic_client->bulk($params));
     }
 
     Response::success('Re-index completed');

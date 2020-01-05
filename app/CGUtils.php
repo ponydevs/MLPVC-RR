@@ -1029,7 +1029,6 @@ class CGUtils {
    */
   public static function searchElastic(array $body, Pagination $Pagination):array {
     $params = array_merge(self::ELASTIC_BASE, $Pagination->toElastic(), [
-      'type' => 'entry',
       'body' => $body,
     ]);
 
@@ -1263,23 +1262,13 @@ class CGUtils {
         ]
       );
       $search->addQuery($multi_match);
-      $score = new FunctionScoreQuery(new MatchAllQuery());
-      $score->addFieldValueFactorFunction('order', 1.5);
-      $score->addParameter('boost_mode', 'sum');
-      $search->addQuery($score);
-      $sort = new ElasticsearchDSL\Sort\FieldSort('_score', 'asc');
-      $search->addSort($sort);
-      $in_order = false;
-    }
-    else {
-      $sort = new ElasticsearchDSL\Sort\FieldSort('order', 'asc');
-      $search->addSort($sort);
     }
 
+    $sort = new ElasticsearchDSL\Sort\FieldSort('order', 'asc');
+    $search->addSort($sort);
+
     $bool_query = new BoolQuery();
-    if (Permission::insufficient('staff'))
-      $bool_query->add(new TermQuery('private', 'false'), BoolQuery::MUST);
-    $bool_query->add(new TermQuery('ishuman', $EQG ? 'true' : 'false'), BoolQuery::MUST);
+    $bool_query->add(new TermQuery('guide', $EQG ? 'eqg' : 'pony'), BoolQuery::MUST);
     $search->addQuery($bool_query);
 
     $search->setSource(false);
@@ -1315,9 +1304,7 @@ class CGUtils {
         foreach ($search['hits']['hits'] as $i => $hit)
           $ids[$hit['_id']] = $i;
 
-        if ($in_order)
-          DB::$instance->orderBy('order');
-        DB::$instance->where('id', array_keys($ids));
+        DB::$instance->orderBy('order')->where('id', array_keys($ids));
         $appearances = Appearances::get($EQG);
         if (!empty($appearances) && !$in_order)
           usort($appearances, static function (Appearance $a, Appearance $b) use ($ids) {

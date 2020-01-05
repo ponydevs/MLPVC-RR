@@ -1445,7 +1445,7 @@ class CoreUtils {
   }
 
   public static function env(string $variable) {
-    $value = \getenv($variable);
+    $value = $_ENV[$variable] ?? null;
     switch ($value){
       case 'true':
         return true;
