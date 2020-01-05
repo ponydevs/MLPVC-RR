@@ -9,9 +9,10 @@
     gulp = require('gulp'),
     plumber = require('gulp-plumber'),
     sass = require('gulp-sass'),
+    sourceMaps = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
     cleanCss = require('gulp-clean-css'),
-    uglify = require('gulp-uglify'),
+    terser = require('gulp-terser'),
     babel = require('gulp-babel'),
     cached = require('gulp-cached'),
     rename = require('gulp-rename'),
@@ -21,7 +22,6 @@
     workingDir = __dirname;
 
   require('dotenv').load();
-  const isProd = process.env.PRODUCTION === 'true';
 
   class Logger {
     constructor(prompt) {
@@ -66,25 +66,25 @@
   let SASSL = new Logger('scss'),
     SASSWatchArray = ['assets/scss/*.scss', 'assets/scss/**/*.scss'];
   gulp.task('scss', () => {
-    let pipe = gulp.src(SASSWatchArray)
+    return gulp.src(SASSWatchArray)
       .pipe(plumber(function(err) {
         SASSL.error(err.relativePath + '\n' + ' line ' + err.line + ': ' + err.messageOriginal);
         this.emit('end');
       }))
+      .pipe(sourceMaps.init())
       .pipe(sass({
         outputStyle: 'expanded',
         errLogToConsole: true,
       }))
       .pipe(autoprefixer({
         browsers: ['last 2 versions', 'not ie <= 11'],
-      }));
-    if (isProd)
-      pipe = pipe.pipe(cleanCss({
+      }))
+      .pipe(cleanCss({
         processImport: false,
         compatibility: '-units.pc,-units.pt',
-      }));
-    return pipe
+      }))
       .pipe(appendMinSuffix())
+      .pipe(sourceMaps.write('.'))
       .pipe(gulp.dest('public/css'));
   });
 
@@ -96,7 +96,7 @@
       'assets/js/**/*.jsx',
     ];
   gulp.task('js', () => {
-    let pipe = gulp.src(JSWatchArray)
+    return gulp.src(JSWatchArray)
       .pipe(cached('js', { optimizeMemory: true }))
       .pipe(plumber(function(err) {
         err =
@@ -112,17 +112,11 @@
         JSL.error(err);
         this.emit('end');
       }))
-      .pipe(babel(babelrc));
-    if (isProd)
-      pipe = pipe.pipe(uglify({
-        output: {
-          comments: function(_, comment) {
-            return /^!/m.test(comment.value);
-          },
-        },
-      }));
-    return pipe
+      .pipe(sourceMaps.init())
+      .pipe(babel(babelrc))
+      .pipe(terser())
       .pipe(appendMinSuffix())
+      .pipe(sourceMaps.write('.'))
       .pipe(gulp.dest('public/js'));
   });
 
