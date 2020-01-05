@@ -1,7 +1,5 @@
 <?php
 
-define('PHP_ACTIVERECORD_AUTOLOAD_DISABLE', true);
-
 $autoload = __DIR__.'/../../vendor/autoload.php';
 if (!file_exists($autoload))
   die('Autoload file missing - did you run `composer install`?');

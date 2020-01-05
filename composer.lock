@@ -2440,12 +2440,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SeinopSys/php-activerecord.git",
-                "reference": "918911429b11e31a54e2551e6ad7fbb0f101df8b"
+                "reference": "44d610e7ad88585b11d427dbf48a6acbf9641a42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SeinopSys/php-activerecord/zipball/918911429b11e31a54e2551e6ad7fbb0f101df8b",
-                "reference": "918911429b11e31a54e2551e6ad7fbb0f101df8b",
+                "url": "https://api.github.com/repos/SeinopSys/php-activerecord/zipball/44d610e7ad88585b11d427dbf48a6acbf9641a42",
+                "reference": "44d610e7ad88585b11d427dbf48a6acbf9641a42",
                 "shasum": ""
             },
             "require": {
@@ -2474,7 +2474,7 @@
             "support": {
                 "source": "https://github.com/SeinopSys/php-activerecord/tree/master"
             },
-            "time": "2017-12-06T14:13:01+00:00"
+            "time": "2020-01-05T21:15:02+00:00"
         },
         {
             "name": "php-tmdb/api",

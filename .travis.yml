@@ -1,6 +1,6 @@
 language: php
 php:
-  - '7.3'
+  - '7.4'
 before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
@@ -13,6 +13,6 @@ before_script:
   - psql -c "CREATE USER \"winterchilla\" WITH LOGIN PASSWORD 'example-password'" -U postgres
   - psql "winterchilla" < ./setup/create_extensions.pg.sql
   - vendor/bin/phinx migrate
-dist: xenial
+dist: bionic
 addons:
   postgresql: "10"
