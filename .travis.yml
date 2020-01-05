@@ -1,6 +1,6 @@
 language: php
 php:
-  - '7.3'
+  - '7.4'
 before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
@@ -15,4 +15,11 @@ before_script:
   - vendor/bin/phinx migrate
 dist: xenial
 addons:
-  postgresql: "10"
+  postgresql: "12"
+  apt:
+    packages:
+    - postgresql-12
+    - postgresql-client-12
+env:
+  global:
+  - PGPORT=5433
