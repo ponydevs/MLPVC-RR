@@ -1,4 +1,4 @@
-# Winterchilla [![Build Status](https://travis-ci.org/MLP-VectorClub/Winterchilla.svg?branch=master)](https://travis-ci.org/MLP-VectorClub/Winterchilla)
+# Winterchilla [![Build Status](https://travis-ci.com/MLP-VectorClub/Winterchilla.svg?branch=master)](https://travis-ci.com/MLP-VectorClub/Winterchilla)
 
 PHP-rendered classic web app powering the MLP Vector Club's website since 2015.
 
