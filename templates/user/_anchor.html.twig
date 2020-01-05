@@ -2,7 +2,7 @@
 {# @var with_avatar bool #}
 {# @var enable_promises bool #}
 {# @var with_vector_app_icon bool #}
-{% spaceless %}
+{% apply spaceless %}
   <a href='{{ user.toURL }}' class='da-userlink local{{ with_avatar ? ' with-avatar provider-' ~ user.get_avatar_provider : '' }}'>
     {% if with_avatar %}
       {% if enable_promises %}
@@ -16,4 +16,4 @@
       {{ user.vectorAppIcon }}
     {% endif %}
   </a>
-{% endspaceless %}
+{% endapply %}

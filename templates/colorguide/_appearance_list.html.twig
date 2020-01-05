@@ -13,7 +13,7 @@
       <li id='p{{ p.id }}'>
         {{ p.spriteHTML(upload_permission) }}
         <div class="data">
-          {% spaceless %}
+          {% apply spaceless %}
             <div class="appearance-header">
               {% if p.private %}
                 <span class='typcn typcn-lock-closed color-orange'></span>
@@ -30,7 +30,7 @@
                 {% endif %}
               </div>
             </div>
-          {% endspaceless %}
+          {% endapply %}
           {{ p.updatesHTML }}
           {{ p.notesHTML }}
           {% if p.owner_id is null and not p.get_protected %}

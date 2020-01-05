@@ -45,7 +45,7 @@
         <th class="reftype">Event</th>
       </tr>
       </thead>
-      {% spaceless %}
+      {% apply spaceless %}
         <tbody>
         {% if log_items is empty %}
           <tr>
@@ -98,7 +98,7 @@
           {% endfor %}
         {% endif %}
         </tbody>
-      {% endspaceless %}
+      {% endapply %}
     </table>
     {{ pagination }}
   </div>

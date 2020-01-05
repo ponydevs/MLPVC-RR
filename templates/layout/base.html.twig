@@ -17,7 +17,7 @@
 
 </header>
 
-{% spaceless %}
+{% apply spaceless %}
   <aside id="sidebar">
     <div class='mobile-nav'>
       <nav>
@@ -60,7 +60,7 @@
       {% endif %}
     {% endif %}
   </aside>
-{% endspaceless %}
+{% endapply %}
 
 <div id="above-content">
   <ol id="breadcrumbs" itemscope itemtype="http://schema.org/BreadcrumbList">{{ breadcrumbs }}</ol>

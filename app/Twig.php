@@ -7,6 +7,7 @@ namespace App;
 use App\Models\Linkable;
 use SeinopSys\RGBAColor;
 use Twig\Environment;
+use Twig\Loader\LoaderInterface;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Twig\TwigTest;
@@ -15,7 +16,7 @@ class Twig {
   /** @var Environment */
   public static $env;
 
-  public static function init(\Twig_LoaderInterface $loader, array $options = []):void {
+  public static function init(LoaderInterface $loader, array $options = []):void {
     self::$env = new Environment($loader, $options);
     self::$env->addFunction(new TwigFunction('permission', '\App\Permission::sufficient'));
     self::$env->addFunction(new TwigFunction('export_vars', '\App\CoreUtils::exportVars'));
@@ -28,15 +29,9 @@ class Twig {
     self::$env->addFunction(new TwigFunction('cutoff', '\App\CoreUtils::cutoff'));
     self::$env->addFunction(new TwigFunction('sd', '\sd'));
     self::$env->addFunction(new TwigFunction('env', '\App\CoreUtils::env'));
-    self::$env->addFunction(new TwigFunction('setting_form', function (...$args) {
-      return (new UserSettingForm(...$args))->render();
-    }));
-    self::$env->addFunction(new TwigFunction('url', function (Linkable $linkable) {
-      return $linkable->toURL();
-    }));
-    self::$env->addFunction(new TwigFunction('hex2rgb', function (string $color) {
-      return RGBAColor::parse($color)->toRGB();
-    }));
+    self::$env->addFunction(new TwigFunction('setting_form', fn(...$args) => (new UserSettingForm(...$args))->render()));
+    self::$env->addFunction(new TwigFunction('url', fn(Linkable $linkable) => $linkable->toURL()));
+    self::$env->addFunction(new TwigFunction('hex2rgb', fn(string $color) => RGBAColor::parse($color)->toRGB()));
 
     self::$env->addFilter(new TwigFilter('apos_encode', '\App\CoreUtils::aposEncode'));
 

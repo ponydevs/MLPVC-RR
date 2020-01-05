@@ -1,6 +1,6 @@
 {# @var cutie_marks \App\Models\Cutiemark[] #}
 {# @var wrap bool #}
-{% spaceless %}
+{% apply spaceless %}
   {% if wrap %}
     <ul id='pony-cm-list'>
   {% endif %}
@@ -35,4 +35,4 @@
   {% if wrap %}
     </ul>
   {% endif %}
-{% endspaceless %}
+{% endapply %}

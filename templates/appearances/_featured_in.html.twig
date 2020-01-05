@@ -1,11 +1,11 @@
 {# @var related_shows \App\Models\Show[] #}
-{% spaceless %}
+{% apply spaceless %}
   {% set edit_button %}
     {% if permission('staff') %}
       <button class="typcn typcn-pencil darkblue edit-show-relations">Edit relations</button>
     {% endif %}
   {% endset %}
-{% endspaceless %}
+{% endapply %}
 <section id="related-shows">
   <h2><span class='typcn typcn-video'></span>Featured in</h2>
   <p>

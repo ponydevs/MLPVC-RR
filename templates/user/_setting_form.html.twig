@@ -2,7 +2,7 @@
 {# @var current_user \App\Models\User #}
 {# @var input string #}
 {# @var map array #}
-{% spaceless %}
+{% apply spaceless %}
   <form {% if signed_in %}action="/user/{{ current_user.id }}/preference/{{ setting_name }}"{% endif %}>
     <label>
       {% set content = map.options.desc %}
@@ -16,4 +16,4 @@
       {% endif %}
     </label>
   </form>
-{% endspaceless %}
+{% endapply %}

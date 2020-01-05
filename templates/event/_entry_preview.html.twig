@@ -1,7 +1,7 @@
 {# @var fullsize string #}
 {# @var preview string #}
 {# @var file_type string #}
-{% spaceless %}
+{% apply spaceless %}
   <div class='preview'>
     <a href='{{ fullsize }}' target='_blank' rel='noopener'>
       <img src='{{ preview }}' alt='event entry preview'>
@@ -14,4 +14,4 @@
       {% endif %}
     {% endif %}
   </div>
-{% endspaceless %}
+{% endapply %}

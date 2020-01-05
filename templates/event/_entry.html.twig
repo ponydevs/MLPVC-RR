@@ -4,7 +4,7 @@
 {# @var lazyload bool #}
 {# @var signed_in bool #}
 {# @var current_user \App\Models\User #}
-{% spaceless %}
+{% apply spaceless %}
   {% set is_staff = permission('staff') %}
   {% if wrap %}
     <li id='entry-{{ entry.id }}'>
@@ -43,4 +43,4 @@
   {% if wrap %}
     </li>
   {% endif %}
-{% endspaceless %}
+{% endapply %}

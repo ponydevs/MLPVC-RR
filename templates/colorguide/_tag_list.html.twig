@@ -1,5 +1,5 @@
 {# @var tags \App\Models\Tag[] #}
-{% spaceless %}
+{% apply spaceless %}
   {% if wrap is not defined or wrap %}
     <tbody>
   {% endif %}
@@ -35,4 +35,4 @@
   {% if wrap is not defined or wrap %}
     </tbody>
   {% endif %}
-{% endspaceless %}
+{% endapply %}

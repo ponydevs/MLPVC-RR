@@ -3,7 +3,7 @@
 {# @var type string #}
 {# @var compact bool #}
 {# @var extra_info bool #}
-{% spaceless %}
+{% apply spaceless %}
   {% macro color_square(c, compact) %}
     {# @var c \App\Models\Color #}
     {# @var compact bool #}
@@ -55,4 +55,4 @@
       {% endfor %}
     {% endif %}
   </li>
-{% endspaceless %}
+{% endapply %}

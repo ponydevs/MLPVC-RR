@@ -1,6 +1,6 @@
 {# @var shows \App\Models\Show[] #}
 {# @var are_episodes bool #}
-{% spaceless %}
+{% apply spaceless %}
   {% if is_staff is not defined %}
     {% set is_staff = permission('staff') %}
   {% endif %}
@@ -38,4 +38,4 @@
       </tr>
     {% endfor %}
   {% endif %}
-{% endspaceless %}
+{% endapply %}

@@ -7,7 +7,7 @@
     <h1>{{ title }}</h1>
     <p>List of all users in the database</p>
 
-    {% spaceless %}
+    {% apply spaceless %}
       <div id="users" class="section-container">
         {% if sections is not null %}
           {% for section in sections %}
@@ -18,6 +18,6 @@
           {% endfor %}
         {% endif %}
       </div>
-    {% endspaceless %}
+    {% endapply %}
   </div>
 {% endblock %}

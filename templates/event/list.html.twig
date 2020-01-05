@@ -16,13 +16,13 @@
     {% endif %}
 
     {{ pagination }}
-    {% spaceless %}
+    {% apply spaceless %}
       <ul id='event-list'>
         {% for event in events %}
           {% include 'event/_list_item.html.twig' %}
         {% endfor %}
       </ul>
-    {% endspaceless %}
+    {% endapply %}
     {{ pagination }}
   </div>
   {{ export_vars({

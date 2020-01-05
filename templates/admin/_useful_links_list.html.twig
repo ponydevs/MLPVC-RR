@@ -1,6 +1,6 @@
 {# @var wrap bool #}
 {# @var useful_links \App\Models\UsefulLink[] #}
-{% spaceless %}
+{% apply spaceless %}
   {% if wrap is not defined or wrap %}
     <ol>
   {% endif %}
@@ -23,4 +23,4 @@
   {% if wrap is not defined or wrap %}
     </ol>
   {% endif %}
-{% endspaceless %}
+{% endapply %}

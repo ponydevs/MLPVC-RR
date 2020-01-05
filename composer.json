@@ -46,7 +46,7 @@
     "google/apiclient": "^2.0",
     "google/apiclient-services": "^0.50.0",
     "ramsey/uuid": "^3.7",
-    "twig/twig": "^2.0",
+    "twig/twig": "^3.0",
     "php-tmdb/api": "~2.1",
     "symfony/dotenv": "^4.1",
     "whichbrowser/parser": "^2.0",

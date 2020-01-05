@@ -1,5 +1,5 @@
 {# @var changes \App\Models\Logs\MajorChange[] #}
-{% spaceless %}
+{% apply spaceless %}
   {% set see_initiator = permission('staff') %}
   {% if wrap is not defined or wrap %}
     <table>
@@ -30,4 +30,4 @@
     </tbody>
     </table>
   {% endif %}
-{% endspaceless %}
+{% endapply %}

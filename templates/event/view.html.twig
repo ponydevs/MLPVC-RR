@@ -46,7 +46,7 @@
             Votes can only be changed 1 hour after being cast, they are locked in afterwards. Editing the entry removes this lock from cast votes.
           </p>
         {% endif %}
-        {% spaceless %}
+        {% apply spaceless %}
           {% if not can_enter %}
             {% if not finalized %}
               <p class="color-red">
@@ -75,7 +75,7 @@
               <p class='color-blue'>This event has concluded. Thank you to everyone who participated!</p>
             {% endif %}
           {% endif %}
-        {% endspaceless %}
+        {% endapply %}
       </div>
     </section>
 

@@ -1,6 +1,6 @@
 {# @var event \App\Models\Event #}
 {# @var entry \App\Models\EventEntry #}
-{% spaceless %}
+{% apply spaceless %}
   {% if event.type == 'content' %}
     {% set can_vote = event.checkCanVote(current_user) %}
     {% set user_vote = signed_in ? entry.userVote(current_user) : null %}
@@ -15,4 +15,4 @@
       <button class='typcn typcn-arrow-sorted-down downvote{{ downvote_clicked }}'{{ disable_voting }} title='Downvote'></button>
     </div>
   {% endif %}
-{% endspaceless %}
+{% endapply %}

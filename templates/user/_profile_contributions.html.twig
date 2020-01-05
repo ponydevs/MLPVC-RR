@@ -14,7 +14,7 @@
   <li>{{ item }}</li>
 {% endmacro %}
 {% set privacy = same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').public : '' %}
-{% spaceless %}
+{% apply spaceless %}
   {% if contribs is not empty %}
     {% if wrap is not defined or wrap %}
       <section class="contributions">
@@ -36,4 +36,4 @@
       </section>
     {% endif %}
   {% endif %}
-{% endspaceless %}
+{% endapply %}

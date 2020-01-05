@@ -8,7 +8,7 @@
     <h2>{{ constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').staff }}Pending reservations{{ gamble }}</h2>
 
     {% if user_is_member %}
-      {% spaceless %}
+      {% apply spaceless %}
         {% set pending_count_readable = has_pending ? "<strong>#{total_pending}</strong>" : 'no' %}
         <span>
 			{{ same_user ? 'You have' : 'This user has' }} {{ pending_count_readable }} pending {{ make_plural('reservation', total_pending) }}
@@ -19,11 +19,11 @@
         Please keep in mind that the global limit is 4 at any given time. If you reach the limit, you can't reserve any more images until you finish or cancel some of your pending reservations.
       {%- endif %}
 		</span>
-      {% endspaceless %}
+      {% endapply %}
 
       {% if posts is defined and posts is not empty %}
         <ul>
-          {% for post in posts %}{% spaceless %}
+          {% for post in posts %}{% apply spaceless %}
             {% set request_reserved = post.get_is_request and post.reserved_at is not empty %}
             <li>
             <div class='image screencap'>
@@ -32,9 +32,9 @@
             {% if post.label is not empty %}
               <span class='label'>{{ post.processLabel }}</span>
             {% endif %}
-          {% endspaceless %}
+          {% endapply %}
             <em>{{ request_reserved ? 'Reserved' : 'Posted' }} under {{ post.toAnchor }} {{ time_tag(request_reserved ? post.reserved_at : post.get_posted_at) }}</em>
-            {% spaceless %}
+            {% apply spaceless %}
               {% if post.isOverdue %}
                 {{ constant('App\\Models\\Post::CONTESTABLE') }}
               {% endif %}
@@ -49,7 +49,7 @@
                 <button class='red typcn typcn-user-delete cancel'>Cancel</button>
               </div>
               </li>
-            {% endspaceless %}{% endfor %}
+            {% endapply %}{% endfor %}
         </ul>
       {% endif %}
     {% else %}

@@ -1,6 +1,6 @@
 {# @controller \App\Models\Appearance::getRelatedHTML #}
 {# @var appearance \App\Models\Appearance #}
-{% spaceless %}
+{% apply spaceless %}
   {% set edit_button %}
     {% if permission('staff') %}
       <button class="typcn typcn-pencil darkblue edit-appearance-relations">Edit relations</button>
@@ -18,4 +18,4 @@
       {{ edit_button }}
     </section>
   {% endif %}
-{% endspaceless %}
+{% endapply %}

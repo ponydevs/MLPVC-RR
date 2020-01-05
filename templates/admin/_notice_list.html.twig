@@ -1,5 +1,5 @@
 {# @var notices \App\Models\Notice[] #}
-{% spaceless %}
+{% apply spaceless %}
   {% if wrap is not defined or wrap %}
     <ul id='notice-list'>
   {% endif %}
@@ -17,4 +17,4 @@
   {% if wrap is not defined or wrap %}
     </ul>
   {% endif %}
-{% endspaceless %}
+{% endapply %}
