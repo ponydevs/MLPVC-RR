@@ -15,4 +15,4 @@ before_script:
   - vendor/bin/phinx migrate
 dist: bionic
 addons:
-  postgresql: "11"
+  postgresql: "10"
