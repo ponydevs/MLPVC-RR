@@ -45,6 +45,8 @@ $router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]/[i:id][cgimg:type]?.[cg
 $router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/sprite(-colors)?/[i:id][adi]?', 'AppearanceController#sprite');
 # ComponentsController
 $router->map('GET', '/components', 'ComponentsController#index');
+# DocsController
+$router->map('GET', '/docs', 'DocsController#index');
 # TagController
 $router->map('GET', '/[cg]/[guide:guide]?/tags/[i]?', 'TagController#list');
 # CutiemarkController
