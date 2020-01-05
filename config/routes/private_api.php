@@ -80,6 +80,7 @@ $private_api_endpoint('/post/[i:id]/fix-stash', 'PostController#fixStash');
 $private_api_endpoint('/setting/[au:key]', 'SettingController#api');
 $private_api_endpoint('/user/session/[uuid:id]', 'UserController#sessionApi');
 $private_api_endpoint('/user/[uuid:id]/avatar-wrap', 'UserController#avatarWrap');
+$private_api_endpoint('/user/[uuid:id]/contrib-cache', 'UserController#contribCacheApi');
 $private_api_endpoint('/user/[uuid:id]/role', 'UserController#roleApi');
 $private_api_endpoint('/user/[uuid:id]/preference/[au:key]', 'PreferenceController#api');
 $private_api_endpoint('/user/pcg/giftable-slots', 'PersonalGuideController#verifyGiftableSlots');

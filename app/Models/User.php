@@ -369,8 +369,12 @@ class User extends AbstractUser implements Linkable {
 
   public const CONTRIB_CACHE_DURATION = Time::IN_SECONDS['hour'];
 
+  public function getCachedContributionsPath():string {
+    return FSPATH."contribs/{$this->id}.json.gz";
+  }
+
   public function getCachedContributions():array {
-    $cache = CachedFile::init(FSPATH."contribs/{$this->id}.json.gz", self::CONTRIB_CACHE_DURATION);
+    $cache = CachedFile::init($this->getCachedContributionsPath(), self::CONTRIB_CACHE_DURATION);
     if (!$cache->expired())
       return $cache->read();
 

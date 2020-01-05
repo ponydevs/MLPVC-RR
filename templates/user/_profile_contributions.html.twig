@@ -16,14 +16,24 @@
 {% set privacy = same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').public : '' %}
 {% spaceless %}
   {% if contribs is not empty %}
-    <section class='contributions'>
-      <h2>{{ privacy }}Contributions <span class='typcn typcn-info-large' title='This data is updated every {{ contrib_cache_duration }}'></span></h2>
+    {% if wrap is not defined or wrap %}
+      <section class="contributions">
+    {% endif %}
+      <h2>
+        {{ privacy }}Contributions
+        <span class="typcn typcn-info-large" title="This data is updated every {{ contrib_cache_duration }}"></span>
+        {% if permission('staff') %}
+          <a class="typcn typcn-arrow-sync" id="purge-contrib-cache" title="Purge cached data" data-for="{{ user.id }}"></a>
+        {% endif %}
+      </h2>
       <ul>
         {% import _self as profile_contributions %}
         {% for key, contrib in contribs %}
           {{ profile_contributions.process_contrib(same_user, key, user, contrib[0], contrib[1], contrib[2] ?? null) }}
         {% endfor %}
       </ul>
-    </section>
+    {% if wrap is not defined or wrap %}
+      </section>
+    {% endif %}
   {% endif %}
 {% endspaceless %}

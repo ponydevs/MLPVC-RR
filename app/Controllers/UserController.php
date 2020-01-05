@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Pagination;
 use App\Permission;
 use App\Response;
+use App\Twig;
 use App\UserPrefs;
 use App\Users;
 
@@ -304,6 +305,37 @@ class UserController extends Controller {
         Response::done($CachedDeviation->to_array());
       break;
     }
+  }
+
+  public function contribCacheApi($params):void {
+    if ($this->action !== 'DELETE')
+      CoreUtils::notAllowed();
+
+    if (Permission::insufficient('staff'))
+      Response::fail('You are not allowed to clear contribution caches');
+
+    if (!isset($params['id']))
+      Response::fail('Missing user ID');
+
+    $user = User::find($params['id']);
+    if (empty($user))
+      Response::fail('The specified user does not exist');
+
+    unlink($user->getCachedContributionsPath());
+
+    $same_user = Auth::$signed_in && $user->id === Auth::$user->id;
+    $contribs = $user->getCachedContributions();
+    $contrib_cache_duration = Users::getContributionsCacheDuration();
+
+    Response::success('Contributions cache successfully cleared', [
+      'html' => Twig::$env->render('user/_profile_contributions.html.twig', [
+        'user' => $user,
+        'same_user' => $same_user,
+        'contribs' => $contribs ?? null,
+        'contrib_cache_duration' => $contrib_cache_duration ?? null,
+        'wrap' => false,
+      ]),
+    ]);
   }
 
   public function list():void {

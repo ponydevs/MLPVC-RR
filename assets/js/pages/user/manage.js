@@ -9,7 +9,8 @@
     $RoleModFormTemplate = $.mk('form').attr('id', 'rolemod').html('<select name="value" required><optgroup label="Possible roles"></optgroup></select>'),
     $OptGrp = $RoleModFormTemplate.find('optgroup'),
     $changeRole = $('#change-role'),
-    $changeRoleMask = $('#change-dev-role-mask');
+    $changeRoleMask = $('#change-dev-role-mask'),
+    $contributions = $('.contributions');
 
   $.each(window.ROLES, (name, label) => {
     $OptGrp.append(`<option value=${name}>${label}</option>`);
@@ -62,6 +63,21 @@
           $.Navigation.reload(true);
         });
       });
+    });
+  });
+
+  $contributions.on('click', '#purge-contrib-cache', e => {
+    e.preventDefault();
+    const $btn = $('#purge-contrib-cache');
+    const userId = $btn.attr('data-for');
+
+    $.Dialog.wait('Purge cached contribution data');
+
+    $.API.delete(`/user/${userId}/contrib-cache`, function() {
+      if (!this.status) return $.Dialog.fail(false, this.message);
+
+      $.Dialog.success(false, this.message, true);
+      $contributions.html(this.html);
     });
   });
 })();
