@@ -3,7 +3,6 @@
   'use strict';
 
   let USERNAME_REGEX = window.USERNAME_REGEX,
-    FULLSIZE_MATCH_REGEX = window.FULLSIZE_MATCH_REGEX,
     showId = window.SHOW_ID,
     $epSection = $content.children('section.episode');
 
@@ -319,13 +318,9 @@
           );
 
         let show_img_update_btn = $li.children('.image').hasClass('screencap'),
-          finished = $li.closest('div').attr('class') === 'finished',
-          $fullsize_link = finished ? $li.children('.original') : $li.children('.image').children('a'),
-          fullsize_url = $fullsize_link.attr('href'),
-          show_stash_fix_btn = !finished && !FULLSIZE_MATCH_REGEX.test(fullsize_url) && /deviantart\.net\//.test(fullsize_url),
           deemed_broken = $li.children('.broken-note').length;
 
-        if (show_img_update_btn || show_stash_fix_btn || deemed_broken){
+        if (show_img_update_btn || deemed_broken){
           const $extraDiv = $.mk('div').attr('class', 'align-center');
 
           if (show_img_update_btn)
@@ -336,18 +331,6 @@
                 .data({
                   $li,
                   id,
-                }),
-            );
-          if (show_stash_fix_btn)
-            $extraDiv.append(
-              $.mk('button', 'dialog-stash-fullsize-fix')
-                .text('Sta.sh fullsize fix')
-                .attr('class', 'orange typcn typcn-spanner')
-                .data({
-                  $li,
-                  id,
-                  finished,
-                  $fullsize_link,
                 }),
             );
           if (deemed_broken)
@@ -719,30 +702,6 @@
             else $li.reloadLi();
           });
         });
-      });
-    })
-    .on('click', '#dialog-stash-fullsize-fix', function(e) {
-      e.preventDefault();
-
-      const { $li, id, finished, $fullsize_link } = $(this).data();
-
-      $.Dialog.close();
-      $.Dialog.wait('Fix Sta.sh fullsize URL', 'Fixing Sta.sh full size image URL');
-
-      $.API.post(`/post/${id}/fix-stash`, function() {
-        if (!this.status){
-          if (this.rmdirect){
-            if (!finished){
-              $li.find('.post-date').children('a').first().triggerHandler('click');
-              return $.Dialog.fail(false, `${this.message}<br>The post might be broken because of this, please check it for any issues.`);
-            }
-            $li.children('.original').remove();
-          }
-          return $.Dialog.fail(false, this.message);
-        }
-
-        $fullsize_link.attr('href', this.fullsize);
-        $.Dialog.success(false, 'Fix successful', true);
       });
     })
     .on('click', '#dialog-clear-broken-status', function(e) {

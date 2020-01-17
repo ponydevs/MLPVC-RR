@@ -2,6 +2,7 @@
 
 namespace App;
 
+use ActiveRecord\DateTime;
 use App\Exceptions\CURLRequestException;
 use App\Exceptions\JSONParseException;
 use App\Models\CachedDeviation;
@@ -103,50 +104,43 @@ class DeviantArt {
   }
 
   /**
-   * Caches information about a deviation in the 'cached_deviations' table
+   * Caches information about a deviation in Redis
    * Returns null on failure
    *
-   * @param string      $ID
-   * @param null|string $type
+   * @param string      $id
+   * @param null|string $provider
    *
    * @return CachedDeviation|null
    */
-  public static function getCachedDeviation($ID, $type = 'fav.me') {
-    if ($type === 'sta.sh')
-      $ID = self::nomralizeStashID($ID);
+  public static function getCachedDeviation($id, $provider = 'fav.me') {
+    if ($provider === 'sta.sh')
+      $id = self::nomralizeStashID($id);
 
-    /** @var $Deviation CachedDeviation */
-    $Deviation = CachedDeviation::find_by_id_and_provider($ID, $type);
-    $localDataMissing = $Deviation == null;
-
-    $cacheExpired = true;
-    if (!$localDataMissing && $Deviation->updated_on !== null)
-      $cacheExpired = $Deviation->updated_on->getTimestamp() + (Time::IN_SECONDS['hour'] * 12) < time();
-
-    if ($cacheExpired){
+    $deviation = CachedDeviation::find($id, $provider);
+    if ($deviation === null){
       try {
-        $json = self::oEmbed($ID, $type);
+        $json = self::oEmbed($id, $provider);
         if (empty($json))
           throw new RuntimeException('oEmbed JSON data is empty');
       }
       catch (\Exception $e){
-        if ($Deviation !== null)
-          $Deviation->update_attributes(['updated_on' => date('c', time() + Time::IN_SECONDS['minute'])]);
+        if ($deviation !== null)
+          $deviation->update_attributes(['updated_on' => date('c', time() + Time::IN_SECONDS['minute'])]);
 
-        CoreUtils::error_log("Saving local data for $ID@$type failed: ".$e->getMessage()."\n".$e->getTraceAsString());
+        CoreUtils::error_log("Saving local data for $id@$provider failed: ".$e->getMessage()."\n".$e->getTraceAsString());
 
         if ($e->getCode() === 404){
-          if ($Deviation !== null)
-            $Deviation->delete();
-          $Deviation = null;
+          if ($deviation !== null)
+            $deviation->delete();
+          $deviation = null;
         }
 
-        return $Deviation;
+        return $deviation;
       }
 
       $insert = [
-        'id' => $ID,
-        'provider' => $type,
+        'id' => $id,
+        'provider' => $provider,
         'title' => preg_replace(new RegExp('\\\\\''), "'", $json['title']),
         'preview' => isset($json['thumbnail_url']) ? URL::makeHttps($json['thumbnail_url']) : null,
         'fullsize' => isset($json['fullsize_url'])
@@ -178,7 +172,7 @@ class DeviantArt {
           }
         break;
         case 'link':
-          $stashpage = HTTP::legitimateRequest("http://$type/$ID");
+          $stashpage = HTTP::legitimateRequest("http://$provider/$id");
           if (!empty($stashpage['response'])){
             preg_match(new RegExp('<span class="text">([A-Za-z\d]+) download,'), $stashpage['response'], $matches);
             if (!empty($matches[1]))
@@ -190,24 +184,20 @@ class DeviantArt {
       }
 
       if ($insert['fullsize'] === null || !preg_match(Regexes::$fullsize_match, $insert['fullsize'])){
-        $fullsize_attempt = self::getDownloadURL($ID, $type);
+        $fullsize_attempt = self::getDownloadURL($id, $provider);
         if (\is_string($fullsize_attempt))
           $insert['fullsize'] = $fullsize_attempt;
       }
 
-      if (empty($Deviation))
-        $Deviation = CachedDeviation::find_by_id_and_provider($ID, $type);
+      if (empty($deviation))
+        $deviation = CachedDeviation::find($id, $provider);
 
-      if (empty($Deviation))
-        $Deviation = CachedDeviation::create($insert);
-      else $Deviation->update_attributes($insert);
-    }
-    else if (!empty($Deviation->updated_on)){
-      $Deviation->updated_on = date('c', strtotime($Deviation->updated_on));
-      $Deviation->save();
+      if (empty($deviation))
+        $deviation = CachedDeviation::create($insert);
+      else $deviation->update_attributes($insert);
     }
 
-    return $Deviation;
+    return $deviation;
   }
 
   /**
@@ -556,10 +546,10 @@ class DeviantArt {
     if (empty($fullsize_url))
       return 5;
 
-    $CachedDeviation = CachedDeviation::find_by_id_and_provider($id, $prov);
-    if (!empty($CachedDeviation)){
-      $CachedDeviation->fullsize = $fullsize_url;
-      $CachedDeviation->save();
+    $cached_deviation = CachedDeviation::find($id, $prov);
+    if (!empty($cached_deviation)){
+      $cached_deviation->fullsize = $fullsize_url;
+      $cached_deviation->save();
     }
 
     return URL::makeHttps($fullsize_url);

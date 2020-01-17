@@ -159,9 +159,6 @@ class ShowHelper {
     if (Permission::sufficient('developer')){
       $import['username_regex'] = Regexes::$username;
     }
-    if (Auth::$signed_in){
-      $import['fullsize_match_regex'] = Regexes::$fullsize_match;
-    }
 
     $linked_post_prefix = $linked_post ? ucfirst($linked_post->kind).": {$linked_post->label} - " : '';
     $heading = $current_episode->formatTitle();

@@ -76,7 +76,6 @@ $private_api_endpoint('/post/check-image', 'PostController#checkImage');
 $private_api_endpoint('/post/reservation', 'PostController#addReservation');
 $private_api_endpoint('/post/request/[i:id]', 'PostController#deleteRequest');
 $private_api_endpoint('/post/request/suggestion', 'PostController#suggestRequest');
-$private_api_endpoint('/post/[i:id]/fix-stash', 'PostController#fixStash');
 $private_api_endpoint('/setting/[au:key]', 'SettingController#api');
 $private_api_endpoint('/user/session/[uuid:id]', 'UserController#sessionApi');
 $private_api_endpoint('/user/[uuid:id]/avatar-wrap', 'UserController#avatarWrap');

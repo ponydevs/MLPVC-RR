@@ -816,61 +816,6 @@ class PostController extends Controller {
     Response::done(['html' => $this->post->getFinishedImage(isset($_GET['viewonly']))]);
   }
 
-  public function fixStash($params) {
-    if ($this->action !== 'POST')
-      CoreUtils::notAllowed();
-
-    $this->_authorize();
-
-    if (Permission::insufficient('staff'))
-      Response::fail();
-
-    $this->load_post($params, 'view');
-
-    // Link is already full size, we're done
-    if (preg_match(Regexes::$fullsize_match, $this->post->fullsize))
-      Response::done(['fullsize' => $this->post->fullsize]);
-
-    // Reverse submission lookup
-    /** @var $StashItem CachedDeviation */
-    $StashItem = DB::$instance
-      ->where('fullsize', $this->post->fullsize)
-      ->orWhere('preview', $this->post->preview)
-      ->getOne('cached_deviations');
-    if (empty($StashItem))
-      Response::fail('Stash URL lookup failed');
-
-    try {
-      $fullsize = DeviantArt::getDownloadURL($StashItem->id, 'sta.sh');
-      if (!\is_string($fullsize)){
-        if ($fullsize === 404){
-          $StashItem->delete();
-          DB::$instance->where('preview', $StashItem->preview)->orWhere('fullsize', $StashItem->fullsize)->update('requests', [
-            'fullsize' => null,
-            'preview' => null,
-          ]);
-          DB::$instance->where('preview', $StashItem->preview)->orWhere('fullsize', $StashItem->fullsize)->update('reservations', [
-            'fullsize' => null,
-            'preview' => null,
-          ]);
-          Response::fail('The original image has been deleted from Sta.sh', ['rmdirect' => true]);
-        }
-        else throw new \Exception("Code $fullsize; Could not find the URL");
-      }
-    }
-    catch (\Exception $e){
-      Response::fail('Error while finding URL: '.$e->getMessage());
-    }
-    // Check image availability
-    if (!DeviantArt::isImageAvailable($fullsize))
-      Response::fail("The specified image doesn't seem to exist. Please verify that you can reach the URL below and try again.<br><a href='$fullsize' target='_blank' rel='noopener'>$fullsize</a>");
-
-    $this->post->fullsize = $fullsize;
-    $this->post->save();
-
-    Response::done(['fullsize' => $fullsize]);
-  }
-
   public function addReservation() {
     if ($this->action !== 'POST')
       CoreUtils::notAllowed();

@@ -93,9 +93,6 @@
       {% if username_regex is defined and username_regex is not empty %}
         {{ export_vars({ 'USERNAME_REGEX': username_regex }) }}
       {% endif %}
-      {% if fullsize_match_regex is defined and fullsize_match_regex is not empty %}
-        {{ export_vars({ 'FULLSIZE_MATCH_REGEX': fullsize_match_regex }) }}
-      {% endif %}
     {% endif %}
   </div>
 
