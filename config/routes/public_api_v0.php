@@ -18,4 +18,5 @@ $public_api_endpoint('/appearances/all', 'API\AppearancesController#queryAll');
 $public_api_endpoint('/appearances/[i:id]/sprite', 'API\AppearancesController#sprite');
 $public_api_endpoint('/appearances/[i:id]/color-groups', 'API\AppearancesController#getColorGroups');
 $public_api_endpoint('/users/me', 'API\UsersController#me');
+$public_api_endpoint('/users/membership', 'API\UsersController#membership');
 $public_api_endpoint('/about/server', 'API\AboutController#server');

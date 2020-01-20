@@ -4,8 +4,10 @@ namespace App\Controllers\API;
 
 use App\Auth;
 use App\CoreUtils;
+use App\DeviantArt;
 use App\HTTP;
 use App\Models\User;
+use App\Permission;
 use App\Response;
 
 /**
@@ -138,6 +140,19 @@ class UsersController extends APIController {
       'user' => self::mapUser(Auth::$user),
       'sessionUpdating' => Auth::$session->updating,
     ]);
+  }
+
+  function membership() {
+    if ($this->action !== 'GET')
+      CoreUtils::notAllowed();
+
+    $name = $_GET['name'];
+
+    $member_list = DeviantArt::getMemberList();
+    if (!isset($member_list[$name]))
+      HTTP::tempRedirect('/img/blank-pixel.png');
+
+    HTTP::tempRedirect('/img/approved.svg');
   }
 
   // TODO Endpoint for changing user settings
