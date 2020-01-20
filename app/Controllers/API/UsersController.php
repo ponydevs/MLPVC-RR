@@ -146,13 +146,15 @@ class UsersController extends APIController {
     if ($this->action !== 'GET')
       CoreUtils::notAllowed();
 
-    $name = $_GET['name'];
+    $name = strtolower(CoreUtils::trim($_GET['name']));
 
     $member_list = DeviantArt::getMemberList();
-    if (!isset($member_list[$name]))
-      HTTP::tempRedirect('/img/blank-pixel.png');
+    foreach ($member_list as $k => $v) {
+      if (strtolower($k) === $name)
+        HTTP::tempRedirect('/img/approved.svg');
+    }
 
-    HTTP::tempRedirect('/img/approved.svg');
+    HTTP::tempRedirect('/img/blank-pixel.png');
   }
 
   // TODO Endpoint for changing user settings
