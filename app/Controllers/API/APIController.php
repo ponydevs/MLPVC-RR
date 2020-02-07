@@ -12,7 +12,7 @@ use App\CoreUtils;
  *     version="0.1",
  *     description="A work-in-progress API that will eventually allow programmatic access to all features of the [MLPVector.Club](https://mlpvector.club/) website.",
  *     @OA\License(name="MIT"),
- *     @OA\Contact(name="David Joseph Guzsik", url="https://seinopsys.hu", email="seinopsys@gmail.com"),
+ *     @OA\Contact(name="David Joseph Guzsik", url="https://seinopsys.dev", email="david@seinopsys.dev"),
  *   ),
  *   @OA\Server(url="/api/v0", description="Unstable API"),
  *   @OA\Tag(name="authentication", description="Endpoints related to getting a user logged in or out, as well as checking logged in status"),

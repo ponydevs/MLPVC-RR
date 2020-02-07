@@ -27,7 +27,7 @@ The site is known to work with the following set of software, assuming correct c
 | Search Server     | ElasticSearch 6+                              |
 | Runtime & Dependencies | Composer (latest)<br>PHP 7.3+            |
 | Source Control    | Git<br><small>(the site shows the commit data in the footer, so the binary should be runnable by the application)</small> |
-| SSL Certificate   | Self-signed ([get a pair here](https://seinopsys.hu/selfsigned))<br><small>(required to use the site through HTTPS while developing)</small> |
+| SSL Certificate   | Self-signed ([get a pair here](https://seinopsys.dev/selfsigned))<br><small>(required to use the site through HTTPS while developing)</small> |
 
 If you can get it to work on some other setup then congratulations, but I cannot guarantee that everything will function as intended. 
 

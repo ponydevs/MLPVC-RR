@@ -41,7 +41,7 @@
     "react": "16.8.6",
     "react-dom": "16.8.6"
   },
-  "author": "SeinopSys <seinopsys@gmail.com> (https://github.com/SeinopSys)",
+  "author": "SeinopSys <david@seinopsys.dev> (https://github.com/SeinopSys)",
   "license": "MIT",
   "private": true,
   "scripts": {

@@ -1,4 +1,4 @@
-/* global moment,ace */
+/* global moment,ace,discordInviteLink */
 (function() {
   'use strict';
 
@@ -238,7 +238,7 @@
     $('#ctxmenu').hide();
 
     // Screw JS file scraping spam bots
-    const email = ['seinopsys', 'gmail.com'].join('@');
+    const email = ['david', 'seinopsys.dev'].join('@');
 
     $.Dialog.info($.Dialog.isOpen() ? undefined : 'Contact Us',
       `<h3>How to contact us</h3>

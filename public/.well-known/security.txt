@@ -1,5 +1,0 @@
-Contact: seinopsys@gmail.com
-Encryption: https://mlpvector.club/pgp-key.txt
-Acknowledgements: 
-Policy: https://mlpvector.club/about/privacy
-Signature: https://mlpvector.club/.well-known/security.txt.sig
