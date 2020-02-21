@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use ActiveRecord\DateTime;
 use App\CoreUtils;
 use App\JSON;
 use App\RedisHelper;
@@ -39,6 +38,7 @@ class CachedDeviation {
   public static function create(array $data):?self {
     $instance = new self($data);
     $instance->save();
+
     return $instance;
   }
 
@@ -54,6 +54,13 @@ class CachedDeviation {
     ]));
 
     return $this;
+  }
+
+  public function update_attributes(array $attributes) {
+    foreach ($attributes as $key => $value)
+      if (property_exists($this, $key))
+        $this->{$key} = $value;
+    $this->save();
   }
 
   public function toLinkWithPreview() {

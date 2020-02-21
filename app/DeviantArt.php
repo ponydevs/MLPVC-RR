@@ -125,7 +125,7 @@ class DeviantArt {
       }
       catch (\Exception $e){
         if ($deviation !== null)
-          $deviation->update_attributes(['updated_on' => date('c', time() + Time::IN_SECONDS['minute'])]);
+          $deviation->save();
 
         CoreUtils::error_log("Saving local data for $id@$provider failed: ".$e->getMessage()."\n".$e->getTraceAsString());
 
@@ -151,7 +151,6 @@ class DeviantArt {
             : null
           ),
         'author' => $json['author_name'],
-        'updated_on' => date('c'),
       ];
 
       switch ($json['type']){
