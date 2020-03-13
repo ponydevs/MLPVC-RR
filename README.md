@@ -45,7 +45,7 @@ PHP-rendered classic web app powering the MLP Vector Club's website since 2015.
    [php-tmdb/api](https://github.com/php-tmdb/api)
  - Development tools:
    [Gulp](http://gulpjs.com/),
-   [Uglify-js](https://www.npmjs.com/package/uglify-js),
+   [Terser](https://github.com/terser/terser),
    [SASS](http://sass-lang.com/),
    [Babel](https://babeljs.io/),
    [Autoprefixer](https://github.com/postcss/autoprefixer),
