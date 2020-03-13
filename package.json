@@ -39,7 +39,8 @@
     "jquery": "^3.4.1",
     "prop-types": "15.6.2",
     "react": "16.8.6",
-    "react-dom": "16.8.6"
+    "react-dom": "16.8.6",
+    "minimist": ">=1.2.2"
   },
   "author": "SeinopSys <david@seinopsys.dev> (https://github.com/SeinopSys)",
   "license": "MIT",
