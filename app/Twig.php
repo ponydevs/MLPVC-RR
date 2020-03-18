@@ -34,6 +34,7 @@ class Twig {
     self::$env->addFunction(new TwigFunction('hex2rgb', fn(string $color) => RGBAColor::parse($color)->toRGB()));
 
     self::$env->addFilter(new TwigFilter('apos_encode', '\App\CoreUtils::aposEncode'));
+    self::$env->addFilter(new TwigFilter('wbr_slash', fn(string $text) => preg_replace('~/([^/])~', '/<wbr>$1', $text)));
 
     self::$env->addTest(new TwigTest('numeric', 'is_numeric'));
   }
