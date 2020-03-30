@@ -148,6 +148,7 @@
   const $searchInput = $searchForm.children('input');
   const appearanceAutocompleteCache = new window.KeyValueCache();
   if ($searchInput.length){
+    const focused = $searchInput.is(':focus');
     $searchInput.autocomplete(
       {
         hint: false,
@@ -166,8 +167,9 @@
           },
           templates: {
             header: () => `<div class="aa-header">
-							Highlight suggestions with the arrow keys, then press <kbd>Enter</kbd> to accept. Pressing
-							<kbd>Enter</kbd> without highlighting a result will take you to the full search results.
+							Highlight suggestions with <kbd><span class="typcn typcn-arrow-up"/></kbd>
+							<kbd><span class="typcn typcn-arrow-down"/></kbd>, then press <kbd>Enter</kbd> to accept.
+							Pressing <kbd>Enter</kbd> without highlighting a result will take you to the search results page.
 						</div>`,
             suggestion: data => {
               return $('<a>').attr('href', data.url).append(
@@ -178,7 +180,10 @@
           },
         },
       ],
-    ).on('autocomplete:selected', function(event, suggestion, dataset, context) {
+    );
+    if (focused)
+      $searchInput.focus();
+    $searchInput.on('autocomplete:selected', function(event, suggestion, dataset, context) {
       if (context && context.selectionMethod === 'click'){
         return;
       }

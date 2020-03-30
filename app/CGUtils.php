@@ -165,6 +165,8 @@ class CGUtils {
       $preview = "<span class='appearance-preview-promise$class' $attributes></span>";
       if (!empty($char_tags)){
         $aka = [];
+        if (CoreUtils::$isEvent && isset(BABEL_ARRAY[$appearance->id]))
+          $aka[] = strtolower($appearance->label);
         foreach ($char_tags as $t){
           if (CoreUtils::contains($appearance->label, $t, false))
             continue;
@@ -179,7 +181,7 @@ class CGUtils {
     if (empty($aka))
       $aka = '';
 
-    $HTML .= "<li><a href='$url'>$preview<span class='name'>$sprite{$appearance->label}</span>$aka</a></li>";
+    $HTML .= "<li><a href='$url'>$preview<span class='name'>$sprite<span class='event-label'>{$appearance->getBabelLabel()}</span></span>$aka</a></li>";
   }
 
   /**

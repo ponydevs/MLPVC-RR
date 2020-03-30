@@ -14,9 +14,9 @@
       }
 
       &.data {
+        display: block !important;
         max-width: 100% !important;
         padding: 0 !important;
-        display: block !important;
         text-align: left;
       }
 
@@ -38,8 +38,8 @@
 
       div.tags {
         display: flex;
-        width: 100%;
         flex-flow: row wrap;
+        width: 100%;
 
         &:empty {
           display: none
@@ -53,22 +53,22 @@
       }
 
       ul.colors {
+        border-color: rgba(black, .3);
+        border-style: solid;
+        border-width: 1px 0 0 1px;
         display: flex;
         flex-wrap: wrap;
-        width: 100%;
-        border-style: solid;
-        border-color: rgba(black, .3);
-        border-width: 1px 0 0 1px;
         margin-top: 5px;
+        width: 100%;
 
         li {
-          display: block;
-          text-align: center;
-          flex: 1 0 auto;
-          max-width: 100%;
-          box-sizing: border-box;
-          margin: 0;
           border-width: 0 1px 1px 0;
+          box-sizing: border-box;
+          display: block;
+          flex: 1 0 auto;
+          margin: 0;
+          max-width: 100%;
+          text-align: center;
 
           .cat {
             text-align: right;
@@ -91,12 +91,12 @@
     }
 
     .appearance-header {
+      align-items: center;
       display: flex;
       flex-flow: row wrap;
-      align-items: center;
 
       .appearance-name {
-        padding-right: .5em;
+        margin-right: .5em;
       }
     }
 
@@ -115,28 +115,28 @@
 }
 
 .appearance-list {
-  padding: 0;
   margin: 0;
+  padding: 0;
 
   .pagination:empty + & {
     margin-top: 8px;
   }
 
   .pagination + &:empty:before {
-    font-size: 1.4em;
-    font-style: italic;
     content: "There are no appearances on this page";
     display: block;
+    font-size: 1.4em;
+    font-style: italic;
     text-align: center;
   }
 
   > li {
-    padding: 10px;
-    color: #434343;
     background-color: rgba(black, .03);
     border: 1px solid rgba(black, .3);
+    color: #434343;
     display: flex;
     flex-flow: row nowrap;
+    padding: 10px;
 
     &:not(:last-child) {
       margin-bottom: 10px
@@ -149,9 +149,9 @@
 
     > div {
       &.sprite img {
-        min-width: 150px;
-        max-width: 100%;
         max-height: 150px;
+        max-width: 100%;
+        min-width: 150px;
       }
 
       .appearance-header .appearance-name {
@@ -159,8 +159,8 @@
       }
 
       > .update {
-        margin-top: 5px;
         font-size: .8em;
+        margin-top: 5px;
 
         &:empty {
           display: none
@@ -179,9 +179,9 @@
         }
 
         span:not(:last-child) {
-          padding-right: 5px;
-          margin-right: 5px;
           border-right: 1px solid;
+          margin-right: 5px;
+          padding-right: 5px;
         }
       }
     }
@@ -201,8 +201,8 @@
 }
 
 div.tags {
-  user-select: none;
   margin-top: 6px;
+  user-select: none;
 }
 
 .tag, div.tags .twitter-typeahead {
@@ -211,13 +211,13 @@ div.tags {
 }
 
 .tag {
+  border: 1px solid;
+  box-sizing: border-box;
+  cursor: default;
   display: inline-block;
   font-weight: bold;
-  box-sizing: border-box;
-  padding: 3px 5px;
-  border: 1px solid;
-  cursor: default;
   height: 26px;
+  padding: 3px 5px;
 
   &:before {
     //noinspection CssNoGenericFontName
@@ -262,10 +262,10 @@ div.tags {
   }
 
   &.synonym {
-    font-weight: normal !important;
-    opacity: .8;
-    letter-spacing: -.8px;
     font-size: .9em;
+    font-weight: normal !important;
+    letter-spacing: -.8px;
+    opacity: .8;
 
     > .uses .typcn {
       margin-right: 4px
@@ -278,25 +278,25 @@ div.tags {
 }
 
 div.colors-pending, ul.colors:empty:before {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding: .2em;
-  box-sizing: border-box;
   border: 1px dashed rgba(black, .5);
+  box-sizing: border-box;
+  display: block;
+  padding: .2em;
+  text-align: center;
+  width: 100%;
 }
 
 div.colors-pending {
-  font-size: 1.2em;
   color: $NDarkBlue;
+  font-size: 1.2em;
 }
 
 ul.colors {
   display: block;
-  padding: 0;
   list-style: none;
-  white-space: initial !important;
   margin: 0;
+  padding: 0;
+  white-space: initial !important;
 
   &:empty:before {
     content: "There are no color groups for this appearance";
@@ -315,18 +315,18 @@ ul.colors {
 
   &.compact {
     .color-group {
+      align-items: center;
       display: inline-flex;
       justify-content: center;
-      align-items: center;
 
       > :not(:last-child) {
         margin-right: 4px;
       }
 
       .color-list {
+        align-items: flex-start;
         display: flex;
         flex-flow: row wrap;
-        align-items: flex-start;
 
         .color {
           margin: 2px;
@@ -336,12 +336,12 @@ ul.colors {
   }
 
   .color-group {
-    display: inline-block;
-    border: 1px solid rgba(black, .2);
     background-color: rgba(black, .05);
-    padding: 4px;
-    margin: 5px 5px 0 0;
+    border: 1px solid rgba(black, .2);
+    display: inline-block;
     font-size: 16px;
+    margin: 5px 5px 0 0;
+    padding: 4px;
 
     .color {
       @include colored-square(16px, 1px)
@@ -354,13 +354,13 @@ ul.colors {
   user-select: none;
 
   label {
+    cursor: pointer;
     display: block;
     margin-top: 10px;
-    cursor: pointer;
 
     input {
-      border-color: rgba(white, .3);
       background-color: rgba(white, .1);
+      border-color: rgba(white, .3);
       margin-right: 7px;
 
       &:before {
@@ -373,10 +373,10 @@ ul.colors {
 #search-form {
   display: flex;
   flex-flow: row;
-  max-width: 700px;
-  width: 100%;
-  text-align: center;
   margin: 0 auto 10px;
+  max-width: 700px;
+  text-align: center;
+  width: 100%;
 
   > * {
     border-radius: 0;
@@ -385,23 +385,23 @@ ul.colors {
   $radius: 8px;
 
   button:last-of-type {
-    border-top-right-radius: $radius;
     border-bottom-right-radius: $radius;
+    border-top-right-radius: $radius;
   }
 
   $SearchBorder: #333;
   $SearchButtonBG: #ddd;
 
   input {
-    font-size: 1em;
-    line-height: .9em;
-    height: 1em;
-    margin: 0;
-    $padding: .3em;
-    padding: $padding;
-    border-color: $SearchBorder;
     background-color: $BackgroundLight;
+    border-color: $SearchBorder;
     box-shadow: inset 0 1px 1px 1px rgba($SearchBorder, .1);
+    font-size: 1em;
+    $padding: .3em;
+    height: 1em;
+    line-height: .9em;
+    margin: 0;
+    padding: $padding;
     width: calc(100% - (#{$padding} * 2) - 2px);
   }
 
@@ -411,28 +411,28 @@ ul.colors {
   }
 
   input, .algolia-autocomplete {
-    border-top-left-radius: $radius;
     border-bottom-left-radius: $radius;
+    border-top-left-radius: $radius;
   }
 
   button {
-    vertical-align: baseline;
-    margin: 0;
-    flex: 0 0 auto;
-    font-size: .8em;
     border: 1px solid $SearchBorder;
     border-left: 0;
-    transform: none !important;
+    flex: 0 0 auto;
+    font-size: .8em;
+    margin: 0;
     padding-left: 7px;
     padding-right: 7px;
+    transform: none !important;
+    vertical-align: baseline;
 
     &:before {
       line-height: 1em
     }
 
     &:not(:hover) {
-      color: $SearchBorder !important;
       background-color: $SearchButtonBG !important;
+      color: $SearchBorder !important;
     }
   }
 
@@ -440,29 +440,29 @@ ul.colors {
     background-color: $BackgroundLight;
 
     .aa-dataset-appearance {
-      overflow: hidden;
-      border-radius: $radius 0 $radius $radius;
       border: 1px solid $SearchBorder;
-      margin-top: -1px;
+      border-radius: $radius 0 $radius $radius;
       box-shadow: 0 1px 5px rgba($HeaderBlue, .2);
+      margin-top: -1px;
+      overflow: hidden;
 
       .aa-header {
-        width: 100%;
-        border-bottom: 1px solid $SearchBorder;
         background-color: $SearchButtonBG;
-        padding: 5px;
+        border-bottom: 1px solid $SearchBorder;
+        box-sizing: border-box;
         font-size: 14px;
         line-height: 1.4em;
-        box-sizing: border-box;
+        padding: 5px;
         user-select: none;
+        width: 100%;
       }
 
       .aa-suggestions {
         background: $BackgroundLight;
-        overflow: hidden;
-        width: 100%;
         box-sizing: border-box;
         font-size: 1.5rem;
+        overflow: hidden;
+        width: 100%;
 
         .aa-suggestion {
           display: block;
@@ -473,13 +473,14 @@ ul.colors {
           }
 
           a {
-            display: flex;
-            flex-flow: row nowrap;
             align-items: center;
-            justify-content: flex-start;
-            $suggestion-padding: 8px;
-            padding: $suggestion-padding;
+            color: inherit !important;
             cursor: pointer;
+            display: flex;
+            $suggestion-padding: 8px;
+            flex-flow: row nowrap;
+            justify-content: flex-start;
+            padding: $suggestion-padding;
             transition: none;
 
             &:not(:last-child) {
@@ -487,23 +488,23 @@ ul.colors {
             }
 
             .ac-appearance-image {
-              flex: 0 0 auto;
-              display: block;
-              $base-size: 1.5em;
-              min-width: $base-size;
-              max-width: 100%;
-              max-height: $base-size;
-              margin-right: $suggestion-padding;
               background: $BackgroundLight;
               border-radius: 4px;
+              $base-size: 1.5em;
+              display: block;
+              flex: 0 0 auto;
+              margin-right: $suggestion-padding;
+              max-height: $base-size;
+              max-width: 100%;
+              min-width: $base-size;
             }
 
             .ac-appearance-label {
               flex: 1 1 auto;
-              white-space: nowrap;
               overflow: hidden;
-              text-overflow: ellipsis;
               text-align: left;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
           }
         }
@@ -514,8 +515,8 @@ ul.colors {
 
 #swatch-save {
   .section .btn {
-    vertical-align: baseline;
     padding: 2px 3px;
+    vertical-align: baseline;
   }
 
   .responsive-embed {
@@ -526,13 +527,23 @@ ul.colors {
 
 #template-gen-form {
   canvas {
-    display: block;
-    width: 300px;
-    height: 300px;
-    margin: 0 auto;
-    border: 1px solid black;
     background: url('/img/transparency.svg') repeat center;
     background-size: 16px;
+    border: 1px solid black;
+    display: block;
+    height: 300px;
+    margin: 0 auto;
     pointer-events: none;
+    width: 300px;
+  }
+}
+
+body.event {
+  #search-form input, .appearance-name, .algolia-autocomplete .aa-suggestions {
+    @include meme-font;
+  }
+
+  .algolia-autocomplete .aa-suggestions a {
+    color: inherit !important;
   }
 }

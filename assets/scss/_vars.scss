@@ -28,6 +28,7 @@ $DeviantArtGreen: #05cc47;
 
 $monospace: 'Consolas', monospace;
 $cursive: 'Celestia', 'Lucida Calligraphy', 'Monotype Corsiva', cursive;
+$MemeFont: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', cursive;
 $RegularFont: 'Arimo', sans-serif;
 $AvatarSize: 50px;
 
@@ -251,6 +252,15 @@ $NoScrollbar: false;
   box-sizing: border-box;
 }
 
+@mixin meme-font($bg: true) {
+  font-family: $MemeFont !important;
+  text-transform: lowercase !important;
+  @if ($bg) {
+    background-color: white !important;
+  }
+  color: black !important;
+}
+
 %appearance-preview {
   display: inline-block;
   height: 1em;
@@ -284,6 +294,10 @@ $NoScrollbar: false;
 
       .preview {
         @extend %appearance-preview
+      }
+
+      span {
+        @include meme-font;
       }
 
       > .typcn {

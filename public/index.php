@@ -13,6 +13,8 @@ $request_uri = preg_replace(new RegExp('(?:….*|<)$'), '', $decoded_uri);
 $safe_uri = preg_replace(new RegExp('[^ -~]'), '', $request_uri);
 // Enforce URL
 CoreUtils::fixPath($safe_uri);
+// Sssssshhh...
+CoreUtils::setIsEvent();
 
 require CONFPATH.'routes/index.php';
 /** @var $match array */

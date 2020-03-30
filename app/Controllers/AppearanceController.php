@@ -48,7 +48,7 @@ class AppearanceController extends ColorGuideController {
       CoreUtils::noPerm();
 
     CoreUtils::fixPath($this->appearance->toURL());
-    $heading = $this->appearance->label;
+    $heading = $this->appearance->getBabelLabel();
 
     $cm_count = \count($this->appearance->cutiemarks);
     $cmv = $cm_count > 0 ? ' and cutie mark '.CoreUtils::makePlural('vector', $cm_count) : '';
@@ -1140,7 +1140,7 @@ class AppearanceController extends ColorGuideController {
 
     CGUtils::autocompleteRespond(array_map(static function (Appearance $a) {
       return [
-        'label' => $a->label,
+        'label' => $a->getBabelLabel(),
         'url' => $a->toURL(),
         'image' => $a->getPreviewImage(),
       ];

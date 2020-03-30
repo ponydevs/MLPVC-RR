@@ -159,3 +159,7 @@
   padding: 0;
   font-size: 0;
 }
+
+body.event #content h1 .meme-font {
+  @include meme-font(false);
+}

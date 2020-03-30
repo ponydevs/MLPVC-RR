@@ -45,7 +45,7 @@
     {% endif %}
     {% if elastic_avail %}
       <form id="search-form">
-        <input name="q" title="Search"{{ search_query is not empty ? 'value="' ~ (search_query | apos_encode) ~ '"' }}>
+        <input name="q" title="Search"{{ search_query is not empty ? 'value="' ~ (search_query | apos_encode) ~ '"' }} autofocus>
         <button type="submit" class="blue">Search</button>
         <button type="submit" name="btnl" class="green typcn typcn-flash" title="I'm feeling lucky"></button>
         <button type="reset" class="red typcn typcn-times" title="Clear"{{ search_query is empty ? ' disabled' : '' }}></button>

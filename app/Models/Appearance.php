@@ -505,11 +505,11 @@ class Appearance extends NSModel implements Linkable {
   }
 
   public function toAnchor():string {
-    return "<a href='{$this->toURL()}'>{$this->label}</a>";
+    return "<a href='{$this->toURL()}'>{$this->getBabelLabel()}</a>";
   }
 
   public function toAnchorWithPreview():string {
-    return "<a href='{$this->toURL()}'>{$this->getPreviewHTML()}<span>{$this->label}</span></a>";
+    return "<a href='{$this->toURL()}'>{$this->getPreviewHTML()}<span>{$this->getBabelLabel()}</span></a>";
   }
 
   /**
@@ -1025,5 +1025,15 @@ class Appearance extends NSModel implements Linkable {
 
   public function getPreviewImage(int $size = self::SPRITE_SIZES['SOURCE']) {
     return $this->getSpriteURL($size, $this->getPreviewURL());
+  }
+
+  public function getBabelLabel():?string {
+    if ($this->owner_id !== null || !CoreUtils::$isEvent)
+      return $this->label;
+
+    if (!isset(BABEL_ARRAY[$this->id]))
+      return strtolower($this->label);
+
+    return CoreUtils::array_random(BABEL_ARRAY[$this->id]);
   }
 }

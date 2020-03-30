@@ -11,7 +11,7 @@
 <head>
   {% include 'layout/_head.html.twig' %}
 </head>
-<body>
+<body {% if event %}class="event"{% endif %}>
 <header>
   {% include 'layout/_header.html.twig' %}
 

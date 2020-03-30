@@ -253,6 +253,10 @@ class CoreUtils {
     $scope['js'] = $scope['default_js'] ? self::DEFAULT_JS : [];
     self::_checkAssets($options, $scope['css'], 'css', $view);
     self::_checkAssets($options, $scope['js'], 'js', $view);
+    $scope['event'] = self::$isEvent;
+    if (self::$isEvent) {
+      $scope['css'][] = 'https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap';
+    }
 
     // Libs
     LibHelper::process($scope, $options, self::DEFAULT_LIBS);
@@ -644,7 +648,7 @@ class CoreUtils {
 
     $unifier = new \DOMDocument('1.0', 'UTF-8');
     $unifier->loadXML($sanitized);
-    if ($warnings !== null) {
+    if ($warnings !== null){
       $all_tags = $unifier->getElementsByTagName('*');
       $transform_attr = false;
       foreach ($all_tags as $tag){
@@ -670,7 +674,7 @@ class CoreUtils {
     }
     // Fix 1-stop linear gradients that would otherwise break in Illustrator
     $linear_gradients = $unifier->getElementsByTagName('linearGradient');
-    if ($warnings !== null) {
+    if ($warnings !== null){
       $single_stop_warnings = [];
     }
     foreach ($linear_gradients as $grad){
@@ -687,11 +691,11 @@ class CoreUtils {
       $stop_node->setAttribute('stop-color', $original_stop_color);
       $grad->appendChild($stop_node);
 
-      if ($warnings !== null && !isset($single_stop_warnings[$original_stop_color])) {
+      if ($warnings !== null && !isset($single_stop_warnings[$original_stop_color])){
         $single_stop_warnings[$original_stop_color] = "Single-stop linear gradient found with color $original_stop_color which will break in Illustrator (this has been remedied by duplicating the color stop, but fixing the source file would be ideal)";
       }
     }
-    if (!empty($single_stop_warnings)) {
+    if (!empty($single_stop_warnings)){
       $warnings = array_merge($warnings, array_values($single_stop_warnings));
     }
 
@@ -1542,7 +1546,7 @@ class CoreUtils {
       'base-uri '.self::env('CSP_BASE_URI'),
       'report-uri '.self::env('CSP_REPORT_URI'),
     ]);
-    foreach (self::CSP_HEADER_NAMES as $header_name) {
+    foreach (self::CSP_HEADER_NAMES as $header_name){
       header("$header_name: $csp_header");
     }
   }
@@ -1551,7 +1555,7 @@ class CoreUtils {
     if (!self::env('CSP_ENABLED'))
       return;
 
-    foreach (self::CSP_HEADER_NAMES as $header_name) {
+    foreach (self::CSP_HEADER_NAMES as $header_name){
       header_remove($header_name);
     }
   }
@@ -1560,5 +1564,59 @@ class CoreUtils {
     if (posix_isatty(STDOUT))
       echo "$message\n";
     else self::error_log(basename($path).": $message");
+  }
+
+  public static function isCrawler() {
+    static $verdict = null;
+
+    if ($verdict === null){
+      $CrawlerDetect = new CrawlerDetect;
+      $verdict = $CrawlerDetect->isCrawler();
+    }
+
+    return $verdict;
+  }
+
+  public static bool $isEvent;
+
+  public static function setIsEvent() {
+    $ts = time();
+    self::$isEvent = $ts >= 1_585_656_000 && $ts < 1_585_828_800 && !self::isCrawler();
+    $babel_path = FSPATH.'babel.php';
+    if (self::$isEvent && file_exists($babel_path)) {
+      require_once $babel_path;
+    }
+  }
+
+  /**
+   * Swap adjacent letters in a string a specific number of times
+   *
+   * @param string $str
+   * @param int    $times
+   *
+   * @return string
+   */
+  public static function swapLetters(string $str, int $times):string {
+    if (mb_strlen($str) < 2)
+      return $str;
+
+    $indices = [];
+    $str_array = mb_str_split($str);
+    foreach ($str_array as $i => $letter){
+      if (preg_match('~^[a-z]$~i', $letter))
+        $indices[] = $i;
+    }
+
+    $indices_count = \count($indices);
+    for ($i = 0; $i < $times; $i++){
+      $key1 = array_rand($indices);
+      if ($key1 === $indices_count - 1)
+        [$key1, $key2] = [$key1-1, $key1];
+      else $key2 = $key1 + 1;
+      [$index1, $index2] = [$indices[$key1], $indices[$key2]];
+      [$str_array[$index2], $str_array[$index1]] = [$str_array[$index1], $str_array[$index2]];
+    }
+
+    return implode('', $str_array);
   }
 }

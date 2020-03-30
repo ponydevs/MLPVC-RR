@@ -124,3 +124,7 @@
     }
   }
 }
+
+body.event #full-list .event-label {
+  @include meme-font;
+}
