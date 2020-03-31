@@ -18,6 +18,7 @@ use enshrined\svgSanitize\data\AllowedAttributes;
 use enshrined\svgSanitize\data\AttributeInterface;
 use enshrined\svgSanitize\data\TagInterface;
 use enshrined\svgSanitize\Sanitizer;
+use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Monolog\Logger;
 use RuntimeException;
 
@@ -1570,8 +1571,8 @@ class CoreUtils {
     static $verdict = null;
 
     if ($verdict === null){
-      $CrawlerDetect = new CrawlerDetect;
-      $verdict = $CrawlerDetect->isCrawler();
+      $crawler_detect = new CrawlerDetect();
+      $verdict = $crawler_detect->isCrawler();
     }
 
     return $verdict;
