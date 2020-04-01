@@ -254,7 +254,7 @@ class CoreUtils {
     $scope['js'] = $scope['default_js'] ? self::DEFAULT_JS : [];
     self::_checkAssets($options, $scope['css'], 'css', $view);
     self::_checkAssets($options, $scope['js'], 'js', $view);
-    $scope['event'] = self::$isEvent;
+    $scope['is_2020_event'] = self::$isEvent;
     if (self::$isEvent) {
       $scope['css'][] = 'https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap';
     }
