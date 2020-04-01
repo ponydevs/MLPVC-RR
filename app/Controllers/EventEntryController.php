@@ -21,16 +21,17 @@ class EventEntryController extends EventController {
   private $entry;
 
   private function load_event_entry($params, string $action) {
-    if (!Auth::$signed_in)
+    $lazy_loading = $action === 'lazyload';
+    if (!Auth::$signed_in && !$lazy_loading)
       Response::fail();
 
     if (!isset($params['entryid']))
       Response::fail('Entry ID is missing or invalid');
 
-    $this->entry = EventEntry::find(\intval($params['entryid'], 10));
+    $this->entry = EventEntry::find((int)$params['entryid']);
     if (empty($this->entry))
       Response::fail('The requested entry could not be found');
-    if ($action === 'lazyload')
+    if ($lazy_loading)
       return;
 
     if ($action === 'manage' && $this->entry->submitted_by !== Auth::$user->id && Permission::insufficient('staff'))
