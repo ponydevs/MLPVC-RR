@@ -33,7 +33,6 @@
     "fightbulc/moment": "^1.28",
     "google/apiclient": "^2.0",
     "google/apiclient-services": "^0.50.0",
-    "jaybizzle/crawler-detect": "^1.2",
     "monolog/monolog": "^1.25",
     "ongr/elasticsearch-dsl": "~7.0",
     "peertopark/uribuilder": "^1.0",

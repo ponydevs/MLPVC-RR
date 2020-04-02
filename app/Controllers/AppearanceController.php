@@ -48,14 +48,13 @@ class AppearanceController extends ColorGuideController {
       CoreUtils::noPerm();
 
     CoreUtils::fixPath($this->appearance->toURL());
-    $heading = $this->appearance->getBabelLabel();
 
     $cm_count = \count($this->appearance->cutiemarks);
     $cmv = $cm_count > 0 ? ' and cutie mark '.CoreUtils::makePlural('vector', $cm_count) : '';
 
     $settings = [
-      'title' => "$heading - Color Guide",
-      'heading' => $heading,
+      'title' => "{$this->appearance->label} - Color Guide",
+      'heading' => $this->appearance->getBabelLabel(),
       'css' => ['pages/colorguide/guide', true],
       'js' => ['jquery.ctxmenu', 'pages/colorguide/guide', true],
       'og' => [

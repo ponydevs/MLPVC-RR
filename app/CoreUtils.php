@@ -18,7 +18,6 @@ use enshrined\svgSanitize\data\AllowedAttributes;
 use enshrined\svgSanitize\data\AttributeInterface;
 use enshrined\svgSanitize\data\TagInterface;
 use enshrined\svgSanitize\Sanitizer;
-use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Monolog\Logger;
 use RuntimeException;
 
@@ -1575,17 +1574,6 @@ class CoreUtils {
     if (posix_isatty(STDOUT))
       echo "$message\n";
     else self::error_log(basename($path).": $message");
-  }
-
-  public static function isCrawler() {
-    static $verdict = null;
-
-    if ($verdict === null){
-      $crawler_detect = new CrawlerDetect();
-      $verdict = $crawler_detect->isCrawler();
-    }
-
-    return $verdict;
   }
 
   public static bool $useNutshellNames;
