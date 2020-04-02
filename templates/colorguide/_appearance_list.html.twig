@@ -18,7 +18,7 @@
               {% if p.private %}
                 <span class='typcn typcn-lock-closed color-orange'></span>
               {% endif %}
-              <a href='{{ p.toURL }}' class="appearance-name">{{ p.babelLabel | escape }}</a>
+              <a href='{{ p.toURL }}' class="appearance-name {%- if p.owner_id %} pcg-name{% endif %}">{{ p.babelLabel | escape }}</a>
               <div class="button-block">
                 <a class='btn link typcn typcn-image' title='View as PNG' href='{{ p.paletteURL }}' target='_blank'></a>
                 <button class='teal typcn typcn-brush get-swatch' title='Download swatch file'></button>

@@ -11,7 +11,7 @@
   {% set owner_or_staff = is_owner or is_staff %}
   <div id="content">
     <div class="sprite-wrap">{{ appearance.spriteHTML(owner_or_staff) }}</div>
-    <h1><span class="meme-font">{{ heading | escape }}</span></h1>
+    <h1><span class="appearance-name {%- if appearance.owner_id %} pcg-name{% endif %}">{{ heading | escape }}</span></h1>
     <p>from {% if owner is defined -%}
         {{ owner.toAnchor ~ posess(owner.name, true) }} <a href='/@{{ owner.name }}/cg'>Personal Color Guide</a>
       {%- else -%}
