@@ -296,14 +296,14 @@ $NoScrollbar: false;
         @extend %appearance-preview
       }
 
-      span {
-        @include meme-font;
-      }
-
       > .typcn {
         margin-right: .2em
       }
     }
+  }
+
+  body.nutshell-names &:not(.personal-cg-appearances) li > a span {
+    @include meme-font;
   }
 }
 

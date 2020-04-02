@@ -12,6 +12,7 @@ class UserPrefs extends GlobalSettings {
     'cg_hidesynon' => 1,
     'cg_hideclrinfo' => 0,
     'cg_fulllstprev' => 1,
+    'cg_nutshell' => 0,
     'p_avatarprov' => 'deviantart',
     'p_vectorapp' => '',
     'p_hidediscord' => 0,
@@ -153,6 +154,7 @@ class UserPrefs extends GlobalSettings {
       case 'cg_hidesynon':
       case 'cg_hideclrinfo':
       case 'cg_fulllstprev':
+      case 'cg_nutshell':
       case 'ep_revstepbtn':
         $value = $value ? 1 : 0;
       break;

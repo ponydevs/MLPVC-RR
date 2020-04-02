@@ -382,6 +382,18 @@ ul.colors {
     border-radius: 0;
   }
 
+  button, input {
+    box-sizing: border-box;
+
+    @media (max-width: $Breakpoint) {
+      height: 1.8rem !important;
+    }
+
+    @media (min-width: $Breakpoint) {
+      height: 3rem !important;
+    }
+  }
+
   $radius: 8px;
 
   button:last-of-type {
@@ -402,7 +414,15 @@ ul.colors {
     line-height: .9em;
     margin: 0;
     padding: $padding;
-    width: calc(100% - (#{$padding} * 2) - 2px);
+    width: calc(100% - 2px);
+  }
+
+  .algolia-autocomplete {
+    display: block !important;
+
+    + button {
+      margin-left: -1px;
+    }
   }
 
   > input, .algolia-autocomplete {
@@ -425,6 +445,8 @@ ul.colors {
     padding-right: 7px;
     transform: none !important;
     vertical-align: baseline;
+    position: relative;
+    z-index: 2;
 
     &:before {
       line-height: 1em
@@ -538,7 +560,7 @@ ul.colors {
   }
 }
 
-body.event {
+body.nutshell-names {
   #search-form input, .appearance-name, .algolia-autocomplete .aa-suggestions {
     @include meme-font;
   }

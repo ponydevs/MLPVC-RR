@@ -20,7 +20,7 @@
 
     {% set has_pcg = (personal_color_guides | length) > 0 %}
     {% if same_user or has_pcg %}
-      <div class='personal-cg-appearances'>
+      <ul class='personal-cg-appearances'>
         {% if has_pcg %}
           {% for p in personal_color_guides %}
             {# @var p \App\Models\Appearance #}
@@ -29,7 +29,7 @@
         {% else %}
           You haven't added any appearances to your Personal Color Guide yet.
         {% endif %}
-      </div>
+      </ul>
     {% endif %}
 
     <div class="button-block">

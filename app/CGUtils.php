@@ -165,7 +165,7 @@ class CGUtils {
       $preview = "<span class='appearance-preview-promise$class' $attributes></span>";
       if (!empty($char_tags)){
         $aka = [];
-        if (CoreUtils::$isEvent && isset(BABEL_ARRAY[$appearance->id]))
+        if (CoreUtils::$useNutshellNames && isset(NUTSHELL_NAMES[$appearance->id]))
           $aka[] = strtolower($appearance->label);
         foreach ($char_tags as $t){
           if (CoreUtils::contains($appearance->label, $t, false))

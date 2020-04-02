@@ -40,6 +40,12 @@ class UserSettingForm {
         'desc' => 'Display previews and alternate names on the full list',
       ],
     ],
+    'cg_nutshell' => [
+      'type' => 'checkbox',
+      'options' => [
+        'desc' => 'Use joke character names (does not affect search)',
+      ],
+    ],
     'p_vectorapp' => [
       'type' => 'select',
       'options' => [

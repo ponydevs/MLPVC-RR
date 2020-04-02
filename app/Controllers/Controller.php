@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\CoreUtils;
 use App\CSRFProtection;
 use App\Users;
 
@@ -34,7 +35,9 @@ abstract class Controller {
     }
 
     CSRFProtection::protect();
-    if (static::$auth)
+    if (static::$auth) {
       Users::authenticate();
+      CoreUtils::checkNutshell();
+    }
   }
 }

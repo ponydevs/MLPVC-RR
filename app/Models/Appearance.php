@@ -1028,12 +1028,12 @@ class Appearance extends NSModel implements Linkable {
   }
 
   public function getBabelLabel():?string {
-    if ($this->owner_id !== null || !CoreUtils::$isEvent)
+    if ($this->owner_id !== null || !CoreUtils::$useNutshellNames)
       return $this->label;
 
-    if (!isset(BABEL_ARRAY[$this->id]))
+    if (!isset(NUTSHELL_NAMES[$this->id]))
       return strtolower($this->label);
 
-    return CoreUtils::array_random(BABEL_ARRAY[$this->id]);
+    return CoreUtils::array_random(NUTSHELL_NAMES[$this->id]);
   }
 }

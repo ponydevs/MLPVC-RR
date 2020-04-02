@@ -122,6 +122,7 @@ class CoreUtils {
       Response::fail('HTTP 400: Bad Request (e.g. invalid characters in the URL)');
 
     Users::authenticate();
+    self::checkNutshell();
 
     self::loadPage('ErrorController::badReq', [
       'title' => '400',
@@ -138,6 +139,7 @@ class CoreUtils {
       Response::fail("HTTP 403: You don't have permission to access {$_SERVER['REQUEST_URI']}");
 
     Users::authenticate();
+    self::checkNutshell();
 
     self::loadPage('ErrorController::noPerm', [
       'title' => '403',
@@ -154,6 +156,7 @@ class CoreUtils {
       Response::fail("HTTP 404: Endpoint ({$_SERVER['REQUEST_URI']}) does not exist");
 
     Users::authenticate();
+    self::checkNutshell();
 
     self::loadPage('ErrorController::notFound', [
       'title' => '404',
@@ -170,6 +173,7 @@ class CoreUtils {
       Response::fail("HTTP 405: The endpoint {$_SERVER['REQUEST_URI']} does not support the {$_SERVER['REQUEST_METHOD']} method");
 
     Users::authenticate();
+    self::checkNutshell();
 
     self::loadPage('ErrorController::notAllowed', [
       'title' => '405',
@@ -254,8 +258,8 @@ class CoreUtils {
     $scope['js'] = $scope['default_js'] ? self::DEFAULT_JS : [];
     self::_checkAssets($options, $scope['css'], 'css', $view);
     self::_checkAssets($options, $scope['js'], 'js', $view);
-    $scope['is_2020_event'] = self::$isEvent;
-    if (self::$isEvent) {
+    $scope['is_2020_event'] = self::$useNutshellNames;
+    if (self::$useNutshellNames) {
       $scope['css'][] = 'https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap';
     }
 
@@ -1298,7 +1302,13 @@ class CoreUtils {
   }
 
   public static function array_random(array $arr) {
-    return empty($arr) ? null : $arr[array_rand($arr, 1)];
+    if (empty($arr))
+      return null;
+
+    if (\count($arr) === 1)
+      return $arr[0];
+
+    return $arr[array_rand($arr, 1)];
   }
 
   /**
@@ -1578,14 +1588,17 @@ class CoreUtils {
     return $verdict;
   }
 
-  public static bool $isEvent;
+  public static bool $useNutshellNames;
 
-  public static function setIsEvent() {
+  public static function checkNutshell() {
     $ts = time();
-    self::$isEvent = $ts >= 1_585_656_000 && $ts < 1_585_828_800 && !self::isCrawler();
-    $babel_path = FSPATH.'babel.php';
-    if (self::$isEvent && file_exists($babel_path)) {
-      require_once $babel_path;
+    self::$useNutshellNames = UserPrefs::get('cg_nutshell') === '1';
+    $names_path = CONFPATH.'nutshell_names.php';
+    if (self::$useNutshellNames) {
+      if (!file_exists($names_path))
+        throw new \Exception('Nutshell name mapping file missing');
+
+      require_once $names_path;
     }
   }
 

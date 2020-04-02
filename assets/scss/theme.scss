@@ -20,25 +20,23 @@
     overflow: initial;
     background: $HeaderFooterBG;
 
-    @media all and (max-width: $Breakpoint) {
+    &:before {
+      z-index: 2;
+      transition: left .4s linear;
+    }
+
+    &.sidebar-open {
+      overflow: hidden;
+
       &:before {
-        z-index: 2;
-        transition: left .4s linear;
-      }
-
-      &.sidebar-open {
-        overflow: hidden;
-
-        &:before {
-          content: "";
-          display: block;
-          position: fixed;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          background: rgba(black, .7);
-        }
+        content: "";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(black, .7);
       }
     }
   }

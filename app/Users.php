@@ -156,7 +156,6 @@ class Users {
 
     if (!Cookie::exists('access')){
       Auth::$session = Session::newGuestSession();
-
       return;
     }
     if (Cookie::exists('access')){
