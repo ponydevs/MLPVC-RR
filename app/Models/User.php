@@ -728,6 +728,6 @@ class User extends AbstractUser implements Linkable {
     else if (Permission::sufficient('member', $this->role))
       return $this->updateRole('user');
 
-    return true;
+    return $this->save();
   }
 }
