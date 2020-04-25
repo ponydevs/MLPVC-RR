@@ -20,15 +20,15 @@ class HTTP {
     $curl_opt = [
       CURLOPT_HTTPHEADER => [
         'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Encoding: gzip, deflate, sdch',
-        'Accept-Language: hu,en-GB;q=0.8,en;q=0.6',
+        'Accept-Encoding: gzip, deflate, br',
+        'Accept-Language: en-US,en;q=0.5',
         'Connection: keep-alive',
       ],
       CURLOPT_HEADER => true,
       CURLOPT_BINARYTRANSFER => true,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.5678.91 Safari/537.36',
+      CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0',
     ];
     if (isset($referrer))
       $curl_opt[CURLOPT_REFERER] = $referrer;
@@ -43,25 +43,25 @@ class HTTP {
     curl_setopt_array($r, $curl_opt);
 
     $response = curl_exec($r);
-    $responseCode = curl_getinfo($r, CURLINFO_HTTP_CODE);
-    $headerSize = curl_getinfo($r, CURLINFO_HEADER_SIZE);
+    $response_code = curl_getinfo($r, CURLINFO_HTTP_CODE);
+    $header_size = curl_getinfo($r, CURLINFO_HEADER_SIZE);
 
-    $responseHeaders = rtrim(mb_substr($response, 0, $headerSize));
-    $response = mb_substr($response, $headerSize);
-    $curlError = curl_error($r);
+    $response_headers = rtrim(mb_substr($response, 0, $header_size));
+    $response = mb_substr($response, $header_size);
+    $curl_error = curl_error($r);
     curl_close($r);
 
-    if ($responseCode < 200 || $responseCode >= 300)
-      throw new CURLRequestException("cURL fail for URL \"$url\"", $responseCode, $curlError);
+    if ($response_code < 200 || $response_code >= 300)
+      throw new CURLRequestException("cURL fail for URL \"$url\". Response headers:\n$response_headers", $response_code, $curl_error);
 
     global $http_response_header;
-    $http_response_header = array_map('rtrim', explode("\n", $responseHeaders));
+    $http_response_header = array_map('rtrim', explode("\n", $response_headers));
 
-    if (preg_match(new RegExp('Content-Encoding:\s?gzip', 'i'), $responseHeaders))
+    if (preg_match(new RegExp('Content-Encoding:\s?gzip', 'i'), $response_headers))
       $response = gzdecode($response);
 
     return [
-      'responseHeaders' => $responseHeaders,
+      'responseHeaders' => $response_headers,
       'response' => $response,
     ];
   }
