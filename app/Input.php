@@ -3,6 +3,14 @@
 namespace App;
 
 use App\Models\Show;
+use Exception;
+use JsonException;
+use RuntimeException;
+use Throwable;
+use function call_user_func_array;
+use function in_array;
+use function is_callable;
+use function is_string;
 
 class Input {
   private $_type, $_source, $_key, $_initValue, $_origValue, $_value, $_respond = true, $_validator, $_range, $_silentFail, $_noLog;
@@ -70,7 +78,7 @@ class Input {
       $this->_validator = function ($value) use ($type) {
         return $type->match($value) ? self::ERROR_NONE : self::ERROR_INVALID;
       };
-    else if (\is_callable($type))
+    else if (is_callable($type))
       $this->_validator = $type;
     else {
       /** @var $type string */
@@ -79,7 +87,7 @@ class Input {
     }
     $this->_type = $type;
 
-    if (!\is_string($key))
+    if (!is_string($key))
       $this->_outputError('Input key missing or invalid');
     $this->_key = $key;
 
@@ -93,7 +101,7 @@ class Input {
         $this->_source = $_source;
     }
     $_SRC = $GLOBALS[$this->_source];
-    if (!isset($_SRC[$key]) || (\is_string($_SRC[$key]) && $_SRC[$key] === '')){
+    if (!isset($_SRC[$key]) || (is_string($_SRC[$key]) && $_SRC[$key] === '')){
       $is_mandatory = empty($o[self::IS_OPTIONAL]);
       if ($is_mandatory)
         $result = self::ERROR_MISSING;
@@ -130,7 +138,7 @@ class Input {
   private function _validate() {
     if ($this->_validator !== null){
       $call_params = [&$this->_origValue, $this->_range];
-      $vaildation_result = \call_user_func_array($this->_validator, $call_params);
+      $vaildation_result = call_user_func_array($this->_validator, $call_params);
       if ($vaildation_result !== null)
         return $vaildation_result;
 
@@ -140,9 +148,9 @@ class Input {
     }
     switch ($this->_type){
       case 'bool':
-        if (!\in_array($this->_origValue, ['1', '0', 'true', 'false', 'on', 'off'], false))
+        if (!in_array($this->_origValue, ['1', '0', 'true', 'false', 'on', 'off'], false))
           return self::ERROR_INVALID;
-        $this->_origValue = \in_array($this->_origValue, ['1', 'true', 'on'], false);
+        $this->_origValue = in_array($this->_origValue, ['1', 'true', 'on'], false);
       break;
       case 'int':
       case 'vote':
@@ -159,23 +167,23 @@ class Input {
       break;
       case 'text':
       case 'string':
-        if (!\is_string($this->_origValue))
+        if (!is_string($this->_origValue))
           return self::ERROR_INVALID;
         if (self::checkStringLength($this->_origValue, $this->_range, $code))
           return $code;
       break;
       case 'uuid':
-        if (!\is_string($this->_origValue) || !preg_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$', 'i'), $this->_origValue))
+        if (!is_string($this->_origValue) || !preg_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$', 'i'), $this->_origValue))
           return self::ERROR_INVALID;
 
         $this->_origValue = strtolower($this->_origValue);
       break;
       case 'username':
-        if (!\is_string($this->_origValue) || !Regexes::$username->match($this->_origValue))
+        if (!is_string($this->_origValue) || !Regexes::$username->match($this->_origValue))
           return self::ERROR_INVALID;
       break;
       case 'url':
-        if (!\is_string($this->_origValue))
+        if (!is_string($this->_origValue))
           return self::ERROR_INVALID;
         if (CoreUtils::startsWith($this->_origValue, ABSPATH))
           $this->_origValue = mb_substr($this->_origValue, mb_strlen(ABSPATH) - 1);
@@ -187,7 +195,7 @@ class Input {
         }
       break;
       case 'int[]':
-        if (!\is_string($this->_origValue) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_origValue))
+        if (!is_string($this->_origValue) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_origValue))
           return self::ERROR_INVALID;
 
         $this->_origValue = array_map('\intval', explode(',', $this->_origValue));
@@ -196,10 +204,10 @@ class Input {
         try {
           $this->_origValue = JSON::decode($this->_origValue);
         }
-        catch (\JsonException $e){
-          throw new \RuntimeException(rtrim('Could not decode JSON; '.$e->getMessage(), '; '));
+        catch (JsonException $e){
+          throw new RuntimeException(rtrim('Could not decode JSON; '.$e->getMessage(), '; '));
         }
-        catch (\Throwable $e){
+        catch (Throwable $e){
           CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
 
           return self::ERROR_INVALID;
@@ -290,7 +298,7 @@ class Input {
     }
     if ($this->_respond)
       Response::fail($message);
-    throw new \Exception($message);
+    throw new Exception($message);
   }
 
   /**

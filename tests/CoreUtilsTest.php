@@ -1,6 +1,7 @@
 <?php
 
 use App\CoreUtils;
+use App\RegExp;
 use PHPUnit\Framework\TestCase;
 
 class CoreUtilsTest extends TestCase {
@@ -58,11 +59,10 @@ class CoreUtilsTest extends TestCase {
   public function testExportVars():void {
     $result = CoreUtils::exportVars([
       'a' => 1,
-      'reg' => new \App\RegExp('^ab?c$', 'gui'),
+      'reg' => new RegExp('^ab?c$', 'gui'),
       'b' => true,
       's' => 'string',
     ]);
-    /** @noinspection all */
     self::assertEquals('<aside class="datastore">{"a":1,"reg":"/^ab?c$/gi","b":true,"s":"string"}</aside>'."\n", $result);
   }
 

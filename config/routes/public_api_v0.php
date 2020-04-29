@@ -4,12 +4,14 @@ namespace App;
 
 global $router;
 
+use function define;
+
 /**
  * @file
  * List of API v0 endpoints meant for pre-release testing
  * These endpoints may change as needed until v1 is released
  */
-\define('PUBLIC_API_V0_PATH', '/api/v0');
+define('PUBLIC_API_V0_PATH', '/api/v0');
 $public_api_endpoint = function ($path, $controller) use ($router) {
   $router->map('POST|GET|PUT|DELETE', PUBLIC_API_V0_PATH.$path, $controller);
 };

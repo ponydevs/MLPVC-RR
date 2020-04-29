@@ -14,6 +14,7 @@ use App\Models\EventEntryVote;
 use App\Permission;
 use App\Response;
 use App\Time;
+use Exception;
 
 class EventEntryController extends EventController {
 
@@ -73,7 +74,7 @@ class EventEntryController extends EventController {
     catch (MismatchedProviderException|UnsupportedProviderException $e){
       Response::fail('Entry link must point to a deviation or Sta.sh submission');
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       Response::fail('Erroe while checking submission link: '.$e->getMessage());
     }
     $update['sub_id'] = $submission->id;
@@ -99,7 +100,7 @@ class EventEntryController extends EventController {
       try {
         $prov = new ImageProvider($prev_src);
       }
-      catch (\Exception $e){
+      catch (Exception $e){
         Response::fail('Preview image error: '.$e->getMessage());
       }
       $update['prev_src'] = $prev_src;
@@ -160,7 +161,7 @@ class EventEntryController extends EventController {
         }
 
         if (!empty($changes)){
-          $changes['last_edited'] = date('c');
+          $changes['updated_at'] = date('c');
           $this->entry->update_attributes($changes);
         }
 

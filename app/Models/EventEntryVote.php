@@ -6,12 +6,12 @@ use ActiveRecord\DateTime;
 use App\Time;
 
 /**
- * @property int        $entry_id
- * @property string     $user_id
- * @property int        $value
- * @property DateTime   $cast_at
- * @property User       $user     (Via relations)
- * @property EventEntry $entry    (Via relations)
+ * @property int            $entry_id
+ * @property string         $user_id
+ * @property int            $value
+ * @property DateTime       $cast_at
+ * @property DeviantartUser $user     (Via relations)
+ * @property EventEntry     $entry    (Via relations)
  * @method static EventEntryVote find_by_entry_id_and_user_id(int $entr_yid, string $user_id)
  */
 class EventEntryVote extends NSModel {
@@ -20,7 +20,7 @@ class EventEntryVote extends NSModel {
   public static $primary_key = ['entry_id', 'user_id'];
 
   public static $belongs_to = [
-    ['user'],
+    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
     ['entry', 'class' => 'EventEntry'],
   ];
 
@@ -33,7 +33,7 @@ class EventEntryVote extends NSModel {
    * @return bool
    */
   public function isLockedIn(EventEntry $entry, ?int $now = null):bool {
-    $entryEditTS = $entry->last_edited->getTimestamp();
+    $entryEditTS = $entry->updated_at->getTimestamp();
     $voteCastTS = $this->cast_at->getTimestamp();
 
     return ($now ?? time()) - $voteCastTS >= Time::IN_SECONDS['hour'] && $entryEditTS < $voteCastTS;

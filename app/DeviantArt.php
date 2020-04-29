@@ -2,16 +2,28 @@
 
 namespace App;
 
-use ActiveRecord\DateTime;
 use App\Exceptions\CURLRequestException;
 use App\Exceptions\JSONParseException;
 use App\Models\CachedDeviation;
 use App\Models\Session;
-use App\Models\User;
+use App\Models\DeviantartUser;
+use DOMDocument;
+use DOMElement;
+use DOMText;
+use Exception;
+use InvalidArgumentException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use RuntimeException;
 use SeinopSys\OAuth2\Client\Provider\DeviantArtProvider;
 use Throwable;
+use TypeError;
+use function array_slice;
+use function count;
+use function get_class;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_string;
 
 class DeviantArt {
   // oAuth Error Response Messages \\
@@ -74,7 +86,7 @@ class DeviantArt {
     if (!empty($postdata)){
       $query = [];
       foreach ($postdata as $k => $v) $query[] = urlencode($k).'='.urlencode($v);
-      $curl_opt[CURLOPT_POST] = \count($postdata);
+      $curl_opt[CURLOPT_POST] = count($postdata);
       $curl_opt[CURLOPT_POSTFIELDS] = implode('&', $query);
     }
     curl_setopt_array($r, $curl_opt);
@@ -112,7 +124,7 @@ class DeviantArt {
    *
    * @return CachedDeviation|null
    */
-  public static function getCachedDeviation($id, $provider = 'fav.me') {
+  public static function getCachedDeviation($id, $provider = 'fav.me'):?CachedDeviation {
     if ($provider === 'sta.sh')
       $id = self::nomralizeStashID($id);
 
@@ -123,7 +135,7 @@ class DeviantArt {
         if (empty($json))
           throw new RuntimeException('oEmbed JSON data is empty');
       }
-      catch (\Exception $e){
+      catch (Exception $e){
         if ($deviation !== null)
           $deviation->save();
 
@@ -157,7 +169,7 @@ class DeviantArt {
         case 'photo':
           if (!empty($json['imagetype']))
             $insert['type'] = $json['imagetype'];
-          else $insert['type'] = \array_slice(explode('.', strtok($json['url'], '?')), -1)[0];
+          else $insert['type'] = array_slice(explode('.', strtok($json['url'], '?')), -1)[0];
         break;
         case 'rich':
           if (isset($json['html'])){
@@ -184,7 +196,7 @@ class DeviantArt {
 
       if ($insert['fullsize'] === null || !preg_match(Regexes::$fullsize_match, $insert['fullsize'])){
         $fullsize_attempt = self::getDownloadURL($id, $provider);
-        if (\is_string($fullsize_attempt))
+        if (is_string($fullsize_attempt))
           $insert['fullsize'] = $fullsize_attempt;
       }
 
@@ -209,7 +221,7 @@ class DeviantArt {
    * @return array
    */
   public static function oEmbed($ID, $type = null) {
-    if (empty($type) || !\in_array($type, ['fav.me', 'sta.sh'], true))
+    if (empty($type) || !in_array($type, ['fav.me', 'sta.sh'], true))
       $type = 'fav.me';
 
     if ($type === 'sta.sh')
@@ -226,7 +238,8 @@ class DeviantArt {
     return $data;
   }
 
-  private static function _authRequest(bool $refresh, string $code):?User {
+  private static function _authRequest(bool $refresh, string $code):?DeviantartUser {
+    /** @noinspection PhpUnusedLocalVariableInspection */
     global $http_response_header;
 
     $provider = self::OAuthProviderInstance();
@@ -235,7 +248,7 @@ class DeviantArt {
         $access_token = $provider->getAccessToken('refresh_token', ['refresh_token' => $code]);
       else $access_token = $provider->getAccessToken('authorization_code', ['code' => $code, 'scope' => ['user', 'browse']]);
     }
-    catch (\TypeError $e){
+    catch (TypeError $e){
       $trace = $e->getTrace();
       if (!empty($trace[0]['function']) && $trace[0]['function'] === 'prepareAccessTokenResponse' && !empty($trace[0]['args']) && CoreUtils::contains($trace[0]['args'][0], 'DeviantArt: 403 Forbidden')){
         $_GET['error'] = 'server_error';
@@ -244,7 +257,7 @@ class DeviantArt {
         return null;
       }
 
-      CoreUtils::error_log('Caught '.\get_class($e).': '.$e->getMessage()."\nTrace:\n".var_export($trace, true));
+      CoreUtils::error_log('Caught '.get_class($e).': '.$e->getMessage()."\nTrace:\n".var_export($trace, true));
     }
     catch (IdentityProviderException $e){
       if (Cookie::exists('access')){
@@ -253,7 +266,7 @@ class DeviantArt {
       }
       $response_body = $e->getResponseBody();
       try {
-        if (\is_array($response_body))
+        if (is_array($response_body))
           $data = $response_body;
         else $data = JSON::decode($response_body);
 
@@ -272,12 +285,10 @@ class DeviantArt {
       return null;
     }
 
-    /** @noinspection PhpParamsInspection */
     $da_user_data = $provider->getResourceOwner($access_token)->toArray();
     $user_id = strtolower($da_user_data['userid']);
 
-    /** @var $user Models\User */
-    $user = User::find($user_id);
+    $user = DeviantartUser::find($user_id);
 
     $local_user_data = [
       'name' => $da_user_data['username'],
@@ -306,8 +317,8 @@ class DeviantArt {
         'id' => $user_id,
         'role' => 'user',
       ];
-      $user = User::create(array_merge($local_user_data, $more_info));
-      if (User::count() === 1) {
+      $user = DeviantartUser::create(array_merge($local_user_data, $more_info));
+      if (DeviantartUser::count() === 1) {
         $first_user = true;
         $user->updateRole('developer');
       }
@@ -341,11 +352,11 @@ class DeviantArt {
   /**
    * Updates the (current) session for seamless browsing even if the session expires beetween requests
    *
-   * @return User|void
+   * @return DeviantartUser|void
    * @throws RuntimeException
-   * @throws \InvalidArgumentException
+   * @throws InvalidArgumentException
    */
-  public static function refreshAccessToken():?User {
+  public static function refreshAccessToken():?DeviantartUser {
     if (empty(Auth::$session))
       throw new RuntimeException('Auth::$session must be set');
 
@@ -357,10 +368,10 @@ class DeviantArt {
    *
    * @param string $code
    *
-   * @return User|void
-   * @throws \InvalidArgumentException
+   * @return DeviantartUser|void
+   * @throws InvalidArgumentException
    */
-  public static function getAccessToken(string $code):?User {
+  public static function getAccessToken(string $code):?DeviantartUser {
     return self::_authRequest(false, $code);
   }
 
@@ -409,7 +420,7 @@ class DeviantArt {
       $memberlist = HTTP::legitimateRequest("https://www.deviantart.com/mlp-vectorclub/modals/memberlist/?offset=$off");
       if (empty($memberlist['response']))
         break;
-      $dom = new \DOMDocument('1.0', 'UTF-8');
+      $dom = new DOMDocument('1.0', 'UTF-8');
       $internalErrors = libxml_use_internal_errors(true);
       $dom->loadHTML($memberlist['response']);
       libxml_use_internal_errors($internalErrors);
@@ -420,7 +431,7 @@ class DeviantArt {
       }
       $more = null;
       foreach ($dom->getElementsByTagName('li') as $li) {
-        /** @var \DOMElement $li */
+        /** @var DOMElement $li */
         $text = trim($li->textContent);
         if ($text !== 'Next')
           continue;
@@ -440,9 +451,9 @@ class DeviantArt {
     $stafflist = JSON::decode(HTTP::legitimateRequest($requri)['response'], false);
     $stafflist = $stafflist->DiFi->response->calls[0]->response->content->html;
     $stafflist = str_replace('id="gmi-GAboutUsModule_Item"', '', $stafflist);
-    $dom = new \DOMDocument('1.0', 'UTF-8');
+    $dom = new DOMDocument('1.0', 'UTF-8');
     $dom->loadHTML($stafflist);
-    /** @var \DOMElement[] $admins */
+    /** @var DOMElement[] $admins */
     $admins = [];
     foreach ($dom->getElementsByTagName('div') as $div){
       if ($div->getAttribute('class') !== 'user-name')
@@ -456,8 +467,8 @@ class DeviantArt {
       $role = null;
       $username = null;
       foreach ($admin->childNodes as $child) {
-        /** @var \DOMElement $child */
-        if ($child instanceof \DOMText || strtolower($child->nodeName) === 'br')
+        /** @var DOMElement $child */
+        if ($child instanceof DOMText || strtolower($child->nodeName) === 'br')
           continue;
 
         $class_attr = $child->getAttribute('class');
@@ -481,11 +492,11 @@ class DeviantArt {
   }
 
   /**
-   * @param User $user
+   * @param DeviantartUser $user
    *
    * @return null|string
    */
-  public static function getClubRole(User $user):?string {
+  public static function getClubRole(DeviantartUser $user):?string {
     return self::getClubRoleByName($user->name);
   }
 
@@ -501,7 +512,7 @@ class DeviantArt {
   }
 
   public static function favmeHttpsUrl(string $favme_id):string {
-    return 'https://www.deviantart.com/art/REDIRECT-'.\intval(mb_substr($favme_id, 1), 36);
+    return 'https://www.deviantart.com/art/REDIRECT-'.intval(mb_substr($favme_id, 1), 36);
   }
 
   public static function trimOutgoingGateFromUrl(string $url):string {
@@ -528,7 +539,7 @@ class DeviantArt {
 
       return 1;
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       return 2;
     }
     if (empty($stashpage))

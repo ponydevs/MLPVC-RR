@@ -3,6 +3,8 @@
 namespace App;
 
 use App\Models\ShowVideo;
+use Exception;
+use RuntimeException;
 
 class VideoProvider {
   public static $id, $embed;
@@ -46,7 +48,7 @@ class VideoProvider {
       if (!empty($test))
         return $test;
     }
-    throw new \Exception('Unsupported provider');
+    throw new Exception('Unsupported provider');
   }
 
   public const URL_ONLY = true;
@@ -68,9 +70,10 @@ class VideoProvider {
         $url = $urlOnly ? "https://mega.nz/#!$video->id" : "https://mega.nz/embed#!$video->id";
       break;
       default:
-        throw new \RuntimeException("Unrecognized provider: {$video->provider}");
+        throw new RuntimeException("Unrecognized provider: {$video->provider}");
     }
 
+    /** @noinspection HtmlUnknownAttribute */
     return $urlOnly ? $url : "<iframe async defer allowfullscreen src='$url'></iframe>";
   }
 }

@@ -13,5 +13,5 @@
       {% endfor %}
     {% endset %}
   {% endif %}
-  <li>{{ html }} <span class='nobr'>&ndash; {{ time_tag(notif.sent_at) ~ actions }}</span></li>
+  <li>{{ html }} <span class='nobr'>&ndash; {{ time_tag(notif.created_at) ~ actions }}</span></li>
 {% endapply %}

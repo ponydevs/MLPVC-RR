@@ -12,8 +12,6 @@ use App\DeviantArt;
 use App\Exceptions\NoPCGSlotsException;
 use App\GlobalSettings;
 use App\Logs;
-use App\Models\Logs\DANameChange;
-use App\Models\Logs\Log;
 use App\NavBreadcrumb;
 use App\Pagination;
 use App\Permission;
@@ -21,39 +19,42 @@ use App\Response;
 use App\Time;
 use App\Twig;
 use App\UserPrefs;
+use Exception;
+use RuntimeException;
+use function count;
 
 /**
  * @inheritdoc
- * @property string           $role
- * @property DateTime         $signup_date
- * @property Session[]        $sessions         (Via relations)
- * @property Notification[]   $notifications    (Via relations)
- * @property Event[]          $submitted_events (Via relations)
- * @property Event[]          $finalized_events (Via relations)
- * @property Appearance[]     $pcg_appearances  (Via relations)
- * @property DiscordMember    $discord_member   (Via relations)
- * @property Log[]            $logs             (Via relations)
- * @property DANameChange[]   $name_changes     (Via relations)
- * @property PCGSlotHistory[] $pcg_slot_history (Via relations)
- * @property string           $role_label       (Via magic method)
- * @property string           $avatar_provider  (Via magic method)
- * @method static User find(...$args)
+ * @property string             $role
+ * @property DateTime           $signup_date
+ * @property Session[]          $sessions         (Via relations)
+ * @property Notification[]     $notifications    (Via relations)
+ * @property Event[]            $submitted_events (Via relations)
+ * @property Event[]            $finalized_events (Via relations)
+ * @property Appearance[]       $pcg_appearances  (Via relations)
+ * @property DiscordMember      $discord_member   (Via relations)
+ * @property Log[]              $logs             (Via relations)
+ * @property PreviousUsername[] $previous_names   (Via relations)
+ * @property PCGSlotHistory[]   $pcg_slot_history (Via relations)
+ * @property string             $role_label       (Via magic method)
+ * @property string             $avatar_provider  (Via magic method)
+ * @method static DeviantartUser find(...$args)
  */
-class User extends AbstractUser implements Linkable {
-  public static $table_name = 'users';
+class DeviantartUser extends AbstractUser implements Linkable {
+  public static $table_name = 'deviantart_users';
 
   public static $has_many = [
-    ['sessions', 'order' => 'last_visit desc'],
-    ['notifications', 'foreign_key' => 'user'],
+    ['sessions', 'foreign_key' => 'user_id', 'order' => 'last_visit desc'],
+    ['notifications', 'foreign_key' => 'recipient_id'],
     ['submitted_events', 'class' => 'Event', 'foreign_key' => 'submitted_by'],
     ['finalized_events', 'class' => 'Event', 'foreign_key' => 'finalized_by'],
     ['pcg_appearances', 'class' => 'Appearance', 'foreign_key' => 'owner_id'],
-    ['logs', 'class' => 'Logs\Log', 'foreign_key' => 'initiator'],
-    ['name_changes', 'class' => 'Logs\DANameChange', 'order' => 'entryid asc'],
-    ['pcg_slot_history', 'class' => 'PCGSlotHistory', 'order' => 'created desc, id desc'],
+    ['logs', 'class' => 'Log', 'foreign_key' => 'initiator'],
+    ['previous_names', 'class' => 'PreviousUsername', 'foreign_key' => 'user_id', 'order' => 'username asc'],
+    ['pcg_slot_history', 'class' => 'PCGSlotHistory', 'foreign_key' => 'user_id', 'order' => 'created desc, id desc'],
   ];
   public static $has_one = [
-    ['discord_member'],
+    ['discord_member', 'foreign_key' => 'user_id'],
   ];
 
   public function get_role_label() {
@@ -73,7 +74,7 @@ class User extends AbstractUser implements Linkable {
     try {
       $newvalue = UserPrefs::process('p_avatarprov', $value);
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       Response::fail('Preference value error: '.$e->getMessage());
     }
 
@@ -166,15 +167,6 @@ class User extends AbstractUser implements Linkable {
     return "<img class='vectorapp-logo' src='/img/vapps/$vectorapp.svg' alt='$vectorapp logo' title='".$this->getVectorAppReadableName()." user'>";
   }
 
-  public function getPendingReservationCount():int {
-    $PendingReservations = DB::$instance->query(
-      'SELECT (SELECT COUNT(*) FROM requests WHERE reserved_by = :uid AND deviation_id IS NULL)+(SELECT COUNT(*) FROM reservations WHERE reserved_by = :uid AND deviation_id IS NULL) as amount',
-      ['uid' => $this->id]
-    );
-
-    return $PendingReservations['amount'] ?? 0;
-  }
-
   /**
    * Update a user's role
    *
@@ -182,7 +174,7 @@ class User extends AbstractUser implements Linkable {
    * @param bool   $skip_log
    *
    * @return bool
-   * @throws \RuntimeException
+   * @throws RuntimeException
    */
   public function updateRole(string $new_role, bool $skip_log = false):bool {
     $old_role = (string)$this->role;
@@ -322,7 +314,7 @@ class User extends AbstractUser implements Linkable {
       foreach ($posts as $post){
         PCGSlotHistory::record($this->id, 'post_approved', null, [
           'id' => $post->id,
-        ], $post->approval_entry->timestamp);
+        ], $post->approval_entry->created_at);
       }
 
     # Take slots for existing appearances
@@ -330,33 +322,7 @@ class User extends AbstractUser implements Linkable {
       PCGSlotHistory::record($this->id, 'appearance_add', null, [
         'id' => $appearance->id,
         'label' => $appearance->label,
-      ], $appearance->added);
-    }
-
-    # Take slots for sent gifts
-    /** @var $sentGifts PCGSlotGift[] */
-    $sentGifts = DB::$instance
-      ->setModel(PCGSlotGift::class)
-      ->query(
-        'SELECT DISTINCT * FROM pcg_slot_gifts
-				WHERE refunded_by IS NULL AND rejected = FALSE AND sender_id = ?', [$this->id]);
-    foreach ($sentGifts as $gift){
-      PCGSlotHistory::record($this->id, 'gift_sent', $gift->amount, [
-        'gift_id' => $gift->id,
-      ], $gift->created_at);
-    }
-
-    # Give slots for received gifts
-    /** @var $receivedGifts PCGSlotGift[] */
-    $receivedGifts = DB::$instance
-      ->setModel(PCGSlotGift::class)
-      ->query(
-        'SELECT DISTINCT * FROM pcg_slot_gifts
-				WHERE claimed = TRUE AND receiver_id = ?', [$this->id]);
-    foreach ($receivedGifts as $gift){
-      PCGSlotHistory::record($this->id, 'gift_accepted', $gift->amount, [
-        'gift_id' => $gift->id,
-      ], $gift->updated_at);
+      ], $appearance->created_at);
     }
 
     # Apply manual point grants
@@ -518,20 +484,7 @@ class User extends AbstractUser implements Linkable {
       $contribs['fulfilled-requests'] = [$reqFin, 'request', 'fulfilled'];
 
     // Broken video reports
-    $brokenVid = DB::$instance->querySingle(
-      'SELECT COUNT(v.entryid) as cnt
-			FROM log l
-			LEFT JOIN log__video_broken v ON l.refid = v.entryid
-			WHERE l.initiator = ?', [$this->id])['cnt'];
-    if ($brokenVid > 0)
-      $contribs[] = [$brokenVid, 'broken video', 'reported'];
-
-    // Broken video reports
-    $approvedPosts = DB::$instance->querySingle(
-      'SELECT COUNT(p.entryid) as cnt
-			FROM log l
-			LEFT JOIN log__post_lock p ON l.refid = p.entryid
-			WHERE l.initiator = ?', [$this->id])['cnt'];
+    $approvedPosts = DB::$instance->where('user_id', $this->id)->count('locked_posts');
     if ($approvedPosts > 0)
       $contribs[] = [$approvedPosts, 'post', 'marked approved'];
 
@@ -613,7 +566,7 @@ class User extends AbstractUser implements Linkable {
     if ($staff_visiting_member || ($user_is_member && $same_user)){
       $pending_res = $this->_getPendingReservations();
       $pending_req_res = $this->_getPendingRequestReservations();
-      $data['total_pending'] = \count($pending_res) + \count($pending_req_res);
+      $data['total_pending'] = count($pending_res) + count($pending_req_res);
       $data['has_pending'] = $data['total_pending'] > 0;
     }
     else {
@@ -679,28 +632,11 @@ class User extends AbstractUser implements Linkable {
     return Permission::ROLES_ASSOC[$this->maskedRole()];
   }
 
-  public function getPCGSlotGiftButtonHTML():string {
-    if (!Auth::$signed_in || Auth::$user->id === $this->id)
-      return '';
-
-    return "<button class='btn green typcn typcn-gift' id='gift-pcg-slots'>Gift slots</a>";
-  }
-
   public function getPCGPointGiveButtonHTML():string {
     if (Permission::insufficient('staff'))
       return '';
 
     return "<button class='btn darkblue typcn typcn-plus' id='give-pcg-points'>Give points</a>";
-  }
-
-  /**
-   * @return PCGSlotGift[]
-   */
-  public function getPendingPCGSlotGifts() {
-    return DB::$instance->setModel(PCGSlotGift::class)->query(
-      'SELECT * FROM pcg_slot_gifts
-			WHERE refunded_by IS NULL AND rejected = FALSE AND claimed = FALSE AND receiver_id = ?
-			ORDER BY created_at', [$this->id]);
   }
 
   /**

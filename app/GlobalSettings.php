@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\GlobalSetting;
+use RuntimeException;
 
 class GlobalSettings {
   public const DEFAULTS = [
@@ -21,7 +22,7 @@ class GlobalSettings {
   public static function get(string $key) {
     $q = GlobalSetting::find($key);
 
-    return isset($q->value) ? $q->value : static::DEFAULTS[$key];
+    return isset($q->val) ? $q->val : static::DEFAULTS[$key];
   }
 
   /**
@@ -46,7 +47,7 @@ class GlobalSettings {
     else if ($value != $default)
       return (new GlobalSetting([
         'key' => $key,
-        'value' => $value,
+        'val' => $value,
       ]))->save();
     else return true;
   }
@@ -75,7 +76,7 @@ class GlobalSettings {
           Response::fail("You cannot change the $key setting");
 
         if (empty($value) || !isset(Permission::ROLES_ASSOC[$value]))
-          throw new \RuntimeException('The specified role is invalid');
+          throw new RuntimeException('The specified role is invalid');
       break;
     }
 

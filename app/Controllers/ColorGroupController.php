@@ -13,10 +13,11 @@ use App\Logs;
 use App\Models\Appearance;
 use App\Models\Color;
 use App\Models\ColorGroup;
-use App\Models\Logs\MajorChange;
+use App\Models\MajorChange;
 use App\Permission;
 use App\Regexes;
 use App\Response;
+use function count;
 
 class ColorGroupController extends ColorGuideController {
   /** @var ColorGroup|null */
@@ -30,7 +31,7 @@ class ColorGroupController extends ColorGuideController {
     if (!$this->creating){
       if (empty($params['id']))
         Response::fail('Missing color group ID');
-      $groupID = \intval($params['id'], 10);
+      $groupID = (int)$params['id'];
       $this->colorgroup = ColorGroup::find($groupID);
       if (empty($this->colorgroup))
         Response::fail("There's no color group with the ID of $groupID");
@@ -56,6 +57,7 @@ class ColorGroupController extends ColorGuideController {
 							LEFT JOIN color_groups cg ON cg.appearance_id = p.id
 							LEFT JOIN colors c ON c.group_id = cg.id
 							WHERE c.id = ?', [$c->linked_to]);
+          /** @noinspection UnsupportedStringOffsetOperationsInspection */
           $out['Colors'][] = $append;
         }
         Response::done($out);
@@ -122,7 +124,7 @@ class ColorGroupController extends ColorGuideController {
             Input::ERROR_INVALID => 'List of colors is invalid',
           ],
         ]))->out();
-        if (\count($recvColors) < 1)
+        if (count($recvColors) < 1)
           Response::fail('Each color group must have at least one color');
 
         /** @var $newcolors Color[] */
@@ -212,7 +214,7 @@ class ColorGroupController extends ColorGuideController {
             /** @var $Affected Color[] */
             $Affected = DB::$instance->where('id', $removedColorIDs)->get('colors');
             foreach ($Affected as $color){
-              if (\count((array)$color->dependant_colors) > 0){
+              if (count((array)$color->dependant_colors) > 0){
                 $links = [];
                 foreach ($color->dependant_colors as $dep){
                   $arranged[$dep->appearance->id][$dep->group_id][$dep->id] = $dep;
@@ -268,10 +270,7 @@ class ColorGroupController extends ColorGuideController {
         $response = ['cgs' => $this->colorgroup->appearance->getColorsHTML(!$this->_appearancePage, NOWRAP)];
 
         if ($this->colorgroup->appearance->owner_id === null && $major){
-          Logs::logAction('major_changes', [
-            'appearance_id' => $this->colorgroup->appearance_id,
-            'reason' => $reason,
-          ]);
+          MajorChange::record($this->colorgroup->appearance_id, $reason);
           if ($this->_appearancePage){
             $FullChangesSection = isset($_REQUEST['FULL_CHANGES_SECTION']);
             $response['changes'] = CGUtils::getMajorChangesHTML(MajorChange::get($this->colorgroup->appearance_id, null), $FullChangesSection);

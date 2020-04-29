@@ -2,6 +2,9 @@
 
 namespace App;
 
+use function is_string;
+use function mb_substr;
+
 /**
  * A class for recursively storing navigation breadcrumbs
  *
@@ -54,7 +57,7 @@ class NavBreadcrumb {
    * @return self
    */
   public function setChild($ch, bool $activate = false):NavBreadcrumb {
-    if (\is_string($ch)){
+    if (is_string($ch)){
       $ch = new self($ch);
       $activate = true;
     }
@@ -86,7 +89,7 @@ class NavBreadcrumb {
   public function toAnchor(int $position) {
     $extra_attributes = 'itemscope itemtype="http://schema.org/Thing" itemprop="item"';
     if ($this->link){
-      $itemid = ABSPATH.\mb_substr($this->link, 1);
+      $itemid = ABSPATH.mb_substr($this->link, 1);
     } else {
       $itemid = md5($this->name);
     }

@@ -8,7 +8,7 @@ use App\DB;
 use App\Input;
 use App\Logs;
 use App\Models\Appearance;
-use App\Models\Logs\Log;
+use App\Models\Log;
 use App\Models\Notice;
 use App\Models\Post;
 use App\Models\UsefulLink;
@@ -18,7 +18,11 @@ use App\Posts;
 use App\RegExp;
 use App\Response;
 use App\Users;
+use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use IPTools\IP;
+use SeinopSys\PostgresDb;
+use Throwable;
+use function in_array;
 
 class AdminController extends Controller {
   public $do = 'admin';
@@ -41,7 +45,7 @@ class AdminController extends Controller {
         $usedIndexes = ['appearances'];
         $index_list = '';
         foreach ($indices as $no => $index){
-          if (!\in_array($index['index'], $usedIndexes, true))
+          if (!in_array($index['index'], $usedIndexes, true))
             continue;
 
           $index_list .= "#$no ";
@@ -63,7 +67,7 @@ class AdminController extends Controller {
         }
         $elastic_down = false;
       }
-      catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
+      catch (NoNodesAvailableException $e){
         $elastic_down = true;
       }
     }
@@ -120,7 +124,7 @@ class AdminController extends Controller {
             try {
               $ip = IP::parse($_GET['by']);
             }
-            catch (\Throwable $e){
+            catch (Throwable $e){
               // If we don't find a valid IP address then we just ignore the parameter
             }
             if ($ip !== null)
@@ -149,15 +153,15 @@ class AdminController extends Controller {
       }
     }
     else if (isset($ip)){
-      $where_args[] = ['ip', \in_array($ip, Logs::LOCALHOST_IPS, true) ? Logs::LOCALHOST_IPS : $ip];
+      $where_args[] = ['ip', in_array($ip, Logs::LOCALHOST_IPS, true) ? Logs::LOCALHOST_IPS : $ip];
       $q[] = "by=$ip";
       $title .= ($type === null ? 'Entries ' : '')."from $ip ";
     }
     else $remove_params[] = 'by';
 
     foreach ($where_args as $arg)
-      DB::$instance->where($arg[0], $arg[1] ?? \SeinopSys\PostgresDb::DBNULL);
-    $pagination = new Pagination('/admin/logs', 25, DB::$instance->count('log'));
+      DB::$instance->where($arg[0], $arg[1] ?? PostgresDb::DBNULL);
+    $pagination = new Pagination('/admin/logs', 40, DB::$instance->count(Log::$table_name));
     $heading = 'Global logs';
     if (!empty($title))
       $title .= '- ';
@@ -173,9 +177,9 @@ class AdminController extends Controller {
       DB::$instance->where(...$arg);
     $log_items = DB::$instance
       ->setModel(Log::class)
-      ->orderBy('timestamp', 'DESC')
-      ->orderBy('entryid', 'DESC')
-      ->get('log', $pagination->getLimit());
+      ->orderBy('created_at', 'DESC')
+      ->orderBy('id', 'DESC')
+      ->get(Log::$table_name, $pagination->getLimit());
 
     $entry_types = Logs::LOG_DESCRIPTION;
     asort($entry_types);
@@ -202,22 +206,22 @@ class AdminController extends Controller {
     if (!isset($params['id']) || !is_numeric($params['id']))
       Response::fail('Entry ID is missing or invalid');
 
-    $entry = \intval($params['id'], 10);
+    $entry = (int)$params['id'];
 
-    $MainEntry = DB::$instance->where('entryid', $entry)->getOne('log');
-    if (empty($MainEntry))
+    /** @var Log|null $main_entry */
+    $main_entry = DB::$instance->where('id', $entry)->getOne(Log::$table_name);
+    if (empty($main_entry))
       Response::fail('Log entry does not exist');
-    if (empty($MainEntry['refid']))
+    if (empty($main_entry->refid))
       Response::fail('There are no details to show', ['unclickable' => true]);
 
-    $Details = DB::$instance->where('entryid', $MainEntry['refid'])->getOne("log__{$MainEntry['reftype']}");
-    if (empty($Details)){
-      CoreUtils::error_log("Could not find details for entry {$MainEntry['reftype']}#{$MainEntry['refid']}, NULL-ing refid of Main#{$MainEntry['entryid']}");
-      DB::$instance->where('entryid', $MainEntry['entryid'])->update('log', ['refid' => null]);
+    if (empty($main_entry->data)){
+      CoreUtils::error_log("Could not find details for entry {$main_entry->reftype}#{$main_entry->refid}, NULL-ing refid of Main#{$main_entry->id}");
+      DB::$instance->where('id', $main_entry->id)->update(Log::$table_name, ['refid' => null]);
       Response::fail('Failed to retrieve details', ['unclickable' => true]);
     }
 
-    Response::done(Logs::formatEntryDetails($MainEntry, $Details));
+    Response::done(Logs::formatEntryDetails($main_entry, $main_entry->data));
   }
 
   /**
@@ -228,7 +232,7 @@ class AdminController extends Controller {
   private function load_useful_link($params) {
     if (empty($params['id']))
       CoreUtils::notFound();
-    $linkid = \intval($params['id'], 10);
+    $linkid = (int)$params['id'];
     $this->usefulLink = UsefulLink::find($linkid);
     if (empty($this->usefulLink))
       Response::fail('The specified link does not exist');
@@ -389,7 +393,7 @@ class AdminController extends Controller {
       else Response::fail('None of the posts have been added to the gallery yet');
     }
 
-    Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved. To see which ones, check the <a href="/admin/logs?type=post_lock&by=you">list of posts you\'ve approved</a>.', ['html' => Posts::getMostRecentList(NOWRAP)]);
+    Response::success('Marked '.CoreUtils::makePlural('post', $approved, PREPEND_NUMBER).' as approved.', ['html' => Posts::getMostRecentList(NOWRAP)]);
   }
 
   public function wsdiag() {
@@ -428,7 +432,7 @@ class AdminController extends Controller {
         'priv' => $_REQUEST['priv'],
       ]);
     }
-    catch (\Throwable $e){
+    catch (Throwable $e){
       $errmsg = 'Failed to send hello: '.$e->getMessage();
       CoreUtils::error_log($errmsg."\n".$e->getTraceAsString());
       Response::fail($errmsg);
@@ -437,7 +441,7 @@ class AdminController extends Controller {
     Response::done();
   }
 
-  private function _setupPcgAppearances():\SeinopSys\PostgresDb {
+  private function _setupPcgAppearances():PostgresDb {
     return DB::$instance->where('owner_id IS NOT NULL');
   }
 
@@ -448,7 +452,7 @@ class AdminController extends Controller {
     $heading = 'All PCG appearances';
     $title = "Page {$pagination->getPage()} - $heading - Color Guide";
 
-    $appearances = $this->_setupPcgAppearances()->orderBy('added', 'DESC')->get(Appearance::$table_name, $pagination->getLimit());
+    $appearances = $this->_setupPcgAppearances()->orderBy('created_at', 'DESC')->get(Appearance::$table_name, $pagination->getLimit());
 
     CoreUtils::loadPage(__METHOD__, [
       'title' => $title,

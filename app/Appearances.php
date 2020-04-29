@@ -7,6 +7,9 @@ use App\Models\Notification;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception as ElasticBadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
+use function count;
+use function is_int;
+use function is_string;
 
 class Appearances {
   public const COUNT_COL = 'COUNT(*) as cnt';
@@ -64,7 +67,7 @@ class Appearances {
       $Tagged[$row->appearance_id][] = $row->tag_id;
     foreach ($Appearances as $p){
       if (!empty($Tagged[$p->id])){
-        if (\count($Tagged[$p->id]) > 1)
+        if (count($Tagged[$p->id]) > 1)
           usort($Tagged[$p->id], function ($a, $b) use ($GroupTagIDs) {
             return array_search($a, $GroupTagIDs, true) - array_search($b, $GroupTagIDs, true);
           });
@@ -95,7 +98,7 @@ class Appearances {
     if (empty($ids))
       return;
 
-    $normalized_ids = \is_string($ids) ? explode(',', $ids) : $ids;
+    $normalized_ids = is_string($ids) ? explode(',', $ids) : $ids;
     $order_map = array_flip($normalized_ids);
     /** @var $appearances Appearance[] */
     $appearances = DB::$instance->where('id', $normalized_ids)->get(Appearance::$table_name);
@@ -179,7 +182,7 @@ class Appearances {
       ],
     ]);
     try {
-      $sad = $elastic_client->indices()->create($params);
+      $elastic_client->indices()->create($params);
     }
     catch (ElasticBadRequest400Exception $e){
       Response::fail('Failed to create index:<br><pre>'.CoreUtils::escapeHTML(JSON::encode(JSON::decode($e->getMessage()), JSON_PRETTY_PRINT)).'</pre>');
@@ -243,7 +246,7 @@ class Appearances {
       ->where('type', 'sprite-colors')
       ->where("data->>'appearance_id'", (string)$appearance_id)
       ->where('read_at', null)
-      ->orderBy('sent_at', 'DESC')
+      ->orderBy('created_at', 'DESC')
       ->get(Notification::$table_name);
   }
 
@@ -253,7 +256,7 @@ class Appearances {
    * @param string             $nag_id ID of user to nag
    */
   public static function clearSpriteColorIssueNotifications($appearance_id, string $action = 'clear', ?string $nag_id = self::SPRITE_NAG_USERID) {
-    if (\is_int($appearance_id))
+    if (is_int($appearance_id))
       $notifs = self::getSpriteColorIssueNotifications($appearance_id, $nag_id);
     else $notifs = $appearance_id;
     if (empty($notifs))

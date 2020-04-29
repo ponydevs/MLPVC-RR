@@ -3,7 +3,7 @@
 {# @var wrap bool #}
 {# @var lazyload bool #}
 {# @var signed_in bool #}
-{# @var current_user \App\Models\User #}
+{# @var current_user \App\Models\DeviantartUser #}
 {% apply spaceless %}
   {% set is_staff = permission('staff') %}
   {% if wrap %}
@@ -28,9 +28,9 @@
 	</span>
     <div class="submitter">
       <div><span class="shorten submitter">By </span><span class="typcn typcn-user" title="By"></span>{{ entry.submitter.toAnchor(false, false, true) }}</div>
-      <div><span class="shorten time">Submitted </span><span class="typcn typcn-time" title="Submitted"></span>{{ time_tag(entry.submitted_at) }}</div>
-      {% if entry.last_edited != entry.submitted_at %}
-        <div><span class="shorten edited">Last edited </span><span class="typcn typcn-pencil" title="Last edited"></span>{{ time_tag(entry.last_edited) }}</div>
+      <div><span class="shorten time">Submitted </span><span class="typcn typcn-time" title="Submitted"></span>{{ time_tag(entry.created_at) }}</div>
+      {% if entry.updated_at != entry.created_at %}
+        <div><span class="shorten edited">Last edited </span><span class="typcn typcn-pencil" title="Last edited"></span>{{ time_tag(entry.updated_at) }}</div>
       {% endif %}
     </div>
     {% if signed_in and (current_user.id == entry.submitted_by or is_staff) %}

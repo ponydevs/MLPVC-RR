@@ -9,14 +9,18 @@ use App\DeviantArt;
 use App\File;
 use App\HTTP;
 use App\Input;
+use App\Models\PreviousUsername;
 use App\Models\Session;
-use App\Models\User;
+use App\Models\DeviantartUser;
 use App\Pagination;
 use App\Permission;
+use App\RegExp;
 use App\Response;
 use App\Twig;
 use App\UserPrefs;
 use App\Users;
+use RuntimeException;
+use function count;
 
 class UserController extends Controller {
   use UserLoaderTrait;
@@ -40,7 +44,7 @@ class UserController extends Controller {
     }
     else $user = Users::get($un, 'name');
 
-    if (empty($user) || !($user instanceof User)){
+    if (empty($user) || !($user instanceof DeviantartUser)){
       if (Auth::$signed_in && isset($user) && $user === false){
         if (CoreUtils::contains(Auth::$session->scope, 'browse')){
           $error = 'User does not exist';
@@ -78,12 +82,8 @@ class UserController extends Controller {
       $is_staff = Permission::sufficient('staff');
 
       if ($same_user || $is_staff){
-        if (\count($user->name_changes) > 0){
-          $old_names = [];
-          foreach ($user->name_changes as $entry)
-            $old_names[] = $entry->old;
-
-          $old_names = implode(', ', $old_names);
+        if (count($user->previous_names) > 0){
+          $old_names = implode(', ', array_map(fn(PreviousUsername $p) => $p->username, $user->previous_names));
         }
       }
 
@@ -163,8 +163,7 @@ class UserController extends Controller {
     if (!isset($params['uuid']) || Permission::insufficient('developer'))
       CoreUtils::notFound();
 
-    /** @var $user User */
-    $user = DB::$instance->where('id', $params['uuid'])->getOne('users', 'name');
+    $user = DeviantartUser::find($params['uuid']);
     if (empty($user))
       CoreUtils::notFound();
 
@@ -199,7 +198,7 @@ class UserController extends Controller {
     if (!isset($params['id']))
       Response::fail('Missing user ID');
 
-    $target_user = User::find($params['id']);
+    $target_user = DeviantartUser::find($params['id']);
     if (empty($target_user))
       Response::fail('User not found');
 
@@ -272,7 +271,7 @@ class UserController extends Controller {
         $data = $user->getApprovedFinishedRequestContributions(false, $pagination);
       break;
       default:
-        throw new \RuntimeException(__METHOD__.": Missing data retriever for type {$params['type']}");
+        throw new RuntimeException(__METHOD__.": Missing data retriever for type {$params['type']}");
     }
 
     CoreUtils::fixPath($pagination->toURI());
@@ -298,13 +297,7 @@ class UserController extends Controller {
     if (empty($CachedDeviation))
       HTTP::statusCode(404, AND_DIE);
 
-    if (empty($_GET['format']))
-      Response::done(['html' => $CachedDeviation->toLinkWithPreview()]);
-    else switch ($_GET['format']){
-      case 'raw':
-        Response::done($CachedDeviation->to_array());
-      break;
-    }
+    Response::done(['html' => $CachedDeviation->toLinkWithPreview()]);
   }
 
   public function contribCacheApi($params):void {
@@ -317,7 +310,7 @@ class UserController extends Controller {
     if (!isset($params['id']))
       Response::fail('Missing user ID');
 
-    $user = User::find($params['id']);
+    $user = DeviantartUser::find($params['id']);
     if (empty($user))
       Response::fail('The specified user does not exist');
 
@@ -342,7 +335,7 @@ class UserController extends Controller {
     if (Permission::insufficient('staff'))
       CoreUtils::noPerm();
 
-    $users = DB::$instance->orderBy('name')->get(User::$table_name);
+    $users = DB::$instance->orderBy('name')->get(DeviantartUser::$table_name);
     if (!empty($users)){
       $arranged = [];
       foreach ($users as $u){
@@ -354,16 +347,16 @@ class UserController extends Controller {
       $sections = [];
       foreach (array_reverse(Permission::ROLES) as $r => $v){
         if (empty($arranged[$r])) continue;
-        /** @var $users \App\Models\User[] */
+        /** @var $users \App\Models\DeviantartUser[] */
         $users = $arranged[$r];
-        $user_count = \count($users);
+        $user_count = count($users);
         $group = CoreUtils::makePlural(Permission::ROLES_ASSOC[$r], $user_count, true);
 
         if ($user_count > 10){
           $users_out = [];
           foreach ($users as $u){
             $firstletter = strtoupper($u->name[0]);
-            if (preg_match(new \App\RegExp('^[^a-z]$', 'i'), $firstletter))
+            if (preg_match(new RegExp('^[^a-z]$', 'i'), $firstletter))
               $firstletter = '#';
             $users_out[$firstletter][] = $u->toAnchor();
           }

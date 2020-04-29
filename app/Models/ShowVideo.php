@@ -7,6 +7,12 @@ use App\CoreUtils;
 use App\ShowHelper;
 use App\Time;
 use App\VideoProvider;
+use Google_Client;
+use Google_Service_YouTube;
+use Google_Service_YouTube_Video;
+use RuntimeException;
+use function count;
+use function in_array;
 
 /**
  * @property int      $show_id
@@ -48,21 +54,21 @@ class ShowVideo extends NSModel {
 
     switch ($this->provider){
       case 'yt':
-        $client = new \Google_Client();
+        $client = new Google_Client();
         $client->setApplicationName(GITHUB_URL);
         $client->setDeveloperKey(CoreUtils::env('GOOGLE_API_KEY'));
-        $service = new \Google_Service_YouTube($client);
+        $service = new Google_Service_YouTube($client);
         $details = $service->videos->listVideos('contentDetails', ['id' => $this->id]);
 
         if (!empty($details)){
-          /** @var $video \Google_Service_YouTube_Video */
+          /** @var $video Google_Service_YouTube_Video */
           $items = $details->getItems();
           if (empty($items))
             $broken = true;
           else {
             $video = $items[0];
             $blocked = $video->getContentDetails()->getRegionRestriction()->blocked;
-            $broken = !empty($blocked) && (\count($blocked) > 100 || \in_array('US', $blocked, true));
+            $broken = !empty($blocked) && (count($blocked) > 100 || in_array('US', $blocked, true));
           }
         }
         else $broken = false;
@@ -77,7 +83,7 @@ class ShowVideo extends NSModel {
         $broken = !CoreUtils::isURLAvailable(VideoProvider::getEmbed($this, VideoProvider::URL_ONLY));
       break;
       default:
-        throw new \RuntimeException("No breakage check defined for provider {$this->provider}");
+        throw new RuntimeException("No breakage check defined for provider {$this->provider}");
     }
 
     if (!$broken){

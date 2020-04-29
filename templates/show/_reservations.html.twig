@@ -1,6 +1,6 @@
 {# @controller \App\Posts::getReservationsSection #}
 {# @var arranged array #}
-{# @var current_user \App\Models\User #}
+{# @var current_user \App\Models\DeviantartUser #}
 {% set can_reserve = permission('member') and user_pref('a_postres', current_user) %}
 <section id="reservations" class="posts">
   <div class="unfinished">

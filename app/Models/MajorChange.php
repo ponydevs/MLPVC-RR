@@ -1,21 +1,26 @@
 <?php
 
-namespace App\Models\Logs;
+namespace App\Models;
 
+use ActiveRecord\DateTime;
 use App\DB;
-use App\Models\Appearance;
+use function is_string;
 
 /**
- * @inheritdoc
- * @property int        $appearance_id
- * @property string     $reason
- * @property Appearance $appearance
+ * @property int            $id
+ * @property int            $appearance_id
+ * @property int            $user_id
+ * @property string         $reason
+ * @property DateTime       $created_at
+ * @property DateTime       $updated_at
+ * @property Appearance     $appearance
+ * @property DeviantartUser $user
+ * @property null           $log
  */
-class MajorChange extends AbstractEntryType {
-  public static $table_name = 'log__major_changes';
-
+class MajorChange extends NSModel {
   public static $belongs_to = [
-    ['appearance', 'class' => '\App\Models\Appearance'],
+    ['appearance'],
+    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
   ];
 
   /** For Twig */
@@ -23,10 +28,14 @@ class MajorChange extends AbstractEntryType {
     return $this->appearance;
   }
 
+  public function getUser():DeviantartUser {
+    return $this->user;
+  }
+
   public static function total(bool $eqg):int {
     $query = DB::$instance->querySingle(
-      'SELECT COUNT(mc.entryid) as total
-			FROM log__major_changes mc
+      'SELECT COUNT(mc.id) as total
+			FROM major_changes mc
 			INNER JOIN appearances a ON mc.appearance_id = a.id
 			WHERE a.ishuman = ?', [$eqg]);
 
@@ -45,21 +54,27 @@ class MajorChange extends AbstractEntryType {
   public static function get(?int $PonyID, ?bool $EQG, $count = null) {
     $LIMIT = '';
     if ($count !== null)
-      $LIMIT = \is_string($count) ? $count : "LIMIT $count";
+      $LIMIT = is_string($count) ? $count : "LIMIT $count";
     $WHERE = $PonyID !== null ? "WHERE mc.appearance_id = $PonyID" : 'WHERE a.ishuman = '.($EQG ? 'true' : 'false');
 
     $query = DB::$instance->setModel(__CLASS__)->query(
       "SELECT mc.*
-			FROM log__major_changes mc
-			INNER JOIN log l ON mc.entryid = l.refid AND l.reftype = 'major_changes'
+			FROM major_changes mc
 			INNER JOIN appearances a ON mc.appearance_id = a.id
 			{$WHERE}
-			ORDER BY l.timestamp DESC
+			ORDER BY mc.created_at DESC
 			{$LIMIT}");
 
     if ($count === MOST_RECENT)
       return $query[0] ?? null;
 
     return $query;
+  }
+
+  public static function record(int $appearance_id, string $reason) {
+    self::create([
+      'appearance_id' => $appearance_id,
+      'reason' => $reason,
+    ]);
   }
 }

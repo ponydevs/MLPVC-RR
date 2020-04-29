@@ -4,10 +4,11 @@ namespace App\Controllers;
 
 use App\Auth;
 use App\CoreUtils;
-use App\Models\User;
+use App\Models\DeviantartUser;
 use App\Permission;
 use App\Response;
 use App\UserPrefs;
+use Exception;
 
 class PreferenceController extends Controller {
   public function __construct() {
@@ -19,7 +20,7 @@ class PreferenceController extends Controller {
 
   /** @var string */
   private $preference, $value;
-  /** @var User|null */
+  /** @var DeviantartUser|null */
   private $user;
 
   public function load_preference($params) {
@@ -27,7 +28,7 @@ class PreferenceController extends Controller {
 
     if (empty($params['id']))
       CoreUtils::notFound();
-    $user = User::find($params['id']);
+    $user = DeviantartUser::find($params['id']);
     if (empty($user))
       Response::fail('The specified user does not exist');
     if (Auth::$user->id !== $user->id && Permission::insufficient('staff'))
@@ -48,7 +49,7 @@ class PreferenceController extends Controller {
         try {
           $newvalue = UserPrefs::process($this->preference);
         }
-        catch (\Exception $e){
+        catch (Exception $e){
           Response::fail('Preference value error: '.$e->getMessage());
         }
 

@@ -2,8 +2,10 @@
 
 namespace App;
 
-use App\Models\User;
+use App\Models\DeviantartUser;
 use App\Models\UserPref;
+use RuntimeException;
+use function array_key_exists;
 
 class UserPrefs extends GlobalSettings {
   /** @see process */
@@ -37,13 +39,13 @@ class UserPrefs extends GlobalSettings {
   /**
    * Gets a user preference item's value
    *
-   * @param string $key
-   * @param User   $for
-   * @param bool   $disable_cache
+   * @param string         $key
+   * @param DeviantartUser $for
+   * @param bool           $disable_cache
    *
    * @return mixed
    */
-  public static function get(string $key, ?User $for = null, bool $disable_cache = false) {
+  public static function get(string $key, ?DeviantartUser $for = null, bool $disable_cache = false) {
     if (empty($for) && Auth::$signed_in)
       $for = Auth::$user;
 
@@ -69,20 +71,20 @@ class UserPrefs extends GlobalSettings {
   /**
    * Sets a preference item's value
    *
-   * @param string $key
-   * @param mixed  $value
-   * @param User   $for
+   * @param string         $key
+   * @param mixed          $value
+   * @param DeviantartUser $for
    *
    * @return bool
    */
-  public static function set(string $key, $value, ?User $for = null):bool {
+  public static function set(string $key, $value, ?DeviantartUser $for = null):bool {
     if (empty($for)){
       if (!Auth::$signed_in)
-        throw new \RuntimeException("Empty \$for when setting user preference $key to ");
+        throw new RuntimeException("Empty \$for when setting user preference $key to ");
       $for = Auth::$user;
     }
 
-    if (!\array_key_exists($key, static::DEFAULTS))
+    if (!array_key_exists($key, static::DEFAULTS))
       Response::fail("Key $key is not allowed");
     $default = static::DEFAULTS[$key];
 
@@ -96,6 +98,7 @@ class UserPrefs extends GlobalSettings {
     $strict = isset(self::STRICT_COMPARE[$key]);
 
     if (UserPref::has($key, $for)){
+      /** @var UserPref $pref */
       $pref = UserPref::find_for($key, $for);
       unset(Users::$_PREF_CACHE[$for->id][$key]);
       if ($strict ? $value === $default : $value == $default)
@@ -114,8 +117,8 @@ class UserPrefs extends GlobalSettings {
     else return true;
   }
 
-  public static function reset(string $key, ?User $for = null):bool {
-    if (!\array_key_exists($key, static::DEFAULTS))
+  public static function reset(string $key, ?DeviantartUser $for = null):bool {
+    if (!array_key_exists($key, static::DEFAULTS))
       Response::fail("Key $key is not allowed");
 
     return self::set($key, static::DEFAULTS[$key], $for);
@@ -137,18 +140,18 @@ class UserPrefs extends GlobalSettings {
       case 'cg_itemsperpage':
         $thing = 'Color Guide items per page';
         if (!is_numeric($value))
-          throw new \RuntimeException("$thing must be a number");
-        $value = \intval($value, 10);
+          throw new RuntimeException("$thing must be a number");
+        $value = (int)$value;
         if ($value < 7 || $value > 20)
-          throw new \RuntimeException("$thing must be between 7 and 20");
+          throw new RuntimeException("$thing must be between 7 and 20");
       break;
       case 'p_vectorapp':
         if (!empty($value) && !isset(CoreUtils::VECTOR_APPS[$value]))
-          throw new \RuntimeException('The specified app is invalid');
+          throw new RuntimeException('The specified app is invalid');
       break;
       case 'p_avatarprov':
-        if (!empty($value) && !isset(User::AVATAR_PROVIDERS[$value]))
-          throw new \RuntimeException('The specified avatar provider is invalid');
+        if (!empty($value) && !isset(DeviantartUser::AVATAR_PROVIDERS[$value]))
+          throw new RuntimeException('The specified avatar provider is invalid');
       break;
       case 'p_hidediscord':
       case 'cg_hidesynon':

@@ -2,6 +2,8 @@
 
 namespace App;
 
+use function count;
+
 class Statistics {
   /**
    * Process label data for stats
@@ -58,7 +60,7 @@ class Statistics {
 
     while (true){
       $break = true;
-      $labelCount = \count($Data['labels']);
+      $labelCount = count($Data['labels']);
       for ($lix = 1; $lix < $labelCount; $lix++){
         $diff = $Data['labels'][$lix] - $Data['labels'][$lix - 1];
         if ($diff > Time::IN_SECONDS['day']){

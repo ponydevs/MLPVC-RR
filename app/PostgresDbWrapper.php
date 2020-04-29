@@ -3,9 +3,14 @@
 namespace App;
 
 use ActiveRecord\Model;
+use PDO;
+use RuntimeException;
+use SeinopSys\PostgresDb;
+use function count;
+use function is_array;
 
-class PostgresDbWrapper extends \SeinopSys\PostgresDb {
-  public static function withConnection(\PDO $PDO):PostgresDbWrapper {
+class PostgresDbWrapper extends PostgresDb {
+  public static function withConnection(PDO $PDO):PostgresDbWrapper {
     $instance = new self();
     $instance->setConnection($PDO);
 
@@ -24,14 +29,14 @@ class PostgresDbWrapper extends \SeinopSys\PostgresDb {
     if (!CoreUtils::startsWith($class_name, 'App\\'))
       $class_name = "App\\Models\\$class_name";
     if (!class_exists($class_name))
-      throw new \RuntimeException("The model $class_name does not exist");
+      throw new RuntimeException("The model $class_name does not exist");
 
-    $this->setClass($class_name, \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE);
+    $this->setClass($class_name, PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE);
 
     return $this;
   }
 
-  private $non_existing_class_cache = [];
+  private array $non_existing_class_cache = [];
 
   /**
    * @inheritdoc
@@ -42,14 +47,14 @@ class PostgresDbWrapper extends \SeinopSys\PostgresDb {
       try {
         $this->setModel($class_name);
       }
-      catch (\RuntimeException $e){
+      catch (RuntimeException $e){
         $this->non_existing_class_cache[$class_name] = true;
       }
     }
 
     $exec_result = parent::execStatement($stmt, $reset);
-    $is_array = \is_array($exec_result);
-    if ($is_array && \count($exec_result) > 0)
+    $is_array = is_array($exec_result);
+    if ($is_array && count($exec_result) > 0)
       $check = $exec_result[0];
     else $check = $exec_result;
 

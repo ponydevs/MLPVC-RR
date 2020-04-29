@@ -5,15 +5,17 @@ namespace App\Models;
 use ActiveRecord\DateTime;
 use App\DB;
 use App\JSON;
+use RuntimeException;
+use function is_int;
 
 /**
- * @property int      $id
- * @property string   $user_id
- * @property string   $change_type
- * @property string   $change_data
- * @property float    $change_amount
- * @property DateTime $created
- * @property User     $user          (Via relations)
+ * @property int            $id
+ * @property string         $user_id
+ * @property string         $change_type
+ * @property string         $change_data
+ * @property float          $change_amount
+ * @property DateTime       $created_at
+ * @property DeviantartUser $user          (Via relations)
  */
 class PCGSlotHistory extends NSModel {
   public static $table_name = 'pcg_slot_history';
@@ -25,10 +27,6 @@ class PCGSlotHistory extends NSModel {
     'staff_member' => true, // Assigned on initial import to avoid showing a "joined" entry out of nowhere
     'staff_join' => true,
     'staff_leave' => false,
-    'gift_sent' => false, // Deducts from sender
-    'gift_accepted' => true, // Transfers to receiver
-    'gift_rejected' => true, // Refunds the sender
-    'gift_refunded' => true, // Refunds the sender
     'appearance_del' => true,
     'appearance_add' => false,
     'free_trial' => true,
@@ -42,12 +40,8 @@ class PCGSlotHistory extends NSModel {
     'staff_member' => 'Being staff',
     'staff_join' => 'Joined staff',
     'staff_leave' => 'Left staff',
-    'gift_sent' => 'Slots gifted',
-    'gift_accepted' => 'Gift accepted',
-    'gift_rejected' => 'Gift rejected',
-    'gift_refunded' => 'Gift refunded',
     'appearance_del' => 'Appearance deleted',
-    'appearance_add' => 'Appearance added',
+    'appearance_add' => 'Appearance created',
     'free_trial' => 'Free slot',
     'manual_give' => 'Manually given',
     'manual_take' => 'Manually taken',
@@ -61,7 +55,7 @@ class PCGSlotHistory extends NSModel {
   ];
 
   public static $belongs_to = [
-    ['user'],
+    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
   ];
 
   /**
@@ -78,14 +72,14 @@ class PCGSlotHistory extends NSModel {
     $entry->user_id = $user_id;
 
     if (!isset(self::VALID_CHANGE_TYPES[$change_type]))
-      throw new \RuntimeException("Invalid change type: $change_type");
+      throw new RuntimeException("Invalid change type: $change_type");
 
     if ($change_amount !== null)
       $entry->change_amount = $change_amount;
     else {
       $key = strtok($change_type, '_');
       if (!isset(self::DEFAULT_CHANGE[$key]))
-        throw new \RuntimeException("No default change amount specified for type: $change_type");
+        throw new RuntimeException("No default change amount specified for type: $change_type");
       $entry->change_amount = self::DEFAULT_CHANGE[$key];
       if ($key === 'post' && $change_data !== null)
         $change_data['type'] = 'post';
@@ -98,9 +92,7 @@ class PCGSlotHistory extends NSModel {
       $entry->change_data = JSON::encode($change_data);
 
     if ($created !== null){
-      if (\is_int($created))
-        $created = date('c', $created);
-      $entry->created = $created;
+      $entry->created_at = is_int($created) ? date('c', $created) : $created;
     }
 
     $entry->save();

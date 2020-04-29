@@ -4,6 +4,7 @@ namespace App;
 
 use ActiveRecord\SQLBuilder;
 use HtmlGenerator\HtmlTag;
+use RuntimeException;
 
 /**
  * Class for writing out complex pagination HTML
@@ -49,7 +50,7 @@ class Pagination {
       $page = array_pop($uri);
     }
     if (is_numeric($page)){
-      $page_int = \intval($page, 10);
+      $page_int = (int)$page;
       if ($this->max_pages !== null)
         $page_int = min($page_int, $this->max_pages);
       $this->page = max($page_int, 1);
@@ -93,11 +94,11 @@ class Pagination {
    * Collect page numbers for pagination
    *
    * @return array
-   * @throws \RuntimeException
+   * @throws RuntimeException
    */
   private function _getLinks() {
     if ($this->max_pages === null)
-      throw new \RuntimeException('$this->maxPages must be defined');
+      throw new RuntimeException('$this->maxPages must be defined');
 
     return array_unique(
       array_merge(
@@ -127,6 +128,7 @@ class Pagination {
     if ($currentIndex !== null && $current)
       $currentIndex = $nr;
 
+    /** @noinspection NullPointerExceptionInspection */
     return '<li>'.(
       !$current
         ? HtmlTag::createElement('a')->set('href', $this->_makeLink($i))->text($i)
@@ -136,7 +138,7 @@ class Pagination {
 
   public function toHTML(bool $wrap = WRAP):string {
     if ($this->max_pages === null){
-      CoreUtils::error_log(__METHOD__.": maxPages peroperty must be defined\nData: ".var_export($this, true)."\nTrace:\n".(new \RuntimeException())->getTraceAsString());
+      CoreUtils::error_log(__METHOD__.": maxPages peroperty must be defined\nData: ".var_export($this, true)."\nTrace:\n".(new RuntimeException())->getTraceAsString());
 
       return '';
     }
@@ -154,11 +156,11 @@ class Pagination {
         }
       }
       else {
-        /** @noinspection MagicMethodsValidityInspection */
         foreach ($this->_getLinks() as $i){
           if ($i !== min($previousPage + 1, $this->max_pages)){
             $diff = $i - ($previousPage + 1);
             if ($diff > 1){
+              /** @noinspection NullPointerExceptionInspection */
               $item = HtmlTag::createElement('li')->set('class', 'spec');
               $item->addElement('a')->text("\u{2026}");
               $item->attr('data-baseurl', $this->_makeLink('*'));

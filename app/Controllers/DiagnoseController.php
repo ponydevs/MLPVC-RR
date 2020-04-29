@@ -5,6 +5,9 @@ namespace App\Controllers;
 use App\CoreUtils;
 use App\Permission;
 use App\Twig;
+use PDOException;
+use RuntimeException;
+use Twig\Error\RuntimeError;
 
 class DiagnoseController extends Controller {
   public function __construct() {
@@ -15,9 +18,9 @@ class DiagnoseController extends Controller {
   }
 
   const TESTABLE_EXCEPTIONS = [
-    'runtime' => \RuntimeException::class,
-    'twig' => \Twig\Error\RuntimeError::class,
-    'pdo' => \PDOException::class,
+    'runtime' => RuntimeException::class,
+    'twig' => RuntimeError::class,
+    'pdo' => PDOException::class,
   ];
 
   public function exception($params) {
@@ -42,7 +45,7 @@ class DiagnoseController extends Controller {
   public function loadtime($params) {
     if (!is_numeric($params['time'] ?? null))
       $time = 30;
-    else $time = \intval($params['time'], 10);
+    else $time = (int)$params['time'];
 
     CoreUtils::fixPath("/diagnose/lt/$time");
 

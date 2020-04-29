@@ -13,26 +13,26 @@ class UserPref extends NSModel {
   public static $primary_key = ['user_id', 'key'];
 
   public static $belongs_to = [
-    ['user'],
+    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
   ];
 
   /**
-   * @param string $key
-   * @param User   $user
+   * @param string         $key
+   * @param DeviantartUser $user
    *
    * @return bool
    */
-  public static function has(string $key, User $user) {
+  public static function has(string $key, DeviantartUser $user) {
     return self::exists(['user_id' => $user->id, 'key' => $key]);
   }
 
   /**
-   * @param string $key
-   * @param User   $user
+   * @param string         $key
+   * @param DeviantartUser $user
    *
    * @return UserPref|null
    */
-  public static function find_for(string $key, User $user) {
+  public static function find_for(string $key, DeviantartUser $user) {
     return self::find_by_user_id_and_key($user->id, $key);
   }
 }

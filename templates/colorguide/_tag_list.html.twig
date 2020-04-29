@@ -25,9 +25,11 @@
       </td>
       <td class="type">{{ t.type ? constant('App\\Tags::TAG_TYPES')[t.type] : '' }}</td>
       <td class="uses">
-        <span>{{ t.uses }}</span>
         {% if t.synonym_of is null and can_edit %}
+          <span>{{ t.uses }}</span>
           <button class='typcn typcn-arrow-sync refresh' title='Refresh use count'></button>
+        {% else %}
+          <span>-</span>
         {% endif %}
       </td>
     </tr>

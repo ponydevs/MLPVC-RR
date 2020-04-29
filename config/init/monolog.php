@@ -1,6 +1,7 @@
 <?php
 
 use App\CoreUtils;
+use App\GracefulErrorHandler;
 use App\UsefulLogger as Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -19,7 +20,7 @@ function monolog_setup() {
   $logger = new Logger('logger');
   $logger->pushHandler($stream);
 
-  $handler = new \App\GracefulErrorHandler($logger);
+  $handler = new GracefulErrorHandler($logger);
   $handler->registerErrorHandler([], false);
   $handler->registerExceptionHandler();
   $handler->registerFatalHandler();

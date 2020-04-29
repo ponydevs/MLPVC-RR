@@ -11,24 +11,29 @@ use App\HTTP;
 use App\ImageProvider;
 use App\Input;
 use App\Logs;
-use App\Models\CachedDeviation;
+use App\Models\BrokenPost;
+use App\Models\LockedPost;
 use App\Models\Notification;
 use App\Models\PCGSlotHistory;
 use App\Models\Post;
 use App\Models\Show;
-use App\Models\User;
+use App\Models\DeviantartUser;
 use App\Permission;
 use App\Posts;
-use App\Regexes;
 use App\Response;
 use App\ShowHelper;
 use App\Time;
 use App\UserPrefs;
 use App\Users;
 use ElephantIO\Exception\ServerConnectionFailureException;
+use Exception;
+use function in_array;
+use function intval;
+use function is_object;
+use function is_string;
 
 class PostController extends Controller {
-  public static $CONTRIB_THANKS;
+  public static string $CONTRIB_THANKS;
 
   public function __construct() {
     parent::__construct();
@@ -101,19 +106,17 @@ class PostController extends Controller {
           $update['reserved_by'] = null;
         }
         $this->post->update_attributes($update);
-        $log = [
-          'id' => $this->post->id,
-          'response_code' => $response_code,
-          'failing_url' => $failing_url,
-        ];
         try {
-          CoreUtils::socketEvent('post-break', $log);
+          CoreUtils::socketEvent('post-break', [
+            'id' => $this->post->id,
+            'response_code' => $response_code,
+            'failing_url' => $failing_url,
+          ]);
         }
-        catch (\Exception $e){
+        catch (Exception $e){
           CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
-        $log['reserved_by'] = $old_reserver ?? $this->post->reserved_by;
-        Logs::logAction('post_break', $log);
+        BrokenPost::record($this->post->id, $response_code, $failing_url, $old_reserver ?? $this->post->reserved_by);
 
         if (Permission::insufficient('staff'))
           Response::done(['broken' => true]);
@@ -207,7 +210,7 @@ class PostController extends Controller {
 
         if ($suggested){
           $response['button'] = Posts::getPostReserveButton($this->post->reserver, false);
-          $response['pendingReservations'] = User::find($suggested ? $this->post->reserved_by : $old_reserver)->getPendingReservationsHTML($suggested
+          $response['pendingReservations'] = DeviantartUser::find($suggested ? $this->post->reserved_by : $old_reserver)->getPendingReservationsHTML($suggested
             ? true : $this->is_user_reserver);
         }
         else $response['li'] = $this->post->getLi();
@@ -241,7 +244,7 @@ class PostController extends Controller {
 
           $response = ['li' => $this->post->getLi()];
           if ($from_profile)
-            $response['pendingReservations'] = User::find($old_reserver)->getPendingReservationsHTML($this->is_user_reserver);
+            $response['pendingReservations'] = DeviantartUser::find($old_reserver)->getPendingReservationsHTML($this->is_user_reserver);
 
           Response::done($response);
         }
@@ -291,7 +294,7 @@ class PostController extends Controller {
         catch (ServerConnectionFailureException $e){
           $response['li'] = $this->post->getLi();
         }
-        catch (\Exception $e){
+        catch (Exception $e){
           CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
         if ($this->is_user_reserver)
@@ -355,7 +358,7 @@ class PostController extends Controller {
         $this->_authorize();
 
         $kind = (new Input('kind', function ($value) {
-          if (!\in_array($value, Post::KINDS, true))
+          if (!in_array($value, Post::KINDS, true))
             return Input::ERROR_INVALID;
         }, [
           Input::CUSTOM_ERROR_MESSAGES => [
@@ -375,12 +378,11 @@ class PostController extends Controller {
         }
 
         $Image = $this->_checkImage();
-        if (!\is_object($Image)){
+        if (!is_object($Image)){
           CoreUtils::error_log("Getting post image failed\n".var_export($Image, true));
           Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
         }
 
-        /** @var $post Post */
         $post = new Post();
         $post->preview = $Image->preview;
         $post->fullsize = $Image->fullsize;
@@ -425,7 +427,7 @@ class PostController extends Controller {
             'show_id' => $post->show_id,
           ]);
         }
-        catch (\Exception $e){
+        catch (Exception $e){
           CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
 
@@ -448,7 +450,7 @@ class PostController extends Controller {
             'id' => $this->post->id,
           ]);
         }
-        catch (\Exception $e){
+        catch (Exception $e){
           CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
 
@@ -487,7 +489,7 @@ class PostController extends Controller {
         if (isset($update['lock'])){
           $message .= '<p>';
 
-          Logs::logAction('post_lock', $postdata);
+          LockedPost::record($this->post->id);
           if ($this->is_user_reserver)
             $message .= self::$CONTRIB_THANKS.' ';
           else Notification::send($this->post->reserved_by, 'post-approved', $postdata);
@@ -497,7 +499,7 @@ class PostController extends Controller {
         if ($this->post->is_request && $this->post->requested_by !== Auth::$user->id){
           $notifSent = Notification::send($this->post->requester->id, 'post-finished', $postdata);
           $message .= "<p><strong>{$this->post->requester->name}</strong> ".($notifSent === 0 ? 'has been notified'
-              : 'will receive a notification shortly').'.</p>'.(\is_string($notifSent)
+              : 'will receive a notification shortly').'.</p>'.(is_string($notifSent)
               ? "<div class='notice fail'><strong>Error:</strong> $notifSent</div>" : '');
         }
 
@@ -506,7 +508,7 @@ class PostController extends Controller {
             'id' => $this->post->id,
           ]);
         }
-        catch (\Exception $e){
+        catch (Exception $e){
           CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
 
@@ -547,7 +549,7 @@ class PostController extends Controller {
             'id' => $this->post->id,
           ]);
         }
-        catch (\Exception $e){
+        catch (Exception $e){
           CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
 
@@ -594,10 +596,12 @@ class PostController extends Controller {
     }
 
     // We fetch the last log entry and restore the reserver from when the post was still up (if applicable)
-    $LogEntry = DB::$instance->where('id', $this->post->id)->orderBy('entryid', 'DESC')->getOne('log__post_break');
+
+    /** @var BrokenPost $broken_post */
+    $broken_post = DB::$instance->where('post_id', $this->post->id)->orderBy('created_at', 'DESC')->getOne('broken_posts');
     $this->post->broken = false;
-    if (isset($LogEntry['reserved_by']))
-      $this->post->reserved_by = $LogEntry['reserved_by'];
+    if (isset($broken_post->reserved_by))
+      $this->post->reserved_by = $broken_post->reserved_by;
 
     $this->post->save();
 
@@ -636,7 +640,7 @@ class PostController extends Controller {
   private $is_user_reserver = false;
 
   public function load_post($params, $action) {
-    $id = \intval($params['id'], 10);
+    $id = (int)$params['id'];
     $this->post = Post::find($id);
     if ($action === 'locate')
       return;
@@ -644,7 +648,7 @@ class PostController extends Controller {
     if (empty($this->post))
       Response::fail("There's no post with the ID $id");
 
-    if ($this->post->lock === true && Permission::insufficient('developer') && !\in_array($action, ['unlock', 'lazyload', 'locate'], true))
+    if ($this->post->lock === true && Permission::insufficient('developer') && !in_array($action, ['unlock', 'lazyload', 'locate'], true))
       Response::fail('This post has been approved and cannot be edited or removed.');
 
     $this->is_user_reserver = Auth::$signed_in && $this->post->reserved_by === Auth::$user->id;
@@ -689,7 +693,7 @@ class PostController extends Controller {
         'id' => $this->post->id,
       ]);
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
     }
 
@@ -743,7 +747,7 @@ class PostController extends Controller {
     $PreviousAttempts = Posts::getTransferAttempts($this->post, Auth::$user);
 
     if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]->read_at))
-      Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]->sent_at).', please wait for them to respond.');
+      Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]->created_at).', please wait for them to respond.');
 
     Notification::send($this->post->reserved_by, 'post-passon', [
       'id' => $this->post->id,
@@ -847,9 +851,7 @@ class PostController extends Controller {
       Response::dbError();
 
     if (!empty($insert['lock']))
-      Logs::logAction('post_lock', [
-        'id' => $reservation->id,
-      ]);
+      LockedPost::record($reservation->id);
 
     try {
       CoreUtils::socketEvent('post-add', [
@@ -858,7 +860,7 @@ class PostController extends Controller {
         'show_id' => $insert['show_id'],
       ]);
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
     }
 
@@ -877,11 +879,11 @@ class PostController extends Controller {
 
       DB::$instance->where(self::SHARE_TYPE[$params['thing']]);
       $attr = 'old_id';
-      $id = \intval($params['id'], 10);
+      $id = (int)$params['id'];
     }
     else {
       $attr = 'id';
-      $id = \intval($params['id'], 36);
+      $id = intval($params['id'], 36);
     }
 
     if ($id > POSTGRES_INTEGER_MAX || $id < 1)

@@ -7,8 +7,6 @@ if (PHP_SAPI !== 'cli') {
     throw new Exception('This file must be run from the command line.');
 }
 
-use App\CoreUtils;
-
 $csv_path = FSPATH.'names.csv';
 
 if (!file_exists($csv_path)) {

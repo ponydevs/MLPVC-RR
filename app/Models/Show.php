@@ -13,15 +13,16 @@ use App\RegExp;
 use App\ShowHelper;
 use App\TMDBHelper;
 use App\VideoProvider;
+use function count;
 
 /**
  * @property int              $id
  * @property string           $type
  * @property int              $season
  * @property int              $episode
- * @property bool             $twoparter             (Uses magic method)
+ * @property int              $parts
  * @property string           $title
- * @property DateTime         $posted
+ * @property DateTime         $created_at
  * @property string           $posted_by
  * @property DateTime         $airs
  * @property int              $no
@@ -37,7 +38,7 @@ use App\VideoProvider;
  * @property ShowAppearance[] $show_appearances      (Via magic method)
  * @property Appearance[]     $related_appearances   (Via magic method)
  * @property ShowVideo[]      $videos                (Via relations)
- * @property User             $poster                (Via relations)
+ * @property DeviantartUser   $poster                (Via relations)
  * @method static Show find_by_season_and_episode(int $season, int $episode)
  * @method static Show|Show[] find(...$params)
  */
@@ -56,7 +57,7 @@ class Show extends NSModel implements Linkable {
   }
 
   public static $belongs_to = [
-    ['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
+    ['poster', 'class' => 'DeviantartUser', 'foreign_key' => 'posted_by'],
   ];
 
   public function get_is_episode():bool {
@@ -129,7 +130,7 @@ class Show extends NSModel implements Linkable {
   }
 
   /**
-   * @return Post[]|null
+   * @return Post[][]|null
    */
   public function getReservations() {
     $reservations = Posts::get($this->id, ONLY_RESERVATIONS, Permission::sufficient('staff'));
@@ -160,13 +161,13 @@ class Show extends NSModel implements Linkable {
     $season = $this->season;
 
     if ($pad){
-      $episode = CoreUtils::pad($episode).($this->twoparter ? '-'.CoreUtils::pad($episode + 1) : '');
+      $episode = CoreUtils::pad($episode).($this->parts === 2 ? '-'.CoreUtils::pad($episode + 1) : '');
       $season = CoreUtils::pad($season);
 
       return "S{$season} E{$episode}";
     }
 
-    if ($this->twoparter)
+    if ($this->parts === 2)
       $episode = $episode.'-'.($episode + 1);
 
     return "S{$season}E{$episode}";
@@ -226,7 +227,7 @@ class Show extends NSModel implements Linkable {
   public function willHaveAiredBy():int {
     $airtime = $this->airs->getTimestamp();
     if ($this->is_episode)
-      $add_minutes = $this->twoparter ? 60 : 30;
+      $add_minutes = $this->parts * 30;
     else $add_minutes = 120;
 
     return strtotime("+{$add_minutes} minutes", $airtime);
@@ -294,8 +295,8 @@ class Show extends NSModel implements Linkable {
    * Examples:
    *   "S1E1" => {season:1,episode:1}
    *   "S01E01" => {season:1,episode:1}
-   *   "S1E1-2" => {season:1,episode:1,twoparter:true}
-   *   "S01E01-02" => {season:1,episode:1,twoparter:true}
+   *   "S1E1-2" => {season:1,episode:1,parts:2}
+   *   "S01E01-02" => {season:1,episode:1,parts:2}
    *
    * @param string $id
    *
@@ -307,15 +308,15 @@ class Show extends NSModel implements Linkable {
 
     if (preg_match(Regexes::$episode_id, $id, $match))
       return [
-        'season' => \intval($match[1], 10),
-        'episode' => \intval($match[2], 10),
-        'twoparter' => !empty($match[3]),
+        'season' => (int)$match[1],
+        'episode' => (int)$match[2],
+        'parts' => !empty($match[3]) ? 2 : 1,
       ];
     else if (preg_match(Regexes::$movie_id, $id, $match))
       return [
         'season' => 0,
-        'episode' => \intval($match[1], 10),
-        'twoparter' => false,
+        'episode' => (int)$match[1],
+        'parts' => 1,
       ];
     else return null;
   }
@@ -323,11 +324,11 @@ class Show extends NSModel implements Linkable {
   /**
    * Gets the rating given to the episode by the user, or null if not voted
    *
-   * @param User $user
+   * @param DeviantartUser $user
    *
    * @return ShowVote|null
    */
-  public function getUserVote(?User $user = null):?ShowVote {
+  public function getUserVote(?DeviantartUser $user = null):?ShowVote {
     if ($user === null && Auth::$signed_in)
       $user = Auth::$user;
 
@@ -381,11 +382,11 @@ class Show extends NSModel implements Linkable {
    *  for the keys 'season' and 'episode'
    * Return's the user's vote entry from the DB
    *
-   * @param User $user
+   * @param DeviantartUser $user
    *
    * @return ShowVote|null
    */
-  public function getVoteOf(?User $user = null):?ShowVote {
+  public function getVoteOf(?DeviantartUser $user = null):?ShowVote {
     if ($user === null) return null;
 
     return ShowVote::find_for($this, $user);
@@ -399,7 +400,7 @@ class Show extends NSModel implements Linkable {
   public function getVideoEmbeds():array {
     $parts = 0;
     $embed = '';
-    if (\count($this->videos) > 0){
+    if (count($this->videos) > 0){
       $Videos = [];
       foreach ($this->videos as $v)
         $Videos[$v->provider][$v->part] = $v;
@@ -407,9 +408,9 @@ class Show extends NSModel implements Linkable {
       $Videos = !empty($Videos['yt']) ? $Videos['yt'] : ($Videos['dm'] ?? $Videos['sv'] ?? $Videos['mg']);
       /** @var $Videos ShowVideo[] */
 
-      $parts = \count($Videos);
+      $parts = count($Videos);
       foreach ($Videos as $v)
-        $embed .= "<div class='responsive-embed".($this->twoparter && $v->part !== 1 ? ' hidden' : '')."'>".VideoProvider::getEmbed($v).'</div>';
+        $embed .= "<div class='responsive-embed".($this->parts === 2 && $v->part !== 1 ? ' hidden' : '')."'>".VideoProvider::getEmbed($v).'</div>';
     }
 
     return [

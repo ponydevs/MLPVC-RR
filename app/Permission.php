@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use RuntimeException;
+
 class Permission {
   public const ROLES_ASSOC = [
     'guest' => 'Guest',
@@ -39,7 +41,7 @@ class Permission {
    */
   public static function sufficient(string $role, ?string $compareAgainst = null):bool {
     if (!isset(self::ROLES[$role]))
-      throw new \RuntimeException("Invalid role: $role");
+      throw new RuntimeException("Invalid role: $role");
 
     $comparison = $compareAgainst !== null;
 

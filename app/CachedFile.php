@@ -2,6 +2,13 @@
 
 namespace App;
 
+use InvalidArgumentException;
+use RuntimeException;
+use function array_slice;
+use function gettype;
+use function is_callable;
+use function is_int;
+
 class CachedFile {
   private const
     TYPE_ANY = 1,
@@ -23,20 +30,20 @@ class CachedFile {
    */
   public function __construct(string $path, $max_age) {
     $this->path = $path;
-    if (\is_int($max_age))
+    if (is_int($max_age))
       $this->max_age = $max_age;
-    else if (\is_callable($max_age))
+    else if (is_callable($max_age))
       $this->expiry_check = $max_age;
-    else throw new \InvalidArgumentException(__METHOD__.' $max_age should be int or callable, '.\gettype($max_age).' given');
+    else throw new InvalidArgumentException(__METHOD__.' $max_age should be int or callable, '.gettype($max_age).' given');
     $this->guessType();
   }
 
   private function guessType() {
     $path_parts = explode('.', $this->path);
-    $last_part = strtolower(\array_slice($path_parts, -1, 1)[0]);
+    $last_part = strtolower(array_slice($path_parts, -1, 1)[0]);
     if ($last_part === 'gz'){
       $this->gzip = true;
-      $ext = strtolower(\array_slice($path_parts, -2, 1)[0]);
+      $ext = strtolower(array_slice($path_parts, -2, 1)[0]);
     }
     else $ext = $last_part;
     switch ($ext){
@@ -109,7 +116,7 @@ class CachedFile {
     CoreUtils::createFoldersFor($this->path);
     if (!file_exists($this->path)){
       if ($this->type !== self::TYPE_LOCK)
-        throw new \RuntimeException("Trying to bump non-existant non-lock file {$this->path}, use ".__CLASS__.'->update instead!');
+        throw new RuntimeException("Trying to bump non-existant non-lock file {$this->path}, use ".__CLASS__.'->update instead!');
 
       return File::put($this->path, '') !== false;
     }

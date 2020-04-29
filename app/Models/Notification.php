@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use ActiveRecord\RecordNotFound;
 use App\CoreUtils;
 use App\DB;
 use App\JSON;
@@ -10,24 +11,25 @@ use App\RegExp;
 use App\Twig;
 use App\Users;
 use ElephantIO\Exception\ServerConnectionFailureException;
+use RuntimeException;
 
 /**
- * @property int    $id
- * @property string $recipient_id
- * @property string $type
- * @property string $data
- * @property string $sent_at
- * @property string $read_at
- * @property string $read_action
- * @property User   $recipient
- * @property array  $actions    (Via magic method)
+ * @property int            $id
+ * @property string         $recipient_id
+ * @property string         $type
+ * @property string         $data
+ * @property string         $created_at
+ * @property string         $read_at
+ * @property string         $read_action
+ * @property DeviantartUser $recipient
+ * @property array          $actions    (Via magic method)
  * @method static Notification find(int $id)
  */
 class Notification extends NSModel {
   public static $table_name = 'notifications';
 
   public static $belongs_to = [
-    ['recipient', 'class' => 'User'],
+    ['recipient', 'class' => 'DeviantartUser'],
   ];
 
   public function get_actions() {
@@ -96,22 +98,6 @@ class Notification extends NSModel {
         'action' => 'Ignore color issues',
       ],
     ],
-    'pcg-slot-gift' => [
-      'accept' => [
-        'label' => 'Accept',
-        'icon' => 'tick',
-        'color' => 'green',
-        'confirm' => true,
-        'action' => 'Accept gift',
-      ],
-      'reject' => [
-        'label' => 'Reject',
-        'icon' => 'cancel',
-        'color' => 'red',
-        'confirm' => true,
-        'action' => 'Reject gift',
-      ],
-    ],
   ];
   public const NOTIF_TYPES = [
     #---------------# (max length)
@@ -125,7 +111,6 @@ class Notification extends NSModel {
     'post-passsnatch' => true,
     'post-passperm' => true,
     'sprite-colors' => true,
-    'pcg-slot-gift' => true,
     'pcg-slot-accept' => true,
     'pcg-slot-reject' => true,
     'pcg-slot-refund' => true,
@@ -133,7 +118,7 @@ class Notification extends NSModel {
 
   public static function send(string $recipient_id, string $type, $data) {
     if (empty(self::NOTIF_TYPES[$type]))
-      throw new \RuntimeException("Invalid notification type: $type");
+      throw new RuntimeException("Invalid notification type: $type");
 
     switch ($type){
       case 'post-finished':
@@ -182,7 +167,6 @@ class Notification extends NSModel {
     if (preg_match(new RegExp('^post-'), $this->type)){
       try {
         /** @var $Post Post */
-        /** @noinspection PhpUndefinedMethodInspection */
         $Post = Post::find($data['id']);
         $Episode = $Post->show;
         $EpID = $Episode->getID();
@@ -196,7 +180,10 @@ class Notification extends NSModel {
     }
     switch ($this->type){
       case 'post-passon':
-        $userlink = Users::get($data['user'])->toAnchor();
+        $user = Users::get($data['user']);
+        if (empty($user))
+          throw new RuntimeException(__METHOD__.' Could not get user via identifier '.var_export($data['user'], true));
+        $userlink = $user->toAnchor();
         $HTML = $this->getElement("$userlink is interested in finishing a <a href='$url'>post</a> you reserved under $EpID. Would you like to pass the reservation to them?");
       break;
       case 'post-passdeny':
@@ -205,7 +192,10 @@ class Notification extends NSModel {
       case 'post-passdel':
       case 'post-passsnatch':
       case 'post-passperm':
-        $userlink = Users::get($data['by'])->toAnchor();
+        $user = Users::get($data['by']);
+        if (empty($user))
+          throw new RuntimeException(__METHOD__.' Could not get user via identifier '.var_export($data['user'], true));
+        $userlink = $user->toAnchor();
 
         $passaction = str_replace('post-pass', '', $this->type);
         switch ($passaction){
@@ -231,32 +221,6 @@ class Notification extends NSModel {
             }
             $HTML = $this->getElement("Reservation transfer status: $message");
           break;
-        }
-      break;
-      case 'pcg-slot-gift':
-      case 'pcg-slot-accept':
-      case 'pcg-slot-reject':
-      case 'pcg-slot-refund':
-        $gift = PCGSlotGift::find($data['gift_id']);
-        if (empty($gift))
-          $HTML = $this->getElement('The gift referenced by this notification no longer exists.');
-        else {
-          $nslots = CoreUtils::makePlural('Personal Color Guide slot', $gift->amount, PREPEND_NUMBER);
-          switch (explode('-', $this->type)[2]){
-            case 'gift':
-              $HTML = $this->getElement("You've received a gift of $nslots from {$gift->sender->toAnchor()}");
-            break;
-            case 'accept':
-              $HTML = $this->getElement("Your gift of $nslots has been accepted by {$gift->receiver->toAnchor()}");
-            break;
-            case 'reject':
-              $HTML = $this->getElement("Your gift of $nslots has been rejected by {$gift->receiver->toAnchor()}, you were refunded");
-            break;
-            case 'refund':
-              $refunder = Permission::sufficient('staff') ? $gift->refunder->toAnchor() : 'a staff member';
-              $HTML = $this->getElement("Your gift of $nslots to {$gift->receiver->toAnchor()} has been refunded by $refunder");
-            break;
-          }
         }
       break;
       default:

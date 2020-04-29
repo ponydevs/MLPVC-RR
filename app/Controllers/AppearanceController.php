@@ -36,7 +36,10 @@ use App\UserPrefs;
 use App\Users;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
+use Exception;
 use Ramsey\Uuid\Uuid;
+use function count;
+use function in_array;
 
 class AppearanceController extends ColorGuideController {
   public function view($params):void {
@@ -49,7 +52,7 @@ class AppearanceController extends ColorGuideController {
 
     CoreUtils::fixPath($this->appearance->toURL());
 
-    $cm_count = \count($this->appearance->cutiemarks);
+    $cm_count = count($this->appearance->cutiemarks);
     $cmv = $cm_count > 0 ? ' and cutie mark '.CoreUtils::makePlural('vector', $cm_count) : '';
 
     $settings = [
@@ -110,6 +113,7 @@ class AppearanceController extends ColorGuideController {
       CoreUtils::notFound();
 
     $totalChangeCount = TagChange::count(['appearance_id' => $this->appearance->id]);
+    /** @noinspection PhpUnusedLocalVariableInspection */
     $Pagination = new Pagination("{$this->path}/tag-changes/{$this->appearance->getURLSafeLabel()}", 25, $totalChangeCount);
   }
 
@@ -137,7 +141,7 @@ class AppearanceController extends ColorGuideController {
           case 'p':
             CGUtils::renderPreviewSVG($this->appearance);
           case 'f':
-            CGUtils::renderCMFacingSVG($this->path, $this->appearance);
+            CGUtils::renderCMFacingSVG($this->appearance);
           default:
             CoreUtils::notFound();
         }
@@ -263,7 +267,7 @@ class AppearanceController extends ColorGuideController {
             try {
               $new_appearance->applyTemplate();
             }
-            catch (\Exception $e){
+            catch (Exception $e){
               $response['message'] .= ', but applying the template failed';
               $response['info'] = 'The common color groups could not be added.<br>Reason: '.$e->getMessage();
               $use_template = false;
@@ -361,7 +365,7 @@ class AppearanceController extends ColorGuideController {
           'label' => $this->appearance->label,
           'notes' => $this->appearance->notes_src,
           'ishuman' => $this->appearance->ishuman,
-          'added' => $this->appearance->added,
+          'added' => $this->appearance->created_at,
           'private' => $this->appearance->private,
           'owner_id' => $this->appearance->owner_id,
         ]);
@@ -399,7 +403,7 @@ class AppearanceController extends ColorGuideController {
     try {
       $this->appearance->applyTemplate();
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       Response::fail('Applying the template failed. Reason: '.$e->getMessage());
     }
 
@@ -532,7 +536,7 @@ class AppearanceController extends ColorGuideController {
         $cgs = $this->appearance->color_groups;
         if (empty($cgs))
           Response::fail('This appearance does not have any color groups');
-        if (\count($cgs) < 2)
+        if (count($cgs) < 2)
           Response::fail('An appearance needs at least 2 color groups before you can change their order');
         foreach ($cgs as $i => $cg)
           $cgs[$i] = $cg->to_array([
@@ -594,7 +598,7 @@ class AppearanceController extends ColorGuideController {
     if (empty($Map))
       CoreUtils::notFound();
 
-    [$Colors, $ColorGroups, $AllColors] = $this->appearance->getSpriteRelevantColors();
+    [$Colors] = $this->appearance->getSpriteRelevantColors();
 
     $SafeLabel = $this->appearance->getURLSafeLabel();
     CoreUtils::fixPath("{$this->path}/sprite/{$this->appearance->id}-$SafeLabel");
@@ -747,7 +751,7 @@ class AppearanceController extends ColorGuideController {
             Input::ERROR_INVALID => 'Cutie mark data (@value) is invalid',
           ],
         ]))->out();
-        if (\count($data) > 4)
+        if (count($data) > 4)
           Response::fail('Appearances can only have a maximum of 4 cutie marks.');
         /** @var $new_cms Cutiemark[] */
         $new_cms = [];
@@ -796,7 +800,7 @@ class AppearanceController extends ColorGuideController {
             $facing = CoreUtils::trim($item['facing']);
             if (empty($facing))
               $facing = null;
-            else if (!\in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
+            else if (!in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
               Response::fail('Body orientation "'.CoreUtils::escapeHTML($facing).'" is invalid');
           }
           else $facing = null;
@@ -815,7 +819,7 @@ class AppearanceController extends ColorGuideController {
               catch (MismatchedProviderException $e){
                 Response::fail('The link must point to a DeviantArt submission, '.$e->getActualProvider().' links are not allowed');
               }
-              catch (\Exception $e){
+              catch (Exception $e){
                 Response::fail('Error while checking deviation link: '.$e->getMessage());
               }
 
@@ -1006,7 +1010,7 @@ class AppearanceController extends ColorGuideController {
           unset($arr['id']);
         $group['colors'][] = $arr;
       }
-      if (\count($group['colors']) > 0)
+      if (count($group['colors']) > 0)
         $list[] = $group;
     }
     Response::done(['list' => $list]);
@@ -1102,9 +1106,9 @@ class AppearanceController extends ColorGuideController {
 
         $existing_relation_ids = array_map(function ($p) { return $p->id; }, $this->appearance->related_shows);
 
-        $added = array_diff($show_ids, $existing_relation_ids);
-        if (!empty($added)){
-          foreach ($added as $show_id)
+        $created_relations = array_diff($show_ids, $existing_relation_ids);
+        if (!empty($created_relations)){
+          foreach ($created_relations as $show_id)
             ShowAppearance::makeRelation($show_id, $this->appearance->id);
         }
 

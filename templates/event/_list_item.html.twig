@@ -10,7 +10,7 @@
         <button class="red typcn typcn-trash delete-event" title="Delete"></button>
       {% endif %}
     </strong>
-    <span class="added">Added {{ time_tag(event.added_at) }}{% if is_staff %} by {{ event.creator.toAnchor }}{% endif %}</span>
+    <span class="added">Added {{ time_tag(event.created_at) }}{% if is_staff %} by {{ event.creator.toAnchor }}{% endif %}</span>
     <ul>
       <li><strong>Type:</strong> {{ constant('App\\Models\\Event::EVENT_TYPES')[event.type] }}</li>
       <li><strong>Start:</strong>&nbsp;{{ time_tag(event.starts_at, constant('App\\Time::TAG_EXTENDED')) }} (<span class="dynt-el"></Span>)</li>

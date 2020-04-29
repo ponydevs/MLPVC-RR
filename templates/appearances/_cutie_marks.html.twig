@@ -28,7 +28,7 @@
         {% endif %}
       </div>
       {% if cm.contributor is not null %}
-        <span class='made-by'>By {{ cm.contributor.toAnchor(constant('App\\Models\\User::WITH_AVATAR')) }}</span>
+        <span class='made-by'>By {{ cm.contributor.toAnchor(constant('App\\Models\\DeviantartUser::WITH_AVATAR')) }}</span>
       {% endif %}
     </li>
   {% endfor %}

@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Event;
+use Exception;
 
 class Events {
   public static function get($limit = null, string $columns = '*') {
@@ -14,7 +15,7 @@ class Events {
    * @param bool                $wrap
    *
    * @return string
-   * @throws \Exception
+   * @throws Exception
    */
   public static function getListHTML(array $Events, bool $wrap = true):string {
     $HTML = '';
@@ -27,7 +28,7 @@ class Events {
         $end = Time::tag($end_ts, Time::TAG_EXTENDED);
         $diff = Time::difference($start_ts, $end_ts);
         $dur = Time::differenceToString($diff, true);
-        $added_at = Time::tag($event->added_at);
+        $added_at = Time::tag($event->created_at);
         $added_by = $isStaff ? ' by '.$event->creator->toAnchor() : '';
         $admin = $isStaff && !$event->isFinalized()
           ? '<button class="blue typcn typcn-pencil edit-event" title="Edit"></button><button class="darkblue typcn typcn-image finalize-event" title="Finalize"></button><button class="red typcn typcn-trash delete-event" title="Delete"></button>'

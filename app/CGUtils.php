@@ -6,8 +6,7 @@ use App\Models\Appearance;
 use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
-use App\Models\Logs\MajorChange;
-use App\Models\PCGSlotGift;
+use App\Models\MajorChange;
 use App\Models\PCGSlotHistory;
 use App\Models\Post;
 use App\Models\Tag;
@@ -15,12 +14,18 @@ use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException;
+use Exception;
+use Generator;
 use ONGR\ElasticsearchDSL;
 use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
-use ONGR\ElasticsearchDSL\Query\Compound\FunctionScoreQuery;
-use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
+use RuntimeException;
 use SeinopSys\RGBAColor;
+use function array_map;
+use function array_slice;
+use function count;
+use function in_array;
+use function is_array;
 
 class CGUtils {
   public const GROUP_TAG_IDS_ASSOC = [
@@ -61,8 +66,13 @@ class CGUtils {
    */
   public static function autocompleteRespond($str):void {
     header('Content-Type: application/json');
-    if (\is_array($str))
-      $str = JSON::encode($str);
+    if (is_array($str)) {
+      $result = JSON::encode($str);
+      if ($result === false)
+        throw new RuntimeException(__METHOD__.': failed to JSON encode parameter: '.var_export($str, true));
+      /** @var string $result */
+      $str = $result;
+    }
     die($str);
   }
 
@@ -240,7 +250,7 @@ class CGUtils {
     try {
       $Image = new ImageProvider(Posts::validateImageURL());
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       Response::fail($e->getMessage());
     }
 
@@ -271,21 +281,12 @@ class CGUtils {
    * @param bool          $wrap
    *
    * @return string
-   * @throws \Exception
+   * @throws Exception
    */
   public static function getMajorChangesHTML(?array $changes, bool $wrap = WRAP):string {
-    $seeInitiator = Permission::sufficient('staff');
-    /** @var $PonyCache Appearance[] */
-    $HTML = '';
-    if (\is_array($changes))
-      foreach ($changes as $c){
-        $initiator = $seeInitiator ? "<div class='by'><span class='typcn typcn-user'></span> {$c->log->actor->toAnchor()}</div>" : '';
-        $appearance = $c->appearance->toAnchorWithPreview();
-        $when = Time::tag($c->log->timestamp);
-      }
-
     return Twig::$env->render('colorguide/_major_changes.html.twig', [
       'changes' => $changes,
+      'wrap' => $wrap,
     ]);
   }
 
@@ -317,24 +318,6 @@ class CGUtils {
           return $appearance->toAnchorWithPreview();
 
         return "$label <span class='color-red typcn typcn-trash' title='Deleted'></span>";
-      case 'gift_sent':
-      case 'gift_accepted':
-      case 'gift_rejected':
-      case 'gift_refunded':
-        $gift = PCGSlotGift::find($data['gift_id']);
-
-        switch (explode('_', $type)[1]){
-          case 'sent':
-            return empty($gift) ? 'Unknown recipient' : 'To '.$gift->receiver->toAnchor();
-          case 'accepted':
-            return empty($gift) ? 'Unknown sender' : 'From '.$gift->sender->toAnchor();
-          case 'rejected':
-            return empty($gift) ? 'Unknown recipient' : 'By '.$gift->receiver->toAnchor();
-          case 'refunded':
-            return (empty($gift) ? 'The receiver' : $gift->receiver->toAnchor()).' did not claim this gift'.
-              '<br>Refunded by '.(Permission::sufficient('staff') ? $gift->refunder->toAnchor() : 'a staff member');
-        }
-      break;
       case 'manual_give':
       case 'manual_take':
         $by = Users::get($data['by']);
@@ -354,15 +337,15 @@ class CGUtils {
    * @param bool             $wrap
    *
    * @return string
-   * @throws \Exception
+   * @throws Exception
    */
   public static function getPCGSlotHistoryHTML(?array $Entries, bool $wrap = WRAP):string {
     $HTML = '';
-    if (\is_array($Entries))
+    if (is_array($Entries))
       foreach ($Entries as $entry){
         $type = PCGSlotHistory::CHANGE_DESC[$entry->change_type];
         $data = self::processPCGSlotHistoryData($entry->change_type, $entry->change_data);
-        $when = Time::tag($entry->created);
+        $when = Time::tag($entry->created_at);
         $dir = $entry->change_amount > 0 ? 'pos' : 'neg';
         $amount = ($entry->change_amount > 0 ? "\u{2B}$entry->change_amount" : "\u{2212}".(-$entry->change_amount));
 
@@ -399,7 +382,8 @@ class CGUtils {
    * @param string     $CGPath
    * @param Appearance $Appearance
    *
-   * @throws \Exception
+   * @throws Exception
+   * @noinspection AdditionOperationOnArraysInspection
    */
   public static function renderAppearancePNG($CGPath, Appearance $Appearance):void {
     $output_path = $Appearance->getPaletteFilePath();
@@ -418,9 +402,9 @@ class CGUtils {
     $regular_font_file = APPATH.'font/Celestia Medium Redux.ttf';
     $pixelated_font_file = APPATH.'font/PixelOperator.ttf';
     if (!file_exists($regular_font_file))
-      throw new \RuntimeException('Font file missing');
+      throw new RuntimeException('Font file missing');
     if (!file_exists($pixelated_font_file))
-      throw new \RuntimeException('Font file missing');
+      throw new RuntimeException('Font file missing');
     $name = $Appearance->label;
     $name_vertical_margin = 5;
     $name_font_size = 22;
@@ -436,7 +420,7 @@ class CGUtils {
       /** @var $sprite_size int[]|false */
       $sprite_size = getimagesize($sprite_path);
       if ($sprite_size === false)
-        throw new \RuntimeException("The sprite image located at $sprite_path could not be loaded by getimagesize");
+        throw new RuntimeException("The sprite image located at $sprite_path could not be loaded by getimagesize");
 
       $sprite_image = imagecreatefrompng($sprite_path);
       /** @var $SpriteSize array */
@@ -459,7 +443,6 @@ class CGUtils {
     /** @noinspection SpellCheckingInspection */
     $test_string = 'ABCDEFGIJKLMOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz/()}{@&#><';
     $group_label_box = Image::saneGetTTFBox($cg_font_size, $regular_font_file, $test_string);
-    $color_name_box = Image::saneGetTTFBox($color_name_font_size, $regular_font_file, $test_string);
 
     // Get export time & size
     $export_ts = [
@@ -567,9 +550,9 @@ class CGUtils {
   public const CMDIR_SVG_PATH = FSPATH.'cg_render/appearance/#/cmdir-@.svg';
 
   // Generate appearance facing image (CM background)
-  public static function renderCMFacingSVG($CGPath, Appearance $appearance):void {
+  public static function renderCMFacingSVG(Appearance $appearance):void {
     $facing = $_GET['facing'] ?? 'left';
-    if (!\in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
+    if (!in_array($facing, Cutiemarks::VALID_FACING_VALUES, true))
       Response::fail('Invalid facing value specified!');
 
     $output_path = str_replace(['#', '@'], [$appearance->id, $facing], self::CMDIR_SVG_PATH);
@@ -611,7 +594,7 @@ class CGUtils {
     return '#'.strtoupper(CoreUtils::pad(dechex($int), 6));
   }
 
-  private static function _coordGenerator($w, $h):?\Generator {
+  private static function _coordGenerator($w, $h):?Generator {
     for ($y = 0; $y < $h; $y++){
       for ($x = 0; $x < $w; $x++)
         yield [$x, $y];
@@ -631,7 +614,7 @@ class CGUtils {
 
       $img_size = getimagesize($png_path);
       if ($img_size === false){
-        throw new \RuntimeException("getimagesize failed to read sprite $png_path");
+        throw new RuntimeException("getimagesize failed to read sprite $png_path");
       }
       [$png_width, $png_height] = $img_size;
       $png = imagecreatefrompng($png_path);
@@ -704,14 +687,13 @@ class CGUtils {
   /**
    * @param string      $CGPath
    * @param Appearance  $appearance
-   * @param string|null $size
+   * @param string|null $wanted_size
    */
-  public static function renderSpritePNG($CGPath, $appearance, $size = null):void {
+  public static function renderSpritePNG($appearance, $wanted_size = null):void {
     $appearance_id = $appearance->id;
     $pcg = $appearance->owner_id !== null;
-    if ($size !== null)
-      $size = (int)$size;
-    if (!\in_array($size, Appearance::SPRITE_SIZES, true))
+    $size = $wanted_size !== null ? (int)$wanted_size : null;
+    if (!in_array($size, Appearance::SPRITE_SIZES, true))
       $size = 600;
     $outsize = $size === Appearance::SPRITE_SIZES['REGULAR'] ? '' : "-$size";
 
@@ -724,7 +706,10 @@ class CGUtils {
     $size_factor = (int)round($size / 300);
     $png = Image::createTransparent($map['width'] * $size_factor, $map['height'] * $size_factor);
     foreach ($map['linedata'] as $line){
-      $rgb = RGBAColor::parse($map['colors'][$line['colorid']]);
+      $map_color = $map['colors'][$line['colorid']];
+      $rgb = RGBAColor::parse($map_color);
+      if ($rgb === null)
+        throw new RuntimeException(__METHOD__.': Failed to parse color value '.var_export($map_color, true));
       $color = imagecolorallocatealpha($png, $rgb->red, $rgb->green, $rgb->blue, $line['opacity']);
       Image::drawSquare($png, $line['x'] * $size_factor, $line['y'] * $size_factor, [$line['width'] * $size_factor, $size_factor], $color, null);
     }
@@ -784,7 +769,7 @@ class CGUtils {
     }
 
     $svg = '';
-    $color_count = \count($preview_colors);
+    $color_count = count($preview_colors);
     switch ($color_count){
       case 0:
         $svg .= '<rect fill="#FFFFFF" width="2" height="2"/><rect fill="#EFEFEF" width="1" height="1"/><rect fill="#EFEFEF" width="1" height="1" x="1" y="1"/>';
@@ -898,6 +883,8 @@ class CGUtils {
         if (empty($c->hex))
           continue;
         $rgb = RGBAColor::parse($c->hex);
+        if ($rgb === null)
+          throw new RuntimeException(__METHOD__.': Failed to parse color value '.var_export($c->hex, true));
         $list[] = [
           $rgb->red,
           $rgb->green,
@@ -968,6 +955,8 @@ class CGUtils {
         return $match;
 
       $color = RGBAColor::parse($dbcolor->hex);
+      if ($color === null)
+        throw new RuntimeException(__METHOD__.': Failed to parse color value '.var_export($dbcolor->hex, true));
       $color->alpha = (float)(!empty($match[2]) ? $match[2] : 1);
 
       return (string)$color;
@@ -1075,7 +1064,7 @@ class CGUtils {
   }
 
   /**
-   * @param RGBAColor[] $colors
+   * @param Color[] $colors
    *
    * @return string|null
    */
@@ -1109,6 +1098,8 @@ class CGUtils {
 
   public static function roundHex(string $hex):string {
     $color = RGBAColor::parse($hex);
+    if ($color === null)
+      throw new RuntimeException(__METHOD__.': Failed to parse color value '.var_export($hex, true));
     foreach (RGBAColor::COMPONENTS as $key){
       $value = &$color->{$key};
       if ($value <= 3)
@@ -1153,7 +1144,7 @@ class CGUtils {
         'label' => $p->label,
         'notes' => $p->notes_src === null ? '' : CoreUtils::trim($p->notes_src, true),
         'ishuman' => $p->ishuman,
-        'added' => gmdate('Y-m-d\TH:i:s\Z', $p->added->getTimestamp()),
+        'added' => gmdate('Y-m-d\TH:i:s\Z', $p->created_at->getTimestamp()),
         'private' => $p->private,
       ];
 
@@ -1189,6 +1180,7 @@ class CGUtils {
               /** @var $colors Color[] */
               $colors = $all_colors[$cg->id];
               foreach ($colors as $c)
+                /** @noinspection UnsupportedStringOffsetOperationsInspection */
                 $append_color_group['Colors'][] = $c->to_array([
                   'except' => ['id', 'group_id', 'linked_to'],
                 ]);
@@ -1246,7 +1238,7 @@ class CGUtils {
    * @throws BadRequest400Exception
    * @throws ServerErrorResponseException
    */
-  public static function searchGuide(Pagination $pagination, bool $EQG, bool $searching = true, string $title = null):array {
+  public static function searchGuide(Pagination $pagination, bool $EQG, bool $searching = true, string &$title = null):array {
     $search = new ElasticsearchDSL\Search();
     $in_order = true;
 
@@ -1279,7 +1271,6 @@ class CGUtils {
       $search = self::searchElastic($search, $pagination);
     }
     catch (Missing404Exception $e){
-      $elastic_avail = false;
       $search = [];
     }
     catch (ServerErrorResponseException | BadRequest400Exception $e){
@@ -1297,7 +1288,7 @@ class CGUtils {
 
     if (!empty($search)){
       $total_hits = $search['hits']['total'];
-      if (\is_array($total_hits) && isset($total_hits['value']))
+      if (is_array($total_hits) && isset($total_hits['value']))
         $total_hits = $total_hits['value'];
       $pagination->calcMaxPages($total_hits);
       if (!empty($search['hits']['hits'])){
@@ -1334,13 +1325,13 @@ class CGUtils {
     if (!file_exists($output_path)){
       $sprite_path = self::getSpriteFilePath($appearance_id, $pcg);
       if (!file_exists($sprite_path)){
-        throw new \RuntimeException("Trying to get preview for non-exiting sprite file $sprite_path");
+        throw new RuntimeException("Trying to get preview for non-exiting sprite file $sprite_path");
       }
 
       $sprite = imagecreatefrompng($sprite_path);
-      $sprite_size = \array_slice(getimagesize($sprite_path), 0, 2);
+      $sprite_size = array_slice(getimagesize($sprite_path), 0, 2);
       $preview_scale_factor = .2;
-      [$preview_width, $preview_height] = \array_map(function (int $size) use ($preview_scale_factor) {
+      [$preview_width, $preview_height] = array_map(function (int $size) use ($preview_scale_factor) {
         return (int)round($size * $preview_scale_factor);
       }, $sprite_size);
 

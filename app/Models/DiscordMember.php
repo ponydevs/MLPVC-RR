@@ -20,22 +20,22 @@ use Wohali\OAuth2\Client\Provider\Exception\DiscordIdentityProviderException;
  * @inheritdoc
  * @property string   $user_id
  * @property string   $username
- * @property string   $nick
- * @property string   $avatar_hash
- * @property DateTime $joined_at
- * @property string   $discriminator
- * @property string   $access        (oAuth)
- * @property string   $refresh       (oAuth)
- * @property string   $scope         (oAuth)
- * @property DateTime $expires       (oAuth)
- * @property DateTime $last_synced
- * @property string   $discord_tag   (Via magic method)
- * @property User     $user          (Via relations)
+ * @property string         $nick
+ * @property string         $avatar_hash
+ * @property DateTime       $joined_at
+ * @property string         $discriminator
+ * @property string         $access        (oAuth)
+ * @property string         $refresh       (oAuth)
+ * @property string         $scope         (oAuth)
+ * @property DateTime       $expires       (oAuth)
+ * @property DateTime       $last_synced
+ * @property string         $discord_tag   (Via magic method)
+ * @property DeviantartUser $user          (Via relations)
  * @method static DiscordMember|DiscordMember[] find(...$args)
  */
 class DiscordMember extends AbstractUser {
   public static $belongs_to = [
-    ['user'],
+    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
   ];
 
   public static $before_destroy = ['update_avatar_provider'];

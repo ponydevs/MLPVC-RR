@@ -13,7 +13,7 @@
       <tr data-id='{{ show.id }}' data-type='{{ show.type }}'>
         {% if show.type == 'episode' %}
           <td class='season' rowspan='2'>{{ show.season }}</td>
-          <td class='episode' rowspan='2'>{{ show.episode }}{% if show.twoparter %}-{{ show.episode + 1 }}{% endif %}</td>
+          <td class='episode' rowspan='2'>{{ show.episode }}{% if show.parts == 2 %}-{{ show.episode + 1 }}{% endif %}</td>
         {% else %}
           <td class='no' rowspan='2'>{{ show.no }}</td>
         {% endif %}

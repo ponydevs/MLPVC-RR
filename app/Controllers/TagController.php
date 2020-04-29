@@ -15,10 +15,12 @@ use App\Permission;
 use App\Regexes;
 use App\Response;
 use App\Tags;
+use function count;
+use function in_array;
 
 class TagController extends ColorGuideController {
   public function list() {
-    $pagination = new Pagination('/cg/tags', 20, DB::$instance->count('tags'));
+    $pagination = new Pagination('/cg/tags', 50, DB::$instance->count('tags'));
 
     CoreUtils::fixPath($pagination->toURI());
     $heading = 'Tags';
@@ -138,7 +140,7 @@ class TagController extends ColorGuideController {
     if (!$this->creating){
       if (!isset($params['id']))
         Response::fail('Missing tag ID');
-      $id = \intval($params['id'], 10);
+      $id = (int)$params['id'];
       $this->tag = Tag::find($id);
       if (empty($this->tag))
         Response::fail('This tag does not exist');
@@ -153,11 +155,9 @@ class TagController extends ColorGuideController {
         Response::done($this->tag->to_array());
       break;
       case 'DELETE':
-        $appearance_id = CGUtils::validateAppearancePageID();
-
         $tid = $this->tag->synonym_of ?? $this->tag->id;
         $Uses = Tagged::by_tag($tid);
-        $UseCount = \count($Uses);
+        $UseCount = count($Uses);
         if (!isset($_REQUEST['sanitycheck']) && $UseCount > 0)
           Response::fail('<p>This tag is currently used on '.CoreUtils::makePlural('appearance', $UseCount, PREPEND_NUMBER).'</p><p>Deleting will <strong class="color-red">permanently remove</strong> the tag from those appearances!</p><p>Are you <em class="color-red">REALLY</em> sure about this?</p>', ['confirm' => true]);
 
@@ -221,7 +221,6 @@ class TagController extends ColorGuideController {
         else {
           $this->tag->update_attributes($data);
           $data = $this->tag->to_array();
-          $appearance_id = !empty($this->_appearancePage) ? \intval($_REQUEST['APPEARANCE_PAGE'], 10) : null;
           $tag_relations = Tagged::by_tag($this->tag->id);
           foreach ($tag_relations as $tagged){
             $tagged->appearance->updateIndex();
@@ -262,7 +261,7 @@ class TagController extends ColorGuideController {
 
         $tagged = Tagged::by_tag($this->tag->id);
         foreach ($tagged as $tg){
-          if (\in_array($tg->appearance_id, $tagged_appearance_ids, true))
+          if (in_array($tg->appearance_id, $tagged_appearance_ids, true))
             continue;
 
           if (!Tagged::make($target->id, $tg->appearance_id)->save())

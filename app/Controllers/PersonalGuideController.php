@@ -6,19 +6,14 @@ use App\Appearances;
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
-use App\DB;
 use App\Input;
-use App\Logs;
-use App\Models\Notification;
 use App\Models\PCGPointGrant;
-use App\Models\PCGSlotGift;
-use App\Models\PCGSlotHistory;
 use App\Pagination;
 use App\Permission;
 use App\Regexes;
 use App\Response;
-use App\Time;
 use App\UserPrefs;
+use function count;
 
 class PersonalGuideController extends ColorGuideController {
   use UserLoaderTrait;
@@ -74,7 +69,7 @@ class PersonalGuideController extends ColorGuideController {
 
     $pagination = new Pagination("{$this->path}/point-history", $EntriesPerPage, $_EntryCount);
     $entries = $this->owner->getPCGSlotHistoryEntries($pagination);
-    if (\count($entries) === 0){
+    if (count($entries) === 0){
       $this->owner->recalculatePCGSlotHistroy();
       $entries = $this->owner->getPCGSlotHistoryEntries($pagination);
     }
@@ -143,139 +138,9 @@ class PersonalGuideController extends ColorGuideController {
         }
         Response::done();
       break;
-      case 'POST':
-        if (!Auth::$signed_in)
-          Response::fail();
-
-        $this->load_user($params);
-
-        if (Auth::$user->id === $this->user->id)
-          Response::fail('You cannot gift slots to yourself');
-        if (Permission::insufficient('member', $this->user->role))
-          Response::fail('The target user must be a Club Member');
-        $existingGift = DB::$instance
-          ->querySingle(
-            'SELECT COUNT(*) as cnt FROM pcg_slot_gifts
-						WHERE sender_id = ? AND receiver_id = ? AND NOT (rejected = TRUE OR claimed = TRUE OR refunded_by IS NOT NULL)', [Auth::$user->id, $this->user->id]);
-        if ($existingGift['cnt'] !== 0)
-          Response::fail('You have already sent a gift to this user, please wait for them to accept or reject it before sending another. If they haven\'t accepted your gift after 2 weeks, you can <a class="send-feedback">contact us</a> to have it refunded ot you.');
-
-        $availSlots = Auth::$user->getPCGAvailablePoints(false);
-        if ($availSlots < 20)
-          Response::fail(self::NOT_ENOUGH_SLOTS_TO_GIFT);
-
-        $amount = (new Input('amount', 'int', [
-          Input::IN_RANGE => [1, floor($availSlots)],
-          Input::CUSTOM_ERROR_MESSAGES => [
-            Input::ERROR_MISSING => 'Amount of slots to gift is missing',
-            Input::ERROR_INVALID => 'Amount of slots to gift (@value) is invalid',
-            Input::ERROR_RANGE => 'Amount of slots to gift must be between @min and @max',
-          ],
-        ]))->out();
-
-        PCGSlotGift::send(Auth::$user->id, $this->user->id, $amount);
-
-        $nSlots = CoreUtils::makePlural('slot', $amount, PREPEND_NUMBER);
-        Response::success("<p>Your gift of $nSlots is on its way! {$this->user->name} will be notified. Your generosity is commendable.</p>".CoreUtils::responseSmiley(':)'));
-      break;
       default:
         CoreUtils::notAllowed();
     }
-  }
-
-  public const NOT_ENOUGH_SLOTS_TO_GIFT = 'You need at least 1 slot you earned from completing requests to gift others. Remember that the free slot cannot be gifted away.';
-
-  public function verifyGiftableSlots() {
-    if ($this->action !== 'GET')
-      CoreUtils::notAllowed();
-
-    if (!Auth::$signed_in)
-      Response::fail();
-
-    $avail = Auth::$user->getPCGAvailablePoints(false);
-
-    if ($avail < 20)
-      Response::fail(self::NOT_ENOUGH_SLOTS_TO_GIFT);
-
-    Response::done(['avail' => $avail]);
-  }
-
-  public function getPendingSlotGifts($params) {
-    if ($this->action !== 'GET')
-      CoreUtils::notAllowed();
-
-    if (Permission::insufficient('staff'))
-      Response::fail();
-
-    $this->load_user($params);
-
-    $gifts = $this->user->getPendingPCGSlotGifts();
-    if (empty($gifts))
-      Response::success('No pending gifts found.');
-
-    $pendingGifts = [];
-    foreach ($gifts as $gift){
-      $pendingGifts[] = [
-        'id' => $gift->id,
-        'from' => $gift->sender->toAnchor(),
-        'amount' => CoreUtils::makePlural('slot', $gift->amount, PREPEND_NUMBER),
-        'sent' => Time::tag($gift->created_at),
-      ];
-    }
-    Response::done(['pendingGifts' => $pendingGifts]);
-  }
-
-  public function refundSlotGifts() {
-    if ($this->action !== 'POST')
-      CoreUtils::notAllowed();
-
-    if (Permission::insufficient('staff'))
-      Response::fail();
-
-    $giftIDs = (new Input('giftids', 'int[]', [
-      Input::CUSTOM_ERROR_MESSAGES => [
-        Input::ERROR_MISSING => 'List of gifts to refund is missing',
-        Input::ERROR_INVALID => 'List of gifts to refund (@value) is invalid',
-      ],
-    ]))->out();
-
-    /** @var $gifts PCGSlotGift[] */
-    $gifts = DB::$instance
-      ->setModel(PCGSlotGift::class)
-      ->where('id', $giftIDs)
-      ->where('rejected', false)
-      ->where('claimed', false)
-      ->where('refunded_by IS NULL')
-      ->get(PCGSlotGift::$table_name);
-    if (\count($gifts) !== \count($giftIDs)){
-      $found = [];
-      foreach ($gifts as $gift)
-        $found[] = $gift->id;
-      CoreUtils::error_log("Gift refund item count mismatch.\nGot: ".implode(',', $giftIDs)."\nFound: ".implode(',', $found));
-      Response::fail("The number of gifts to refund doesn't match the number of gifts found in the database. Please tell the developer to look into why this might have happened.");
-    }
-
-    foreach ($gifts as $gift){
-      $giftIDArr = ['gift_id' => $gift->id];
-      PCGSlotHistory::record($gift->sender_id, 'gift_refunded', $gift->amount, $giftIDArr);
-      $gift->sender->syncPCGSlotCount();
-
-      $gift->refunded_by = Auth::$user->id;
-      $gift->save();
-
-      /** @var $notif Notification */
-      $notif = DB::$instance
-        ->where('recipient_id', $gift->receiver_id)
-        ->where('type', 'pcg-slot-gift')
-        ->where("data->'gift_id'", $gift->id)
-        ->getOne(Notification::$table_name);
-      $notif->safeMarkRead();
-
-      Logs::logAction('pcg_gift_refund', $giftIDArr);
-      Notification::send($gift->sender_id, 'pcg-slot-refund', $giftIDArr);
-    }
-
-    Response::success('The selected gifts have been successfully refunded to their senders.');
   }
 
   public function pointsApi($params) {

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\CoreUtils;
 use App\CSRFProtection;
 use App\Users;
+use function is_array;
 
 abstract class Controller {
   protected static $auth = true;
@@ -25,7 +26,7 @@ abstract class Controller {
         $in = file_get_contents('php://input');
         parse_str($in, $data);
 
-        if (\is_array($data) && !empty($data))
+        if (is_array($data) && !empty($data))
           foreach ($data as $k => $v){
             if (is_numeric($k))
               $_REQUEST[] = $v;

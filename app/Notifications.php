@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Notification;
 use ElephantIO\Exception\ServerConnectionFailureException;
+use Exception;
 
 class Notifications {
   public const
@@ -69,7 +70,7 @@ class Notifications {
       if (!$silent)
         Response::fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
       if (!$silent)
         Response::fail('SocketEvent Error: '.$e->getMessage());

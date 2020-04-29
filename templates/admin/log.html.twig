@@ -1,7 +1,7 @@
 {# @controller App\Controllers\AdminController::log #}
-{# @var current_user App\Models\User #}
+{# @var current_user App\Models\DeviantartUser #}
 {# @var pagination App\Pagination #}
-{# @var log_items \App\Models\Logs\Log[] #}
+{# @var log_items \App\Models\Log[] #}
 {# @var type string #}
 {# @var by string #}
 {# @var ip string #}
@@ -90,8 +90,8 @@
               {% endset %}
             {% endif %}
             <tr>
-              <td class='entryid'>{{ item.entryid }}</td>
-              <td class='timestamp'>{{ time_tag(item.timestamp, constant('App\\Time::TAG_EXTENDED')) }}<span class="dynt-el"></span></td>
+              <td class='entryid'>{{ item.id }}</td>
+              <td class='timestamp'>{{ time_tag(item.created_at, constant('App\\Time::TAG_EXTENDED')) }}<span class="dynt-el"></span></td>
               <td class='ip'>{{ init_user }}<br>{{ ip }}</td>
               <td class='reftype'>{{ event }}</td>
             </tr>

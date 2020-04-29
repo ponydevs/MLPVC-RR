@@ -5,7 +5,10 @@ namespace App;
 use App\Exceptions\MismatchedProviderException;
 use App\Models\Notification;
 use App\Models\Post;
-use App\Models\User;
+use App\Models\DeviantartUser;
+use ElephantIO\Exception\ServerConnectionFailureException;
+use Exception;
+use InvalidArgumentException;
 
 class Posts {
 
@@ -147,12 +150,11 @@ class Posts {
     try {
       $image = new ImageProvider($image_url);
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       Response::fail($e->getMessage());
     }
 
     foreach (Post::KINDS as $kind){
-      /** @noinspection DisconnectedForeachInstructionInspection */
       if ($image->preview !== null && !empty($post)){
         $already_used = Post::find_by_preview($image->preview);
         if (!empty($already_used) && $already_used->id !== $post->id)
@@ -179,16 +181,13 @@ class Posts {
     try {
       $Image = new ImageProvider($deviation, ImageProvider::PROV_DEVIATION);
 
-      foreach (Post::KINDS as $what){
-
-        $already_used = Post::find_by_deviation_id($Image->id);
-        if (!empty($already_used))
-          Response::fail("This exact deviation has already been marked as the finished version of  a {$already_used->toAnchor($already_used->kind,null,true)} under {$already_used->show->toAnchor()}");
-      }
+      $already_used = Post::find_by_deviation_id($Image->id);
+      if (!empty($already_used))
+        Response::fail("This exact deviation has already been marked as the finished version of  a {$already_used->toAnchor($already_used->kind,null,true)} under {$already_used->show->toAnchor()}");
 
       $return = ['deviation_id' => $Image->id];
       $Deviation = DeviantArt::getCachedDeviation($Image->id);
-      if (!empty($Deviation->author)){
+      if ($Deviation && !empty($Deviation->author)){
         $Author = Users::get($Deviation->author, 'name');
 
         if (empty($Author))
@@ -213,7 +212,7 @@ class Posts {
     catch (MismatchedProviderException $e){
       Response::fail('The finished vector must be uploaded to DeviantArt, '.$e->getActualProvider().' links are not allowed');
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       Response::fail($e->getMessage());
     }
   }
@@ -225,7 +224,7 @@ class Posts {
    * @param bool        $lazyload Output promise elements in place of deviation data
    *
    * @return string|array
-   * @throws \Exception
+   * @throws Exception
    */
   public static function getRequestsSection(?array $arranged = null, bool $lazyload = false) {
     return Twig::$env->render('show/_requests.html.twig', [
@@ -238,7 +237,7 @@ class Posts {
   /**
    * Generate HTML of reservations for episode pages
    *
-   * @param Post[]|null $arranged Arranged reservations
+   * @param Post[][]|null $arranged Arranged reservations
    * @param bool        $lazyload Output promise elements in place of deviation data
    *
    * @return string|array
@@ -252,13 +251,13 @@ class Posts {
   }
 
   /**
-   * @param Post      $Post
-   * @param User|null $sent_by
-   * @param string    $cols
+   * @param Post                $Post
+   * @param DeviantartUser|null $sent_by
+   * @param string              $cols
    *
    * @return Notification[]|null
    */
-  public static function getTransferAttempts(Post $Post, ?User $sent_by = null, $cols = 'read_at,sent_at') {
+  public static function getTransferAttempts(Post $Post, ?DeviantartUser $sent_by = null, $cols = 'read_at,created_at') {
     if ($Post->reserved_by !== null)
       DB::$instance->where('recipient_id', $Post->reserved_by);
     if (!empty($sent_by))
@@ -267,20 +266,20 @@ class Posts {
     return DB::$instance
       ->where('type', 'post-passon')
       ->where("data->>'id'", $Post->id)
-      ->orderBy('sent_at', NEWEST_FIRST)
+      ->orderBy('created_at', NEWEST_FIRST)
       ->get('notifications', null, $cols);
   }
 
   /**
-   * @param Post      $Post
-   * @param string    $reason
-   * @param User|null $sent_by
+   * @param Post                $Post
+   * @param string              $reason
+   * @param DeviantartUser|null $sent_by
    *
-   * @throws \InvalidArgumentException
+   * @throws InvalidArgumentException
    */
-  public static function clearTransferAttempts(Post $Post, string $reason, ?User $sent_by = null) {
+  public static function clearTransferAttempts(Post $Post, string $reason, ?DeviantartUser $sent_by = null) {
     if (empty(Post::TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
-      throw new \InvalidArgumentException("Invalid clear reason $reason");
+      throw new InvalidArgumentException("Invalid clear reason $reason");
 
     DB::$instance->where('read_at IS NULL');
     $transfer_attempts = self::getTransferAttempts($Post, $sent_by, 'id,data');
@@ -312,7 +311,7 @@ class Posts {
    */
   public static function getSuggestionLi(Post $Request):string {
     if ($Request->is_reservation)
-      throw new \Exception(__METHOD__." only accepts requests as its first argument, got reservation ($Request->id)");
+      throw new Exception(__METHOD__." only accepts requests as its first argument, got reservation ($Request->id)");
     $escapedLabel = CoreUtils::aposEncode($Request->label);
     $label = $Request->getLabelHTML();
     $time_ago = Time::tag($Request->posted_at);
@@ -337,10 +336,10 @@ class Posts {
   }
 
   /**
-   * @param User|null   $reservedBy
-   * @param bool|string $view_only
-   * @param bool        $forceAvailable
-   * @param bool        $enablePromises
+   * @param DeviantartUser|null $reservedBy
+   * @param bool|string         $view_only
+   * @param bool                $forceAvailable
+   * @param bool                $enablePromises
    *
    * @return string
    */
@@ -349,7 +348,7 @@ class Posts {
       return Permission::sufficient('member') && $view_only === false && UserPrefs::get('a_reserve', Auth::$user)
         ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 
-    $dAlink = $reservedBy->toAnchor(User::WITH_AVATAR, $enablePromises);
+    $dAlink = $reservedBy->toAnchor(DeviantartUser::WITH_AVATAR, $enablePromises);
     $vectorapp = $reservedBy->getVectorAppClassName();
     if (!empty($vectorapp))
       $vectorapp .= "' title='Uses ".$reservedBy->getVectorAppReadableName().' to make vectors';
@@ -424,7 +423,7 @@ class Posts {
       $socketServerAvailable = false;
       CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
     }
 

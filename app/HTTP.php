@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Exceptions\CURLRequestException;
+use Exception;
 
 class HTTP {
   /**
@@ -93,21 +94,6 @@ class HTTP {
     return preg_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::trim($_match[1]) : null;
   }
 
-  private static $PUSHED_ASSETS = [];
-
-  /**
-   * Suggest files to client via HTTP/2 Server Push
-   *
-   * @param string $url
-   */
-  public static function pushResource($url):void {
-    self::$PUSHED_ASSETS[] = $url;
-    $headerContent = [];
-    foreach (self::$PUSHED_ASSETS as $asset)
-      $headerContent[] = "<$url>; rel=preload";
-    header('Link: '.implode(',', $headerContent));
-  }
-
   public const STATUS_CODES = [
     300 => 'Multiple Choices',
     301 => 'Moved Permanently',
@@ -146,7 +132,7 @@ class HTTP {
    * @param int  $code HTTP status code
    * @param bool $die  Halt script execution afterwards
    *
-   * @throws \Exception
+   * @throws Exception
    */
   public static function statusCode($code, $die = false):void {
     http_response_code($code);

@@ -8,6 +8,9 @@ use App\DB;
 use App\DeviantArt;
 use App\Permission;
 use App\Time;
+use RuntimeException;
+use function count;
+use function in_array;
 
 /**
  * @property int          $id
@@ -16,27 +19,27 @@ use App\Time;
  * @property string       $type
  * @property string       $entry_role
  * @property string       $vote_role
- * @property DateTime     $starts_at
- * @property DateTime     $ends_at
- * @property string       $added_by
- * @property DateTime     $added_at
- * @property string       $desc_src
- * @property string       $desc_rend
- * @property string       $result_favme
- * @property string       $finalized_by
- * @property DateTime     $finalized_at
- * @property EventEntry[] $entries      (Via relations)
- * @property User         $creator      (Via relations)
- * @property User         $finalizer    (Via relations)
+ * @property DateTime       $starts_at
+ * @property DateTime       $ends_at
+ * @property string         $added_by
+ * @property DateTime       $created_at
+ * @property string         $desc_src
+ * @property string         $desc_rend
+ * @property string         $result_favme
+ * @property string         $finalized_by
+ * @property DateTime       $finalized_at
+ * @property EventEntry[]   $entries      (Via relations)
+ * @property DeviantartUser $creator      (Via relations)
+ * @property DeviantartUser $finalizer    (Via relations)
  * @method static Event find(...$args)
  */
 class Event extends NSModel implements Linkable {
   public static $has_many = [
-    ['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, submitted_at asc'],
+    ['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, created_at asc'],
   ];
   public static $belongs_to = [
-    ['creator', 'class' => 'User', 'foreign_key' => 'added_by'],
-    ['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],
+    ['creator', 'class' => 'DeviantartUser', 'foreign_key' => 'added_by'],
+    ['finalizer', 'class' => 'DeviantartUser', 'foreign_key' => 'finalized_by'],
   ];
 
   /** For Twig */
@@ -77,7 +80,7 @@ class Event extends NSModel implements Linkable {
     return CoreUtils::makeUrlSafe($this->name);
   }
 
-  public function checkCanEnter(User $user):bool {
+  public function checkCanEnter(DeviantartUser $user):bool {
     switch ($this->entry_role){
       case 'user':
       case 'member':
@@ -86,11 +89,11 @@ class Event extends NSModel implements Linkable {
       case 'spec_discord':
         return $user->isDiscordServerMember(true);
       default:
-        throw new \RuntimeException("Unhandled entry role {$this->entry_role} on event #{$this->id}");
+        throw new RuntimeException("Unhandled entry role {$this->entry_role} on event #{$this->id}");
     }
   }
 
-  public function checkCanVote(User $user):bool {
+  public function checkCanVote(DeviantartUser $user):bool {
     return !$this->hasEnded() && Permission::sufficient($this->vote_role, $user->role);
   }
 
@@ -107,7 +110,7 @@ class Event extends NSModel implements Linkable {
   }
 
   public function getEntryRoleName():string {
-    return \in_array($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC[$this->entry_role])
+    return in_array($this->entry_role, self::REGULAR_ENTRY_ROLES) ? CoreUtils::makePlural(Permission::ROLES_ASSOC[$this->entry_role])
       : self::SPECIAL_ENTRY_ROLES[$this->entry_role];
   }
 
@@ -127,26 +130,33 @@ class Event extends NSModel implements Linkable {
   public function getWinnerHTML(bool $wrap = WRAP):string {
     $HTML = '';
 
-    if ($this->type === 'collab')
-      $HTML = '<div id="final-image"><div>'.DeviantArt::getCachedDeviation($this->result_favme)->toLinkWithPreview().'</div></div>';
+    if ($this->type === 'collab') {
+      $deviation = DeviantArt::getCachedDeviation($this->result_favme);
+      if ($deviation) {
+        $HTML = '<div id="final-image"><div>'.$deviation->toLinkWithPreview().'</div></div>';
+      } else {
+        $url = "http://fav.me/{$this->result_favme}";
+        $HTML = "<div id='final-image'><p>Could not load preview, use this link to view the deviation: <a href='$url'>$url</a></p></div>";
+      }
+    }
     else {
 
       /** @var $HighestScoringEntries EventEntry[] */
       $HighestScoringEntries = DB::$instance->setModel(EventEntry::class)->query(
         'SELECT * FROM event_entries 
 				WHERE event_id = ? AND score > 0 AND score = (SELECT MAX(score) FROM event_entries)
-				ORDER BY submitted_at', [$this->id]);
+				ORDER BY created_at', [$this->id]);
 
       if (empty($HighestScoringEntries))
         $HTML .= "<div class='notice info'><span class='typcn typcn-times'></span> No entries match the win criteria, thus the event ended without a winner</div>";
       else {
-        $HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner', \count($HighestScoringEntries), PREPEND_NUMBER).'.</p>';
+        $HTML .= '<p>The event has concluded with '.CoreUtils::makePlural('winner', count($HighestScoringEntries), PREPEND_NUMBER).'.</p>';
         foreach ($HighestScoringEntries as $entry){
           $title = CoreUtils::escapeHTML($entry->title);
           $preview = isset($entry->prev_full)
             ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>"
             : "<span class='title'>$title</span>";
-          $by = '<div>'.$entry->submitter->toAnchor(User::WITH_AVATAR).'</div>';
+          $by = '<div>'.$entry->submitter->toAnchor(DeviantartUser::WITH_AVATAR).'</div>';
           $HTML .= "<div class='winning-entry'>$preview$by</div>";
         }
       }

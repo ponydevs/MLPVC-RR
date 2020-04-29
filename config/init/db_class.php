@@ -1,4 +1,8 @@
 <?php
 
-$ar_conn = \Activerecord\Connection::instance();
-\App\DB::$instance = \App\PostgresDbWrapper::withConnection($ar_conn->connection);
+use Activerecord\Connection;
+use App\DB;
+use App\PostgresDbWrapper;
+
+$ar_conn = Connection::instance();
+DB::$instance = PostgresDbWrapper::withConnection($ar_conn->connection);

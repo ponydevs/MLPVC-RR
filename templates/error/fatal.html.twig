@@ -2,6 +2,7 @@
 {% set fatal_error = true %}
 {% set cachebust_ts = 'now'|date('U') %}
 {% set signed_in = false %}
+{% set is_2020_event = false %}
 {% set current_user = null %}
 {% set current_session = null %}
 {% if err_cause == 'db' %}

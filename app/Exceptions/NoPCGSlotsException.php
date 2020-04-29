@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
-class NoPCGSlotsException extends \Exception {
+use Exception;
+
+class NoPCGSlotsException extends Exception {
 
 }

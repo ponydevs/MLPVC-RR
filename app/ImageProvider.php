@@ -6,6 +6,11 @@ use App\Exceptions\CURLRequestException;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\UnsupportedProviderException;
 use App\Models\CachedDeviation;
+use RuntimeException;
+use function count;
+use function in_array;
+use function is_array;
+use function is_string;
 
 class ImageProvider {
   /**
@@ -26,9 +31,9 @@ class ImageProvider {
     if (!empty($url)){
       $provider = self::getProvider(DeviantArt::trimOutgoingGateFromUrl(CoreUtils::trim($url)));
       if (!empty($reqProv)){
-        if (!\is_array($reqProv))
+        if (!is_array($reqProv))
           $reqProv = [$reqProv];
-        if (!\in_array($provider->name, $reqProv, true))
+        if (!in_array($provider->name, $reqProv, true))
           throw new MismatchedProviderException($provider->name);
       }
       $this->provider = $provider->name;
@@ -97,12 +102,12 @@ class ImageProvider {
 
     if (empty($ctype)){
       if (empty($url))
-        throw new \RuntimeException("Resource URL ($url) is empty, please try again.");
+        throw new RuntimeException("Resource URL ($url) is empty, please try again.");
       $headers = get_headers($url, 1);
       $ctype = $headers['Content-Type'] ?? $headers['content-type'];
     }
     if (empty(self::$_allowedMimeTypes[$ctype]))
-      throw new \RuntimeException((!empty(self::$_blockedMimeTypes[$ctype]) ? self::$_blockedMimeTypes[$ctype].' are'
+      throw new RuntimeException((!empty(self::$_blockedMimeTypes[$ctype]) ? self::$_blockedMimeTypes[$ctype].' are'
           : "Content type \"$ctype\" is").' not allowed, please use a different image.');
   }
 
@@ -131,7 +136,7 @@ class ImageProvider {
         $data = @File::get("http://derpibooru.org/api/v1/json/images/$id");
 
         if (empty($data))
-          throw new \RuntimeException('The requested image could not be found on Derpibooru');
+          throw new RuntimeException('The requested image could not be found on Derpibooru');
         $data = JSON::decode($data);
 
         if (isset($data['duplicate_of'])){
@@ -142,11 +147,11 @@ class ImageProvider {
 
         if (!isset($data['processed'])){
           CoreUtils::error_log("Invalid Derpibooru response for ID $id\n".var_export($data, true));
-          throw new \RuntimeException('Derpibooru returned an invalid API response. This issue has been logged, please <a class="send-feedback">remind us</a> to take a look.');
+          throw new RuntimeException('Derpibooru returned an invalid API response. This issue has been logged, please <a class="send-feedback">remind us</a> to take a look.');
         }
 
         if (!$data['processed'])
-          throw new \RuntimeException("The image was found but it hasn't been rendered yet. Please wait for it to render and try again shortly.");
+          throw new RuntimeException("The image was found but it hasn't been rendered yet. Please wait for it to render and try again shortly.");
 
         $this->fullsize = $data['representations']['full'];
         $this->preview = $data['representations']['small'];
@@ -171,20 +176,20 @@ class ImageProvider {
           if ($isImage){
             $broke = false;
             $failed = [];
-            $ps = \is_string($CachedDeviation->preview);
+            $ps = is_string($CachedDeviation->preview);
             if (!$ps || !DeviantArt::isImageAvailable($CachedDeviation->preview)){
               if ($ps)
                 $failed["$this->provider#$this->id"]['preview'] = $CachedDeviation->preview;
               $broke = true;
             }
-            $fss = \is_string($CachedDeviation->fullsize);
+            $fss = is_string($CachedDeviation->fullsize);
             if (!$fss || !DeviantArt::isImageAvailable($CachedDeviation->fullsize)){
               if ($fss)
                 $failed["$this->provider#$this->id"]['fullsize'] = $CachedDeviation->fullsize;
               $broke = true;
             }
             if ($broke){
-              $makesure = \count($failed) > 0 ? ' make sure the links below work and' : '';
+              $makesure = count($failed) > 0 ? ' make sure the links below work and' : '';
               $message = "<p>The submission appears to be unavailable. Please$makesure try again, or re-submit if this persists.</p>";
               foreach ($failed as $identify => $links){
                 $anchors = [];
@@ -193,20 +198,20 @@ class ImageProvider {
                 }
                 $message .= '<div><strong>'.CoreUtils::escapeHTML($identify).':</strong> '.implode(', ', $anchors).'</div>';
               }
-              throw new \RuntimeException($message);
+              throw new RuntimeException($message);
             }
           }
           else if ($this->_require_image)
-            throw new \RuntimeException('The provided link cannot be used becuase it does not have an associated image.');
+            throw new RuntimeException('The provided link cannot be used becuase it does not have an associated image.');
         }
         catch (CURLRequestException $e){
           if ($e->getCode() === 404)
-            throw new \RuntimeException('The requested image could not be found');
-          throw new \RuntimeException($e->getMessage());
+            throw new RuntimeException('The requested image could not be found');
+          throw new RuntimeException($e->getMessage());
         }
 
         if (empty($CachedDeviation))
-          throw new \RuntimeException("{$this->provider} submission information could not be fetched for $id");
+          throw new RuntimeException("{$this->provider} submission information could not be fetched for $id");
 
         $this->preview = $CachedDeviation->preview;
         $this->fullsize = $CachedDeviation->fullsize;
@@ -222,15 +227,15 @@ class ImageProvider {
       case 'lightshot':
         $page = @File::get("http://prntscr.com/$id");
         if (empty($page))
-          throw new \RuntimeException('The requested page could not be found');
+          throw new RuntimeException('The requested page could not be found');
         if (!preg_match(new RegExp('<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.'), $page, $_match))
-          throw new \RuntimeException('The requested image could not be found');
+          throw new RuntimeException('The requested image could not be found');
 
         $this->provider = 'imgur';
         $this->setUrls($_match[1]);
       break;
       default:
-        throw new \RuntimeException("The image could not be retrieved due to a missing handler for the provider \"{$this->provider}\"");
+        throw new RuntimeException("The image could not be retrieved due to a missing handler for the provider \"{$this->provider}\"");
     }
 
     if (isset($this->preview))

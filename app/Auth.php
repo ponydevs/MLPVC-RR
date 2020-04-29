@@ -3,14 +3,14 @@
 namespace App;
 
 use App\Models\Session;
-use App\Models\User;
+use App\Models\DeviantartUser;
 
 /**
  * This class provides global access to some site-wide variables.
  * It's much more straight-forward and IDE friendly than the old approach using `global $var`
  */
 class Auth {
-  /** @var User|null Currently authenticated user (or null if guest) */
+  /** @var DeviantartUser|null Currently authenticated user (or null if guest) */
   public static $user;
 
   /** @var Session Current session */

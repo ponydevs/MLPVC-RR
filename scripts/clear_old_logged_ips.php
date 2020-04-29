@@ -2,14 +2,17 @@
 
 # GDPR
 
+use App\CoreUtils;
+use App\Models\Log;
+
 require __DIR__.'/../config/init/minimal.php';
 
-$done = \App\Models\Logs\Log::update_all(array(
+$done = Log::update_all(array(
   'set' => ['ip' => GDPR_IP_PLACEHOLDER],
-  'conditions' => "now() - timestamp > INTERVAL '3 MONTH'",
+  'conditions' => "now() - created_at > INTERVAL '3 MONTH'",
 ));
 
-$message = \App\CoreUtils::makePlural('log entry', $done, PREPEND_NUMBER).' updated';
+$message = CoreUtils::makePlural('log entry', $done, PREPEND_NUMBER).' updated';
 if (posix_isatty(STDIN))
   echo basename(__FILE__).": $message\n";
-else \App\CoreUtils::error_log($message);
+else CoreUtils::error_log($message);

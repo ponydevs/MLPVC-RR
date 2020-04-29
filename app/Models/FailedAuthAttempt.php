@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Models\Logs;
+namespace App\Models;
 
+use ActiveRecord\DateTime;
 use App\CoreUtils;
 use App\DB;
-use App\Logs;
 use App\Time;
+use function count;
 
 /**
- * @inheritdoc
- * @property string $user_agent
+ * @property int      $id
+ * @property string   $ip
+ * @property string   $user_agent
+ * @property DateTime $created_at
+ * @property DateTime $updated_at
  */
-class FailedAuthAttempt extends AbstractEntryType {
-  public static $table_name = 'log__failed_auth_attempts';
-
+class FailedAuthAttempt extends NSModel {
   /**
    * Returns true if blocking should not occur
    */
@@ -21,23 +23,18 @@ class FailedAuthAttempt extends AbstractEntryType {
     // Get all failed attempts in the last 10 minutes
     $ip = $_SERVER['REMOTE_ADDR'];
     $last = 5;
-    /** @var $failedAttempts Log[] */
-    $failedAttempts = DB::$instance->setModel('Logs\Log')->query(
-      'SELECT l.* FROM log__failed_auth_attempts lf
-			LEFT JOIN log l ON l.refid = lf.entryid
-			WHERE l.ip = ?
-			ORDER BY l.timestamp DESC
-			LIMIT ?', [$ip, $last]);
+    /** @var $failedAttempts self[] */
+    $failedAttempts = DB::$instance->where('ip', $ip)->orderBy('created_at', 'desc')->get('failed_auth_attempts', $last);
 
     // If none, let it go
-    if (empty($failedAttempts) || \count($failedAttempts) < 5)
+    if (empty($failedAttempts) || count($failedAttempts) < 5)
       return true;
 
     // Otherwise calculate average distance between failed login attempts
-    $total_dist = CoreUtils::tsDiff($failedAttempts[0]->timestamp);
-    $cnt = \count($failedAttempts);
+    $total_dist = CoreUtils::tsDiff($failedAttempts[0]->created_at);
+    $cnt = count($failedAttempts);
     for ($i = 1; $i < $cnt; $i++)
-      $total_dist += $failedAttempts[$i - 1]->timestamp->getTimestamp() - $failedAttempts[$i]->timestamp->getTimestamp();
+      $total_dist += $failedAttempts[$i - 1]->created_at->getTimestamp() - $failedAttempts[$i]->created_at->getTimestamp();
     $avg = $total_dist / $cnt;
     $threshold = Time::IN_SECONDS['minute'] * 3;
     // Allow login if average time between attempts is above 5 minutes
@@ -50,7 +47,8 @@ class FailedAuthAttempt extends AbstractEntryType {
   }
 
   public static function record() {
-    Logs::logAction('failed_auth_attempts', [
+    self::create([
+      'ip' => $_SERVER['REMOTE_ADDR'],
       'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
     ]);
   }

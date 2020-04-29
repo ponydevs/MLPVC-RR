@@ -1,6 +1,8 @@
 <?php
 
+use Phinx\Db\Table;
 use Phinx\Migration\AbstractMigration;
+use Phinx\Migration\IrreversibleMigrationException;
 use Phinx\Util\Literal;
 
 /*
@@ -8,7 +10,7 @@ use Phinx\Util\Literal;
  */
 
 class ConvertSchemaToMigration extends AbstractMigration {
-  /** @var \Phinx\Db\Table[] */
+  /** @var Table[] */
   protected $tables = [];
 
   public function up() {
@@ -596,5 +598,7 @@ class ConvertSchemaToMigration extends AbstractMigration {
       ->update();
   }
 
-  // There is no going back
+  public function down():void {
+    throw new IrreversibleMigrationException("There is no going back");
+  }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use InvalidArgumentException;
+
 /**
  * @property int        $tag_id
  * @property int        $appearance_id
@@ -67,12 +69,12 @@ class Tagged extends NSModel {
    * @param int|int[] $appearance_ids
    *
    * @return bool
-   * @throws \InvalidArgumentException
+   * @throws InvalidArgumentException
    * @see is
    */
   public static function multi_is($tag_ids, $appearance_ids):bool {
     if (empty($tag_ids) || empty($appearance_ids))
-      throw new \InvalidArgumentException("Both parameters must be arrays of integers with at least 1 element. Got:\n\$tag_ids = ".var_export($tag_ids, true)."\n\$appearance_ids = ".var_export($appearance_ids, false));
+      throw new InvalidArgumentException("Both parameters must be arrays of integers with at least 1 element. Got:\n\$tag_ids = ".var_export($tag_ids, true)."\n\$appearance_ids = ".var_export($appearance_ids, false));
 
     return self::exists([
       'conditions' => [

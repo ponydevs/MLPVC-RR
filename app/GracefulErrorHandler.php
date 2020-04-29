@@ -2,11 +2,12 @@
 
 namespace App;
 
+use Exception;
 use Monolog\ErrorHandler;
 
 class GracefulErrorHandler extends ErrorHandler {
   /**
-   * @param \Exception $e
+   * @param Exception $e
    */
   private function _outputErrorPage($e) {
     [$msec, $sec] = explode(' ', microtime());

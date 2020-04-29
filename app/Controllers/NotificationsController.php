@@ -10,12 +10,11 @@ use App\JSON;
 use App\Logs;
 use App\Models\Appearance;
 use App\Models\Notification;
-use App\Models\PCGSlotGift;
-use App\Models\PCGSlotHistory;
 use App\Models\Post;
 use App\Notifications;
 use App\Posts;
 use App\Response;
+use Throwable;
 
 class NotificationsController extends Controller {
   public $do = 'notifications';
@@ -35,7 +34,7 @@ class NotificationsController extends Controller {
       $notifs = Notifications::getHTML(Notifications::get(Notifications::UNREAD_ONLY), NOWRAP);
       Response::done(['list' => $notifs]);
     }
-    catch (\Throwable $e){
+    catch (Throwable $e){
       CoreUtils::error_log('Exception caught when fetching notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
       Response::fail('An error prevented the notifications from appearing. If this persists, <a class="send-feedback">let us know</a>.');
     }
@@ -45,8 +44,7 @@ class NotificationsController extends Controller {
     if ($this->action !== 'POST')
       CoreUtils::notAllowed();
 
-    $nid = \intval($params['id'], 10);
-    /** @var $notif Notification */
+    $nid = (int)$params['id'];
     $notif = Notification::find($nid);
     if (empty($notif) || $notif->recipient_id !== Auth::$user->id)
       Response::fail("The notification (#$nid) does not exist");
@@ -64,7 +62,6 @@ class NotificationsController extends Controller {
         Response::fail("Invalid read action ($read_action) specified for notification type {$notif->type}");
       /** @var $data array */
       $data = !empty($notif->data) ? JSON::decode($notif->data) : null;
-      /** @noinspection DegradedSwitchInspection */
       switch ($notif->type){
         case 'post-passon':
           /** @var $post Post */
@@ -122,35 +119,6 @@ class NotificationsController extends Controller {
           if ($read_action === 'deny')
             Response::success('The notification has been cleared, but it will reappear if the sprite image or the colors are updated.');
           Response::done();
-        break;
-        case 'pcg-slot-gift':
-          $gift = PCGSlotGift::find($data['gift_id']);
-          if (empty($gift))
-            Response::fail('The specified gift does not exist. If you believe this is an error, please <a class="send-feedback">let us know</a>.');
-          if ($gift->receiver_id !== Auth::$user->id)
-            Response::fail('Only the recipient can accept or reject this gift.');
-          $gift_arr = ['gift_id' => $gift->id];
-          if ($read_action === 'reject'){
-            PCGSlotHistory::record($gift->sender_id, 'gift_rejected', $gift->amount, $gift_arr);
-            $gift->sender->syncPCGSlotCount();
-            $gift->rejected = true;
-            $gift->save();
-            Notification::send($gift->sender_id, 'pcg-slot-reject', $gift_arr);
-
-            $notif->safeMarkRead($read_action);
-            Response::done();
-          }
-          else {
-            PCGSlotHistory::record($gift->receiver_id, 'gift_accepted', $gift->amount, $gift_arr);
-            $gift->receiver->syncPCGSlotCount();
-            $gift->claimed = true;
-            $gift->save();
-
-            Notification::send($gift->sender_id, 'pcg-slot-accept', $gift_arr);
-
-            $notif->safeMarkRead($read_action);
-            Response::success('You now have '.CoreUtils::makePlural('available slot', floor($gift->receiver->getPCGAvailablePoints(false) / 10), PREPEND_NUMBER).". If you want to create an appearance you can <a href='{$gift->receiver->toURL()}/cg'>click here</a> to go directly to your personal color guide.");
-          }
         break;
         default:
           $notif->safeMarkRead($read_action);

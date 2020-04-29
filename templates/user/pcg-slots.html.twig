@@ -1,7 +1,7 @@
 {# @controller App\COntrollers\PersonalGuideController::pointHistory #}
 {# @var entries \App\Models\PCGSlotHistory[] #}
 {# @var pagination \App\Pagination #}
-{# @var user \App\Models\User #}
+{# @var user \App\Models\DeviantartUser #}
 {# @var is_owner bool #}
 {% extends 'layout/base.html.twig' %}
 
@@ -14,9 +14,6 @@
       <a href="{{ user.toURL }}" class="btn link typcn typcn-user">Profile page</a>
       {% if permission('developer') %}
         <button class="orange typcn typcn-refresh" id="recalc-button">Recalculate</button>
-      {% endif %}
-      {% if permission('staff') %}
-        <button class="blue typcn typcn-gift" id="pending-gifts-button">Pending gifts</button>
       {% endif %}
     </div>
     {{ pagination }}

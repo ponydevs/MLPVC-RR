@@ -1,7 +1,10 @@
 <?php
 
-$loader = new Twig\Loader\FilesystemLoader(PROJPATH.'templates', PROJPATH);
-\App\Twig::init($loader, array(
+use App\Twig;
+use Twig\Loader\FilesystemLoader;
+
+$loader = new FilesystemLoader(PROJPATH.'templates', PROJPATH);
+Twig::init($loader, array(
   'cache' => FSPATH.'tmp/twig_cache',
   'auto_reload' => true,
   'autoescape' => false,

@@ -2,7 +2,13 @@
 
 namespace App;
 
+use Exception;
+use RuntimeException;
 use SeinopSys\RGBAColor;
+use function count;
+use function in_array;
+use function is_array;
+use function is_string;
 
 class Image {
   /**
@@ -12,14 +18,14 @@ class Image {
    * @param string[] $allowedMimeTypes
    *
    * @return int[]
-   * @throws \RuntimeException
+   * @throws RuntimeException
    */
   public static function checkType($tmp, $allowedMimeTypes):array {
     $imageSize = getimagesize($tmp);
     if ($imageSize === false)
-      throw new \RuntimeException("getimagesize could not read $tmp");
+      throw new RuntimeException("getimagesize could not read $tmp");
     /** @var $imageSize array */
-    if (\is_array($allowedMimeTypes) && !\in_array($imageSize['mime'], $allowedMimeTypes, true))
+    if (is_array($allowedMimeTypes) && !in_array($imageSize['mime'], $allowedMimeTypes, true))
       Response::fail('This type of image is now allowed: '.$imageSize['mime']);
     [$width, $height] = $imageSize;
 
@@ -70,7 +76,11 @@ class Image {
    * @return resource
    */
   public static function preserveAlpha($img, &$background = null) {
-    $background = imagecolorallocatealpha($img, 0, 0, 0, 127);
+    $alpha_color = imagecolorallocatealpha($img, 0, 0, 0, 127);
+    if ($alpha_color === false)
+      throw new RuntimeException(__METHOD__.': Failed to allocate alpha color');
+    /** @var int $alpha_color */
+    $background = $alpha_color;
     imagecolortransparent($img, $background);
     imagealphablending($img, false);
     imagesavealpha($img, true);
@@ -116,6 +126,29 @@ class Image {
   }
 
   /**
+   * @param resource    $image
+   * @param string|null $fill
+   * @param string|int  $outline
+   *
+   * @return array Fill and outline colors or null
+   */
+  private static function resolveColors($image, ?string $fill, $outline) {
+    $passed_fill = null;
+    if ($fill !== null && is_string($fill)){
+      $fill_color = RGBAColor::parse($fill);
+      if ($fill_color)
+        $passed_fill = imagecolorallocate($image, $fill_color->red, $fill_color->green, $fill_color->blue);
+    }
+    $passed_outline = is_int($outline) ? $outline : null;
+    if (is_string($outline)){
+      $outline_color = RGBAColor::parse($outline);
+      if ($outline_color)
+        $passed_outline = imagecolorallocate($image, $outline_color->red, $outline_color->green, $outline_color->blue);
+    }
+    return [$passed_fill, $passed_outline];
+  }
+
+  /**
    * Draw a an (optionally filled) square on an $image
    *
    * @param resource    $image
@@ -126,16 +159,9 @@ class Image {
    * @param string|int  $outline
    */
   public static function drawSquare($image, $x, $y, $size, $fill, $outline):void {
-    if ($fill !== null && \is_string($fill)){
-      $fill = RGBAColor::parse($fill);
-      $fill = imagecolorallocate($image, $fill->red, $fill->green, $fill->blue);
-    }
-    if (\is_string($outline)){
-      $outline = RGBAColor::parse($outline);
-      $outline = imagecolorallocate($image, $outline->red, $outline->green, $outline->blue);
-    }
+    [$passed_fill, $passed_outline] = self::resolveColors($image, $fill, $outline);
 
-    if (\is_array($size)){
+    if (is_array($size)){
       $x2 = $x + $size[0];
       $y2 = $y + $size[1];
     }
@@ -147,10 +173,10 @@ class Image {
     $x2--;
     $y2--;
 
-    if ($fill !== null)
+    if ($passed_fill !== null)
       imagefilledrectangle($image, $x, $y, $x2, $y2, $fill);
-    if ($outline !== null)
-      imagerectangle($image, $x, $y, $x2, $y2, $outline);
+    if ($passed_outline !== null)
+      imagerectangle($image, $x, $y, $x2, $y2, $passed_outline);
   }
 
   /**
@@ -164,16 +190,11 @@ class Image {
    * @param string|int  $outline
    */
   public static function drawCircle($image, $x, $y, $size, $fill, $outline):void {
-    if ($fill !== null && \is_string($fill)){
-      $fill = RGBAColor::parse($fill);
-      $fill = imagecolorallocate($image, $fill->red, $fill->green, $fill->blue);
-    }
-    if (\is_string($outline)){
-      $outline = RGBAColor::parse($outline);
-      $outline = imagecolorallocate($image, $outline->red, $outline->green, $outline->blue);
-    }
+    [$passed_fill, $passed_outline] = self::resolveColors($image, $fill, $outline);
+    if ($passed_outline === null)
+      throw new RuntimeException(__METHOD__." called without a valid \$outline argument");
 
-    if (\is_array($size)){
+    if (is_array($size)){
       /** @var $size int[] */
       [$width, $height] = $size;
       $x2 = $x + $width;
@@ -188,9 +209,9 @@ class Image {
     $cx = (int)CoreUtils::average([$x, $x2]);
     $cy = (int)CoreUtils::average([$y, $y2]);
 
-    if ($fill !== null)
-      imagefilledellipse($image, $cx, $cy, $width, $height, $fill);
-    imageellipse($image, $cx, $cy, $width, $height, $outline);
+    if ($passed_fill !== null)
+      imagefilledellipse($image, $cx, $cy, $width, $height, $passed_fill);
+    imageellipse($image, $cx, $cy, $width, $height, $passed_outline);
   }
 
   /**
@@ -205,9 +226,11 @@ class Image {
    * @param string          $font_file
    * @param array           $box
    * @param int             $y_offset
+   *
+   * @noinspection AdditionOperationOnArraysInspection
    */
   public static function writeOn($image, $text, $x, $font_size, $font_color, &$origin, $font_file, $box = null, $y_offset = 0) {
-    $line_count = \is_array($text) ? \count($text) : 1;
+    $line_count = is_array($text) ? count($text) : 1;
     $line_padding_bottom = 2;
     if (empty($box)){
       $box = self::saneGetTTFBox($font_size, $font_file, $text);
@@ -265,9 +288,10 @@ class Image {
    * @param string|string[] $text
    *
    * @return array
+   * @noinspection AdditionOperationOnArraysInspection
    */
   public static function saneGetTTFBox($font_size, $font_file, $text):array {
-    if (!\is_array($text)){
+    if (!is_array($text)){
       $first_line = $text;
       $text = [];
     }
@@ -344,8 +368,7 @@ class Image {
     if ($output) self::_output($svg_data, $file_path, $file_rel_path, $writer, $content_type);
     else {
       if ($svg_data === null)
-        throw new \Exception('$svg_data cannot be null when $output is false');
-      /** @var string $svg_data */
+        throw new Exception('$svg_data cannot be null when $output is false');
       self::_store($svg_data, $file_path, $writer, $content_type, $output);
     }
   }
@@ -382,13 +405,12 @@ class Image {
    * @param string          $content_type
    * @param bool            $output
    *
-   * @throws \Exception
+   * @throws Exception
    */
   private static function _store($data, $file_path, $write_callback, $content_type, bool $output):void {
     $development = !CoreUtils::env('PRODUCTION');
     $last_modified = file_exists($file_path) ? filemtime($file_path) : time();
     $data_is_not_null = $data !== null;
-
 
     if ($data_is_not_null){
       CoreUtils::createFoldersFor($file_path);

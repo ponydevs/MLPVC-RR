@@ -15,6 +15,7 @@ use App\RedisHelper;
 use App\Response;
 use App\Tags;
 use OpenApi\Annotations as OA;
+use function count;
 
 /**
  * @OA\Schema(
@@ -70,7 +71,7 @@ class AppearancesController extends APIController {
    *   required={
    *     "id",
    *     "label",
-   *     "added",
+   *     "created_at",
    *     "notes",
    *     "tags",
    *     "sprite",
@@ -88,7 +89,7 @@ class AppearancesController extends APIController {
    *     example="Twinkle Sprinkle"
    *   ),
    *   @OA\Property(
-   *     property="added",
+   *     property="created_at",
    *     type="string",
    *     format="date-time"
    *   ),
@@ -157,11 +158,11 @@ class AppearancesController extends APIController {
     $appearance = [
       'id' => $a->id,
       'label' => $a->label,
-      'added' => gmdate('c', $a->added->getTimestamp()),
+      'created_at' => gmdate('c', $a->created_at->getTimestamp()),
       'notes' => $a->notes_rend,
       'tags' => $tags,
       'sprite' => self::mapSprite($a, $with_previews),
-      'hasCutieMarks' => \count($a->cutiemarks) !== 0,
+      'hasCutieMarks' => count($a->cutiemarks) !== 0,
     ];
     if (!$compact)
       $appearance['colorGroups'] = self::_getColorGroups($a);
@@ -665,7 +666,7 @@ class AppearancesController extends APIController {
 
     self::_handlePrivateAppearanceCheck($appearance);
 
-    CGUtils::renderSpritePNG($this->path, $appearance, $_GET['size'] ?? null);
+    CGUtils::renderSpritePNG($appearance, $_GET['size'] ?? null);
   }
 
   /**

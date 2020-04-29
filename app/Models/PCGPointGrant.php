@@ -5,14 +5,14 @@ namespace App\Models;
 use ActiveRecord\DateTime;
 
 /**
- * @property string      $receiver_id
- * @property string      $sender_id
- * @property int         $amount
- * @property null|string $comment
- * @property DateTime    $created_at
- * @property DateTime    $updated_at
- * @property User        $receiver    (Via relations)
- * @property User        $sender      (Via relations)
+ * @property string         $receiver_id
+ * @property string         $sender_id
+ * @property int            $amount
+ * @property null|string    $comment
+ * @property DateTime       $created_at
+ * @property DateTime       $updated_at
+ * @property DeviantartUser $receiver    (Via relations)
+ * @property DeviantartUser $sender      (Via relations)
  * @method static PCGPointGrant create(array $attrs)
  * @method static PCGPointGrant|PCGPointGrant[] find(...$args)
  */
@@ -22,8 +22,8 @@ class PCGPointGrant extends NSModel {
   public static $after_create = ['make_related_entries'];
 
   public static $belongs_to = [
-    ['sender', 'class' => '\App\Models\User', 'foreign_key' => 'sender_id'],
-    ['receiver', 'class' => '\App\Models\User', 'foreign_key' => 'receiver_id'],
+    ['sender', 'class' => 'DeviantartUser', 'foreign_key' => 'sender_id'],
+    ['receiver', 'class' => 'DeviantartUser', 'foreign_key' => 'receiver_id'],
   ];
 
   /**

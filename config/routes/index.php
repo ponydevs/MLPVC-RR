@@ -2,7 +2,9 @@
 
 namespace App;
 
-$router = new \AltoRouter();
+use AltoRouter;
+
+$router = new AltoRouter();
 $router->addMatchTypes([
   'un' => USERNAME_PATTERN,
   'au' => '[A-Za-z_]+',

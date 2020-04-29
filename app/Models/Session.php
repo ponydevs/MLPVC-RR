@@ -17,17 +17,17 @@ use Ramsey\Uuid\Uuid;
  * @property string   $browser_name
  * @property string   $browser_ver
  * @property string   $user_agent
- * @property string   $token     (Cookie Auth)
- * @property string   $access    (oAuth)
- * @property string   $refresh   (oAuth)
- * @property string   $scope     (oAuth)
- * @property DateTime $expires   (oAuth)
- * @property DateTime $created
- * @property DateTime $last_visit
- * @property string   $data
- * @property bool     $updating
- * @property bool     $expired   (Via magic method)
- * @property User     $user      (Via relations)
+ * @property string         $token     (Cookie Auth)
+ * @property string         $access    (oAuth)
+ * @property string         $refresh   (oAuth)
+ * @property string         $scope     (oAuth)
+ * @property DateTime       $expires   (oAuth)
+ * @property DateTime       $created
+ * @property DateTime       $last_visit
+ * @property string         $data
+ * @property bool           $updating
+ * @property bool           $expired   (Via magic method)
+ * @property DeviantartUser $user      (Via relations)
  * @method static Session find_by_token(string $token)
  * @method static Session find_by_access(string $access)
  * @method static Session find_by_refresh(string $code)
@@ -35,11 +35,11 @@ use Ramsey\Uuid\Uuid;
  */
 class Session extends NSModel {
   public static $belongs_to = [
-    ['user'],
+    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
   ];
 
   /** For Twig */
-  public function getUser():User {
+  public function getUser():DeviantartUser {
     return $this->user;
   }
 

@@ -6,7 +6,9 @@ global $router;
 
 // Proper REST API endpoints (sort of)
 // Allowing all request methods lets us reply with HTTP 405 to unsupported methods at the controller level
-\define('PRIVATE_API_PATH', '/api/private');
+use function define;
+
+define('PRIVATE_API_PATH', '/api/private');
 $private_api_endpoint = function ($path, $controller) use ($router) {
   $router->map('POST|GET|PUT|DELETE', PRIVATE_API_PATH.$path, $controller);
 };
@@ -82,12 +84,9 @@ $private_api_endpoint('/user/[uuid:id]/avatar-wrap', 'UserController#avatarWrap'
 $private_api_endpoint('/user/[uuid:id]/contrib-cache', 'UserController#contribCacheApi');
 $private_api_endpoint('/user/[uuid:id]/role', 'UserController#roleApi');
 $private_api_endpoint('/user/[uuid:id]/preference/[au:key]', 'PreferenceController#api');
-$private_api_endpoint('/user/pcg/giftable-slots', 'PersonalGuideController#verifyGiftableSlots');
-$private_api_endpoint('/user/pcg/refund-gifts', 'PersonalGuideController#refundSlotGifts');
 $private_api_endpoint('/user/[uuid:id]/pcg/point-history/recalc', 'PersonalGuideController#pointRecalc');
 $private_api_endpoint('/user/[uuid:id]/pcg/points', 'PersonalGuideController#pointsApi');
 $private_api_endpoint('/user/[uuid:id]/pcg/slots', 'PersonalGuideController#slotsApi');
-$private_api_endpoint('/user/[uuid:id]/pcg/pending-gifts', 'PersonalGuideController#getPendingSlotGifts');
 
 // "API" Endpoints
 $router->map('POST', '/discord-connect/sync/[un:name]', 'DiscordAuthController#sync');

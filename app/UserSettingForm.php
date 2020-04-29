@@ -2,12 +2,13 @@
 
 namespace App;
 
-use App\Models\User;
+use App\Models\DeviantartUser;
+use Exception;
 
 class UserSettingForm {
   /** @var string */
   private $_setting_name;
-  /** @var User */
+  /** @var DeviantartUser */
   private $_current_user;
   /** @var bool */
   private $_can_save;
@@ -72,7 +73,7 @@ class UserSettingForm {
       'options' => [
         'desc' => 'Choose which service to pull your avatar from: ',
         'optg' => 'Available providers',
-        'opts' => User::AVATAR_PROVIDERS,
+        'opts' => DeviantartUser::AVATAR_PROVIDERS,
         'optperm' => [
           'discord' => 'discord_member',
         ],
@@ -140,11 +141,11 @@ class UserSettingForm {
     ],
   ];
 
-  public function __construct(string $setting_name, ?User $current_user = null, ?string $req_perm = null) {
+  public function __construct(string $setting_name, ?DeviantartUser $current_user = null, ?string $req_perm = null) {
     if (!isset(UserPrefs::DEFAULTS[$setting_name]))
-      throw new \Exception('Could not instantiate '.__CLASS__." for non-existant setting $setting_name");
+      throw new Exception('Could not instantiate '.__CLASS__." for non-existant setting $setting_name");
     if (!isset(self::INPUT_MAP[$setting_name]))
-      throw new \Exception('Could not instantiate '.__CLASS__." for $setting_name: Missing INPUT_MAP entry");
+      throw new Exception('Could not instantiate '.__CLASS__." for $setting_name: Missing INPUT_MAP entry");
     $this->_setting_name = $setting_name;
     if ($current_user === null && Auth::$signed_in)
       $current_user = Auth::$user;

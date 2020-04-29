@@ -1,10 +1,11 @@
 <?php
 
 use App\JSON;
+use Phinx\Db\Table;
 use Phinx\Migration\AbstractMigration;
 
 class CreateUnifiedPostsTable extends AbstractMigration {
-  private function _renameIdColumn(\Phinx\Db\Table $t) {
+  private function _renameIdColumn(Table $t) {
     $t->renameColumn('id', 'old_id')->save();
     $t->addColumn('id', 'integer', ['null' => true])
       ->changeColumn('old_id', 'integer', ['null' => true])

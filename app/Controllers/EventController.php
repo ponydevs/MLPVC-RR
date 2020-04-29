@@ -13,6 +13,9 @@ use App\Pagination;
 use App\Permission;
 use App\RegExp;
 use App\Response;
+use Exception;
+use function count;
+use function in_array;
 
 class EventController extends Controller {
   public $do = 'event';
@@ -130,7 +133,6 @@ class EventController extends Controller {
         ]))->out();
         CoreUtils::checkStringValidity($description, 'Event description', INVERSE_PRINTABLE_ASCII_PATTERN);
         $this->event->desc_src = $description;
-        /** @noinspection PhpUndefinedMethodInspection */
         $this->event->desc_rend = CoreUtils::parseMarkdown($description);
 
         if ($this->creating){
@@ -147,7 +149,7 @@ class EventController extends Controller {
         }
 
         $entry_role = (new Input('entry_role', function ($value) {
-          if (!\in_array($value, Event::REGULAR_ENTRY_ROLES) && empty(Event::SPECIAL_ENTRY_ROLES[$value]))
+          if (!in_array($value, Event::REGULAR_ENTRY_ROLES) && empty(Event::SPECIAL_ENTRY_ROLES[$value]))
             return Input::ERROR_INVALID;
         }, [
           Input::CUSTOM_ERROR_MESSAGES => [
@@ -159,7 +161,7 @@ class EventController extends Controller {
 
         if ($this->event->type === 'contest'){
           $vote_role = (new Input('vote_role', function ($value) {
-            if (!\in_array($value, Event::REGULAR_ENTRY_ROLES))
+            if (!in_array($value, Event::REGULAR_ENTRY_ROLES))
               return Input::ERROR_INVALID;
           }, [
             Input::CUSTOM_ERROR_MESSAGES => [
@@ -194,7 +196,7 @@ class EventController extends Controller {
 
         if ($this->creating){
           $this->event->added_by = Auth::$user->id;
-          $this->event->added_at = date('c');
+          $this->event->created_at = date('c');
         }
 
         $starts_at = (new Input('starts_at', 'timestamp', [
@@ -204,7 +206,7 @@ class EventController extends Controller {
             Input::ERROR_INVALID => 'Event start time (@value) is invalid',
           ],
         ]))->out();
-        $this->event->starts_at = isset($starts_at) ? date('c', $starts_at) : $this->event->added_at;
+        $this->event->starts_at = isset($starts_at) ? date('c', $starts_at) : $this->event->created_at;
 
         $ends_at = (new Input('ends_at', 'timestamp', [
           Input::CUSTOM_ERROR_MESSAGES => [
@@ -276,7 +278,7 @@ class EventController extends Controller {
     catch (MismatchedProviderException $e){
       Response::fail('The deviation must be on DeviantArt, '.$e->getActualProvider().' links are not allowed');
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       Response::fail('Deviation link issue: '.$e->getMessage());
     }
     if (!CoreUtils::isDeviationInClub($favme))
@@ -306,7 +308,7 @@ class EventController extends Controller {
       Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
 
     if (!empty($this->event->max_entries)){
-      $entrycnt = \count(Auth::$user->getEntriesFor($this->event, 'id'));
+      $entrycnt = count(Auth::$user->getEntriesFor($this->event, 'id'));
       if ($entrycnt >= $this->event->max_entries)
         Response::fail("You've used all of your entries for this event. If you want to change your entry, edit it instead.");
       $remain = $this->event->max_entries - $entrycnt;

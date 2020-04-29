@@ -6,6 +6,7 @@ use App\CoreUtils;
 use App\GlobalSettings;
 use App\Permission;
 use App\Response;
+use Exception;
 
 class SettingController extends Controller {
   public function __construct() {
@@ -38,7 +39,7 @@ class SettingController extends Controller {
         try {
           $newvalue = GlobalSettings::process($this->setting);
         }
-        catch (\Exception $e){
+        catch (Exception $e){
           Response::fail('Preference value error: '.$e->getMessage());
         }
 

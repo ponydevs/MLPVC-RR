@@ -1,4 +1,4 @@
-{# @var changes \App\Models\Logs\MajorChange[] #}
+{# @var changes \App\Models\MajorChange[] #}
 {% apply spaceless %}
   {% set see_initiator = permission('staff') %}
   {% if wrap is not defined or wrap %}
@@ -18,9 +18,9 @@
         <td class="pony-link">{{ c.appearance.toAnchorWithPreview }}</td>
         <td class="reason">{{ c.reason }}</td>
         <td class="by-at">
-          <div class="when"><span class="typcn typcn-time"></span> {{ time_tag(c.get_log.timestamp) }}</div>
+          <div class="when"><span class="typcn typcn-time"></span> {{ time_tag(c.created_at) }}</div>
           {% if see_initiator %}
-            <div class='by'><span class='typcn typcn-user'></span> {{ c.get_log.actor.toAnchor }}</div>
+            <div class='by'><span class='typcn typcn-user'></span> {{ c.user.toAnchor }}</div>
           {% endif %}
         </td>
       </tr>

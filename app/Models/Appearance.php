@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use ActiveRecord\DatabaseException;
 use ActiveRecord\DateTime;
 use App\Appearances;
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
-use App\Models\Logs\MajorChange;
 use App\NSUriBuilder;
 use App\Permission;
 use App\RegExp;
@@ -22,7 +22,11 @@ use App\Users;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
+use Exception;
+use RuntimeException;
 use SeinopSys\RGBAColor;
+use function count;
+use function in_array;
 
 /**
  * @property int                 $id
@@ -31,7 +35,8 @@ use SeinopSys\RGBAColor;
  * @property string              $notes_src
  * @property string              $notes_rend
  * @property string|null         $owner_id
- * @property DateTime            $added
+ * @property DateTime            $created_at
+ * @property DateTime            $updated_at
  * @property DateTime            $last_cleared
  * @property bool                $ishuman
  * @property bool                $private
@@ -39,7 +44,7 @@ use SeinopSys\RGBAColor;
  * @property string              $sprite_hash
  * @property Cutiemark[]         $cutiemarks          (Via relations)
  * @property ColorGroup[]        $color_groups        (Via relations)
- * @property User|null           $owner               (Via relations)
+ * @property DeviantartUser|null $owner               (Via relations)
  * @property RelatedAppearance[] $related_appearances (Via relations)
  * @property Tag[]               $tags                (Via relations)
  * @property Tagged[]            $tagged              (Via relations)
@@ -62,7 +67,7 @@ class Appearance extends NSModel implements Linkable {
     ['tagged', 'class' => 'Tagged'],
     ['color_groups', 'order' => '"order" asc, id asc'],
     ['related_appearances', 'class' => 'RelatedAppearance', 'foreign_key' => 'source_id', 'order' => 'target_id asc'],
-    ['major_changes', 'class' => 'Logs\MajorChange', 'order' => 'entryid desc'],
+    ['major_changes', 'class' => 'MajorChange', 'order' => 'id desc'],
     ['show_appearances'],
     ['related_shows', 'class' => 'Show', 'through' => 'show_appearances'],
   ];
@@ -77,7 +82,7 @@ class Appearance extends NSModel implements Linkable {
   }
 
   public static $belongs_to = [
-    ['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
+    ['owner', 'class' => 'DeviantartUser', 'foreign_key' => 'owner_id'],
   ];
 
   /** For Twig */
@@ -228,31 +233,6 @@ class Appearance extends NSModel implements Linkable {
     return $this->sprite_hash;
   }
 
-  /**
-   * Returns the HTML for sprite images
-   *
-   * @param bool $canUpload
-   * @param User $user
-   *
-   * @return string
-   */
-  public function getSpriteHTML(bool $canUpload, ?User $user = null):string {
-    if (Auth::$signed_in && $this->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite'))
-      $canUpload = false;
-
-    $imgPth = $this->getSpriteURL();
-    if (!empty($imgPth)){
-      $img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($this->label)."'></a>";
-      if ($canUpload)
-        $img = "<div class='upload-wrap'>$img</div>";
-    }
-    else if ($canUpload)
-      $img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png' alt='blank pixel'></a></div>";
-    else return '';
-
-    return "<div class='sprite'>$img</div>";
-  }
-
   private static function _processNotes(string $notes):string {
     $notes = CoreUtils::sanitizeHtml($notes);
     $notes = preg_replace(new RegExp('(\s)(&gt;&gt;(\d+))(\D|$)'), "$1<a href='https://derpibooru.org/$3'>$2</a>$4", $notes);
@@ -354,7 +334,7 @@ class Appearance extends NSModel implements Linkable {
   public function getUpdatesHTML($wrap = WRAP) {
     $update = MajorChange::get($this->id, null, MOST_RECENT);
     if (!empty($update)){
-      $update = 'Last major change '.Time::tag($update->log->timestamp);
+      $update = 'Last major change '.Time::tag($update->created_at);
     }
     else {
       if (Permission::insufficient('staff'))
@@ -367,14 +347,14 @@ class Appearance extends NSModel implements Linkable {
 
   public function getChangesHTML(bool $wrap = WRAP):string {
     $HTML = '';
-    if (\count($this->major_changes) === 0)
+    if (count($this->major_changes) === 0)
       return $HTML;
 
     $isStaff = Permission::sufficient('staff');
     foreach ($this->major_changes as $change){
-      $li = CoreUtils::escapeHTML($change->reason).' &ndash; '.Time::tag($change->log->timestamp);
+      $li = CoreUtils::escapeHTML($change->reason).' &ndash; '.Time::tag($change->created_at);
       if ($isStaff)
-        $li .= ' by '.$change->log->actor->toAnchor();
+        $li .= ' by '.$change->user->toAnchor();
       $HTML .= "<li>$li</li>";
     }
     if (!$wrap)
@@ -392,7 +372,7 @@ class Appearance extends NSModel implements Linkable {
    * Returns the HTML of the "Featured in" section of appearance pages
    *
    * @return string
-   * @throws \Exception
+   * @throws Exception
    */
   public function getRelatedShowsHTML():string {
     $related_shows = $this->related_shows;
@@ -407,8 +387,9 @@ class Appearance extends NSModel implements Linkable {
 
   public function verifyToken(?string $token = null) {
     if ($token === null){
-      if (!isset($_GET['token']))
+      if (!isset($_GET['token']) || !is_string($_GET['token']))
         return false;
+      /** @noinspection CallableParameterUseCaseInTypeContextInspection */
       $token = $_GET['token'];
     }
 
@@ -438,7 +419,7 @@ class Appearance extends NSModel implements Linkable {
   public function getPendingPlaceholder():string {
     return $this->isPrivate() ? "<div class='colors-pending'><span class='typcn typcn-time'></span> ".($this->last_cleared !== null
         ? 'This appearance is currently undergoing maintenance and will be available again shortly &mdash; '.Time::tag($this->last_cleared)
-        : 'This appearance will be finished soon, please check back later &mdash; '.Time::tag($this->added)).'</div>' : '';
+        : 'This appearance will be finished soon, please check back later &mdash; '.Time::tag($this->created_at)).'</div>' : '';
   }
 
   /**
@@ -558,7 +539,7 @@ class Appearance extends NSModel implements Linkable {
 
   public function getElasticBody() {
     if ($this->owner_id !== null)
-      throw new \RuntimeException('Attempt to get ElasticSearch body for private appearance');
+      throw new RuntimeException('Attempt to get ElasticSearch body for private appearance');
 
     $tags = Tags::getFor($this->id, null, true, true);
     $tag_names = [];
@@ -636,7 +617,7 @@ class Appearance extends NSModel implements Linkable {
         $SortedColorGroups[$cg->id] = $cg;
 
       $AllColors = CGUtils::getColorsForEach($ColorGroups);
-      if ($AllColors !== null && \count($AllColors) > 0){
+      if ($AllColors !== null && count($AllColors) > 0){
         foreach ($AllColors as $cg){
           /** @var $cg Color[] */
           foreach ($cg as $c)
@@ -747,9 +728,8 @@ class Appearance extends NSModel implements Linkable {
    */
   public function applyTemplate():self {
     if (ColorGroup::exists(['conditions' => ['appearance_id = ?', $this->id]]))
-      throw new \RuntimeException('Template can only be applied to empty appearances');
+      throw new RuntimeException('Template can only be applied to empty appearances');
 
-    /** @var $Scheme string[][] */
     $Scheme = $this->ishuman
       ? self::HUMAN_TEMPLATE
       : self::PONY_TEMPLATE;
@@ -764,7 +744,7 @@ class Appearance extends NSModel implements Linkable {
       ]);
       $GroupID = $Group->id;
       if (!$GroupID)
-        throw new \RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::$instance->getLastError(), ': '));
+        throw new RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::$instance->getLastError(), ': '));
 
       $ci = 1;
       foreach ($ColorNames as $label){
@@ -774,7 +754,7 @@ class Appearance extends NSModel implements Linkable {
           'label' => $label,
           'order' => $ci++,
         ]))->save()
-        ) throw new \RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::$instance->getLastError(), ': '));
+        ) throw new RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::$instance->getLastError(), ': '));
       }
     }
 
@@ -829,7 +809,7 @@ class Appearance extends NSModel implements Linkable {
       }
     }
 
-    return !\in_array(false, $success, true);
+    return !in_array(false, $success, true);
   }
 
   public const DEFAULT_COLOR_MAPPING = [
@@ -889,11 +869,11 @@ class Appearance extends NSModel implements Linkable {
   public function processTagChanges(string $old_tags, string $new_tags, bool $eqg) {
     $old = array_map([CoreUtils::class, 'trim'], explode(',', $old_tags));
     $new = array_map([CoreUtils::class, 'trim'], explode(',', $new_tags));
-    $added = array_diff($new, $old);
-    $removed = array_diff($old, $new);
+    $added_tag_names = array_diff($new, $old);
+    $removed_tag_names = array_diff($old, $new);
 
-    if (!empty($removed)){
-      $removed_tags = DB::$instance->disableAutoClass()->where('name', $removed)->get('tags', null, 'id, name');
+    if (!empty($removed_tag_names)){
+      $removed_tags = DB::$instance->disableAutoClass()->where('name', $removed_tag_names)->get('tags', null, 'id, name');
       $removed_tags = array_reduce($removed_tags, function ($acc, $el) {
         $acc[$el['id']] = $el['name'];
 
@@ -908,7 +888,7 @@ class Appearance extends NSModel implements Linkable {
       }
     }
 
-    foreach ($added as $name){
+    foreach ($added_tag_names as $name){
       $_REQUEST['tag_name'] = CoreUtils::trim($name);
       if (empty($_REQUEST['tag_name']))
         continue;
@@ -939,7 +919,7 @@ class Appearance extends NSModel implements Linkable {
     try {
       $created = Tagged::make($tag->id, $this->id)->save();
     }
-    catch (\ActiveRecord\DatabaseException $e){
+    catch (DatabaseException $e){
       // Relation already exists, moving on
       if (CoreUtils::contains($e->getMessage(), 'duplicate key value violates unique constraint "tagged_pkey"')){
         return $this;
@@ -976,7 +956,7 @@ class Appearance extends NSModel implements Linkable {
       Appearances::clearSpriteColorIssueNotifications($this->id, 'del', null);
   }
 
-  public static function checkCreatePermission(User $user, bool $personal) {
+  public static function checkCreatePermission(DeviantartUser $user, bool $personal) {
     if (!$personal){
       if (!$user->perm('staff'))
         Response::fail("You don't have permission to add appearances to the official Color Guide");

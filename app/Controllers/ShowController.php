@@ -9,7 +9,6 @@ use App\DB;
 use App\DeviantArt;
 use App\HTTP;
 use App\Input;
-use App\Logs;
 use App\Models\Appearance;
 use App\Models\Show;
 use App\Models\ShowAppearance;
@@ -23,6 +22,9 @@ use App\Response;
 use App\ShowHelper;
 use App\Twig;
 use App\VideoProvider;
+use DateInterval;
+use Exception;
+use Throwable;
 
 class ShowController extends Controller {
   public function index() {
@@ -151,10 +153,6 @@ class ShowController extends Controller {
           $update['season'] = ShowHelper::validateSeason(ShowHelper::ALLOW_MOVIES);
           $update['episode'] = ShowHelper::validateEpisode(!$is_episode);
 
-          $episode_changed = true;
-          $season_changed = true;
-          $original_episode = $this->creating ? $update['episode'] : $this->show->episode;
-          $original_season = $this->creating ? $update['season'] : $this->show->season;
           if ($this->creating){
             $matching_id = Show::find_by_season_and_episode($update['season'], $update['episode']);
             if (!empty($matching_id)){
@@ -175,11 +173,12 @@ class ShowController extends Controller {
             }
           }
 
-          $update['twoparter'] = isset($_REQUEST['twoparter']);
-          if ($update['twoparter']){
+          $update['parts'] = 1;
+          if (isset($_REQUEST['twoparter'])){
             $next_part = Show::find_by_season_and_episode($update['season'], $update['episode'] + 1);
             if (!empty($next_part))
               Response::fail("This episode cannot have two parts because {$next_part->toURL()} already exists.");
+            $update['parts'] = 2;
           }
         }
         else if (!$this->creating){
@@ -299,9 +298,8 @@ class ShowController extends Controller {
         if (isset($_REQUEST['html']))
           Response::done(['html' => ShowHelper::getSidebarVoting($this->show)]);
 
-        $table = ShowVote::$table_name;
         $vote_count_query = DB::$instance->query(
-          "SELECT count(*) as value, vote as label FROM $table WHERE show_id = ? GROUP BY vote ORDER BY vote", [$this->show->id]);
+          "SELECT count(*) as value, vote as label FROM show_votes WHERE show_id = ? GROUP BY vote ORDER BY vote", [$this->show->id]);
         $vote_counts = [];
         foreach ($vote_count_query as $row)
           $vote_counts[$row['label']] = $row['value'];
@@ -360,7 +358,7 @@ class ShowController extends Controller {
     switch ($this->action){
       case 'GET':
         $response = [
-          'twoparter' => $this->show->twoparter,
+          'twoparter' => $this->show->parts === 2,
           'vidlinks' => [],
           'fullep' => [],
           'airs' => date('c', strtotime($this->show->airs)),
@@ -377,7 +375,7 @@ class ShowController extends Controller {
       break;
       case 'PUT':
         foreach (array_keys(ShowHelper::VIDEO_PROVIDER_NAMES) as $provider){
-          for ($part = 1; $part <= ($this->show->twoparter ? 2 : 1); $part++){
+          for ($part = 1; $part <= $this->show->parts; $part++){
             $set = null;
             $post_key = "{$provider}_$part";
             if (!empty($_REQUEST[$post_key])){
@@ -385,17 +383,16 @@ class ShowController extends Controller {
               try {
                 $vid_provider = new VideoProvider(DeviantArt::trimOutgoingGateFromUrl($_REQUEST[$post_key]));
               }
-              catch (\Exception $e){
+              catch (Exception $e){
                 Response::fail("$provider_name link issue: ".$e->getMessage());
               }
               if ($vid_provider->episodeVideo === null || $vid_provider->episodeVideo->provider !== $provider)
                 Response::fail("Incorrect $provider_name URL specified");
-              /** @noinspection PhpUndefinedFieldInspection */
               $set = $vid_provider::$id;
             }
 
-            $fullep = $this->show->twoparter ? false : true;
-            if ($part === 1 && $this->show->twoparter && isset($_REQUEST["{$post_key}_full"])){
+            $fullep = $this->show->parts === 1;
+            if ($part === 1 && $this->show->parts === 2 && isset($_REQUEST["{$post_key}_full"])){
               $next_part = $provider.'_'.($part + 1);
               $_REQUEST[$next_part] = null;
               $fullep = true;
@@ -510,11 +507,6 @@ class ShowController extends Controller {
 
       $removed++;
       $video->delete();
-      Logs::logAction('video_broken', [
-        'show_id' => $this->show->id,
-        'provider' => $video->provider,
-        'id' => $video->id,
-      ]);
       unset($this->show->videos[$k]);
     }
 
@@ -535,7 +527,7 @@ class ShowController extends Controller {
     try {
       $synopses = $this->show->getSynopses();
     }
-    catch (\Throwable $exception){
+    catch (Throwable $exception){
       $message = $exception->getMessage();
       if (strpos($message, '503 Service Temporarily Unavailable') !== false){
         Response::fail('The TMDB API is experiencing a temporary outage, synopsis data is currently unavailable.');
@@ -579,19 +571,19 @@ class ShowController extends Controller {
       Response::fail('No last added episode found');
 
     $season = $last_added->season;
-    if ($last_added->twoparter && $last_added->episode + 1 === 26){
+    if ($last_added->parts === 2 && $last_added->episode + 1 === 26){
       $season++;
       $episode = 1;
       $airs = date('Y-m-d', strtotime('this saturday'));
     }
     else {
       $episode = min($last_added->episode + 1, 26);
-      $airs = $last_added->airs->add(new \DateInterval('P1W'))->format('Y-m-d');
+      $airs = $last_added->airs->add(new DateInterval('P1W'))->format('Y-m-d');
     }
     Response::done([
       'season' => $season,
       'episode' => $episode,
-      'no' => $last_added->no + ($last_added->twoparter ? 2 : 1),
+      'no' => $last_added->no + $last_added->parts,
       'airday' => $airs,
     ]);
   }

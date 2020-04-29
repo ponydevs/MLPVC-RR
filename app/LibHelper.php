@@ -2,6 +2,8 @@
 
 namespace App;
 
+use RuntimeException;
+
 class LibHelper {
   public const TYPE_JS = 0b01;
   public const TYPE_CSS = 0b10;
@@ -34,11 +36,11 @@ class LibHelper {
    * @param string $lib
    *
    * @return array
-   * @throws \RuntimeException
+   * @throws RuntimeException
    */
   public static function get(string $lib):array {
     if (!isset(self::AVAILABLE_LIBS[$lib]))
-      throw new \RuntimeException("Library $lib not found in ".__CLASS__.'::AVAILABLE_LIBS');
+      throw new RuntimeException("Library $lib not found in ".__CLASS__.'::AVAILABLE_LIBS');
     $lib_value = self::AVAILABLE_LIBS[$lib];
     $js = ($lib_value & self::TYPE_JS) !== 0;
     $css = ($lib_value & self::TYPE_CSS) !== 0;

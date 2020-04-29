@@ -2,7 +2,12 @@
 
 namespace App;
 
-use App\Models\User;
+use App\Models\Appearance;
+use App\Models\DeviantartUser;
+use App\Models\Session;
+use App\Models\Show;
+use RuntimeException;
+use function array_slice;
 
 class View {
   /** @var string */
@@ -19,14 +24,14 @@ class View {
    * @param string $name
    *
    * @return string[]
-   * @throws \RuntimeException
+   * @throws RuntimeException
    */
   public static function processName(string $name):array {
     [$controller, $method] = explode('::', $name);
     $name = strtolower($controller.'::'.preg_replace(new RegExp('([a-z])([A-Z])'), '$1-$2', $method));
     if (!preg_match(new RegExp('^(?:\\\\?app\\\\controllers\\\\)?([a-z]+)controller::([a-z-]+)$'), $name, $match))
-      throw new \RuntimeException("Could not resolve view based on value $name");
-    [$class, $method] = \array_slice($match, 1, 2);
+      throw new RuntimeException("Could not resolve view based on value $name");
+    [$class, $method] = array_slice($match, 1, 2);
 
     return [$class, $method];
   }
@@ -42,7 +47,7 @@ class View {
         switch ($this->method){
           case 'browser':
             if (isset($scope['session'])){
-              /** @var $session \App\Models\Session */
+              /** @var $session Session */
               $session = $scope['session'];
               $bc = (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'))->setChild(
                 (new NavBreadcrumb($session->user->name, $session->user->toURL()))->setChild('Session #'.$session->id)
@@ -81,7 +86,7 @@ class View {
         $ret->setChild($bc);
         switch ($this->method){
           case 'appearance':
-            /** @var $appearance \App\Models\Appearance */
+            /** @var $appearance Appearance */
             $appearance = $scope['appearance'];
             if ($appearance->owner_id !== null){
               $bc = $appearance->owner->getPCGBreadcrumb();
@@ -109,7 +114,7 @@ class View {
             $ret->setChild('Color Picker');
           break;
           case 'sprite':
-            /** @var $appearance \App\Models\Appearance */
+            /** @var $appearance Appearance */
             $appearance = $scope['appearance'];
             if ($appearance->owner_id !== null)
               $bc = $appearance->owner->getPCGBreadcrumb();
@@ -137,7 +142,7 @@ class View {
           case 'view':
             if (!isset($scope['current_episode']))
               return new NavBreadcrumb('Home', null, true);
-            /** @var $ep \App\Models\Show */
+            /** @var $ep Show */
             $ep = $scope['current_episode'];
             $cat = new NavBreadcrumb($ep->is_episode ? 'TV Episodes' : 'Movies, Shorts & Specials');
             $cat->setChild(new NavBreadcrumb($scope['heading'], $ep->toURL(), true));
@@ -177,9 +182,9 @@ class View {
       case 'user':
         $bc = (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'));
         if ($this->method !== 'list'){
-          /** @var $User \App\Models\User */
+          /** @var $User \App\Models\DeviantartUser */
           $user = $scope['user'];
-          if ($user instanceof User){
+          if ($user instanceof DeviantartUser){
             switch ($this->method){
               case 'colorguide':
                 return $user->getPCGBreadcrumb(true);

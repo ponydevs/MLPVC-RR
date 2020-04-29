@@ -2,6 +2,9 @@
 
 namespace App;
 
+use RuntimeException;
+use function is_array;
+
 class Response {
   public static function fail(string $message = '', $data = [], bool $prettyPrint = false):void {
     if (empty($message)){
@@ -37,7 +40,7 @@ class Response {
   public static function done(array $data = [], ?string $cache_key = null, ?int $cache_for_seconds = null):void {
     if ($cache_key !== null) {
       if ($cache_for_seconds === null)
-        throw new \RuntimeException("Cache duration for key $cache_key is null");
+        throw new RuntimeException("Cache duration for key $cache_key is null");
       $data['cachedOn'] = date('c');
       $data['cachedFor'] = $cache_for_seconds;
     }
@@ -61,7 +64,7 @@ class Response {
     $response = ['status' => $status];
     if (!empty($message))
       $response['message'] = $message;
-    if (!empty($data) && \is_array($data))
+    if (!empty($data) && is_array($data))
       $response = array_merge($data, $response);
     $mask = JSON_UNESCAPED_SLASHES;
     if ($prettyPrint)

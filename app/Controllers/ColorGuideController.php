@@ -10,14 +10,15 @@ use App\DB;
 use App\HTTP;
 use App\Input;
 use App\Models\Appearance;
-use App\Models\Logs\MajorChange;
-use App\Models\User;
+use App\Models\MajorChange;
+use App\Models\DeviantartUser;
 use App\NSUriBuilder;
 use App\Pagination;
 use App\Permission;
 use App\Regexes;
 use App\RegExp;
 use App\Response;
+use App\Time;
 use App\UserPrefs;
 use App\Users;
 
@@ -42,7 +43,7 @@ class ColorGuideController extends Controller {
     $this->path = rtrim("/cg/{$this->_guide}", '/');
   }
 
-  /** @var User|null|false */
+  /** @var DeviantartUser|null|false */
   protected $owner;
   /** @var bool */
   protected $ownerIsCurrentUser = false;
@@ -144,7 +145,7 @@ class ColorGuideController extends Controller {
         DB::$instance->orderBy('label');
       break;
       case 'added';
-        DB::$instance->orderBy('added', 'DESC');
+        DB::$instance->orderBy('created_at', 'DESC');
       break;
     }
     $appearances = Appearances::get($this->_EQG, null, null, 'id,label,private');
@@ -240,7 +241,6 @@ class ColorGuideController extends Controller {
     $title = '';
     /** @var $appearances_per_page int */
     $appearances_per_page = UserPrefs::get('cg_itemsperpage');
-    $appearances = [];
     $elastic_avail = CGUtils::isElasticAvailable();
     $searching = !empty($_GET['q']) && CoreUtils::trim($_GET['q']) !== '';
     $json_response = CoreUtils::isJSONExpected();
@@ -282,7 +282,7 @@ class ColorGuideController extends Controller {
     if (!file_exists(CGUtils::GUIDE_EXPORT_PATH))
       CGUtils::saveExportData();
     $json_export_url = CoreUtils::cachedAssetLink('mlpvc-colorguide', 'dist', 'json');
-    $json_export_time = \App\Time::tag((int)explode('?', $json_export_url)[1]);
+    $json_export_time = Time::tag((int)explode('?', $json_export_url)[1]);
     $universal_appearance = Appearance::find(0);
     $settings = [
       'title' => $title,
@@ -317,7 +317,7 @@ class ColorGuideController extends Controller {
     if (Permission::insufficient('developer'))
       CoreUtils::noPerm();
 
-    CoreUtils::downloadAsFile(ElasticNoNodesAvailableException::getExportData(), 'mlpvc-colorguide.json');
+    CoreUtils::downloadAsFile(CGUtils::getExportData(), 'mlpvc-colorguide.json');
   }
 
   public function reindex():void {
@@ -333,6 +333,10 @@ class ColorGuideController extends Controller {
     CoreUtils::fixPath('/cg/blending');
 
     $hex_pattern = preg_replace(new RegExp('^/(.*)/.*$'), '$1', Regexes::$hex_color->jsExport());
+    $dasprid = Users::get('dasprid', 'name');
+    $dasprid_link = empty($dasprid)
+      ? "<a href='https://www.deviantart.com/dasprid'>dasprid</a>"
+      : $dasprid->toAnchor(DeviantartUser::WITH_AVATAR);
     CoreUtils::loadPage(__METHOD__, [
       'title' => 'Color Blending Calculator',
       'css' => [true],
@@ -340,7 +344,7 @@ class ColorGuideController extends Controller {
       'import' => [
         'hex_pattern' => $hex_pattern,
         'nav_blending' => true,
-        'dasprid_link' => Users::get('dasprid', 'name')->toAnchor(User::WITH_AVATAR),
+        'dasprid_link' => $dasprid_link,
         'hex_color_regex' => Regexes::$hex_color,
       ],
     ]);
@@ -413,7 +417,7 @@ class ColorGuideController extends Controller {
 
     CoreUtils::callScript('sprite_color_checkup');
 
-    $nagUser = User::find(Appearances::SPRITE_NAG_USERID);
+    $nagUser = DeviantartUser::find(Appearances::SPRITE_NAG_USERID);
     $The_authorities = Appearances::SPRITE_NAG_USERID === Auth::$user->id ? 'You' : $nagUser->toAnchor();
     Response::success('Checkup started.'.($nagUser !== null ? " $The_authorities will be notified if there are any issues." : ''));
   }

@@ -2,6 +2,7 @@
 
 use App\Models\Post;
 use App\Models\Show;
+use App\Time;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -128,7 +129,7 @@ class PostTest extends TestCase {
 
     $request->reserved_at = '2016-01-04T01:00:00Z';
     $result = $request->isOverdue($now);
-    self::assertEquals($now - \App\Time::IN_SECONDS['week'] * 3, $request->reserved_at->getTimestamp(), 'reserved_at should match current time - 3 weeks');
+    self::assertEquals($now - Time::IN_SECONDS['week'] * 3, $request->reserved_at->getTimestamp(), 'reserved_at should match current time - 3 weeks');
     self::assertTrue($result, 'Request must be overdue by now (0s)');
 
     $request->reserved_at = '2016-01-04T00:59:59';

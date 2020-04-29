@@ -1,6 +1,6 @@
 {# @controller \App\ShowHelper::loadPage #}
 {# @controller \App\Controllers\PostController::share #}
-{# @var poster \App\Models\User #}
+{# @var poster \App\Models\DeviantartUser #}
 {# @var current_episode \App\Models\Show #}
 {# @var prev_episode \App\Models\Show #}
 {# @var next_episode \App\Models\Show #}
@@ -40,7 +40,7 @@
             <h1>{{ heading | escape }}</h1>
             <p>Vector Requests & Reservations</p>
             {% if permission('staff') %}
-              <p class="added-by"><em>{{ constant('App\\ShowHelper::VALID_TYPES')[current_episode.type] }} added by {{ poster.toAnchor }} {{ time_tag(current_episode.posted) }}</em></p>
+              <p class="added-by"><em>{{ constant('App\\ShowHelper::VALID_TYPES')[current_episode.type] }} added by {{ poster.toAnchor }} {{ time_tag(current_episode.created_at) }}</em></p>
             {% endif %}
           </div>
         </div>

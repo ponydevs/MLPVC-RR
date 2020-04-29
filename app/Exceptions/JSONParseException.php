@@ -2,5 +2,7 @@
 
 namespace App\Exceptions;
 
-class JSONParseException extends \Exception {
+use Exception;
+
+class JSONParseException extends Exception {
 }

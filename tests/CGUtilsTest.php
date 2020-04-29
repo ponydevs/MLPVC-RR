@@ -2,6 +2,7 @@
 
 use App\CGUtils;
 use PHPUnit\Framework\TestCase;
+use SeinopSys\RGBAColor;
 
 class CGUtilsTest extends TestCase {
   public function testRoundHex() {
@@ -22,7 +23,7 @@ class CGUtilsTest extends TestCase {
   }
 
   public function testGenerateGimpPalette() {
-    $c = \SeinopSys\RGBAColor::parse('#0122ff');
+    $c = RGBAColor::parse('#0122ff');
     $ts = strtotime('2018-09-10T19:19:19+02:00');
     $colors = [
       [$c->red, $c->green, $c->blue, 'Mane & Tail | Outline'],

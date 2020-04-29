@@ -1,6 +1,6 @@
 {# @controller \App\Posts::getRequestsSection #}
 {# @var arranged array #}
-{# @var current_user \App\Models\User #}
+{# @var current_user \App\Models\DeviantartUser #}
 {% set can_request = permission('user') and user_pref('a_postreq', current_user) %}
 <section id="requests" class="posts">
   <div class="unfinished">

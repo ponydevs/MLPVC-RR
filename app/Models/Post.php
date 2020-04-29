@@ -7,55 +7,56 @@ use App\Auth;
 use App\CoreUtils;
 use App\DB;
 use App\DeviantArt;
-use App\Logs;
-use App\Models\Logs\Log;
 use App\Permission;
 use App\Posts;
 use App\RegExp;
 use App\Response;
 use App\Time;
 use App\UserPrefs;
+use Exception;
+use function count;
 
 /**
  * This is a blanket class for both requests and reservations.
  * Requests always have a non-null requested_by value which is to be used for post type detection.
  *
- * @property int      $id
- * @property int|null $old_id
- * @property string   $type
- * @property int      $season
- * @property int      $episode
- * @property int      $show_id
- * @property string   $preview
- * @property string   $fullsize
- * @property string   $label
- * @property string   $requested_by
- * @property DateTime $requested_at
- * @property string   $reserved_by
- * @property DateTime $reserved_at
- * @property string   $deviation_id
- * @property bool     $lock
- * @property DateTime $finished_at
- * @property bool     $broken
- * @property User     $reserver       (Via relations)
- * @property User     $requester      (Via relations)
- * @property DateTime $posted_at      (Via magic method)
- * @property string   $posted_by      (Via magic method)
- * @property User     $poster         (Via magic method)
- * @property Show     $show           (Via magic method)
- * @property string   $kind           (Via magic method)
- * @property bool     $finished       (Via magic method)
- * @property Log      $approval_entry (Via magic method)
- * @property bool     $is_request     (Via magic method)
- * @property bool     $is_reservation (Via magic method)
+ * @property int            $id
+ * @property int|null       $old_id
+ * @property string         $type
+ * @property int            $season
+ * @property int            $episode
+ * @property int            $show_id
+ * @property string         $preview
+ * @property string         $fullsize
+ * @property string         $label
+ * @property string         $requested_by
+ * @property DateTime       $requested_at
+ * @property string         $reserved_by
+ * @property DateTime       $reserved_at
+ * @property string         $deviation_id
+ * @property bool           $lock
+ * @property DateTime       $finished_at
+ * @property bool           $broken
+ * @property DeviantartUser $reserver       (Via relations)
+ * @property DeviantartUser $requester      (Via relations)
+ * @property DateTime       $posted_at      (Via magic method)
+ * @property string         $posted_by      (Via magic method)
+ * @property DeviantartUser $poster         (Via magic method)
+ * @property Show           $show           (Via magic method)
+ * @property string         $kind           (Via magic method)
+ * @property bool           $finished       (Via magic method)
+ * @property LockedPost     $approval_entry (Via magic method)
+ * @property bool           $is_request     (Via magic method)
+ * @property bool           $is_reservation (Via magic method)
  * @method static Post|Post[] find(...$args)
+ * @method static Post find_by_old_id(int $old_id)
  * @method static Post find_by_deviation_id(string $deviation_id)
  * @method static Post find_by_preview(string $preview_url)
  */
 class Post extends NSModel implements Linkable {
   public static $belongs_to = [
-    ['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
-    ['requester', 'class' => 'User', 'foreign_key' => 'requested_by'],
+    ['reserver', 'class' => 'DeviantartUser', 'foreign_key' => 'reserved_by'],
+    ['requester', 'class' => 'DeviantartUser', 'foreign_key' => 'requested_by'],
     ['show'],
   ];
 
@@ -72,7 +73,7 @@ class Post extends NSModel implements Linkable {
         'id' => $this->id,
       ]);
     }
-    catch (\Exception $e){
+    catch (Exception $e){
       CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
     }
 
@@ -99,7 +100,7 @@ class Post extends NSModel implements Linkable {
   }
 
   public function get_poster() {
-    return User::find($this->posted_by);
+    return DeviantartUser::find($this->posted_by);
   }
 
   public function get_finished() {
@@ -115,20 +116,18 @@ class Post extends NSModel implements Linkable {
   }
 
   public function get_approval_entry() {
-    $where_query = "type = 'post' AND id = :id";
+    $where_query = "type = 'post' AND post_id = :id";
     $where_bind = ['id' => $this->id];
     if ($this->old_id !== null){
-      $where_query = "($where_query) OR (type = :kind AND old_id = :old_id)";
+      $where_query = "($where_query) OR (type = :kind AND old_post_id = :old_id)";
       $where_bind['kind'] = $this->kind;
       $where_bind['old_id'] = $this->old_id;
     }
 
-    return DB::$instance->setModel(Log::class)->querySingle(
-      "SELECT l.*
-			FROM log__post_lock pl
-			LEFT JOIN log l ON l.reftype = 'post_lock' AND l.refid = pl.entryid
+    return DB::$instance->setModel(LockedPost::class)->querySingle(
+      "SELECT * FROM locked_posts
 			WHERE $where_query
-			ORDER BY pl.entryid
+			ORDER BY created_at
 			LIMIT 1", $where_bind
     );
   }
@@ -176,7 +175,6 @@ class Post extends NSModel implements Linkable {
   public function toAnchor(string $label = null, Show $Episode = null, $newtab = false):string {
     if ($Episode === null)
       $Episode = $this->show;
-    /** @var $Episode Show */
     $link = $this->toURL($Episode);
     if (empty($label))
       $label = $Episode->getID();
@@ -250,7 +248,7 @@ class Post extends NSModel implements Linkable {
    * @param bool $enablePromises Output "promise" elements in place of all images (requires JS to display)
    *
    * @return string
-   * @throws \Exception
+   * @throws Exception
    */
   public function getLi(bool $view_only = false, bool $cachebust_url = false, bool $enablePromises = false):string {
     $ID = $this->getIdString();
@@ -302,21 +300,21 @@ class Post extends NSModel implements Linkable {
           : '';
         $locked_at = '';
         if ($approved){
-          $LogEntry = $this->approval_entry;
-          if (!empty($LogEntry)){
-            $approverIsNotReserver = $LogEntry->initiator !== null && $LogEntry->initiator !== $this->reserved_by;
-            $approvedby = $isStaff && $LogEntry->initiator !== null
+          $locked_post = $this->approval_entry;
+          if (!empty($locked_post)){
+            $approverIsNotReserver = $locked_post->user_id !== null && $locked_post->user_id !== $this->reserved_by;
+            $approvedby = $isStaff && $locked_post->user_id !== null
               ? ' by '.(
               $approverIsNotReserver
                 ? (
-              $this->is_request && $LogEntry->initiator === $this->requested_by
+              $this->is_request && $locked_post->user_id === $this->requested_by
                 ? 'the requester'
-                : $LogEntry->actor->toAnchor()
+                : $locked_post->user->toAnchor()
               )
                 : 'the reserver'
               )
               : '';
-            $locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag($LogEntry->timestamp)."</strong>$approvedby</em>" : '';
+            $locked_at = $approved ? "<em class='approve-date'>Approved <strong>".Time::tag($locked_post->created_at)."</strong>$approvedby</em>" : '';
           }
           else $locked_at = '<em class="info-line approve-date">Approval data unavilable</em>';
         }
@@ -405,7 +403,7 @@ class Post extends NSModel implements Linkable {
       if ($view_only !== false)
         $HTML .= "<div><a href='$view_only' class='btn link typcn typcn-arrow-forward'>View</a></div>";
       else {
-        $regularButton = \count($Buttons) < 3;
+        $regularButton = count($Buttons) < 3;
         foreach ($Buttons as $b){
           $WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".CoreUtils::aposEncode($b[1])."'>");
           $HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button>";
@@ -425,8 +423,7 @@ class Post extends NSModel implements Linkable {
     if (!$this->save())
       Response::dbError();
 
-    $postdata = ['id' => $this->id];
-    Logs::logAction('post_lock', $postdata);
+    LockedPost::record($this->id);
 
     if (UserPrefs::get('a_pcgearn', $this->reserver)){
       PCGSlotHistory::record($this->reserver->id, 'post_approved', null, [
@@ -436,6 +433,6 @@ class Post extends NSModel implements Linkable {
     }
 
     if ($this->reserved_by !== Auth::$user->id)
-      Notification::send($this->reserved_by, 'post-approved', $postdata);
+      Notification::send($this->reserved_by, 'post-approved', ['id' => $this->id]);
   }
 }

@@ -49,29 +49,3 @@
     }
   }
 }
-
-#refund-gifts-form {
-  table {
-    width: 100%;
-    border-collapse: collapse;
-
-    th, td {
-      border: 1px solid;
-      padding: 10px;
-    }
-
-    .refund {
-      text-align: center;
-      transition: background-color .1s linear;
-      will-change: background-color;
-
-      &.unselected {
-        background: $NRedBG;
-      }
-
-      &.selected {
-        background: $NGreenBG;
-      }
-    }
-  }
-}

@@ -4,6 +4,7 @@ namespace App;
 
 use ActiveRecord\DateTime;
 use Moment\Moment;
+use function is_string;
 
 class Time {
   public const IN_SECONDS = [
@@ -122,23 +123,24 @@ class Time {
   /**
    * Create <time datetime></time> tag
    *
-   * @param string|int|DateTime $timestamp
+   * @param string|int|DateTime $time_value
    * @param bool                $extended
    * @param string              $allowDyntime
    * @param int                 $now For use in tests
    *
    * @return string
    */
-  public static function tag($timestamp, bool $extended = false, string $allowDyntime = self::TAG_ALLOW_DYNTIME, ?int $now = null):string {
-    if ($timestamp instanceof DateTime)
-      $timestamp = $timestamp->getTimestamp();
-    else if (\is_string($timestamp)){
-      $ts = strtotime($timestamp);
+  public static function tag($time_value, bool $extended = false, string $allowDyntime = self::TAG_ALLOW_DYNTIME, ?int $now = null):string {
+    if ($time_value instanceof DateTime)
+      $timestamp = $time_value->getTimestamp();
+    else if (is_string($time_value)){
+      $ts = strtotime($time_value);
       if ($ts === false)
         return '';
       $timestamp = $ts;
     }
     /** @var $timestamp int */
+    else $timestamp = $time_value;
 
     $datetime = self::format($timestamp);
     $full = self::format($timestamp, self::FORMAT_FULL);

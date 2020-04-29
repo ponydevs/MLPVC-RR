@@ -1,6 +1,7 @@
 <?php
 
 use Phinx\Migration\AbstractMigration;
+use Phinx\Migration\IrreversibleMigrationException;
 
 class ReformSessions extends AbstractMigration {
   public function up() {
@@ -18,5 +19,8 @@ class ReformSessions extends AbstractMigration {
       ->addColumn('data', 'text', ['null' => true])
       ->update();
   }
-  // There is no going back
+
+  public function down():void {
+    throw new IrreversibleMigrationException("There is no going back");
+  }
 }

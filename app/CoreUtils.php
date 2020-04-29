@@ -11,6 +11,8 @@ use App\Models\Event;
 use App\Models\Notice;
 use App\Models\Show;
 use App\Models\UsefulLink;
+use DOMDocument;
+use DOMElement;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use ElephantIO\Engine\SocketIO\Version2X as SocketIOEngine;
@@ -18,8 +20,25 @@ use enshrined\svgSanitize\data\AllowedAttributes;
 use enshrined\svgSanitize\data\AttributeInterface;
 use enshrined\svgSanitize\data\TagInterface;
 use enshrined\svgSanitize\Sanitizer;
+use Exception;
+use HTMLPurifier;
+use HTMLPurifier_Config;
+use HTMLPurifier_TagTransform_Simple;
 use Monolog\Logger;
+use Parsedown;
 use RuntimeException;
+use TypeError;
+use WhichBrowser\Parser;
+use function count;
+use function dirname;
+use function gettype;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_int;
+use function is_object;
+use function is_string;
+use function OpenApi\scan;
 
 class CoreUtils {
   public const FIXPATH_EMPTY = [
@@ -227,7 +246,7 @@ class CoreUtils {
   public static function loadPage(string $method_name, array $options = []) {
     if (self::isJSONExpected()){
       HTTP::statusCode(400);
-      self::error_log(__METHOD__.": JSON expected, but this was called instead.\nView: $method_name\nOptions:\n".var_export($options, true)."\nStacktrace:\n".(new \Exception())->getTraceAsString());
+      self::error_log(__METHOD__.": JSON expected, but this was called instead.\nView: $method_name\nOptions:\n".var_export($options, true)."\nStacktrace:\n".(new Exception())->getTraceAsString());
       $path = self::escapeHTML($_SERVER['REQUEST_URI']);
       Response::fail("The requested endpoint ($path) does not support JSON responses");
     }
@@ -299,7 +318,7 @@ class CoreUtils {
         // Notifications & useful links
         if (Auth::$signed_in){
           $notifs = Notifications::get(Notifications::UNREAD_ONLY);
-          $scope['have_notifs'] = \count($notifs) > 0;
+          $scope['have_notifs'] = count($notifs) > 0;
           $scope['notifications'] = Notifications::getHTML($notifs);
           $scope['useful_links'] = UsefulLink::in_order();
         }
@@ -369,7 +388,6 @@ class CoreUtils {
     }
     else $i = 0;
 
-    /** @var $upcoming_events Event[] */
     $upcoming_events = Event::upcoming();
     if (!empty($upcoming_events)){
       foreach ($upcoming_events as $j => $event){
@@ -434,11 +452,11 @@ class CoreUtils {
    * @param string   $ext        The literal strings 'css' or 'js'
    * @param View     $view       The view class that enables the true shortcut
    *
-   * @throws \Exception
+   * @throws Exception
    */
   private static function _checkAssets(array $options, &$customType, string $ext, View $view) {
     if (isset($options[$ext])){
-      if (!\is_array($options[$ext]))
+      if (!is_array($options[$ext]))
         throw new RuntimeException("\$options[$ext] must be an array");
       $customType = array_merge($customType, $options[$ext]);
     }
@@ -509,7 +527,7 @@ class CoreUtils {
   // Turns a file size ini setting value into bytes
   private static function _shortSizeInBytes($size) {
     $unit = mb_substr($size, -1);
-    $value = \intval(mb_substr($size, 0, -1), 10);
+    $value = (int)mb_substr($size, 0, -1);
     switch (strtoupper($unit)){
       case 'G':
         $value *= 1024;
@@ -550,7 +568,7 @@ class CoreUtils {
    * @param array $export Associative aray where keys are the desired JS variable names
    *
    * @return string
-   * @throws \Exception
+   * @throws Exception
    */
   public static function exportVars(array $export):string {
     if (empty($export))
@@ -573,7 +591,7 @@ class CoreUtils {
    * @return string Sanitized HTML code
    */
   public static function sanitizeHtml(string $dirty_html, ?array $allowedTags = null, ?array $allowedAttributes = null) {
-    $config = \HTMLPurifier_Config::createDefault();
+    $config = HTMLPurifier_Config::createDefault();
     $whitelist = ['strong', 'b', 'em', 'i'];
     if (!empty($allowedTags))
       $whitelist = array_merge($whitelist, $allowedTags);
@@ -583,10 +601,12 @@ class CoreUtils {
 
     // Mapping old to new
     $def = $config->getHTMLDefinition();
-    $def->info_tag_transform['b'] = new \HTMLPurifier_TagTransform_Simple('strong');
-    $def->info_tag_transform['i'] = new \HTMLPurifier_TagTransform_Simple('em');
+    if ($def === null)
+      throw new RuntimeException(__METHOD__.': $def should never be null');
+    $def->info_tag_transform['b'] = new HTMLPurifier_TagTransform_Simple('strong');
+    $def->info_tag_transform['i'] = new HTMLPurifier_TagTransform_Simple('em');
 
-    $purifier = new \HTMLPurifier($config);
+    $purifier = new HTMLPurifier($config);
 
     return self::trim($purifier->purify($dirty_html), true);
   }
@@ -601,7 +621,11 @@ class CoreUtils {
     exec(SVGO_BINARY." $tmp_path ".
       '--disable=removeUnknownsAndDefaults,removeUselessStrokeAndFill,convertPathData,convertTransform,cleanupNumericValues,mergePaths,convertShapeToPath '.
       '--enable=removeRasterImages,removeDimensions,cleanupIDs');
-    $svgdata = File::get($tmp_path);
+    $read_file = File::get($tmp_path);
+    if ($read_file === false)
+      throw new RuntimeException(__METHOD__.": Failed to read file $tmp_path");
+    /** @var string $read_file */
+    $svgdata = $read_file;
     self::deleteFile($tmp_path);
 
     return $svgdata;
@@ -650,13 +674,13 @@ class CoreUtils {
     $sanitizer->removeRemoteReferences(true);
     $sanitized = $sanitizer->sanitize($dirty_svg);
 
-    $unifier = new \DOMDocument('1.0', 'UTF-8');
+    $unifier = new DOMDocument('1.0', 'UTF-8');
     $unifier->loadXML($sanitized);
     if ($warnings !== null){
       $all_tags = $unifier->getElementsByTagName('*');
       $transform_attr = false;
       foreach ($all_tags as $tag){
-        /** @var $tag \DOMElement */
+        /** @var $tag DOMElement */
         if (empty($tag->getAttribute('transform')))
           continue;
 
@@ -670,7 +694,7 @@ class CoreUtils {
     // Make sure we add the default colors of paths to the file to make them replaceable (unless they have a class)
     $paths = $unifier->getElementsByTagName('path');
     foreach ($paths as $path){
-      /** @var $path \DOMElement */
+      /** @var $path DOMElement */
       $fill_attr = $path->getAttribute('fill');
       $class_attr = $path->getAttribute('class');
       if ($fill_attr === null && $class_attr === null)
@@ -682,14 +706,15 @@ class CoreUtils {
       $single_stop_warnings = [];
     }
     foreach ($linear_gradients as $grad){
-      /** @var $grad \DOMElement */
+      /** @var $grad DOMElement */
       if ($grad->childNodes->length !== 1)
         continue;
 
+      /** @var $original_stop_node DOMElement */
       $original_stop_node = $grad->childNodes->item(0);
       $original_stop_color = $original_stop_node->getAttribute('stop-color');
 
-      /** @var $stop_node \DOMElement */
+      /** @var $stop_node DOMElement */
       $stop_node = $original_stop_node->cloneNode();
       $stop_node->setAttribute('offset', 1 - $stop_node->getAttribute('offset'));
       $stop_node->setAttribute('stop-color', $original_stop_color);
@@ -711,11 +736,11 @@ class CoreUtils {
     if ($svg_data === false)
       return Input::ERROR_INVALID;
 
-    $parser = new \DOMDocument('1.0', 'UTF-8');
+    $parser = new DOMDocument('1.0', 'UTF-8');
     libxml_use_internal_errors(true);
     $parser->loadXML(self::sanitizeSvg($svg_data));
     libxml_use_internal_errors();
-    if ($parser->documentElement === null || strtolower($parser->documentElement->nodeName) !== 'svg' || \count($parser->documentElement->childNodes) === 0)
+    if ($parser->documentElement === null || strtolower($parser->documentElement->nodeName) !== 'svg' || count($parser->documentElement->childNodes) === 0)
       return Input::ERROR_INVALID;
     unset($parser);
 
@@ -730,7 +755,7 @@ class CoreUtils {
    * @return bool Whether the folder was sucessfully created
    */
   public static function createFoldersFor(string $path):bool {
-    $folder = \dirname($path);
+    $folder = dirname($path);
 
     return !is_dir($folder) ? mkdir($folder, FOLDER_PERM, true) : true;
   }
@@ -738,23 +763,24 @@ class CoreUtils {
   /**
    * Formats a 1-dimensional array of stings naturally
    *
-   * @param string[] $list
-   * @param string   $append
-   * @param string   $separator
-   * @param bool     $noescape Set to true to prevent character escaping
+   * @param string|string[] $list
+   * @param string          $append
+   * @param string          $separator
+   * @param bool            $noescape Set to true to prevent character escaping
    *
    * @return string
    */
   public static function arrayToNaturalString(array $list, string $append = 'and', string $separator = ',', $noescape = false):string {
-    if (\is_string($list)) $list = explode($separator, $list);
+    if (is_string($list))
+      $list = explode($separator, $list);
 
-    if (\count($list) > 1){
+    if (count($list) > 1){
       $list_str = $list;
-      array_splice($list_str, \count($list_str) - 1, 0, $append);
+      array_splice($list_str, count($list_str) - 1, 0, $append);
       $i = 0;
-      $maxDest = \count($list_str) - 3;
+      $maxDest = count($list_str) - 3;
       while ($i < $maxDest){
-        if ($i === \count($list_str) - 1)
+        if ($i === count($list_str) - 1)
           continue;
         $list_str[$i] .= ',';
         $i++;
@@ -784,7 +810,7 @@ class CoreUtils {
       /** @var $fails string[][] */
       $invalid = [];
       foreach ($fails[0] as $f)
-        if (!\in_array($f, $invalid, true)){
+        if (!in_array($f, $invalid, true)){
           switch ($f){
             case "\n":
               $invalid[] = '\n';
@@ -800,7 +826,7 @@ class CoreUtils {
           }
         }
 
-      $count = \count($invalid);
+      $count = count($invalid);
       $s = $count !== 1 ? 's' : '';
       $the_following = $count !== 1 ? 'the following' : 'an';
       $Error = "$Thing (".self::escapeHTML($string).") contains $the_following invalid character$s: ".self::arrayToNaturalString($invalid);
@@ -835,13 +861,13 @@ class CoreUtils {
   /**
    * Returns the HTML of the GIT information in the website's footer
    *
-   * @param bool $wrap
    * @param bool $reload_warning
    *
    * @return string
    */
-  public static function getFooterGitInfo(bool $wrap = WRAP, bool $reload_warning = false):string {
+  public static function getFooterGitInfo(bool $reload_warning = false):string {
     $data = self::getFooterGitInfoRaw();
+    $data['reload_warning'] = $reload_warning;
 
     return Twig::$env->render('layout/_footer_git_info.html.twig', $data);
   }
@@ -901,7 +927,6 @@ class CoreUtils {
    * @return string
    */
   public static function getBreadcrumbsHTML($disabled = false, array $scope = [], ?View $view = null):string {
-    $breadcrumb = '';
     // Navigation items
     if (!$disabled){
       if ($view === null)
@@ -910,7 +935,7 @@ class CoreUtils {
       try {
         $breadcrumb = $view->getBreadcrumb($scope) ?? '';
       }
-      catch (\TypeError $e){
+      catch (TypeError $e){
         $breadcrumb = '';
       }
     }
@@ -946,10 +971,10 @@ class CoreUtils {
    */
   public static function makePlural($w, float $in = 0, $prep = false):string {
     $ret = ($prep ? "$in " : '');
-    if ($in !== 1.0 && $w[-1] === 'y' && !\in_array(strtolower($w), self::$_endsWithYButStillPlural, true))
+    if ($in !== 1.0 && $w[-1] === 'y' && !in_array(strtolower($w), self::$_endsWithYButStillPlural, true))
       return $ret.mb_substr($w, 0, -1).'ies';
 
-    return $ret.$w.($in !== 1.0 && !\in_array(strtolower($w), self::$_uncountableWords, true) ? 's' : '');
+    return $ret.$w.($in !== 1.0 && !in_array(strtolower($w), self::$_uncountableWords, true) ? 's' : '');
   }
 
   /**
@@ -976,7 +1001,7 @@ class CoreUtils {
    */
   public static function detectBrowser($user_agent = null) {
     $return = ['user_agent' => !empty($user_agent) ? $user_agent : ($_SERVER['HTTP_USER_AGENT'] ?? '')];
-    $result = new \WhichBrowser\Parser($return['user_agent']);
+    $result = new Parser($return['user_agent']);
     if (!empty($result->browser->name)){
       $return['browser_name'] = $result->browser->name;
 
@@ -1018,7 +1043,7 @@ class CoreUtils {
    * @return float
    */
   public static function average(array $numbers):float {
-    return array_sum($numbers) / \count($numbers);
+    return array_sum($numbers) / count($numbers);
   }
 
   /**
@@ -1029,8 +1054,8 @@ class CoreUtils {
    * @return bool|int
    */
   public static function isDeviationInClub($DeviationID) {
-    if (!\is_int($DeviationID))
-      $DeviationID = \intval(mb_substr($DeviationID, 1), 36);
+    if (!is_int($DeviationID))
+      $DeviationID = intval(mb_substr($DeviationID, 1), 36);
 
     try {
       $difi_request = HTTP::legitimateRequest("https://www.deviantart.com/global/difi/?c[]=\"DeviationView\",\"getAllGroups\",[\"$DeviationID\"]&t=json");
@@ -1131,11 +1156,11 @@ class CoreUtils {
    * @param mixed  $value
    */
   public static function set(&$on, $key, $value) {
-    if (\is_object($on))
+    if (is_object($on))
       $on->{$key} = $value;
-    else if (\is_array($on))
+    else if (is_array($on))
       $on[$key] = $value;
-    else throw new RuntimeException('$on is of invalid type ('.\gettype($on).')');
+    else throw new RuntimeException('$on is of invalid type ('.gettype($on).')');
   }
 
   /**
@@ -1161,7 +1186,7 @@ class CoreUtils {
     $available = curl_exec($ch) !== false;
     $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($available === false && !empty($only_fails))
-      $available = !\in_array($response_code, $only_fails, false);
+      $available = !in_array($response_code, $only_fails, false);
     curl_close($ch);
 
     return $available;
@@ -1247,7 +1272,7 @@ class CoreUtils {
     'br' => true,
   ];
 
-  public static function closestMeaningfulPreviousSibling(\DOMElement $e) {
+  public static function closestMeaningfulPreviousSibling(DOMElement $e) {
     do {
       $e = $e->previousSibling;
     } while ($e !== null && empty(self::trim($e->textContent)));
@@ -1304,7 +1329,7 @@ class CoreUtils {
     if (empty($arr))
       return null;
 
-    if (\count($arr) === 1)
+    if (count($arr) === 1)
       return $arr[0];
 
     return $arr[array_rand($arr, 1)];
@@ -1341,8 +1366,11 @@ class CoreUtils {
   }
 
   public static function conditionalUncompress(string &$data) {
-    if (0 === mb_strpos($data, "\x1f\x8b\x08", 0, 'US-ASCII'))
-      $data = @gzdecode($data);
+    if (0 === mb_strpos($data, "\x1f\x8b\x08", 0, 'US-ASCII')) {
+      $decoded_data = @gzdecode($data);
+      if (is_string($decoded_data))
+        $data = $decoded_data;
+    }
   }
 
   public static function stringSize(string $data):int {
@@ -1391,7 +1419,7 @@ class CoreUtils {
   }
 
   public static function parseMarkdown(string $text):string {
-    return \Parsedown::instance()->setUrlsLinked(false)->setBreaksEnabled(true)->setMarkupEscaped(true)->text($text);
+    return Parsedown::instance()->setUrlsLinked(false)->setBreaksEnabled(true)->setMarkupEscaped(true)->text($text);
   }
 
   /**
@@ -1504,7 +1532,7 @@ class CoreUtils {
     $output_path = APPATH.API_SCHEMA_PATH;
     if ($only_if_missing && file_exists($output_path))
       return;
-    $openapi = \OpenApi\scan(PROJPATH.'app/Controllers/API');
+    $openapi = scan(PROJPATH.'app/Controllers/API');
     if (!$openapi->validate())
       throw new RuntimeException("Invalid OpenAPI schema, could not generate $output_path");
     self::createFoldersFor($output_path);
@@ -1515,7 +1543,7 @@ class CoreUtils {
     $args[] = "v$version";
 
     return implode('_', array_map(function ($arg) {
-      switch (\gettype($arg)){
+      switch (gettype($arg)){
         case 'boolean':
           return $arg ? 't' : 'f';
         case 'double':
@@ -1579,13 +1607,13 @@ class CoreUtils {
   public static bool $useNutshellNames;
 
   public static function checkNutshell() {
-    $ts = time();
     self::$useNutshellNames = UserPrefs::get('cg_nutshell') === '1';
     $names_path = CONFPATH.'nutshell_names.php';
     if (self::$useNutshellNames) {
       if (!file_exists($names_path))
-        throw new \Exception('Nutshell name mapping file missing');
+        throw new RuntimeException('Nutshell name mapping file missing');
 
+      /** @noinspection PhpIncludeInspection */
       require_once $names_path;
     }
   }
@@ -1609,7 +1637,7 @@ class CoreUtils {
         $indices[] = $i;
     }
 
-    $indices_count = \count($indices);
+    $indices_count = count($indices);
     for ($i = 0; $i < $times; $i++){
       $key1 = array_rand($indices);
       if ($key1 === $indices_count - 1)

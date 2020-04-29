@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
-class MismatchedProviderException extends \Exception {
+use Exception;
+
+class MismatchedProviderException extends Exception {
   /** @var string|null */
   private $actualProvider;
 

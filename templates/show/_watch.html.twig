@@ -7,7 +7,7 @@
   <h2>Watch the {{ current_episode.type | capitalize }}</h2>
   <p class='button-block align-center'>
     {% for v in videos %}
-      {% set part = current_episode.twoparter ? (v.fullep ? " (Full episode)" : " (Part #{v.part})") : '' %}
+      {% set part = current_episode.parts == 2 ? (v.fullep ? " (Full episode)" : " (Part #{v.part})") : '' %}
       <a class='btn typcn {{ v.get_button_class }}' href='{{ v.get_url | apos_encode }}' target='_blank' rel='noopener'>{{ v.get_provider_name ~ part }}</a>
     {% endfor %}
     <button class='green typcn typcn-eye showplayers'>Show on-site player</button>

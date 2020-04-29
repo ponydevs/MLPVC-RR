@@ -3,10 +3,16 @@
 namespace App;
 
 use App\Exceptions\CURLRequestException;
-use App\Models\Logs\DANameChange;
+use App\Models\Cutiemark;
+use App\Models\PreviousUsername;
+use App\Models\DeviantartUser;
 use App\Models\Post;
 use App\Models\Session;
-use App\Models\User;
+use Exception;
+use InvalidArgumentException;
+use RuntimeException;
+use function array_slice;
+use function count;
 
 class Users {
   public const RESERVATION_LIMIT = 4;
@@ -24,17 +30,17 @@ class Users {
    * @param string $value
    * @param string $column
    *
-   * @return User|null|false
-   * @throws \Exception
+   * @return DeviantartUser|null|false
+   * @throws Exception
    */
   public static function get($value, $column = 'id') {
     if ($column === 'id')
-      return User::find($value);
+      return DeviantartUser::find($value);
 
     if ($column === 'name' && !empty(self::$_USER_CACHE[$value]))
       return self::$_USER_CACHE[$value];
 
-    $user = DB::$instance->where($column, $value)->getOne('users');
+    $user = DB::$instance->where($column, $value)->getOne('deviantart_users');
 
     if (empty($user) && $column === 'name'){
       if (Regexes::$username->match($value)){
@@ -56,25 +62,26 @@ class Users {
    *
    * @param string[] $usernames
    *
-   * @return User|null|false|void
-   * @throws \Exception
+   * @return DeviantartUser|null|false|void
+   * @throws Exception
    */
   public static function fetch($usernames) {
-    $count = \count($usernames);
+    $count = count($usernames);
     if ($count < 1)
-      throw new \RuntimeException('No usernames specified');
+      throw new RuntimeException('No usernames specified');
     else if ($count > 50)
-      throw new \RuntimeException("Too many usernames specified ($count)");
+      throw new RuntimeException("Too many usernames specified ($count)");
     $single_user = $count === 1;
+    if ($single_user){
+      $previous_name = PreviousUsername::find_by_username($usernames[0]);
+      if (!empty($previous_name)) {
+        return $previous_name->user;
+      }
+    }
+
     $fetch_index = 0;
     $fetch_params = [];
     foreach ($usernames as $un){
-      if ($single_user){
-        $old_name = DANameChange::find_by_old($un);
-        if (!empty($old_name))
-          return $old_name->user;
-      }
-
       $fetch_params["usernames[{$fetch_index}]"] = $un;
       $fetch_index++;
     }
@@ -85,7 +92,7 @@ class Users {
     catch (CURLRequestException $e){
       if ($single_user)
         return false;
-      else throw new \RuntimeException('Failed to fetch users: '.$e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
+      else throw new RuntimeException('Failed to fetch users: '.$e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
     }
 
     if ($single_user && empty($user_data['results'][0]))
@@ -94,30 +101,27 @@ class Users {
     foreach ($user_data['results'] as $user_data){
       $id = strtolower($user_data['userid']);
 
-      $db_user = User::find($id);
+      $db_user = DeviantartUser::find($id);
       $user_exists = !empty($db_user);
       if (!$user_exists)
-        $db_user = new User(['id' => $id]);
+        $db_user = new DeviantartUser([
+          'id' => $id,
+          'created_at' => date('c'),
+        ]);
 
       $db_user->name = $user_data['username'];
       $db_user->avatar_url = URL::makeHttps($user_data['usericon']);
       $save_success = $db_user->assignCorrectRole();
 
       if (!$save_success)
-        throw new \RuntimeException('Saving user data failed'.(Permission::sufficient('developer') ? ': '.DB::$instance->getLastError() : ''));
+        throw new RuntimeException('Saving user data failed'.(Permission::sufficient('developer') ? ': '.DB::$instance->getLastError() : ''));
 
-      if (!$user_exists)
-        Logs::logAction('userfetch', ['userid' => $db_user->id]);
-      $names = \array_slice($usernames, 0);
+      $names = array_slice($usernames, 0);
       if ($user_exists && $db_user->name !== $usernames[0])
         $names[] = $db_user->name;
       foreach ($names as $name){
         if (strcasecmp($name, $db_user->name) !== 0){
-          Logs::logAction('da_namechange', [
-            'old' => $name,
-            'new' => $db_user->name,
-            'user_id' => $id,
-          ], Logs::FORCE_INITIATOR_WEBSERVER);
+          PreviousUsername::record($id, $name, $db_user->name);
         }
       }
       if ($single_user)
@@ -148,7 +152,7 @@ class Users {
   /**
    * Check authentication cookie and set Auth class static properties
    *
-   * @throws \InvalidArgumentException
+   * @throws InvalidArgumentException
    */
   public static function authenticate() {
     if (Auth::$signed_in)
@@ -209,7 +213,7 @@ class Users {
   }
 
   public static function getContributionsCacheDuration(string $unit = 'hour'):string {
-    $cache_dur = User::CONTRIB_CACHE_DURATION / Time::IN_SECONDS[$unit];
+    $cache_dur = DeviantartUser::CONTRIB_CACHE_DURATION / Time::IN_SECONDS[$unit];
 
     return CoreUtils::makePlural($unit, $cache_dur, PREPEND_NUMBER);
   }
@@ -237,10 +241,10 @@ class Users {
     $approval_entry = $item->approval_entry;
     if ($approval_entry !== null){
       if (Permission::sufficient('staff')){
-        $approved_by = $approval_entry->actor->toAnchor();
+        $approved_by = $approval_entry->user->toAnchor();
         $HTML .= "<div class='approved-by'><span class='typcn typcn-user'></span> $approved_by</div>";
       }
-      $approved_at = Time::tag($approval_entry->timestamp);
+      $approved_at = Time::tag($approval_entry->created_at);
       $HTML .= "<div class='approved-at-ts'><span class='typcn typcn-time'></span> $approved_at</div>";
     }
 
@@ -290,14 +294,14 @@ class Users {
 					HTML;
       break;
       default:
-        throw new \Exception(__METHOD__.": Missing table heading definitions for type $type");
+        throw new Exception(__METHOD__.": Missing table heading definitions for type $type");
     }
     $TABLE = "<thead><tr>$TABLE</tr></thead>";
 
     foreach ($data as $item){
       switch ($type){
         case 'cms-provided':
-          /** @var $item \App\Models\Cutiemark */
+          /** @var $item Cutiemark */
           $appearance = $item->appearance;
           $preview = $appearance->toAnchorWithPreview();
           $deviation = $item->favme !== null ? "<div class='deviation-promise image-promise' data-favme='{$item->favme}'></div>" : self::NOPE;

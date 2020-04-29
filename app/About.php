@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
+use function array_slice;
 
 class About {
   public static function getServerOS():string {
@@ -14,7 +15,7 @@ class About {
   }
 
   public static function getServerSoftware():string {
-    return implode(' ', \array_slice(preg_split('~[/ ]~', $_SERVER['SERVER_SOFTWARE']), 0, 2));
+    return implode(' ', array_slice(preg_split('~[/ ]~', $_SERVER['SERVER_SOFTWARE']), 0, 2));
   }
 
   public static function getPHPVersion():string {

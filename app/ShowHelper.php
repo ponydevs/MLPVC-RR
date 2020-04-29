@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Post;
 use App\Models\Show;
+use InvalidArgumentException;
 
 class ShowHelper {
   public const TITLE_CUTOFF = 26;
@@ -55,12 +56,12 @@ class ShowHelper {
    * @param bool $cache
    *
    * @return Show|null
-   * @throws \InvalidArgumentException
+   * @throws InvalidArgumentException
    */
   public static function getActual(int $season, int $episode, bool $allowMovies = false, $cache = false) {
     $cache_key = "$season-$episode";
     if (!$allowMovies && $season === 0)
-      throw new \InvalidArgumentException('This action cannot be performed on movies');
+      throw new InvalidArgumentException('This action cannot be performed on movies');
 
     if ($cache && isset(self::$episodeCache[$cache_key]))
       return self::$episodeCache[$cache_key];
@@ -70,7 +71,7 @@ class ShowHelper {
       return $ep;
 
     $part_1 = Show::find_by_season_and_episode($season, $episode - 1);
-    $output = !empty($part_1) && $part_1->twoparter === true
+    $output = !empty($part_1) && $part_1->parts === 2
       ? $part_1
       : null;
     if ($cache)
@@ -138,7 +139,7 @@ class ShowHelper {
         $og_image = $linked_post->preview;
       else {
         $finishdeviation = DeviantArt::getCachedDeviation($linked_post->deviation_id);
-        if (!empty($finishdeviation->preview))
+        if ($finishdeviation && !empty($finishdeviation->preview))
           $og_image = $finishdeviation->preview;
       }
     }

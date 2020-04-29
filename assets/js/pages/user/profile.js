@@ -8,7 +8,6 @@
     $.Dialog.info('About Personal Color Guides',
       `<p>The Personal Color Guide is a place where you can store and share colors for any of your OCs, similar to our <a href="/cg/">Official Color Guide</a>. You have full control over the colors and other metadata for any OCs you add to the system, and you can chose to keep your PCG publicly visible on your profile or make individual appearances private and share them with only certain people using a direct link.</p>
 			<p><em>&ldquo;So where's the catch?&rdquo;</em> &mdash; you might ask. Everyone starts with 1 slot (10 points), which lets you add a single OC to your personal guide. This limit can be increased by joining <a href="https://www.deviantart.com/mlp-vectorclub">our group</a> on DeviantArt, then fulfilling requests on this website. You will be given a point for every request you finish and we approve. In order to get an additional slot, you will need 10 points, which means 10 requests.</p>
-			<p>If you have no use for your additional slots you may choose to give them away to other users - even non-members! The only restrictions are that only whole slots can be gifted and the free slot everyone starts out with cannot be gifted away. To share your hard-earned slots with others, simply visit their profile and click the <strong class="color-green"><span class="typcn typcn-gift"></span> Gift slots</strong> button under the Personal Color Guide section.</p>
 			<br>
 			<p><strong>However</strong>, there are a few things to keep in mind:</p>
 			<ul>
@@ -76,61 +75,6 @@
 
             $.Dialog.success(false, 'Image has been updated');
             $.Navigation.reload(true);
-          });
-        });
-      });
-    });
-  }
-
-  const $giftPCGSlots = $('#gift-pcg-slots');
-  if ($giftPCGSlots.length){
-    $giftPCGSlots.on('click', function(e) {
-      e.preventDefault();
-
-      $.Dialog.wait(`Gifting PCG slots to ${username}`, 'Checking your available slot count');
-
-      $.API.get('/user/pcg/giftable-slots', function() {
-        if (!this.status) return $.Dialog.fail(false, this.message);
-
-        const availableSlots = this.avail;
-
-        const $GiftForm = $.mk('form', 'pcg-slot-gift-form').append(
-          $.mk('label').append(
-            `<p>Choose how many slots you want to give</p>`,
-            $.mk('input').attr({
-              type: 'number',
-              name: 'amount',
-              min: 1,
-              max: availableSlots,
-              value: 1,
-              step: 1,
-              'class': 'large-number-input',
-              required: true,
-            }),
-          ),
-        );
-        $.Dialog.request(false, $GiftForm, 'Continue', function($form) {
-          $form.on('submit', function(e) {
-            e.preventDefault();
-
-            const data = $form.mkData();
-            if (isNaN(data.amount) || data.amount < 1)
-              return $.Dialog.fail(false, 'Invalid amount entered');
-            data.amount = parseInt(data.amount, 10);
-            const
-              s = data.amount === 1 ? '' : 's',
-              are = data.amount === 1 ? 'is' : 'are';
-            $.Dialog.confirm(false, `<p>You are about to send <strong>${data.amount} slot${s}</strong> to <strong>${username}</strong>. The slots will be immediately removed from your account and a notification will be sent to ${username} where they can choose to accept or reject your gift.</p><p>If they reject, the slot${s} ${are} returned to you. You will be notified if they decide, and if they don't do so within <strong>2 weeks</strong> you may ask the staff to have your slot${s} refunded.</p><p>Are you sure?</p>`, [`Gift ${data.amount} slot${s} to ${username}`, 'Cancel'], sure => {
-              if (!sure) return;
-
-              $.Dialog.wait(false, 'Sending gift');
-
-              $.API.post(`/user/${userId}/pcg/slots`, data, function() {
-                if (!this.status) return $.Dialog.fail(false, this.message);
-
-                $.Dialog.success(false, this.message, true);
-              });
-            });
           });
         });
       });

@@ -12,15 +12,15 @@ use App\Permission;
 use App\Users;
 
 /**
- * @property int         $id
- * @property int         $appearance_id
- * @property string      $facing
- * @property string|null $favme
- * @property int         $rotation
- * @property string|null $label
- * @property Appearance  $appearance     (Via relations)
- * @property string|null $contributor_id (Via magic method)
- * @property User        $contributor    (Via magic method)
+ * @property int            $id
+ * @property int            $appearance_id
+ * @property string         $facing
+ * @property string|null    $favme
+ * @property int            $rotation
+ * @property string|null    $label
+ * @property Appearance     $appearance     (Via relations)
+ * @property string|null    $contributor_id (Via magic method)
+ * @property DeviantartUser $contributor    (Via magic method)
  * @method static Cutiemark find(int $id)
  * @method static Cutiemark[] find_by_sql($sql, $data = null)
  * @method static Cutiemark[] find_all_by_appearance_id(int $appearance_id)
@@ -58,11 +58,11 @@ class Cutiemark extends NSModel {
   }
 
   public function get_contributor() {
-    return $this->contributor_id !== null ? User::find($this->contributor_id) : null;
+    return $this->contributor_id !== null ? DeviantartUser::find($this->contributor_id) : null;
   }
 
   /** For Twig */
-  public function getContributor():?User {
+  public function getContributor():?DeviantartUser {
     return $this->contributor;
   }
 

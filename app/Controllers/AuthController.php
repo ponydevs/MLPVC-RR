@@ -8,12 +8,13 @@ use App\CoreUtils;
 use App\DB;
 use App\DeviantArt;
 use App\HTTP;
-use App\Models\Logs\FailedAuthAttempt;
-use App\Models\User;
+use App\Models\FailedAuthAttempt;
+use App\Models\DeviantartUser;
 use App\Permission;
 use App\Response;
 use App\Twig;
 use App\Users;
+use Exception;
 
 class AuthController extends Controller {
   public function begin() {
@@ -46,7 +47,7 @@ class AuthController extends Controller {
       try {
         Auth::$user = DeviantArt::getAccessToken($_GET['code']);
       }
-      catch (\Exception $e){
+      catch (Exception $e){
         CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
         FailedAuthAttempt::record();
         $this->_error('server_error');
@@ -91,7 +92,7 @@ class AuthController extends Controller {
       if ($username !== null){
         if (Permission::insufficient('staff'))
           Response::fail();
-        /** @var $TargetUser User */
+        /** @var $TargetUser DeviantartUser */
         $TargetUser = Users::get($username, 'name');
         if (empty($TargetUser))
           Response::fail("Target user doesn't exist");
