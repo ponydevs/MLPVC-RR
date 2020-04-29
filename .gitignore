@@ -1,6 +1,5 @@
 # Well Known excpetions
 /public/.well-known/*
-!/public/.well-known/security.txt*
 !/public/.well-known/assetlinks.json
 !/public/.well-known/apple-app-site-association
 
