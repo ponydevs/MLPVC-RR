@@ -44,15 +44,16 @@
         $wssHeartbeat.addClass('beat');
         const ips = [];
         const conns = {};
-        Object.keys(data.clients).forEach(key => {
-          const c = data.clients[key];
-          c.ip = c.ip.replace(/^::ffff:/, '');
-          const ip = 'ip-' + c.ip.replace(/[^a-f\d]/g, '-');
-          ips.push(ip);
-          if (!conns[ip])
-            conns[ip] = [];
-          conns[ip].push(c);
-        });
+        if (data.clients)
+          Object.keys(data.clients).forEach(key => {
+            const c = data.clients[key];
+            c.ip = c.ip.replace(/^::ffff:/, '');
+            const ip = 'ip-' + c.ip.replace(/[^a-f\d]/g, '-');
+            ips.push(ip);
+            if (!conns[ip])
+              conns[ip] = [];
+            conns[ip].push(c);
+          });
         if (ips.length === 0)
           $connectionList.empty();
         else {

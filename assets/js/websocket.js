@@ -257,11 +257,11 @@
           this.devquery(what, data, cb);
         }, 2000);
 
-      this.conn.emit('devquery', { what, data }, wsdecoder(data => {
+      this.conn.emit('devquery', { what, data }, wsdecoder(responseData => {
         if (typeof cb === 'function')
-          return cb(data);
+          return cb(responseData);
 
-        console.log('[WS] DevQuery ' + (data.status ? 'Success' : 'Fail'), data);
+        console.log('[WS] DevQuery ' + (responseData.status ? 'Success' : 'Fail'), responseData);
       }));
     }
 
