@@ -233,6 +233,31 @@ class Appearance extends NSModel implements Linkable {
     return $this->sprite_hash;
   }
 
+  /**
+   * Returns the HTML for sprite images
+   *
+   * @param bool $canUpload
+   * @param DeviantartUser $user
+   *
+   * @return string
+   */
+  public function getSpriteHTML(bool $canUpload, ?DeviantartUser $user = null):string {
+    if (Auth::$signed_in && $this->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite'))
+      $canUpload = false;
+
+    $imgPth = $this->getSpriteURL();
+    if (!empty($imgPth)){
+      $img = "<a href='$imgPth' target='_blank' title='Open image in new tab'><img src='$imgPth' alt='".CoreUtils::aposEncode($this->label)."'></a>";
+      if ($canUpload)
+        $img = "<div class='upload-wrap'>$img</div>";
+    }
+    else if ($canUpload)
+      $img = "<div class='upload-wrap'><a><img src='/img/blank-pixel.png' alt='blank pixel'></a></div>";
+    else return '';
+
+    return "<div class='sprite'>$img</div>";
+  }
+
   private static function _processNotes(string $notes):string {
     $notes = CoreUtils::sanitizeHtml($notes);
     $notes = preg_replace(new RegExp('(\s)(&gt;&gt;(\d+))(\D|$)'), "$1<a href='https://derpibooru.org/$3'>$2</a>$4", $notes);
