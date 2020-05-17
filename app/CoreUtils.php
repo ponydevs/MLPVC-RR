@@ -1582,8 +1582,13 @@ class CoreUtils {
       'frame-ancestors '.self::env('CSP_FRAME_ANCESTORS'),
       'form-action '.self::env('CSP_FRAME_ANCESTORS'),
       'base-uri '.self::env('CSP_BASE_URI'),
-      'report-uri '.self::env('CSP_REPORT_URI'),
     ]);
+
+    $report_uri = self::env('CSP_REPORT_URI');
+    if (!empty($report_uri)) {
+      $csp_header .= ";report-uri $report_uri";
+    }
+
     foreach (self::CSP_HEADER_NAMES as $header_name){
       header("$header_name: $csp_header");
     }
