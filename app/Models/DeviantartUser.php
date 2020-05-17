@@ -273,7 +273,7 @@ class DeviantartUser extends AbstractUser implements Linkable {
    */
   public function getPCGSlotHistoryEntries(Pagination $Pagination = null):?array {
     $limit = isset($Pagination) ? $Pagination->getLimit() : null;
-    DB::$instance->orderBy('created', 'desc')->orderBy('id', 'desc');
+    DB::$instance->orderBy('created_at', 'desc')->orderBy('id', 'desc');
 
     return DB::$instance->where('user_id', $this->id)->get(PCGSlotHistory::$table_name, $limit);
   }
