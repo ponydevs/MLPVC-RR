@@ -12,6 +12,7 @@ use App\ImageProvider;
 use App\Input;
 use App\Logs;
 use App\Models\BrokenPost;
+use App\Models\LegacyPostMapping;
 use App\Models\LockedPost;
 use App\Models\Notification;
 use App\Models\PCGSlotHistory;
@@ -679,7 +680,6 @@ class PostController extends Controller {
     Logs::logAction('req_delete', [
       'show_id' => $this->post->show_id,
       'id' => $this->post->id,
-      'old_id' => $this->post->old_id,
       'label' => $this->post->label,
       'type' => $this->post->type,
       'requested_by' => $this->post->requested_by,
@@ -868,29 +868,28 @@ class PostController extends Controller {
   }
 
   public const SHARE_TYPE = [
-    'req' => 'requested_by IS NOT NULL',
-    'res' => 'requested_by IS NULL',
+    'req' => 'request',
+    'res' => 'reservation',
   ];
 
   public function share($params) {
     if (!empty($params['thing'])){
-      if (!isset(self::SHARE_TYPE[$params['thing']]))
+      if (!array_key_exists($params['thing'], self::SHARE_TYPE))
         CoreUtils::notFound();
 
-      DB::$instance->where(self::SHARE_TYPE[$params['thing']]);
-      $attr = 'old_id';
-      $id = (int)$params['id'];
+      $type = self::SHARE_TYPE[$params['thing']];
+      $old_id = (int)$params['id'];
+      $linked_post = LegacyPostMapping::lookup($old_id, $type);
     }
     else {
-      $attr = 'id';
       $id = intval($params['id'], 36);
+
+      if ($id > POSTGRES_INTEGER_MAX || $id < 1)
+        CoreUtils::notFound();
+
+      $linked_post = Post::find($id);
     }
 
-    if ($id > POSTGRES_INTEGER_MAX || $id < 1)
-      CoreUtils::notFound();
-
-    /** @var $linked_post Post */
-    $linked_post = DB::$instance->where($attr, $id)->getOne('posts');
     if ($linked_post === NULL)
       CoreUtils::notFound();
 

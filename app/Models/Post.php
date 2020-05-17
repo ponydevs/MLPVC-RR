@@ -21,7 +21,6 @@ use function count;
  * Requests always have a non-null requested_by value which is to be used for post type detection.
  *
  * @property int            $id
- * @property int|null       $old_id
  * @property string         $type
  * @property int            $season
  * @property int            $episode
@@ -49,7 +48,6 @@ use function count;
  * @property bool           $is_request     (Via magic method)
  * @property bool           $is_reservation (Via magic method)
  * @method static Post|Post[] find(...$args)
- * @method static Post find_by_old_id(int $old_id)
  * @method static Post find_by_deviation_id(string $deviation_id)
  * @method static Post find_by_preview(string $preview_url)
  */
@@ -116,19 +114,11 @@ class Post extends NSModel implements Linkable {
   }
 
   public function get_approval_entry() {
-    $where_query = "type = 'post' AND post_id = :id";
-    $where_bind = ['id' => $this->id];
-    if ($this->old_id !== null){
-      $where_query = "($where_query) OR (type = :kind AND old_post_id = :old_id)";
-      $where_bind['kind'] = $this->kind;
-      $where_bind['old_id'] = $this->old_id;
-    }
-
     return DB::$instance->setModel(LockedPost::class)->querySingle(
       "SELECT * FROM locked_posts
-			WHERE $where_query
-			ORDER BY created_at
-			LIMIT 1", $where_bind
+			WHERE post_id = ?
+			ORDER BY created_at 
+			LIMIT 1", [$this->id]
     );
   }
 

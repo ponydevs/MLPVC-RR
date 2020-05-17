@@ -105,17 +105,15 @@ class ShowHelper {
   /**
    * Loads the episode page
    *
-   * @param null|string|Show $force       If null: Parses $data and loads appropriate episode
-   *                                      If string: Loads episode by specified ID
-   *                                      If SHow: Uses the object as Show data
-   * @param Post             $linked_post Linked post (when sharing)
+   * @param null|Show $current_episode
+   * @param Post      $linked_post Linked post (when sharing)
    */
-  public static function loadPage($force = null, Post $linked_post = null) {
-    if ($force instanceof Show)
-      $current_episode = $force;
-    if (empty($current_episode))
+  public static function loadPage(?Show $current_episode = null, Post $linked_post = null) {
+    if ($current_episode === null)
       CoreUtils::notFound();
 
+    // Only enforce path if not linking to a post. This will allow for the
+    // URL to be crawled and it can be swapped out on the client side.
     if (!$linked_post)
       CoreUtils::fixPath($current_episode->toURL());
 

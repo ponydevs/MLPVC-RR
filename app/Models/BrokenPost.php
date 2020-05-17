@@ -6,9 +6,7 @@ use ActiveRecord\DateTime;
 
 /**
  * @property int            $id
- * @property int            $old_post_id
  * @property int            $post_id
- * @property string         $type
  * @property string         $reserved_by
  * @property int            $response_code
  * @property string         $failing_url
@@ -18,14 +16,9 @@ use ActiveRecord\DateTime;
  * @property Post           $post          (Via magic method)
  */
 class BrokenPost extends NSModel {
-  /** For Twig */
-  public function getPost():Post {
-    return $this->get_post();
-  }
-
-  public function get_post():Post {
-    return $this->old_post_id ? Post::find_by_old_id($this->old_post_id) : Post::find($this->post_id);
-  }
+  public static $belongs_to = [
+    ['post']
+  ];
 
   public static function record(int $post_id, int $response_code, string $failing_url, string $reserved_by) {
     self::create([

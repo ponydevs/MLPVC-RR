@@ -6,6 +6,7 @@ use ActiveRecord\RecordNotFound;
 use App\Exceptions\JSONParseException;
 use App\Models\Appearance;
 use App\Models\ColorGroup;
+use App\Models\LegacyPostMapping;
 use App\Models\Log;
 use App\Models\Post;
 use App\Models\Show;
@@ -312,13 +313,6 @@ class Logs {
         $keyc = $data['allow'] ? self::KEYCOLOR_SUCCESS : self::KEYCOLOR_ERROR;
         $details[] = ["<span class='typcn typcn-$icon'></span> $text", self::SKIP_VALUE, $keyc];
       break;
-      case 'pcg_gift_refund':
-        $gift = PCGSlotGift::find($data['gift_id']);
-        $details[] = ['Sender', $gift->sender->toAnchor()];
-        $details[] = ['Recipient', $gift->receiver->toAnchor()];
-        $details[] = ['Amount', CoreUtils::makePlural('slot', $gift->amount, PREPEND_NUMBER).' ('.CoreUtils::makePlural('point', $gift->amount * 10, PREPEND_NUMBER).')'];
-        $details[] = ['Sent', Time::tag($gift->created_at)];
-      break;
       case 'failed_auth_attempts':
         $browser = !empty($data['user_agent']) ? CoreUtils::detectBrowser($data['user_agent']) : null;
         $details[] = ['Browser', $browser === null ? 'Unknown' : "{$browser['browser_name']} {$browser['browser_ver']} on {$browser['platform']}"];
@@ -346,11 +340,9 @@ class Logs {
     if ($data['type'] === 'post')
       return Post::find($data['id']);
 
-    if ($data['type'] === 'request')
-      DB::$instance->where('requested_by IS NOT NULL');
-    else DB::$instance->where('requested_by IS NULL');
+    $type = $data['type'] === 'request' ? 'request' : 'reservation';
 
-    return DB::$instance->where('old_id', $data['old_id'])->getOne('posts');
+    return LegacyPostMapping::lookup($data['old_id'], $type);
   }
 
   const REF_KEY = 'Reference';
