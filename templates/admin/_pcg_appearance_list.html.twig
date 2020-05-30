@@ -21,7 +21,7 @@
       <tr>
         <td class="pony-link">{{ appearance.toAnchorWithPreview }}</td>
         <td>{{ appearance.owner.toAnchor }}</td>
-        <td>{{ time_tag(appearance.added) }}</td>
+        <td>{{ time_tag(appearance.created_at) }}</td>
         {% set cutiemarks = appearance.cutiemarks %}
         {% set cm_count = cutiemarks | length %}
         <td class="cutiemarks">
