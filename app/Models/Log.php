@@ -46,7 +46,7 @@ class Log extends NSModel {
 
   public function set_data($value) {
     if (!is_string($value))
-      $value = JSON::encode($value);
+      $value = JSON::encode($value, JSON_FORCE_OBJECT);
     $this->assign_attribute('data', $value);
   }
 
