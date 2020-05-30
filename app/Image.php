@@ -127,13 +127,13 @@ class Image {
 
   /**
    * @param resource    $image
-   * @param string|null $fill
+   * @param string|int|null $fill
    * @param string|int  $outline
    *
    * @return array Fill and outline colors or null
    */
-  private static function resolveColors($image, ?string $fill, $outline) {
-    $passed_fill = null;
+  private static function resolveColors($image, $fill, $outline) {
+    $passed_fill = is_int($fill) ? $fill : null;
     if ($fill !== null && is_string($fill)){
       $fill_color = RGBAColor::parse($fill);
       if ($fill_color)
