@@ -1,6 +1,5 @@
 <?php /** @noinspection SqlResolve */
 
-use Phinx\Db\Table;
 use Phinx\Migration\AbstractMigration;
 
 class SimplifyDatabaseStructure extends AbstractMigration {
@@ -43,6 +42,7 @@ class SimplifyDatabaseStructure extends AbstractMigration {
       ->rename('logs')
       ->renameColumn('entryid', 'id')
       ->update();
+    $this->execute("ALTER SEQUENCE log_entryid_seq RENAME TO logs_id_seq");
   }
 
   public function down():void {
@@ -51,6 +51,7 @@ class SimplifyDatabaseStructure extends AbstractMigration {
       ->rename('log')
       ->renameColumn('id', 'entryid')
       ->update();
+    $this->execute("ALTER SEQUENCE logs_id_seq RENAME TO log_entryid_seq");
 
     $this->table('settings')
       ->rename('global_settings')
