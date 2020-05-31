@@ -53,17 +53,18 @@ class Logs {
    * @throws RuntimeException
    */
   public static function logAction($reftype, $data = null, $forcews = false) {
-    $central = [
+    $log = new Log([
       'ip' => $_SERVER['REMOTE_ADDR'],
       'refid' => null,
       'reftype' => $reftype,
-      'data' => $data,
-    ];
+    ]);
 
     if (Auth::$signed_in && !$forcews)
-      $central['initiator'] = Auth::$user->id;
+      $log->initiator = Auth::$user->id;
 
-    return (new Log($central))->save();
+    $log->data = $data;
+
+    return $log->save();
   }
 
   public static $ACTIONS = [
