@@ -81,12 +81,12 @@ class CGUtils {
    *
    * @param Appearance[] $appearances
    * @param string       $order_by
-   * @param bool         $eqg
+   * @param string       $guide
    * @param bool         $wrap
    *
    * @return string
    */
-  public static function getFullListHTML(array $appearances, $order_by, bool $eqg, $wrap = WRAP):string {
+  public static function getFullListHTML(array $appearances, $order_by, ?string $guide, $wrap = WRAP):string {
     $HTML = '';
     $char_tags = DB::$instance->query(
         "SELECT t.name, tg.appearance_id FROM tags t
@@ -101,10 +101,9 @@ class CGUtils {
       switch ($order_by){
         case 'label':
           $PrevFirstLetter = '';
-          $upcaseAZ = (string)new RegExp('^[A-Z]$');
           foreach ($appearances as $p){
             $FirstLetter = strtoupper($p->label[0]);
-            if (!preg_match($upcaseAZ, $FirstLetter))
+            if (!preg_match('/^[A-Z]$/', $FirstLetter))
               $FirstLetter = '#';
             if (!is_numeric($FirstLetter) ? ($FirstLetter !== $PrevFirstLetter) : !is_numeric($PrevFirstLetter)){
               if ($PrevFirstLetter !== ''){
@@ -117,8 +116,8 @@ class CGUtils {
           }
         break;
         case 'relevance':
-          $Sorted = Appearances::sort($appearances, $eqg);
-          foreach (self::GROUP_TAG_IDS_ASSOC[$eqg ? 'eqg' : 'pony'] as $Category => $CategoryName){
+          $Sorted = Appearances::sort($appearances, $guide);
+          foreach (self::GROUP_TAG_IDS_ASSOC[$guide] as $Category => $CategoryName){
             if (empty($Sorted[$Category]))
               continue;
 
@@ -947,7 +946,7 @@ class CGUtils {
       $color_warnings = [];
     }
 
-    $svg = preg_replace_callback(new RegExp('<!--@(\d+)(?:,([\d.]+))?-->'), static function ($match) {
+    $svg = preg_replace_callback('/<!--@(\d+)(?:,([\d.]+))?-->/', static function ($match) {
       /** @var $dbcolor Color */
       $dbcolor = Color::find($match[1]);
 
@@ -961,7 +960,7 @@ class CGUtils {
 
       return (string)$color;
     }, $svg);
-    $svg = preg_replace_callback(new RegExp('<!--#/([A-F\d]{8})-->'), static function ($match) use (&$warnings, &$color_warnings) {
+    $svg = preg_replace_callback('~<!--#/([A-F\d]{8})-->~', static function ($match) use (&$warnings, &$color_warnings) {
       $hex_without_hash = $match[1];
       $color = RGBAColor::parse("#$hex_without_hash");
 
@@ -1143,7 +1142,7 @@ class CGUtils {
         'order' => $p->order,
         'label' => $p->label,
         'notes' => $p->notes_src === null ? '' : CoreUtils::trim($p->notes_src, true),
-        'ishuman' => $p->ishuman,
+        'guide' => $p->guide,
         'added' => gmdate('Y-m-d\TH:i:s\Z', $p->created_at->getTimestamp()),
         'private' => $p->private,
       ];
@@ -1230,7 +1229,7 @@ class CGUtils {
 
   /**
    * @param Pagination  $pagination
-   * @param bool        $EQG
+   * @param string      $guide
    * @param bool        $searching
    * @param string|null $title
    *
@@ -1238,13 +1237,13 @@ class CGUtils {
    * @throws BadRequest400Exception
    * @throws ServerErrorResponseException
    */
-  public static function searchGuide(Pagination $pagination, bool $EQG, bool $searching = true, string &$title = null):array {
+  public static function searchGuide(Pagination $pagination, string $guide, bool $searching = true, string &$title = null):array {
     $search = new ElasticsearchDSL\Search();
     $in_order = true;
 
     // Search query exists
     if ($searching){
-      $search_query = preg_replace(new RegExp('[^\w\s*?\'-]'), '', CoreUtils::trim($_GET['q']));
+      $search_query = preg_replace("~[^\w\s*?'-]~", '', CoreUtils::trim($_GET['q']));
       if ($title !== null)
         $title .= "$search_query - ";
       $multi_match = new ElasticsearchDSL\Query\FullText\MultiMatchQuery(
@@ -1262,7 +1261,7 @@ class CGUtils {
     $search->addSort($sort);
 
     $bool_query = new BoolQuery();
-    $bool_query->add(new TermQuery('guide', $EQG ? 'eqg' : 'pony'), BoolQuery::MUST);
+    $bool_query->add(new TermQuery('guide', $guide), BoolQuery::MUST);
     $search->addQuery($bool_query);
 
     $search->setSource(false);
@@ -1298,7 +1297,7 @@ class CGUtils {
           $ids[$hit['_id']] = $i;
 
         DB::$instance->orderBy('order')->where('id', array_keys($ids));
-        $appearances = Appearances::get($EQG);
+        $appearances = Appearances::get($guide);
         if (!empty($appearances) && !$in_order)
           usort($appearances, static function (Appearance $a, Appearance $b) use ($ids) {
             return $ids[$a->id] <=> $ids[$b->id];

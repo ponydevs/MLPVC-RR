@@ -194,7 +194,7 @@
       }
 
       .entry-deviation-promise {
-        @include loading-indicator(92px, 'roll');
+        @include loading-indicator(92px);
         flex: 0 0 auto;
         margin-right: 10px;
       }

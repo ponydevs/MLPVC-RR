@@ -7,7 +7,6 @@ use App\CoreUtils;
 use App\DB;
 use App\JSON;
 use App\Notifications;
-use App\RegExp;
 use App\Twig;
 use App\Users;
 use ElephantIO\Exception\ServerConnectionFailureException;
@@ -164,7 +163,7 @@ class Notification extends NSModel {
       return $this->getElement(Twig::$env->render($view_name, ['notif' => $this]));
 
     $data = !empty($this->data) ? JSON::decode($this->data) : null;
-    if (preg_match(new RegExp('^post-'), $this->type)){
+    if (strpos($this->type, "post-") === 0){
       try {
         /** @var $Post Post */
         $Post = Post::find($data['id']);

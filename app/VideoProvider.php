@@ -33,7 +33,7 @@ class VideoProvider {
    */
   private static function testProvider(string $url, string $pattern, string $name) {
     $match = [];
-    if (preg_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
+    if (preg_match("~^(?:https?://(?:www\\.)?)?$pattern~", $url, $match))
       return new ShowVideo([
         'provider' => $name,
         'id' => $match[1],

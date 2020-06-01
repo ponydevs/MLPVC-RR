@@ -1,8 +1,7 @@
 (function() {
   'use strict';
 
-  const PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN, EVENT_TYPES = window.EVENT_TYPES,
-    EventPage = Boolean(window.EventPage);
+  const { PRINTABLE_ASCII_PATTERN, EVENT_TYPES, EventPage } = window;
 
   let $eventTypeSelect = $.mk('select').attr({
       name: 'type',

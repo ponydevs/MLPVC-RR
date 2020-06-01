@@ -87,8 +87,8 @@ class Posts {
     ]))->out();
     if ($label !== null){
       if (!$editing || $label !== $post->label){
-        CoreUtils::checkStringValidity($label, 'The description', INVERSE_PRINTABLE_ASCII_PATTERN);
-        $label = preg_replace(new RegExp("''"), '"', $label);
+        CoreUtils::checkStringValidity($label, 'The description');
+        $label = str_replace("''", '"', $label);
         CoreUtils::set($target, 'label', $label);
       }
     }

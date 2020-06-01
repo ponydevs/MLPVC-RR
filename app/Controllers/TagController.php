@@ -163,8 +163,8 @@ class TagController extends ColorGuideController {
 
         $this->tag->delete();
 
-        if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$this->_EQG ? 'eqg' : 'pony'][$this->tag->id]))
-          Appearances::getSortReorder($this->_EQG);
+        if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$this->guide][$this->tag->id]))
+          Appearances::getSortReorder($this->guide);
         foreach ($Uses as $use)
           $use->appearance->updateIndex();
 

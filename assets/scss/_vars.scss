@@ -243,10 +243,10 @@ $NoScrollbar: false;
   }
 }
 
-@mixin loading-indicator($size, $type: 'ring', $spacing: 0.1) {
+@mixin loading-indicator($size, $spacing: 0.1) {
   width: $size;
   height: $size;
-  background: url('/img/loading-#{$type}.svg') no-repeat center center;
+  background: url('/img/loading-ring.svg') no-repeat center center;
   $bgsize: $size - ($size*$spacing*2);
   background-size: $bgsize $bgsize;
   box-sizing: border-box;
@@ -366,7 +366,7 @@ $NoScrollbar: false;
     top: 50%;
     transform: translate(-50%, -50%);
     overflow: hidden;
-    @include loading-indicator(64px, 'gears');
+    @include loading-indicator(64px);
   }
 
   &:before, &:after, iframe, object, embed {

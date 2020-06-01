@@ -1,6 +1,6 @@
 {# @controller \App\Controllers\ColorGuideController::fullList #}
 {# @var is_staff bool #}
-{# @var eqg bool #}
+{# @var guide string #}
 {# @var ordering string #}
 {# @var appearances \App\Models\Appearance[] #}
 {# @var max_upload_size string #}
@@ -9,6 +9,7 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
+  {% set eqg = guide == 'eqg' %}
   {% set eqg_path = eqg ? '/eqg' : '' %}
   <div id="content" class="section-container">
     <h1>Complete {{ eqg ? 'EQG Character' : 'Pony' }} List</h1>
@@ -24,15 +25,15 @@
         <button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"{{ sort_by != 'relevance' ? ' disabled' : '' }}>Re-order</button>
         <button class='red typcn typcn-times hidden' id="guide-reorder-cancel">Cancel</button>
       {% endif %}
-      <a class='btn link typcn typcn-world' href="/cg{{ eqg ? '' : '/eqg' }}/full{{ sort_by != 'relevance' ? ('?sort_by=' ~ sort_by) : '' }}">List of {{ eqg ? 'Ponies' : 'Equestria Girls' }}</a>
+      <a class='btn link typcn typcn-world' href="/cg/{{ eqg ? 'pony' : 'eqg' }}/full{{ sort_by != 'relevance' ? ('?sort_by=' ~ sort_by) : '' }}">List of {{ eqg ? 'Ponies' : 'Equestria Girls' }}</a>
       <a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
-      <a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
+      <a class='btn link typcn typcn-warning' href="/cg/{{ guide }}/changes">Major Changes</a>
     </div>
 
     {{ full_list }}
   </div>
 
-  {{ export_vars({ 'EQG': eqg }) }}
+  {{ export_vars({ 'GUIDE': guide }) }}
   {% if is_staff %}
     {{ export_vars({
       'TAG_TYPES_ASSOC': constant('App\\Tags::TAG_TYPES'),

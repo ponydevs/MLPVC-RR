@@ -75,7 +75,7 @@ class ImageProvider {
    */
   private static function _testProvider($url, $pattern, $name) {
     $match = [];
-    if (preg_match(new RegExp("^(?:https?://(?:www\\.)?)?$pattern"), $url, $match))
+    if (preg_match("~^(?:https?://(?:www\\.)?)?$pattern~", $url, $match))
       return new ImageProviderItem($name, $match[1]);
 
     return false;
@@ -228,7 +228,7 @@ class ImageProvider {
         $page = @File::get("http://prntscr.com/$id");
         if (empty($page))
           throw new RuntimeException('The requested page could not be found');
-        if (!preg_match(new RegExp('<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.'), $page, $_match))
+        if (!preg_match('~<img\s+class="image__pic[^"]*"\s+src="http://i\.imgur\.com/([A-Za-z\d]+)\.~', $page, $_match))
           throw new RuntimeException('The requested image could not be found');
 
         $this->provider = 'imgur';

@@ -11,6 +11,6 @@ class URL {
    * @return string
    */
   public static function makeHttps($url) {
-    return (new RegExp('^(https?:)?//'))->replace('https://', $url);
+    return preg_replace('~^(https?:)?//~', 'https://', $url);
   }
 }

@@ -1,8 +1,8 @@
 (function() {
   'use strict';
 
-  let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC,
-    $tbody = $('#tags').children('tbody'),
+  const { TAG_TYPES_ASSOC } = window;
+  let $tbody = $('#tags').children('tbody'),
     updateList = function($tr, action) {
       if (!this.status) return $.Dialog.fail(false, this.message);
 

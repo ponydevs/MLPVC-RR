@@ -1,6 +1,6 @@
 {# @var tag \App\Models\Tag #}
-{# @var eqg bool #}
+{# @var guide string #}
 {% apply spaceless %}
   {% set is_syn = tag.synonym_of is not null %}
-  <a href="{{ tag.searchUrl(eqg) | apos_encode }}" class="tag id-{{ tag.id }}{{ tag.type is not empty ? ' typ-' ~ tag.type : '' }}{{ is_syn ? ' synonym' : '' }}"{% if is_syn %} data-syn-of="{{ tag.synonym_of }}"{% endif %}{% if tag.title %} title="{{ tag.title | apos_encode }}"{% endif %}>{{ tag.name | escape }}</a>
+  <a href="{{ tag.searchUrl(guide) | apos_encode }}" class="tag id-{{ tag.id }}{{ tag.type is not empty ? ' typ-' ~ tag.type : '' }}{{ is_syn ? ' synonym' : '' }}"{% if is_syn %} data-syn-of="{{ tag.synonym_of }}"{% endif %}{% if tag.title %} title="{{ tag.title | apos_encode }}"{% endif %}>{{ tag.name | escape }}</a>
 {% endapply %}

@@ -17,8 +17,6 @@ use App\Response;
 use Throwable;
 
 class NotificationsController extends Controller {
-  public $do = 'notifications';
-
   public function __construct() {
     parent::__construct();
 

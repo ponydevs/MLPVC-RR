@@ -1,7 +1,7 @@
 {# @controller \App\Controllers\AppearanceController::view #}
 {# @var appearance \App\Models\Appearance #}
 {# @var owner \App\Models\DeviantartUser #}
-{# @var eqg bool #}
+{# @var guide string #}
 {# @var is_owner bool #}
 {# @var heading string #}
 {% extends 'layout/base.html.twig' %}
@@ -15,7 +15,7 @@
     <p>from {% if owner is defined -%}
         {{ owner.toAnchor ~ posess(owner.name, true) }} <a href='/@{{ owner.name }}/cg'>Personal Color Guide</a>
       {%- else -%}
-        the MLP-VectorClub's <a href='/cg{{ eqg ? '/eqg' : '/pony' }}'>{{ eqg ? 'EQG ' : '' }}Color Guide</a>
+        the MLP-VectorClub's <a href='/cg/{{ guide }}'>{{ guide == 'eqg' ? 'EQG ' : '' }}Color Guide</a>
       {%- endif %}</p>
 
     {% if owner_or_staff %}
@@ -84,9 +84,10 @@
     </div>
   </div>
   {{ export_vars({
-    'EQG': eqg,
+    'GUIDE': guide,
     'AppearancePage': true,
-    'PersonalGuide': owner.name ?? false,
+    'OwnerId': owner.id ?? null,
+    'OwnerName': owner.name ?? null,
   }) }}
   {% if exports is defined %}
     {{ export_vars(exports) }}

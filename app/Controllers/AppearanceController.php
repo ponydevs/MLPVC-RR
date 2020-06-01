@@ -19,6 +19,7 @@ use App\Models\Appearance;
 use App\Models\CachedDeviation;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
+use App\Models\DeviantartUser;
 use App\Models\Notification;
 use App\Models\PCGSlotHistory;
 use App\Models\RelatedAppearance;
@@ -70,16 +71,16 @@ class AppearanceController extends ColorGuideController {
       ],
       'import' => [
         'appearance' => $this->appearance,
-        'eqg' => $this->_EQG,
+        'guide' => $this->guide,
         'is_owner' => false,
       ],
     ];
     if (!empty($this->appearance->owner_id)){
       $settings['import']['owner'] = $this->owner;
-      $settings['import']['is_owner'] = $this->ownerIsCurrentUser;
+      $settings['import']['is_owner'] = $this->is_owner;
       $settings['og']['description'] = "Colors$cmv for \"{$this->appearance->label}\" from ".CoreUtils::posess($this->owner->name)." Personal Color Guide on the the MLP-VectorClub's website";
     }
-    if ($this->ownerIsCurrentUser || Permission::sufficient('staff')){
+    if ($this->is_owner || Permission::sufficient('staff')){
       self::_appendManageAssets($settings);
       $settings['import']['exports'] = [
         'TAG_TYPES_ASSOC' => Tags::TAG_TYPES,
@@ -162,7 +163,7 @@ class AppearanceController extends ColorGuideController {
       Response::fail();
 
     if ($this->creating){
-      Appearance::checkCreatePermission(Auth::$user, $this->_personalGuide);
+      Appearance::checkCreatePermission(Auth::$user, $this->guide === null);
     }
     else {
       $this->load_appearance($params);
@@ -181,7 +182,7 @@ class AppearanceController extends ColorGuideController {
       case 'POST':
         /** @var $data array */
         $data = [
-          'ishuman' => $this->_personalGuide ? null : $this->_EQG,
+          'guide' => $this->guide,
         ];
 
         $label = (new Input('label', 'string', [
@@ -191,19 +192,18 @@ class AppearanceController extends ColorGuideController {
             Input::ERROR_RANGE => 'Appearance name must be beetween @min and @max characters long',
           ],
         ]))->out();
-        CoreUtils::checkStringValidity($label, 'Appearance name', INVERSE_PRINTABLE_ASCII_PATTERN);
-        $dupe = Appearance::find_dupe($this->creating, $this->_personalGuide, [
+        CoreUtils::checkStringValidity($label, 'Appearance name');
+        $dupe = Appearance::find_dupe($this->creating, [
           'owner_id' => Auth::$user->id,
-          'ishuman' => $data['ishuman'],
+          'guide' => $data['guide'],
           'label' => $label,
           'id' => $this->creating ? null : $this->appearance->id,
         ]);
         if (!empty($dupe)){
-          if ($this->_personalGuide)
+          if ($this->guide === null)
             Response::fail('You already have an appearance with the same name in your Personal Color Guide');
 
-          Response::fail("An appearance <a href='{$dupe->toURL()}' target='_blank'>already exists</a> in the ".($this->_EQG ? 'EQG'
-              : 'Pony').' guide with this exact name. Consider adding an identifier in brackets or choosing a different name.');
+          Response::fail("An appearance <a href='{$dupe->toURL()}' target='_blank'>already exists</a> in the ".CGUtils::GUIDE_MAP[$this->guide].' guide with this exact name. Consider adding an identifier in brackets or choosing a different name.');
         }
         if ($this->creating || $label !== $this->appearance->label)
           $data['label'] = $label;
@@ -216,7 +216,7 @@ class AppearanceController extends ColorGuideController {
           ],
         ]))->out();
         if ($notes !== null){
-          CoreUtils::checkStringValidity($notes, 'Appearance notes', INVERSE_PRINTABLE_ASCII_PATTERN);
+          CoreUtils::checkStringValidity($notes, 'Appearance notes');
           if ($this->creating || $notes !== $this->appearance->notes_src)
             $data['notes_src'] = $notes;
         }
@@ -227,12 +227,12 @@ class AppearanceController extends ColorGuideController {
         ]))->out();
 
         if ($this->creating){
-          if ($this->_personalGuide || Permission::insufficient('staff')){
+          if ($this->guide === null || Permission::insufficient('staff')){
             $data['owner_id'] = Auth::$user->id;
           }
           if (empty($data['owner_id'])){
             $biggest_order = DB::$instance->disableAutoClass()
-              ->where('ishuman', $data['ishuman'])
+              ->where('guide', $data['guide'])
               ->getOne('appearances', 'MAX("order") as "order"');
             $data['order'] = ($biggest_order['order'] ?? 0) + 1;
           }
@@ -280,7 +280,7 @@ class AppearanceController extends ColorGuideController {
             'order' => $new_appearance->order,
             'label' => $new_appearance->label,
             'notes' => $new_appearance->notes_src,
-            'ishuman' => $new_appearance->ishuman,
+            'guide' => $new_appearance->guide,
             'usetemplate' => $use_template,
             'private' => $new_appearance->private,
             'owner_id' => $new_appearance->owner_id,
@@ -315,7 +315,7 @@ class AppearanceController extends ColorGuideController {
         }
 
         $response = [];
-        if (!$this->_appearancePage){
+        if (!$this->appearance_page){
           $response['label'] = $edited_appearance->label;
           if (isset($old_data['label']) && $old_data['label'] !== $this->appearance->label)
             $response['newurl'] = $edited_appearance->toURL();
@@ -364,7 +364,7 @@ class AppearanceController extends ColorGuideController {
           'order' => $this->appearance->order,
           'label' => $this->appearance->label,
           'notes' => $this->appearance->notes_src,
-          'ishuman' => $this->appearance->ishuman,
+          'guide' => $this->appearance->guide,
           'added' => $this->appearance->created_at,
           'private' => $this->appearance->private,
           'owner_id' => $this->appearance->owner_id,
@@ -407,7 +407,7 @@ class AppearanceController extends ColorGuideController {
       Response::fail('Applying the template failed. Reason: '.$e->getMessage());
     }
 
-    Response::done(['cgs' => $this->appearance->getColorsHTML(!$this->_appearancePage, NOWRAP)]);
+    Response::done(['cgs' => $this->appearance->getColorsHTML(!$this->appearance_page, NOWRAP)]);
   }
 
   public function selectiveClear($params):void {
@@ -575,7 +575,7 @@ class AppearanceController extends ColorGuideController {
           'newgroups' => $newCGs,
         ]);
 
-        Response::done(['cgs' => $this->appearance->getColorsHTML(!$this->_appearancePage, NOWRAP)]);
+        Response::done(['cgs' => $this->appearance->getColorsHTML(!$this->appearance_page, NOWRAP)]);
       break;
       default:
         CoreUtils::notAllowed();
@@ -611,6 +611,7 @@ class AppearanceController extends ColorGuideController {
         'appearance' => $this->appearance,
         'colors' => $Colors,
         'map' => $Map,
+        'guide' => $this->guide,
         'owner' => $this->appearance->owner,
       ],
     ]);
@@ -650,19 +651,19 @@ class AppearanceController extends ColorGuideController {
     $this->load_appearance($params);
     $this->appearance->enforceManagePermission();
 
+    if (!empty($this->appearance->owner_id))
+      Response::fail('Relations are unavailable for appearances in personal guides');
+
     switch ($this->action){
       case 'GET':
-        if (!empty($this->appearance->owner_id))
-          Response::fail('Relations are unavailable for appearances in personal guides');
-
         $RelatedAppearances = $this->appearance->related_appearances;
         $RelatedAppearanceIDs = [];
         foreach ($RelatedAppearances as $p)
           $RelatedAppearanceIDs[$p->target_id] = $p->is_mutual;
 
         $Appearances = DB::$instance->disableAutoClass()
-          ->where('ishuman', $this->_EQG)
-          ->where('"id" NOT IN (0,'.$this->appearance->id.')')
+          ->where('guide', $this->guide)
+          ->where('id', [0, $this->appearance->id], '!=')
           ->orderBy('label')
           ->get('appearances', null, 'id,label');
 
@@ -680,9 +681,6 @@ class AppearanceController extends ColorGuideController {
         Response::done($Sorted);
       break;
       case 'PUT':
-        if ($this->appearance->owner_id !== null)
-          Response::fail('Relations are unavailable for appearances in personal guides');
-
         /** @var $AppearanceIDs int[] */
         $AppearanceIDs = (new Input('ids', 'int[]', [
           Input::IS_OPTIONAL => true,
@@ -714,7 +712,7 @@ class AppearanceController extends ColorGuideController {
             RelatedAppearance::make($this->appearance->id, $id, isset($mutuals[$id]));
 
         $out = [];
-        if ($this->_appearancePage)
+        if ($this->appearance_page)
           $out['section'] = $this->appearance->getRelatedHTML();
         Response::done($out);
       break;
@@ -785,7 +783,7 @@ class AppearanceController extends ColorGuideController {
           if (isset($item['label'])){
             $item['label'] = CoreUtils::trim($item['label']);
             if (!empty($item['label'])){
-              CoreUtils::checkStringValidity($item['label'], 'Cutie Mark label', INVERSE_PRINTABLE_ASCII_PATTERN);
+              CoreUtils::checkStringValidity($item['label'], 'Cutie Mark label');
               if (Input::checkStringLength($item['label'], [1, 32]) === Input::ERROR_RANGE)
                 Response::fail('Cutie mark label must be between 1 and 32 chars long');
               if (isset($labels[$item['label']]))
@@ -911,7 +909,7 @@ class AppearanceController extends ColorGuideController {
         }
 
         $data = [];
-        if ($this->_appearancePage && !empty($cutie_marks))
+        if ($this->appearance_page && !empty($cutie_marks))
           $data['html'] = Cutiemarks::getListForAppearancePage(Cutiemarks::get($this->appearance));
         Response::done($data);
       break;
@@ -948,7 +946,7 @@ class AppearanceController extends ColorGuideController {
             Input::ERROR_INVALID => 'List of tags is invalid',
           ],
         ]))->out();
-        $this->appearance->processTagChanges($orig_tags ?? '', $tags, $this->_EQG);
+        $this->appearance->processTagChanges($orig_tags ?? '', $tags, $this->guide);
         $this->appearance->updateIndex();
 
         Response::done();
@@ -963,10 +961,10 @@ class AppearanceController extends ColorGuideController {
       CoreUtils::notAllowed();
 
     $list = [];
-    $personal_guide = $_REQUEST['PERSONAL_GUIDE'] ?? null;
-    if ($personal_guide !== null){
-      $owner = Users::get($personal_guide, 'name');
-      if (empty($owner))
+    $owner_id = $_REQUEST['owner_id'] ?? null;
+    if ($owner_id !== null){
+      $owner = DeviantartUser::find($owner_id);
+      if ($owner === null)
         Response::fail('Personal Color Guide owner could not be found');
       $cond = ['owner_id = ?', $owner->id];
     }
@@ -974,11 +972,11 @@ class AppearanceController extends ColorGuideController {
 
     foreach (Appearance::all([
       'conditions' => $cond,
-      'select' => 'id, label, ishuman',
+      'select' => 'id, label, guide',
       'order' => 'label asc',
     ]) as $item)
       $list[] = $item->to_array();
-    Response::done(['list' => $list, 'pcg' => $personal_guide !== null]);
+    Response::done(['list' => $list, 'pcg' => $owner_id !== null]);
   }
 
   /**
@@ -1102,9 +1100,9 @@ class AppearanceController extends ColorGuideController {
             Input::ERROR_MISSING => 'Missing appearance ID list',
             Input::ERROR_INVALID => 'Appearance ID list is invalid',
           ],
-        ]))->out();
+        ]))->out() ?? [];
 
-        $existing_relation_ids = array_map(function ($p) { return $p->id; }, $this->appearance->related_shows);
+        $existing_relation_ids = array_map(fn($p) => $p->id, $this->appearance->related_shows);
 
         $created_relations = array_diff($show_ids, $existing_relation_ids);
         if (!empty($created_relations)){
@@ -1129,14 +1127,15 @@ class AppearanceController extends ColorGuideController {
     if ($this->action !== 'GET')
       CoreUtils::notAllowed();
 
-    if (empty($_GET['q']) || empty($_GET['EQG']))
+    if (empty($_GET['q']) || empty($_GET['GUIDE']))
       CGUtils::autocompleteRespond('[]');
 
-    $eqg = $_GET['EQG'] === 'true';
+    if (!array_key_exists($_GET['GUIDE'], CGUtils::GUIDE_MAP))
+      CoreUtils::badRequest();
 
     $pagination = new Pagination('', 5);
     /** @var $appearances Appearance[] */
-    [$appearances] = CGUtils::searchGuide($pagination, $eqg);
+    [$appearances] = CGUtils::searchGuide($pagination, $_GET['GUIDE']);
 
     if (empty($appearances))
       CGUtils::autocompleteRespond('[]');

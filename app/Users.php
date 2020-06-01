@@ -30,10 +30,10 @@ class Users {
    * @param string $value
    * @param string $column
    *
-   * @return DeviantartUser|null|false
+   * @return DeviantartUser|null
    * @throws Exception
    */
-  public static function get($value, $column = 'id') {
+  public static function get(string $value, string $column = 'id'):?DeviantartUser {
     if ($column === 'id')
       return DeviantartUser::find($value);
 
@@ -62,10 +62,10 @@ class Users {
    *
    * @param string[] $usernames
    *
-   * @return DeviantartUser|null|false|void
+   * @return DeviantartUser|null
    * @throws Exception
    */
-  public static function fetch($usernames) {
+  public static function fetch(array $usernames):?DeviantartUser {
     $count = count($usernames);
     if ($count < 1)
       throw new RuntimeException('No usernames specified');
@@ -91,12 +91,12 @@ class Users {
     }
     catch (CURLRequestException $e){
       if ($single_user)
-        return false;
+        return null;
       else throw new RuntimeException('Failed to fetch users: '.$e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
     }
 
     if ($single_user && empty($user_data['results'][0]))
-      return false;
+      return null;
 
     foreach ($user_data['results'] as $user_data){
       $id = strtolower($user_data['userid']);

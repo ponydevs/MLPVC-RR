@@ -11,6 +11,7 @@ use App\Models\Color;
 use App\Models\ColorGroup;
 use App\Models\Tag;
 use App\Pagination;
+use App\Permission;
 use App\RedisHelper;
 use App\Response;
 use App\Tags;
@@ -434,12 +435,11 @@ class AppearancesController extends APIController {
     $searching = !empty($_GET['q']) && $_GET['q'] !== '';
     $guide_name = $_GET['guide'] ?? null;
     $with_previews = ($_GET['previews'] ?? null) === 'true';
-    if (!isset(CGUtils::GUIDE_MAP[$guide_name])){
+    if (!array_key_exists($guide_name, CGUtils::GUIDE_MAP)){
       HTTP::statusCode(400);
       Response::fail('COLOR_GUIDE.INVALID_GUIDE_NAME');
     }
-    $eqg = $guide_name === 'eqg';
-    [$appearances] = CGUtils::searchGuide($pagination, $eqg, $searching);
+    [$appearances] = CGUtils::searchGuide($pagination, $guide_name, $searching);
 
     $results = array_map(function (Appearance $a) use ($with_previews) {
       return self::mapAppearance($a, $with_previews);
@@ -512,7 +512,6 @@ class AppearancesController extends APIController {
       HTTP::statusCode(400);
       Response::fail('COLOR_GUIDE.INVALID_GUIDE_NAME');
     }
-    $eqg = $guide_name === 'eqg';
 
     $cache_time = 600;
     $cache_key = CoreUtils::generateCacheKey(1, 'all appearances', $guide_name, $with_previews);
@@ -521,7 +520,7 @@ class AppearancesController extends APIController {
       Response::doneCached($cached_data);
 
     /** @var $appearances Appearance[] */
-    $appearances = DB::$instance->where('ishuman', $eqg)->get(Appearance::$table_name);
+    $appearances = DB::$instance->where('guide', $guide_name)->get(Appearance::$table_name);
 
     $results = array_map(function (Appearance $a) use ($with_previews) {
       return self::mapAppearance($a, $with_previews, true);
@@ -542,7 +541,7 @@ class AppearancesController extends APIController {
   }
 
   private static function _handlePrivateAppearanceCheck(Appearance $appearance):void {
-    if ($appearance->private){
+    if ($appearance->private && Permission::insufficient('staff')){
       // TODO check for token param and allow if correct
       HTTP::statusCode(403);
       Response::fail('COLOR_GUIDE.APPEARANCE_PRIVATE');

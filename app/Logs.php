@@ -146,9 +146,9 @@ class Logs {
       case 'appearances':
         $details[] = ['Action', self::$ACTIONS[$data['action']]];
 
-        $PonyGuide = empty($data['ishuman']);
-        if ($data['ishuman'] !== null)
-          $details[] = ['Guide', $PonyGuide ? 'Pony' : 'EQG'];
+        $guide = CGUtils::GUIDE_MAP[empty($data['ishuman']) ? ($data['guide'] ?: null) : ($data['ishuman'] ? 'pony' : 'eqg')];
+        if ($guide !== null)
+          $details[] = ['Guide', $guide];
         $details[] = ['ID', self::_getAppearanceLink($data['id'])];
         $details[] = ['Label', $data['label']];
         if (!empty($data['order']))
@@ -269,7 +269,7 @@ class Logs {
         $newdata = !empty($data['newdata']) ? JSON::encode($data['newdata'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '';
         if ($olddata || $newdata){
           $diff = self::diff($olddata, $newdata, 'block', new FineDiff\Granularity\Sentence(), function ($diff) {
-            return preg_replace(new RegExp('([^/>a-z\d])(d[a-z\d]{6,})'), '$1<a href="http://fav.me/$2">$2</a>', $diff);
+            return preg_replace('~([^/>a-z\d])(d[a-z\d]{6,})~', '$1<a href="http://fav.me/$2">$2</a>', $diff);
           });
           $details[] = ['Metadata changes', $diff];
         }
@@ -291,7 +291,7 @@ class Logs {
         $newdata = '';
         if ($olddata || $newdata){
           $diff = self::diff($olddata, $newdata, 'block', new FineDiff\Granularity\Sentence(), function ($diff) {
-            return preg_replace(new RegExp('([^/>a-z\d])(d[a-z\d]{6,})'), '$1<a href="http://fav.me/$2">$2</a>', $diff);
+            return preg_replace('~([^/>a-z\d])(d[a-z\d]{6,})~', '$1<a href="http://fav.me/$2">$2</a>', $diff);
           });
           $details[] = ['Metadata changes', $diff];
         }

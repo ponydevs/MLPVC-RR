@@ -104,7 +104,7 @@ class ColorGroupController extends ColorGuideController {
                 Input::ERROR_RANGE => 'The reason cannot be longer than @max characters',
               ],
             ]))->out();
-            CoreUtils::checkStringValidity($reason, 'Change reason', INVERSE_PRINTABLE_ASCII_PATTERN);
+            CoreUtils::checkStringValidity($reason, 'Change reason');
           }
         }
 
@@ -155,7 +155,7 @@ class ColorGroupController extends ColorGuideController {
           if (empty($c['label']))
             Response::fail("You must specify a color name $index");
           $label = CoreUtils::trim($c['label']);
-          CoreUtils::checkStringValidity($label, "Color $index name", INVERSE_PRINTABLE_ASCII_PATTERN);
+          CoreUtils::checkStringValidity($label, "Color $index name");
           $ll = mb_strlen($label);
           if ($ll < 3 || $ll > 30)
             Response::fail("The color name must be between 3 and 30 characters in length $index");
@@ -267,11 +267,11 @@ class ColorGroupController extends ColorGuideController {
             $appearance->clearRenderedImages([Appearance::CLEAR_CM]);
         }
 
-        $response = ['cgs' => $this->colorgroup->appearance->getColorsHTML(!$this->_appearancePage, NOWRAP)];
+        $response = ['cgs' => $this->colorgroup->appearance->getColorsHTML(!$this->appearance_page, NOWRAP)];
 
         if ($this->colorgroup->appearance->owner_id === null && $major){
           MajorChange::record($this->colorgroup->appearance_id, $reason);
-          if ($this->_appearancePage){
+          if ($this->appearance_page){
             $FullChangesSection = isset($_REQUEST['FULL_CHANGES_SECTION']);
             $response['changes'] = CGUtils::getMajorChangesHTML(MajorChange::get($this->colorgroup->appearance_id, null), $FullChangesSection);
             if ($FullChangesSection)

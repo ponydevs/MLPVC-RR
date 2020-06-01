@@ -1223,7 +1223,7 @@ ul.pagination {
         position: absolute;
         top: 0;
         left: 0;
-        @include loading-indicator(100%, 'gear');
+        @include loading-indicator(100%);
       }
     }
 

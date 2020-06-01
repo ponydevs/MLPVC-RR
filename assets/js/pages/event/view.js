@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN;
+  const { PRINTABLE_ASCII_PATTERN } = window;
 
   let $eventEntries = $('#event-entries'),
     $entryForm = $.mk('form', 'new-entry').append(

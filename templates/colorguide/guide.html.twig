@@ -1,6 +1,6 @@
 {# @controller \App\Controllers\ColorGuideController::guide #}
 {# @var heading string #}
-{# @var eqg bool #}
+{# @var guide string #}
 {# @var elastic_avail bool #}
 {# @var pagination \App\Pagination #}
 {# @var ponies array #}
@@ -12,6 +12,7 @@
 {% extends "layout/base.html.twig" %}
 
 {% block content %}
+  {% set eqg = guide == 'eqg' %}
   <div id="content">
     <h1>{{ heading }}</h1>
     <p>A searchable list of character colors from the {{ eqg ? 'movies' : 'series' }}</p>
@@ -25,7 +26,7 @@
         <button class='green typcn typcn-plus' id="new-appearance-btn">Add new {{ eqg ? 'Character' : 'Pony' }}</button>
       {% endif %}
       <a class='btn link typcn typcn-world' href="/cg/{{ eqg ? 'pony' : 'eqg' }}">View {{ eqg ? 'Pony' : 'EQG' }} Guide</a>
-      <a class='btn link typcn typcn-th-menu' href="/cg/{{ eqg ? 'eqg' : 'pony' }}/full">Full List</a>
+      <a class='btn link typcn typcn-th-menu' href="/cg/{{ guide }}/full">Full List</a>
       <a class='btn link typcn typcn-arrow-forward' href="/cg/blending">Blending Calculator</a>
       <a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker</a>
       <a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
@@ -52,7 +53,7 @@
       </form>
     {% else %}
       <div class="notice warn align-center">
-        <span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn link typcn typcn-th-menu" href="/cg'.($EQG?'/eqg':'').'/full">Full List</a> to find appearances faster. Sorry for the inconvenience.
+        <span class="typcn typcn-warning"></span> <strong>ElasticSearch server is down!</strong> Please <a class="send-feedback">let us know</a>, and in the meantime, use the <a class="btn link typcn typcn-th-menu" href="/cg/{{ guide }}/full">Full List</a> to find appearances faster. Sorry for the inconvenience.
       </div>
     {% endif %}
     {{ pagination }}
@@ -61,9 +62,9 @@
   </div>
 
   {{ export_vars({
-    'EQG': eqg,
+    'GUIDE': guide,
     'AppearancePage': false,
-    'PersonalGuide': owner.id ?? false,
+    'OwnerId': owner.id ?? false,
   }) }}
   {% if permission('staff') %}
     {{ export_vars({

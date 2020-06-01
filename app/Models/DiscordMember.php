@@ -5,7 +5,6 @@ namespace App\Models;
 use ActiveRecord\DateTime;
 use App\Controllers\DiscordAuthController;
 use App\CoreUtils;
-use App\RegExp;
 use App\Response;
 use App\Time;
 use App\UserPrefs;
@@ -52,7 +51,7 @@ class DiscordMember extends AbstractUser {
     if (empty($this->avatar_hash))
       return 'https://cdn.discordapp.com/embed/avatars/'.($this->discriminator % 5).'.png';
 
-    $ext = preg_match(new RegExp('^a_'), $this->avatar_hash) ? 'gif' : 'png';
+    $ext = strpos($this->avatar_hash, "a_") === 0 ? 'gif' : 'png';
 
     return "https://cdn.discordapp.com/avatars/{$this->id}/{$this->avatar_hash}.$ext";
   }

@@ -2,9 +2,8 @@
   'use strict';
 
   //noinspection JSUnusedLocalSymbols
-  let $list = $('.appearance-list'),
-    EQG = window.EQG,
-    AppearancePage = !!window.AppearancePage;
+  let $list = $('.appearance-list');
+  const { GUIDE, AppearancePage } = window;
 
   let copyHash = !$.LocalStorage.get('leavehash'),
     $toggler = $('#toggle-copy-hash'),
@@ -161,7 +160,7 @@
           source: (q, callback) => {
             if (appearanceAutocompleteCache.has(q))
               return callback(appearanceAutocompleteCache.get(q));
-            $.API.get(`/cg/appearances`, { q, EQG }, data => {
+            $.API.get(`/cg/appearances`, { q, guide: GUIDE }, data => {
               callback(appearanceAutocompleteCache.set(q, data));
             });
           },

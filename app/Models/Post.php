@@ -9,7 +9,6 @@ use App\DB;
 use App\DeviantArt;
 use App\Permission;
 use App\Posts;
-use App\RegExp;
 use App\Response;
 use App\Time;
 use App\UserPrefs;
@@ -196,16 +195,15 @@ class Post extends NSModel implements Linkable {
 
   public function processLabel():string {
     $label = CoreUtils::escapeHTML($this->label);
-    $label = preg_replace(new RegExp("(\\w)'(\\w)"), '$1&rsquo;$2', $label);
-    $label = preg_replace(new RegExp("''"), '"', $label);
-    $label = preg_replace(new RegExp('"([^"]+)"'), '&ldquo;$1&rdquo;', $label);
-    $label = preg_replace(new RegExp('\.\.\.'), '&hellip;', $label);
-    $label = preg_replace(new RegExp('(?:(f)ull[- ](b)od(?:y|ied)( version)?)', 'i'), '<strong class="color-darkblue">$1ull $2ody</strong>$3', $label);
-    $label = preg_replace(new RegExp('(?:(f)ace[- ](o)nly( version)?)', 'i'), '<strong class="color-darkblue">$1ace $2nly</strong>$3', $label);
-    $label = preg_replace(new RegExp('(?:(f)ull (s)cene( version)?)', 'i'), '<strong class="color-darkblue">$1ull $2cene</strong>$3', $label);
-    $label = preg_replace(new RegExp('(?:(e)ntire (s)cene( version)?)', 'i'), '<strong class="color-darkblue">$1ntire $2cene</strong>$3', $label);
-    $label = preg_replace(new RegExp('(?:(s)eparate (v)ector(s)?)', 'i'), '<strong class="color-darkblue">$1eparate $2ector$3</strong>', $label);
-    $label = preg_replace(new RegExp('\[([\w\s]+ intensifies)\]', 'i'), '<span class="intensify">$1</span>', $label);
+    $label = str_replace(array("''", '...'), array('"', '&hellip;'), $label);
+    $label = preg_replace("/(\\w)'(\\w)/", '$1&rsquo;$2', $label);
+    $label = preg_replace('/"([^"]+)"/', '&ldquo;$1&rdquo;', $label);
+    $label = preg_replace('/(?:(f)ull[- ](b)od(?:y|ied)( version)?)/i', '<strong class="color-darkblue">$1ull $2ody</strong>$3', $label);
+    $label = preg_replace('/(?:(f)ace[- ](o)nly( version)?)/i', '<strong class="color-darkblue">$1ace $2nly</strong>$3', $label);
+    $label = preg_replace('/(?:(f)ull (s)cene( version)?)/i', '<strong class="color-darkblue">$1ull $2cene</strong>$3', $label);
+    $label = preg_replace('/(?:(e)ntire (s)cene( version)?)/i', '<strong class="color-darkblue">$1ntire $2cene</strong>$3', $label);
+    $label = preg_replace('/(?:(s)eparate (v)ector(s)?)/i', '<strong class="color-darkblue">$1eparate $2ector$3</strong>', $label);
+    $label = preg_replace('/\[([\w\s]+ intensifies)]/i', '<span class="intensify">$1</span>', $label);
 
     return $label;
   }

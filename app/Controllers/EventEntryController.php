@@ -87,7 +87,7 @@ class EventEntryController extends EventController {
         Input::ERROR_INVALID => 'Entry title (@valie) is invalid',
       ],
     ]))->out();
-    CoreUtils::checkStringValidity($title, 'Entry title', INVERSE_PRINTABLE_ASCII_PATTERN);
+    CoreUtils::checkStringValidity($title, 'Entry title');
     $update['title'] = $title;
 
     $prev_src = (new Input('prev_src', 'url', [

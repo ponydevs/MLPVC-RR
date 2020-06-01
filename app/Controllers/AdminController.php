@@ -15,7 +15,6 @@ use App\Models\UsefulLink;
 use App\Pagination;
 use App\Permission;
 use App\Posts;
-use App\RegExp;
 use App\Response;
 use App\Users;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
@@ -25,8 +24,6 @@ use Throwable;
 use function in_array;
 
 class AdminController extends Controller {
-  public $do = 'admin';
-
   public function __construct() {
     parent::__construct();
 
@@ -88,7 +85,7 @@ class AdminController extends Controller {
   public function log() {
     $type = Logs::validateRefType('type', true, true);
     /** @noinspection NotOptimalIfConditionsInspection */
-    if (isset($_GET['type']) && preg_match(new RegExp('/^[a-z_]+$/'), $_GET['type']) && isset(Logs::LOG_DESCRIPTION[$_GET['type']]))
+    if (isset($_GET['type']) && preg_match('/^[a-z_]+$/', $_GET['type']) && isset(Logs::LOG_DESCRIPTION[$_GET['type']]))
       $type = $_GET['type'];
 
     $ip = null;
@@ -281,7 +278,7 @@ class AdminController extends Controller {
           ],
         ]))->out();
         if ($this->creating || $this->usefulLink->label !== $label){
-          CoreUtils::checkStringValidity($label, 'Link label', INVERSE_PRINTABLE_ASCII_PATTERN);
+          CoreUtils::checkStringValidity($label, 'Link label');
           $data['label'] = $label;
         }
 
@@ -305,7 +302,7 @@ class AdminController extends Controller {
         if (!isset($title))
           $data['title'] = '';
         else if ($this->creating || $this->usefulLink->title !== $title){
-          CoreUtils::checkStringValidity($title, 'Link title', INVERSE_PRINTABLE_ASCII_PATTERN);
+          CoreUtils::checkStringValidity($title, 'Link title');
           $data['title'] = $title;
         }
 
@@ -423,7 +420,7 @@ class AdminController extends Controller {
     CoreUtils::detectUnexpectedJSON();
 
     $clientid = $_REQUEST['clientid'] ?? null;
-    if (!preg_match(new RegExp('^[a-zA-Z\d_-]+$'), $clientid))
+    if (!preg_match('/^[a-zA-Z\d_-]+$/', $clientid))
       Response::fail('Invalid client ID');
 
     try {

@@ -9,7 +9,6 @@ use App\DB;
 use App\Permission;
 use App\Posts;
 use App\Regexes;
-use App\RegExp;
 use App\ShowHelper;
 use App\TMDBHelper;
 use App\VideoProvider;
@@ -186,7 +185,9 @@ class Show extends NSModel implements Linkable {
    * @return string
    */
   public function safeTitle():string {
-    return CoreUtils::trim((new RegExp('-{2,}'))->replace('-', (new RegExp('[^a-z\d]', 'i'))->replace('-', $this->title)), false, '-');
+    $value = preg_replace('/[^a-z\d]/i', '-', $this->title);
+    $value = preg_replace('/-{2,}/', '-', $value);
+    return CoreUtils::trim($value, false, '-');
   }
 
   /**

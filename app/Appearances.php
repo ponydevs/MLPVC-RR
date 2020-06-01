@@ -16,21 +16,21 @@ class Appearances {
   public const PCG_APPEARANCE_MAKE_DISABLED = 'You are not allowed to create personal color guide appearances';
 
   /**
-   * @param bool|null $EQG
+   * @param string|null $guide
    * @param int|int[] $limit
    * @param string    $userid
    * @param string    $cols
    *
    * @return Appearance[]
    */
-  public static function get(?bool $EQG, $limit = null, ?string $userid = null, ?string $cols = null) {
+  public static function get(?string $guide, $limit = null, ?string $userid = null, ?string $cols = null) {
     if ($userid !== null)
       DB::$instance->where('owner_id', $userid);
     else {
       DB::$instance->where('owner_id IS NULL');
       self::_order();
-      if ($EQG !== null)
-        DB::$instance->where('ishuman', $EQG)->where('id', 0, '!=');
+      if ($guide !== null)
+        DB::$instance->where('guide', $guide)->where('id', 0, '!=');
     }
     if ($cols === self::COUNT_COL)
       DB::$instance->disableAutoClass();
@@ -53,13 +53,13 @@ class Appearances {
    * Sort appearances based on tags
    *
    * @param Appearance[] $Appearances
-   * @param bool         $EQG
+   * @param string       $guide
    * @param bool         $simpleArray
    *
    * @return array
    */
-  public static function sort($Appearances, bool $EQG, bool $simpleArray = false) {
-    $GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC[$EQG ? 'eqg' : 'pony']);
+  public static function sort($Appearances, ?string $guide, bool $simpleArray = false) {
+    $GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC[$guide]);
     $Sorted = [];
     $Tagged = [];
     $_tagged = DB::$instance->where('tag_id IN ('.implode(',', $GroupTagIDs).')')->orderBy('appearance_id')->get('tagged');
@@ -78,7 +78,7 @@ class Appearances {
     }
     if ($simpleArray){
       $idArray = [];
-      foreach (CGUtils::GROUP_TAG_IDS_ASSOC[$EQG ? 'eqg' : 'pony'] as $Category => $CategoryName){
+      foreach (CGUtils::GROUP_TAG_IDS_ASSOC[$guide] as $Category => $CategoryName){
         if (empty($Sorted[$Category]))
           continue;
         /** @var $Sorted Appearance[][] */
@@ -114,13 +114,10 @@ class Appearances {
     }
   }
 
-  /**
-   * @param bool $EQG
-   */
-  public static function getSortReorder($EQG) {
-    if ($EQG)
+  public static function getSortReorder(?string $guide) {
+    if ($guide !== 'pony')
       return;
-    self::reorder(self::sort(self::get($EQG, null, null, 'id'), $EQG, SIMPLE_ARRAY));
+    self::reorder(self::sort(self::get($guide, null, null, 'id'), $guide, SIMPLE_ARRAY));
   }
 
   public static function reindex() {

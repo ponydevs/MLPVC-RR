@@ -544,7 +544,7 @@
     display: block;
 
     &.loading {
-      @include loading-indicator(100px, 'ring');
+      @include loading-indicator(100px);
 
       > * {
         display: none !important;

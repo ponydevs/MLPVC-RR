@@ -88,7 +88,7 @@ class UserPrefs extends GlobalSettings {
       Response::fail("Key $key is not allowed");
     $default = static::DEFAULTS[$key];
 
-    if (preg_match(new RegExp('^a_'), $key))
+    if (strpos($key, "a_") === 0)
       Logs::logAction('staff_limits', [
         'setting' => $key,
         'allow' => $value,

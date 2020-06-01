@@ -32,12 +32,12 @@ class MajorChange extends NSModel {
     return $this->user;
   }
 
-  public static function total(bool $eqg):int {
+  public static function total(string $guide):int {
     $query = DB::$instance->querySingle(
       'SELECT COUNT(mc.id) as total
 			FROM major_changes mc
 			INNER JOIN appearances a ON mc.appearance_id = a.id
-			WHERE a.ishuman = ?', [$eqg]);
+			WHERE a.guide = ?', [$guide]);
 
     return $query['total'] ?? 0;
   }
@@ -46,24 +46,31 @@ class MajorChange extends NSModel {
    * Gets the list of updates for an entire guide or just an appearance
    *
    * @param int|null        $PonyID
-   * @param bool|null       $EQG
+   * @param string|null     $guide
    * @param string|int|null $count
    *
    * @return MajorChange|MajorChange[]
    */
-  public static function get(?int $PonyID, ?bool $EQG, $count = null) {
-    $LIMIT = '';
+  public static function get(?int $PonyID, ?string $guide, $count = null) {
+    $limit_query = '';
     if ($count !== null)
-      $LIMIT = is_string($count) ? $count : "LIMIT $count";
-    $WHERE = $PonyID !== null ? "WHERE mc.appearance_id = $PonyID" : 'WHERE a.ishuman = '.($EQG ? 'true' : 'false');
+      $limit_query = is_string($count) ? $count : "LIMIT $count";
+    if ($PonyID !== null){
+      $where_query = "mc.appearance_id = ?";
+      $where_param = $PonyID;
+    }
+    else {
+      $where_query = 'a.guide = ?';
+      $where_param = $guide;
+    }
 
     $query = DB::$instance->setModel(__CLASS__)->query(
       "SELECT mc.*
 			FROM major_changes mc
 			INNER JOIN appearances a ON mc.appearance_id = a.id
-			{$WHERE}
+			WHERE {$where_query}
 			ORDER BY mc.created_at DESC
-			{$LIMIT}");
+			{$limit_query}", [$where_param]);
 
     if ($count === MOST_RECENT)
       return $query[0] ?? null;

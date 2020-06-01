@@ -1,10 +1,8 @@
 (function() {
   'use strict';
 
-  let AppearanceID = window.AppearanceID,
-    AppearanceColors = window.AppearanceColors,
-    SpriteColorList = window.SpriteColorList,
-    $Table = $.mk('table').appendTo($('#input-cont').empty()),
+  const { AppearanceID, AppearanceColors, SpriteColorList } = window;
+  let $Table = $.mk('table').appendTo($('#input-cont').empty()),
     $SVG,
     AppearanceColorObject = {},
     AppearanceColorIterator = 1,

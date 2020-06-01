@@ -47,15 +47,15 @@ class Tag extends NSModel {
     return Tagged::make($this->id, $appearance_id)->save();
   }
 
-  public function getHTML(bool $EQG):string {
+  public function getHTML(string $guide):string {
     return Twig::$env->render('appearances/_tag.html.twig', [
       'tag' => $this,
-      'eqg' => $EQG,
+      'guide' => $guide,
     ]);
   }
 
-  public function getSearchUrl(bool $eqg):string {
-    return '/cg/'.($eqg ? 'eqg' : 'pony').'?q='.urlencode($this->name);
+  public function getSearchUrl(string $guide):string {
+    return "/cg/$guide?q=".urlencode($this->name);
   }
 
   public function updateUses() {

@@ -28,8 +28,8 @@ class View {
    */
   public static function processName(string $name):array {
     [$controller, $method] = explode('::', $name);
-    $name = strtolower($controller.'::'.preg_replace(new RegExp('([a-z])([A-Z])'), '$1-$2', $method));
-    if (!preg_match(new RegExp('^(?:\\\\?app\\\\controllers\\\\)?([a-z]+)controller::([a-z-]+)$'), $name, $match))
+    $name = strtolower("$controller::".preg_replace('/([a-z])([A-Z])/', '$1-$2', $method));
+    if (!preg_match('~^(?:\\\\?app\\\\controllers\\\\)?([a-z]+)controller::([a-z-]+)$~', $name, $match))
       throw new RuntimeException("Could not resolve view based on value $name");
     [$class, $method] = array_slice($match, 1, 2);
 
@@ -80,9 +80,9 @@ class View {
 
         return $bc;
       case 'colorguide':
-        $eqg = $scope['eqg'] ?? false;
+        $guide = $scope['guide'] ?? 'pony';
         $ret = new NavBreadcrumb('Color Guide');
-        $bc = new NavBreadcrumb($eqg ? 'EQG' : 'Pony', '/cg/'.($eqg ? 'eqg' : 'pony'));
+        $bc = new NavBreadcrumb(CGUtils::GUIDE_MAP[$guide], "/cg/$guide");
         $ret->setChild($bc);
         switch ($this->method){
           case 'appearance':

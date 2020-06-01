@@ -514,7 +514,7 @@ class CoreUtils {
    * @return string
    */
   public static function capitalize($str, $all = false) {
-    if ($all) return preg_replace_callback(new RegExp('((?:^|\s)[a-z])(\w+\b)?', 'i'), function ($match) {
+    if ($all) return preg_replace_callback('/((?:^|\s)[a-z])(\w+\b)?/i', function ($match) {
       return strtoupper($match[1]).strtolower($match[2]);
     }, $str);
     else return mb_strlen($str) === 1 ? strtoupper($str) : strtoupper($str[0]).mb_substr($str, 1);
@@ -559,7 +559,7 @@ class CoreUtils {
         $workWith = $sizes[1];
     }
 
-    return preg_replace(new RegExp('^(\d+)([GMk])$', 'i'), '$1 $2B', strtoupper($workWith));
+    return preg_replace('/^(\d+)([GMk])$/i', '$1 $2B', strtoupper($workWith));
   }
 
   /**
@@ -642,7 +642,7 @@ class CoreUtils {
    */
   public static function sanitizeSvg(string $dirty_svg, bool $minify = true, ?array &$warnings = null) {
     // Remove bogous HTML entities
-    $dirty_svg = preg_replace(new RegExp('&ns_[a-z_]+;'), '', $dirty_svg);
+    $dirty_svg = preg_replace('/&ns_[a-z_]+;/', '', $dirty_svg);
     if ($minify)
       $dirty_svg = self::minifySvgData($dirty_svg);
 
@@ -805,7 +805,7 @@ class CoreUtils {
    *
    * @return null|string
    */
-  public static function checkStringValidity($string, $Thing, $pattern, $returnError = false) {
+  public static function checkStringValidity($string, $Thing, $pattern = INVERSE_PRINTABLE_ASCII_PATTERN, $returnError = false) {
     if (preg_match_all(new RegExp($pattern, 'u'), $string, $fails)){
       /** @var $fails string[][] */
       $invalid = [];
@@ -986,7 +986,7 @@ class CoreUtils {
    * @return string
    */
   public static function makeSingular(string $w):string {
-    return preg_replace(new RegExp('s$'), '', $w);
+    return preg_replace('/s$/', '', $w);
   }
 
   private static $_uncountableWords = ['staff'];
@@ -1015,7 +1015,7 @@ class CoreUtils {
 
   // Converts a browser name to it's equivalent class name
   public static function browserNameToClass($BrowserName) {
-    return preg_replace(new RegExp('[^a-z]'), '', strtolower($BrowserName));
+    return preg_replace('/[^a-z]/', '', strtolower($BrowserName));
   }
 
   /**
@@ -1028,9 +1028,9 @@ class CoreUtils {
    * @return string
    */
   public static function trim(string $str, bool $multiline = false, string $chars = " \t\n\r\0\x0B\xC2\xA0"):string {
-    $out = preg_replace(new RegExp(' +'), ' ', trim($str, $chars));
+    $out = preg_replace('/ +/', ' ', trim($str, $chars));
     if ($multiline)
-      $out = preg_replace(new RegExp('(\r\n|\r)'), "\n", $out);
+      $out = preg_replace('/(\r\n|\r)/', "\n", $out);
 
     return $out;
   }
@@ -1201,7 +1201,7 @@ class CoreUtils {
   }
 
   public static function makeUrlSafe(string $string):string {
-    return self::trim(preg_replace(new RegExp('-+'), '-', preg_replace(new RegExp('[^A-Za-z\d\-]'), '-', $string)), false, '-');
+    return self::trim(preg_replace('/-+/', '-', preg_replace(new RegExp('[^A-Za-z\d\-]'), '-', $string)), false, '-');
   }
 
   /**

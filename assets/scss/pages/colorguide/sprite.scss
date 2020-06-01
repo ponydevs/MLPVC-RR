@@ -45,7 +45,7 @@
       display: block;
       margin: calc(300px - 40px) auto;
 
-      @include loading-indicator(125px, 'gears');
+      @include loading-indicator(125px);
     }
 
     svg {
@@ -80,7 +80,7 @@
   #input-cont {
     &:empty {
       display: block;
-      @include loading-indicator(125px, 'gears');
+      @include loading-indicator(125px);
     }
 
     &:not(:empty):before {

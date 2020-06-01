@@ -58,7 +58,7 @@ class HTTP {
     global $http_response_header;
     $http_response_header = array_map('rtrim', explode("\n", $response_headers));
 
-    if (preg_match(new RegExp('Content-Encoding:\s?gzip', 'i'), $response_headers))
+    if (preg_match('/Content-Encoding:\s?gzip/i', $response_headers))
       $response = gzdecode($response);
 
     return [
@@ -81,17 +81,17 @@ class HTTP {
     $cookies = [];
     if (!empty($http_response_header))
       foreach ($http_response_header as $header){
-        if (!preg_match(new RegExp('^([^:]+): (.*)$'), $header, $parts) || $parts[1] !== 'Set-Cookie')
+        if (!preg_match('/^([^:]+): (.*)$/', $header, $parts) || $parts[1] !== 'Set-Cookie')
           continue;
 
-        preg_match(new RegExp('\s*([^=]+=[^;]+)(?:;|$)'), $parts[2], $cookie);
+        preg_match('/\s*([^=]+=[^;]+)(?:;|$)/', $parts[2], $cookie);
         [$name, $value] = explode('=', $cookie[1], 2);
         $cookies[$name] = $value;
       }
 
     $request = self::legitimateRequest($url, $cookies, $referrer, true);
 
-    return preg_match(new RegExp('Location:\s+([^\r\n]+)'), $request['responseHeaders'], $_match) ? CoreUtils::trim($_match[1]) : null;
+    return preg_match('/Location:\s+([^\r\n]+)/', $request['responseHeaders'], $_match) ? CoreUtils::trim($_match[1]) : null;
   }
 
   public const STATUS_CODES = [

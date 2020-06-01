@@ -73,7 +73,7 @@ class DeviantArt {
     else if ($token !== false)
       return null;
 
-    $requestURI = preg_match(new RegExp('^https?://'), $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
+    $requestURI = preg_match('~^https?://~', $endpoint) ? $endpoint : "https://www.deviantart.com/api/v1/oauth2/$endpoint";
 
     $r = curl_init($requestURI);
     $curl_opt = [
@@ -109,7 +109,7 @@ class DeviantArt {
 
       return null;
     }
-    if (preg_match(new RegExp('Content-Encoding:\s?gzip','i'), $responseHeaders))
+    if (preg_match('/Content-Encoding:\s?gzip/i', $responseHeaders))
       $response = gzdecode($response);
 
     return JSON::decode($response);
@@ -153,12 +153,12 @@ class DeviantArt {
       $insert = [
         'id' => $id,
         'provider' => $provider,
-        'title' => preg_replace(new RegExp('\\\\\''), "'", $json['title']),
+        'title' => preg_replace("/\\\\'/", "'", $json['title']),
         'preview' => isset($json['thumbnail_url']) ? URL::makeHttps($json['thumbnail_url']) : null,
         'fullsize' => isset($json['fullsize_url'])
           ? URL::makeHttps($json['fullsize_url'])
           : (
-          isset($json['url']) && !preg_match(new RegExp('-\d+$'), $json['url'])
+          isset($json['url']) && !preg_match('/-\d+$/', $json['url'])
             ? URL::makeHttps($json['url'])
             : null
           ),
@@ -173,19 +173,21 @@ class DeviantArt {
         break;
         case 'rich':
           if (isset($json['html'])){
-            $DATA_EXTENSION_REGEX = new RegExp('^[\s\S]*\sdata-extension="([a-z\d]+?)"[\s\S]*$');
-            if ($DATA_EXTENSION_REGEX->match($json['html']))
-              $insert['type'] = $DATA_EXTENSION_REGEX->replace('$1', $json['html']);
+            $data_extension_regex = /** @lang PhpRegExp */
+              '/^[\s\S]*\sdata-extension="([a-z\d]+?)"[\s\S]*$/';
+            if (preg_match($data_extension_regex, $json['html']))
+              $insert['type'] = preg_replace($data_extension_regex, '$1', $json['html']);
 
-            $H2_EXTENSION_REGEX = new RegExp('^[\s\S]*<h2>([A-Z\d]+?)</h2>[\s\S]*$');
-            if ($H2_EXTENSION_REGEX->match($json['html']))
-              $insert['type'] = strtolower($H2_EXTENSION_REGEX->replace('$1', $json['html']));
+            $h2_extension_regex = /** @lang PhpRegExp */
+              '~^[\s\S]*<h2>([A-Z\d]+?)</h2>[\s\S]*$~';
+            if (preg_match($h2_extension_regex, $json['html']))
+              $insert['type'] = strtolower(preg_replace($h2_extension_regex, '$1', $json['html']));
           }
         break;
         case 'link':
           $stashpage = HTTP::legitimateRequest("http://$provider/$id");
           if (!empty($stashpage['response'])){
-            preg_match(new RegExp('<span class="text">([A-Za-z\d]+) download,'), $stashpage['response'], $matches);
+            preg_match('/<span class="text">([A-Za-z\d]+) download,/', $stashpage['response'], $matches);
             if (!empty($matches[1]))
               $insert['type'] = strtolower($matches[1]);
           }
@@ -516,7 +518,7 @@ class DeviantArt {
   }
 
   public static function trimOutgoingGateFromUrl(string $url):string {
-    return preg_replace(new RegExp('^https?://(www\.)?deviantart\.com/users/outgoing\?'), '', $url);
+    return preg_replace('~^https?://(www\.)?deviantart\.com/users/outgoing\?~', '', $url);
   }
 
   /**
@@ -546,7 +548,7 @@ class DeviantArt {
       return 3;
 
     $DL_LINK_REGEX = "(https?://(sta\.sh|www\.deviantart\.com)/download/\d+/[a-z\d_]+-d[a-z\d]{6,}\.(?:$formats)\?[^\"]+)";
-    $urlmatch = preg_match(new RegExp('<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.$DL_LINK_REGEX.'"'), $stashpage['response'], $_match);
+    $urlmatch = preg_match('~<a\s+class="[^"]*?dev-page-download[^"]*?"\s+href="'.$DL_LINK_REGEX.'"~', $stashpage['response'], $_match);
 
     if (!$urlmatch)
       return 4;

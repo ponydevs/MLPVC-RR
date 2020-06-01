@@ -34,7 +34,7 @@ class PersonalGuideController extends ColorGuideController {
     $heading = CoreUtils::posess($this->owner->name).' Personal Color Guide';
     $title = "Page {$pagination->getPage()} - $heading";
 
-    $is_owner = $this->ownerIsCurrentUser;
+    $is_owner = $this->is_owner;
     $owner_or_staff = $is_owner || Permission::sufficient('staff');
 
     $settings = [
@@ -61,7 +61,7 @@ class PersonalGuideController extends ColorGuideController {
   public function pointHistory($params) {
     $this->_initialize($params);
 
-    if (!$this->ownerIsCurrentUser && Permission::insufficient('staff'))
+    if (!$this->is_owner && Permission::insufficient('staff'))
       CoreUtils::noPerm();
 
     $EntriesPerPage = 20;
@@ -75,7 +75,7 @@ class PersonalGuideController extends ColorGuideController {
     }
 
     CoreUtils::fixPath($pagination->toURI());
-    $heading = ($this->ownerIsCurrentUser ? 'Your' : CoreUtils::posess($this->owner->name)).' Point History';
+    $heading = ($this->is_owner ? 'Your' : CoreUtils::posess($this->owner->name)).' Point History';
     $title = "Page {$pagination->getPage()} - $heading";
 
     $js = ['paginate'];
@@ -90,7 +90,7 @@ class PersonalGuideController extends ColorGuideController {
         'entries' => $entries,
         'pagination' => $pagination,
         'user' => $this->owner,
-        'is_owner' => $this->ownerIsCurrentUser,
+        'is_owner' => $this->is_owner,
         'pcg_slot_history' => CGUtils::getPCGSlotHistoryHTML($entries),
       ],
     ]);
@@ -176,7 +176,7 @@ class PersonalGuideController extends ColorGuideController {
             Input::ERROR_RANGE => 'Comment must be between @min and @max chars',
           ],
         ]))->out();
-        CoreUtils::checkStringValidity($comment, 'Comment', INVERSE_PRINTABLE_ASCII_PATTERN);
+        CoreUtils::checkStringValidity($comment, 'Comment');
 
         PCGPointGrant::record($this->user->id, Auth::$user->id, $amount, $comment);
 

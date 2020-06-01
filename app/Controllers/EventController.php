@@ -11,15 +11,12 @@ use App\Input;
 use App\Models\Event;
 use App\Pagination;
 use App\Permission;
-use App\RegExp;
 use App\Response;
 use Exception;
 use function count;
 use function in_array;
 
 class EventController extends Controller {
-  public $do = 'event';
-
   /** @var bool */
   protected $_eventPage;
 
@@ -120,7 +117,7 @@ class EventController extends Controller {
             Input::ERROR_RANGE => 'Event name must be between @min and @max characters long',
           ],
         ]))->out();
-        CoreUtils::checkStringValidity($name, 'Event name', INVERSE_PRINTABLE_ASCII_PATTERN);
+        CoreUtils::checkStringValidity($name, 'Event name');
         $this->event->name = $name;
 
         $description = (new Input('description', 'text', [
@@ -131,7 +128,7 @@ class EventController extends Controller {
             Input::ERROR_RANGE => 'Event description cannot be longer than @max characters',
           ],
         ]))->out();
-        CoreUtils::checkStringValidity($description, 'Event description', INVERSE_PRINTABLE_ASCII_PATTERN);
+        CoreUtils::checkStringValidity($description, 'Event description');
         $this->event->desc_src = $description;
         $this->event->desc_rend = CoreUtils::parseMarkdown($description);
 
@@ -175,7 +172,7 @@ class EventController extends Controller {
 
         $max_entries = (new Input('max_entries', function (&$value, $range) {
           /** @noinspection TypeUnsafeComparisonInspection */
-          if ($value == 0 || preg_match(new RegExp('^unlimited$', 'i'), $value)){
+          if ($value == 0 || preg_match('/^unlimited$/i', $value)){
             $value = null;
 
             return Input::ERROR_NONE;

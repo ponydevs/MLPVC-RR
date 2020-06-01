@@ -16,57 +16,48 @@ use App\NSUriBuilder;
 use App\Pagination;
 use App\Permission;
 use App\Regexes;
-use App\RegExp;
 use App\Response;
 use App\Time;
 use App\UserPrefs;
 use App\Users;
 
 class ColorGuideController extends Controller {
-  public $do = 'colorguide';
+  /** @var bool */
+  protected bool $appearance_page = false;
+  /** @var string|null Guide identifier or null for personal color guides */
+  protected ?string $guide = 'pony';
+
+  protected ?DeviantartUser $owner = null;
+  protected bool $is_owner = false;
 
   public function __construct() {
     parent::__construct();
 
-    $this->_appearancePage = isset($_REQUEST['APPEARANCE_PAGE']);
-    $this->_personalGuide = isset($_REQUEST['PERSONAL_GUIDE']);
+    $this->appearance_page = isset($_REQUEST['APPEARANCE_PAGE']);
+    if (isset($_REQUEST['owner_id']))
+      $this->guide = null;
   }
-
-  /** @var bool|int|null */
-  protected $_EQG;
-  /** @var bool */
-  protected $_appearancePage, $_personalGuide;
-  /** @var string */
-  protected $_guide;
-
-  protected function _initCGPath():void {
-    $this->path = rtrim("/cg/{$this->_guide}", '/');
-  }
-
-  /** @var DeviantartUser|null|false */
-  protected $owner;
-  /** @var bool */
-  protected $ownerIsCurrentUser = false;
 
   protected function _initialize($params):void {
-    $this->_guide = strtolower($params['guide'] ?? 'pony');
-    $this->_EQG = $this->_guide === 'eqg' || isset($_REQUEST['eqg']);
-    $nameSet = isset($params['name']);
+    if (!empty($params['guide']) && array_key_exists($params['guide'], CGUtils::GUIDE_MAP)) {
+      $this->guide = $params['guide'];
+    }
+    $name_set = isset($params['name']);
 
-    if ($nameSet){
+    if ($name_set){
       $this->owner = Users::get($params['name'], 'name');
       if (empty($this->owner))
         CoreUtils::notFound();
+      $this->guide = null;
     }
-    $this->ownerIsCurrentUser = $nameSet ? (Auth::$signed_in && Auth::$user->id === $this->owner->id) : false;
+    $this->is_owner = $name_set ? (Auth::$signed_in && Auth::$user->id === $this->owner->id) : false;
 
-    if ($nameSet)
+    if ($name_set)
       $this->path = "/@{$this->owner->name}/cg";
-    else $this->_initCGPath();
+    else $this->path = rtrim("/cg/{$this->guide}", '/');
   }
 
-  /** @var Appearance */
-  protected $appearance;
+  protected ?Appearance $appearance;
 
   public function load_appearance($params, bool $set_properties = true):void {
     if (!isset($params['id']))
@@ -77,31 +68,18 @@ class ColorGuideController extends Controller {
     if (!$set_properties)
       return;
 
-    $this->_personalGuide = $this->appearance->owner_id !== null;
-    $this->owner = $this->appearance->owner;
-    if (!$this->_personalGuide){
-      if ($this->appearance->ishuman && !$this->_EQG){
-        $this->_EQG = 1;
-        $this->path = '/cg/eqg';
-      }
-      else if (!$this->appearance->ishuman && $this->_EQG){
-        $this->_EQG = 0;
-        $this->path = '/cg';
-      }
-      else if ($this->owner !== null){
-        $this->owner = null;
-        $this->ownerIsCurrentUser = false;
-        $this->path = '/cg';
-      }
-      else {
-        $this->_EQG = $this->appearance->ishuman;
-      }
+    if ($this->appearance->owner_id !== null) {
+      $this->guide = null;
+      $this->owner = $this->appearance->owner;
     }
-    else {
-      $this->_EQG = $this->appearance->ishuman;
+    if ($this->guide === null){
       $OwnerName = $this->appearance->owner->name;
       $this->path = "/@$OwnerName/cg";
-      $this->ownerIsCurrentUser = Auth::$signed_in && ($this->appearance->owner_id === Auth::$user->id);
+      $this->is_owner = Auth::$signed_in && ($this->appearance->owner_id === Auth::$user->id);
+    }
+    else if ($this->guide !== $this->appearance->guide){
+      $this->guide = $this->appearance->guide;
+      $this->path = '/cg/eqg';
     }
   }
 
@@ -148,8 +126,7 @@ class ColorGuideController extends Controller {
         DB::$instance->orderBy('created_at', 'DESC');
       break;
     }
-    $appearances = Appearances::get($this->_EQG, null, null, 'id,label,private');
-    $eqg = $this->_EQG;
+    $appearances = Appearances::get($this->guide, null, null, 'id,label,private');
 
     $path = new NSUriBuilder("{$this->path}/full");
     if ($sort_by !== 'relevance')
@@ -157,7 +134,7 @@ class ColorGuideController extends Controller {
 
     if (CoreUtils::isJSONExpected())
       Response::done([
-        'html' => CGUtils::getFullListHTML($appearances, $sort_by, $eqg, NOWRAP),
+        'html' => CGUtils::getFullListHTML($appearances, $sort_by, $this->guide, NOWRAP),
         'stateUrl' => (string)$path,
       ]);
 
@@ -170,18 +147,18 @@ class ColorGuideController extends Controller {
       $libs[] = 'sortable';
 
     $import = [
-      'eqg' => $eqg,
+      'guide' => $this->guide,
       'appearances' => $appearances,
       'sort_by' => $sort_by,
       'is_staff' => $is_staff,
-      'full_list' => CGUtils::getFullListHTML($appearances, $sort_by, $eqg),
+      'full_list' => CGUtils::getFullListHTML($appearances, $sort_by, $this->guide),
     ];
     if ($is_staff){
       $import['max_upload_size'] = CoreUtils::getMaxUploadSize();
       $import['hex_color_pattern'] = Regexes::$hex_color;
     }
     CoreUtils::loadPage(__METHOD__, [
-      'title' => 'Full List - '.($this->_EQG ? 'EQG' : 'Pony').' Color Guide',
+      'title' => 'Full List - '.CGUtils::GUIDE_MAP[$this->guide].' Color Guide',
       'css' => [true],
       'libs' => $libs,
       'js' => [true],
@@ -209,18 +186,18 @@ class ColorGuideController extends Controller {
       Input::IS_OPTIONAL => true,
     ]))->out();
 
-    Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->_EQG), $ordering, $this->_EQG, NOWRAP)]);
+    Response::done(['html' => CGUtils::getFullListHTML(Appearances::get($this->guide), $ordering, $this->guide, NOWRAP)]);
   }
 
   public function changeList($params):void {
     $this->_initialize($params);
-    $pagination = new Pagination("{$this->path}/changes", 9, MajorChange::total($this->_EQG));
+    $pagination = new Pagination("{$this->path}/changes", 9, MajorChange::total($this->guide));
 
     CoreUtils::fixPath($pagination->toURI());
-    $heading = 'Major '.CGUtils::GUIDE_MAP[$this->_guide].' Color Changes';
+    $heading = 'Major '.CGUtils::GUIDE_MAP[$this->guide].' Color Changes';
     $title = "Page {$pagination->getPage()} - $heading - Color Guide";
 
-    $changes = MajorChange::get(null, $this->_EQG, $pagination->getLimitString());
+    $changes = MajorChange::get(null, $this->guide, $pagination->getLimitString());
 
     CoreUtils::loadPage(__METHOD__, [
       'title' => $title,
@@ -228,7 +205,7 @@ class ColorGuideController extends Controller {
       'css' => [true],
       'js' => ['paginate'],
       'import' => [
-        'eqg' => $this->_EQG,
+        'guide' => $this->guide,
         'changes' => $changes,
         'pagination' => $pagination,
       ],
@@ -246,17 +223,17 @@ class ColorGuideController extends Controller {
     $json_response = CoreUtils::isJSONExpected();
     if ($elastic_avail){
       $pagination = new Pagination($this->path, $appearances_per_page);
-      [$appearances, $search_query] = CGUtils::searchGuide($pagination, $this->_EQG, $searching, $title);
+      [$appearances, $search_query] = CGUtils::searchGuide($pagination, $this->guide, $searching, $title);
     }
     else {
       if ($searching && $json_response)
         Response::fail('The ElasticSearch server is currently down and search is not available, sorry for the inconvenience.<br>Please <a class="send-feedback">let us know</a> about this issue.', ['unavail' => true]);
 
       $search_query = null;
-      $entry_count = DB::$instance->where('ishuman', $this->_EQG)->where('id != 0')->count('appearances');
+      $entry_count = DB::$instance->where('guide', $this->guide)->where('id != 0')->count('appearances');
 
       $pagination = new Pagination($this->path, $appearances_per_page, $entry_count);
-      $appearances = Appearances::get($this->_EQG, $pagination->getLimit());
+      $appearances = Appearances::get($this->guide, $pagination->getLimit());
     }
 
     if (isset($_REQUEST['btnl'])){
@@ -276,7 +253,7 @@ class ColorGuideController extends Controller {
       $path->append_query_param('q', $search_query);
     else $remove_params = ['q'];
     CoreUtils::fixPath($path, $remove_params);
-    $heading = ($this->_EQG ? 'EQG' : 'Pony').' Color Guide';
+    $heading = CGUtils::GUIDE_MAP[$this->guide].' Color Guide';
     $title .= "Page {$pagination->getPage()} - $heading";
 
     if (!file_exists(CGUtils::GUIDE_EXPORT_PATH))
@@ -292,7 +269,7 @@ class ColorGuideController extends Controller {
       'js' => ['jquery.ctxmenu', true, 'paginate'],
       'libs' => ['autocomplete'],
       'import' => [
-        'eqg' => $this->_EQG,
+        'guide' => $this->guide,
         'appearances' => $appearances,
         'pagination' => $pagination,
         'elastic_avail' => $elastic_avail,
@@ -332,7 +309,7 @@ class ColorGuideController extends Controller {
   public function blending():void {
     CoreUtils::fixPath('/cg/blending');
 
-    $hex_pattern = preg_replace(new RegExp('^/(.*)/.*$'), '$1', Regexes::$hex_color->jsExport());
+    $hex_pattern = preg_replace('~^/(.*)/.*$~', '$1', Regexes::$hex_color->jsExport());
     $dasprid = Users::get('dasprid', 'name');
     $dasprid_link = empty($dasprid)
       ? "<a href='https://www.deviantart.com/dasprid'>dasprid</a>"

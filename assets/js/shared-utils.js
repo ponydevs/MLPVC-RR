@@ -749,16 +749,16 @@
   $.loadImages = html => {
     const $el = $(html);
 
-    return new Promise(fulfill => {
+    return new Promise(resolve => {
       const $imgs = $el.find('img');
       let loaded = 0;
       if ($imgs.length)
         $imgs.on('load', e => {
           loaded++;
           if (loaded === $imgs.length)
-            fulfill({ $el, e });
-        }).on('error', e => fulfill({ e }));
-      else fulfill({ $el });
+            resolve({ $el, e });
+        }).on('error', e => resolve({ e }));
+      else resolve({ $el });
     });
   };
 

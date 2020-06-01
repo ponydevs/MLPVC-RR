@@ -1,8 +1,9 @@
 (function() {
   'use strict';
 
-  let $tables = $('#content').find('table'),
-    SHOW_TYPES = window.SHOW_TYPES;
+  const { SHOW_TYPES, EP_TITLE_REGEX } = window;
+  let $tables = $('#content').find('table');
+
   /*!
    * Timezone data string taken from:
    * http://momentjs.com/downloads/moment-timezone-with-data.js
@@ -15,8 +16,6 @@
   const sat_date = $.momentToYMD(saturday);
   const sat_time = $.momentToHM(saturday);
   const sat_day = saturday.format('dddd');
-
-  let EP_TITLE_REGEX = window.EP_TITLE_REGEX;
 
   function EpisodeForm(id) {
     const typeOptions = [];

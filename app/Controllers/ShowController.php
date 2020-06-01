@@ -256,7 +256,7 @@ class ShowController extends Controller {
           ],
         ]))->out();
         if ($notes !== null){
-          CoreUtils::checkStringValidity($notes, "$what notes", INVERSE_PRINTABLE_ASCII_PATTERN);
+          CoreUtils::checkStringValidity($notes, "$what notes");
           $notes = CoreUtils::sanitizeHtml($notes, ['a'], ['a.href']);
           if ($this->creating || $notes !== $this->show->notes)
             $update['notes'] = $notes;
@@ -444,7 +444,7 @@ class ShowController extends Controller {
 
     switch ($this->action){
       case 'GET':
-        $columns = ['id', 'label', 'ishuman'];
+        $columns = ['id', 'label', 'guide'];
 
         $linked_ids = [];
         foreach ($this->show->related_appearances as $p){

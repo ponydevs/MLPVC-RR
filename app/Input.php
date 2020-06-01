@@ -173,7 +173,7 @@ class Input {
           return $code;
       break;
       case 'uuid':
-        if (!is_string($this->_origValue) || !preg_match(new RegExp('^[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-[89ab][a-f0-9]{3}\-[a-f0-9]{12}$', 'i'), $this->_origValue))
+        if (!is_string($this->_origValue) || !preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $this->_origValue))
           return self::ERROR_INVALID;
 
         $this->_origValue = strtolower($this->_origValue);
@@ -187,15 +187,15 @@ class Input {
           return self::ERROR_INVALID;
         if (CoreUtils::startsWith($this->_origValue, ABSPATH))
           $this->_origValue = mb_substr($this->_origValue, mb_strlen(ABSPATH) - 1);
-        if (!preg_match(Regexes::$rewrite, $this->_origValue) && !preg_match(new RegExp('^#[a-z\-]+$'), $this->_origValue)){
+        if (!preg_match(Regexes::$rewrite, $this->_origValue) && !preg_match('/^#[a-z\-]+$/', $this->_origValue)){
           if (self::checkStringLength($this->_origValue, $this->_range, $code))
             return $code;
-          if (!preg_match(new RegExp('^https?://[a-z\d/.-]+(?:/[ -~]+)?$', 'i'), $this->_origValue))
+          if (!preg_match('~^https?://[a-z\d/.-]+(?:/[ -~]+)?$~i', $this->_origValue))
             Response::fail('Link URL does not appear to be a valid link');
         }
       break;
       case 'int[]':
-        if (!is_string($this->_origValue) || !preg_match(new RegExp('^\d{1,12}(?:,\d{1,12})*$'), $this->_origValue))
+        if (!is_string($this->_origValue) || !preg_match('/^\d{1,12}(?:,\d{1,12})*$/', $this->_origValue))
           return self::ERROR_INVALID;
 
         $this->_origValue = array_map('\intval', explode(',', $this->_origValue));

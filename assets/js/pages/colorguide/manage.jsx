@@ -1,12 +1,19 @@
 (function(undefined) {
   'use strict';
 
-  let TAG_TYPES_ASSOC = window.TAG_TYPES_ASSOC, $colorGroups, HEX_COLOR_PATTERN = window.HEX_COLOR_PATTERN,
-    isWebkit = 'WebkitAppearance' in document.documentElement.style, EQG = window.EQG,
-    PRINTABLE_ASCII_PATTERN = window.PRINTABLE_ASCII_PATTERN,
-    AppearancePage = !!window.AppearancePage, PersonalGuide = window.PersonalGuide,
-    PGRq = PersonalGuide ? `/@${PersonalGuide}` : '',
-    TAG_NAME_REGEX = window.TAG_NAME_REGEX,
+  const
+    {
+      HEX_COLOR_PATTERN,
+      TAG_TYPES_ASSOC,
+      GUIDE,
+      PRINTABLE_ASCII_PATTERN,
+      AppearancePage,
+      OwnerId,
+      OwnerName,
+      TAG_NAME_REGEX,
+    } = window,
+    isWebkit = 'WebkitAppearance' in document.documentElement.style,
+    PGRq = OwnerName ? `/@${OwnerName}` : '',
     ColorTextParseError = function(line, lineNumber, matches) {
       let missing = [];
       if (!matches || !matches[1])
@@ -22,9 +29,10 @@
       }`;
       this.lineNumber = lineNumber;
     };
+  let $colorGroups;
 
   let $SpriteUploadFormTemplate = $.mk('form', 'sprite-upload').html(
-    (PersonalGuide ? `<div class="notice info"><label>About sprites</label><p>Sprites are small, pixelated images showcasing all of the colors a given character has. They are most useful if they contain a full body image of your character with any difficult details highlighted. You can use it together with the notes, adding explanations about anything that might be confusing.</p><p>Sprites have a height limit of 300px, a width limit between 300 and 700 pixels, and are expected to be PNG files with a transparent background.</p><p>We provide templates that fit these guidelines for anyone to use through the <a class="sprite-template-gen">Template Generator</a>. If you decide to use this generator, you must add at least the mane and tail before uploading the sprite to the site.</p><p class="color-red">The staff reserves the right to remove any sprites that do not follow these guidelines.</p></div>` : '') +
+    (OwnerId ? `<div class="notice info"><label>About sprites</label><p>Sprites are small, pixelated images showcasing all of the colors a given character has. They are most useful if they contain a full body image of your character with any difficult details highlighted. You can use it together with the notes, adding explanations about anything that might be confusing.</p><p>Sprites have a height limit of 300px, a width limit between 300 and 700 pixels, and are expected to be PNG files with a transparent background.</p><p>We provide templates that fit these guidelines for anyone to use through the <a class="sprite-template-gen">Template Generator</a>. If you decide to use this generator, you must add at least the mane and tail before uploading the sprite to the site.</p><p class="color-red">The staff reserves the right to remove any sprites that do not follow these guidelines.</p></div>` : '') +
     `<p class="align-center"><a class="upload-link">Click here to upload a file</a> (max. ${window.MAX_SIZE}) or enter a URL below.</p>
 		<label><input type="text" name="image_url" placeholder="External image URL" required></label>
 		<p class="align-center">The URL will be checked against the supported provider list, and if an image is found, it'll be downloaded to the server and set as this appearance's sprite image.</p>`,
@@ -54,7 +62,7 @@
 					<span>Additional notes (1000 chars. max, optional)</span>
 					<div class="code-editor"></div>
 				</div>
-				<label><input type='checkbox' name='private'> Make private (only ${PersonalGuide ? 'you and staff' : 'staff'} can see added colors)</label>`,
+				<label><input type='checkbox' name='private'> Make private (only ${OwnerId ? 'you and staff' : 'staff'} can see added colors)</label>`,
       ),
     ponyEditorActions = {
       selectiveWipe: (data, appearanceID) => e => {
@@ -80,7 +88,7 @@
 							</div>
 						</fieldset>
 						<label><input type="checkbox" name="wipe_notes"> Clear notes</label>
-						${PersonalGuide ? '' : `<label><input type="checkbox" name="wipe_tags"> Remove all tags</label>`}
+						${OwnerId ? '' : `<label><input type="checkbox" name="wipe_tags"> Remove all tags</label>`}
 						<label><input type="checkbox" name="mkpriv"> Make private</label>
 						<label><input type="checkbox" name="reset_priv_key"> Generate new private sharing key</label>`,
           );
@@ -108,12 +116,11 @@
           });
         });
       },
-      cmEditor: (data, appearanceId) => e => {
+      cmEditor: (ponyLabel, appearanceId) => e => {
         e.preventDefault();
 
-        let ponyLabel = data.label;
         $.Dialog.close();
-        $.Dialog.wait('Manage Cutie Mark of ' + ponyLabel, 'Retrieving CM data from server');
+        $.Dialog.wait(`Manage Cutie Mark of ${ponyLabel}`, 'Retrieving CM data from server');
         $.API.get(`/cg/appearance/${appearanceId}/cutiemarks`, function() {
           if (!this.status) return $.Dialog.fail(false, this.message);
 
@@ -164,7 +171,7 @@
                   'class': 'darkblue typcn typcn-pencil cg-cm-editor',
                 })
                 .text('Cutie Mark')
-                .on('click', ponyEditorActions.cmEditor(data, appearanceID)),
+                .on('click', ponyEditorActions.cmEditor(data.label, appearanceID)),
             ),
           );
         }
@@ -178,10 +185,10 @@
           $.Dialog.wait(false, 'Saving changes');
           if (AppearancePage)
             data.APPEARANCE_PAGE = true;
-          if (PersonalGuide)
-            data.PERSONAL_GUIDE = true;
-          if (EQG)
-            data.eqg = true;
+          if (OwnerId)
+            data.owner_id = OwnerId;
+          if (GUIDE)
+            data.guide = GUIDE;
 
           $.API[editing ? 'put' : 'post'](`/cg/appearance${editing ? `/${appearanceID}` : ''}`, data, data => {
             if (!data.status) return $.Dialog.fail(false, data.message);
@@ -216,11 +223,11 @@
     let $this = $(this),
       title = $this.text().trim();
 
-    if (!PersonalGuide)
+    if (!OwnerId)
       return mkPonyEditor($this, title);
 
     $.Dialog.wait(title, 'Checking whether there are available slots');
-    $.API.get(`/user/${PersonalGuide}/pcg/slots`, function() {
+    $.API.get(`/user/${OwnerId}/pcg/slots`, function() {
       if (!this.status) return $.Dialog.fail(false, this.message);
 
       mkPonyEditor($this, title);
@@ -357,45 +364,44 @@
 
   const AppearanceListCache = (function() {
     let _list;
-    const loadItems = () => {
-      return new Promise((fulfill, desert) => {
-        if (typeof _list !== 'undefined'){
-          fulfill(_list);
-          return;
-        }
+    return {
+      read(){
+        if (_list)
+          return Promise.resolve(_list);
 
-        const data = {};
-        if (PersonalGuide)
-          data.PERSONAL_GUIDE = PersonalGuide;
-        $.API.get('/cg/appearances/list', data, function() {
-          if (!this.status) return $.Dialog.fail('Appearance list retrieval', this.message);
+        return new Promise((resolve, reject) => {
+          const data = {};
+          if (OwnerId)
+            data.owner_id = OwnerId;
+          if (GUIDE)
+            data.guide = GUIDE;
+          $.API.get('/cg/appearances/list', data, function() {
+            if (!this.status) return $.Dialog.fail('Appearance list retrieval', this.message);
 
-          _list = this.list;
-          fulfill(_list);
-        }).fail(function() {
-          desert();
+            _list = this.list;
+            resolve(_list);
+          }).fail(function() {
+            reject();
+          });
         });
-      });
+      }
     };
-    return { read: () => loadItems() };
   })();
 
   const ColorListCache = (function() {
     let _list = {};
     const loadItems = appearance_id => {
-      return new Promise((fulfill, desert) => {
-        if (typeof _list[appearance_id] !== 'undefined'){
-          fulfill(_list[appearance_id]);
-          return;
-        }
-
+      if (typeof _list[appearance_id] !== 'undefined'){
+        return Promise.resolve(_list[appearance_id]);
+      }
+      return new Promise((resolve, reject) => {
         $.API.get(`/cg/appearance/${appearance_id}/link-targets`, function() {
           if (!this.status) return $.Dialog.fail('Color group list retrieval', this.message);
 
           _list[appearance_id] = this.list;
-          fulfill(_list[appearance_id]);
+          resolve(_list[appearance_id]);
         }).fail(function() {
-          desert();
+          reject();
         });
       });
     };
@@ -440,12 +446,14 @@
                 $pony = $.mk('optgroup').attr('label', 'Pony Guide'),
                 $eqg = $.mk('optgroup').attr('label', 'EQG Guide'),
                 $pcg = $.mk('optgroup').attr('label', 'Personal Color Guide');
-              if (EQG === true) $this.append($eqg, $pony);
-              else if (EQG === false) $this.append($pony, $eqg);
-              else $this.append($pcg);
+              switch (GUIDE){
+                case 'eqg': $this.append($eqg, $pony); break;
+                case 'pony': $this.append($pony, $eqg); break;
+                default: $this.append($pcg);
+              }
 
               $.each(list, (_, el) => {
-                (el.ishuman === null ? $pcg : (el.ishuman ? $eqg : $pony)).append(
+                (el.guide === null ? $pcg : (el.guide === 'eqg' ? $eqg : $pony)).append(
                   $.mk('option').attr({
                     value: el.id,
                   }).text(el.label),
@@ -557,7 +565,7 @@
 						<option>Magic</option>
 					</datalist>`,
         ),
-        PersonalGuide ? undefined : $.mk('label').append(
+        OwnerId ? undefined : $.mk('label').append(
           $.mk('input').attr({
             type: 'checkbox',
             name: 'major',
@@ -570,7 +578,7 @@
 					<span>Change reason (1-255 chars.)</span>
 					<input type='text' name='reason' pattern="${PRINTABLE_ASCII_PATTERN.replace('+', '{1,255}')}" required disabled>
 				</label>
-				<p class="align-center">Each color must have a short (3-30 chars.) description.${PersonalGuide ? '<br>The editor rounds RGB values: ≤3 to 0 and ≥252 to 255.' : ''}<br>Rows that have a label will always be saved.</p>`,
+				<p class="align-center">Each color must have a short (3-30 chars.) description.${OwnerId ? '<br>The editor rounds RGB values: ≤3 to 0 and ≥252 to 255.' : ''}<br>Rows that have a label will always be saved.</p>`,
         $.mk('div').attr('class', 'btn-group').append(
           this.$addBtn, this.$editorToggle,
         ),
@@ -685,7 +693,7 @@
       let val = $.RGBAColor.parse(input.value);
       if (val !== null){
         let $input = $(input);
-        if (!PersonalGuide)
+        if (!OwnerId)
           $.each($.RGBAColor.COMPONENTS, function(_, channel) {
             const value = val[channel];
             if (value <= 3)
@@ -952,7 +960,7 @@
         $colorSelector = $this.next(),
         color_id = parseInt($this.siblings().filter('.clrid').text().replace('ID:', ''), 10);
       $this.disable();
-      return new Promise(fulfill => {
+      return new Promise(resolve => {
         ColorListCache.read(appearance_id).then(function(groups) {
           $colorSelector.children('optgroup').remove();
           $colorSelector.children('.appearance-name-option').text(appearance_name);
@@ -973,7 +981,7 @@
 
           $this.enable().addClass('hidden');
           $colorSelector.enable().val('').removeClass('hidden');
-          fulfill($colorSelector);
+          resolve($colorSelector);
         });
       });
     }
@@ -1978,7 +1986,7 @@
                   $.Dialog.close();
                   $uploadInput.trigger('click', [true]);
                 });
-                if (PersonalGuide)
+                if (OwnerId)
                   $form.find('.sprite-template-gen').on('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();

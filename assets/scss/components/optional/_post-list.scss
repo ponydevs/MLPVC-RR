@@ -101,7 +101,7 @@
         }
 
         .post-deviation-promise {
-          @include loading-indicator(154px, 'roll', .3);
+          @include loading-indicator(154px, .3);
 
           margin: 0 auto 10px;
         }
@@ -109,7 +109,7 @@
 
       &.screencap {
         .post-image-promise {
-          @include loading-indicator(152px, 'roll', .3);
+          @include loading-indicator(152px, .3);
           width: 268px;
 
           margin: 0 auto 10px;
@@ -271,7 +271,7 @@
           flex: 0 0 40px;
 
           &.user-avatar-promise {
-            @include loading-indicator(40px, 'roll');
+            @include loading-indicator(40px);
           }
         }
 

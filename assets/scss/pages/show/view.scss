@@ -239,10 +239,10 @@
 
       .synopsis-promise {
         margin: 0 auto;
-        @include loading-indicator(218px, 'roll');
+        @include loading-indicator(218px);
 
         &.twoparter {
-          @include loading-indicator(399px, 'roll', 0.3);
+          @include loading-indicator(399px, 0.3);
         }
       }
 

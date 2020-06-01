@@ -2,14 +2,13 @@
 (function() {
   'use strict';
 
-  let USERNAME_REGEX = window.USERNAME_REGEX,
-    showId = window.SHOW_ID,
-    $epSection = $content.children('section.episode');
+  const { USERNAME_REGEX, SHOW_ID } = window;
+  let $epSection = $content.children('section.episode');
 
   $('#video').on('click', function() {
     $.Dialog.wait('Set video links', 'Requesting links from the server');
 
-    const endpoint = `/show/${showId}/video-data`;
+    const endpoint = `/show/${SHOW_ID}/video-data`;
     $.API.get(endpoint, function() {
       const data = this;
       const { type } = data;
@@ -55,7 +54,7 @@
           $.each(data.fullep, function(_, prov) {
             $VidLinksForm
               .find('input[type="checkbox"]')
-              .filter('[name="' + prov + '_1_full"]')
+              .filter(`[name="${prov}_1_full"]`)
               .prop('checked', true)
               .trigger('change');
           });
@@ -63,7 +62,7 @@
       if (Object.keys(data.vidlinks).length > 0){
         let $inputs = $VidLinksForm.find('input[type="url"]');
         $.each(data.vidlinks, function(k, v) {
-          $inputs.filter('[name=' + k + ']').val(v);
+          $inputs.filter(`[name=${k}]`).val(v);
         });
       }
       $.Dialog.request(false, $VidLinksForm, 'Save', function($form) {
@@ -98,7 +97,7 @@
   $('#cg-relations').on('click', function() {
     $.Dialog.wait('Guide relation editor', 'Retrieving relations from server');
 
-    const endpoint = `/show/${showId}/guide-relations`;
+    const endpoint = `/show/${SHOW_ID}/guide-relations`;
     $.API.get(endpoint, response => {
       if (!response.status) return $.Dialog.fail(false, response.message);
 
@@ -109,7 +108,7 @@
         formId: 'guide-relation-editor',
         valueKey: 'id',
         displayKey: 'label',
-        findGroup: el => el.ishuman ? 'eqg' : 'pony',
+        findGroup: el => el.guide,
         onSuccess(data) {
           let $cgRelations = $content.children('section.appearances');
           if (data.section){
@@ -535,7 +534,7 @@
         let $unbind = $form.find('[name=unbind]');
 
         if (!deleteOnly)
-          $form.prepend('<div class="notice info">By removing the "finished" flag, the post will be moved back to the "List of ' + Type + '" section</div>');
+          $form.prepend(`<div class="notice info">By removing the "finished" flag, the post will be moved back to the "List of ${Type}" section</div>`);
 
         if (type === 'reservation'){
           $unbind.on('click', function() {

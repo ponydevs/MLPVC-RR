@@ -96,7 +96,7 @@
           }
 
           .appearance-preview-promise {
-            @include loading-indicator(100px, 'roll', .25);
+            @include loading-indicator(100px, .25);
           }
 
           img.border {

@@ -14,7 +14,6 @@ use App\Models\Session;
 use App\Models\DeviantartUser;
 use App\Pagination;
 use App\Permission;
-use App\RegExp;
 use App\Response;
 use App\Twig;
 use App\UserPrefs;
@@ -356,7 +355,7 @@ class UserController extends Controller {
           $users_out = [];
           foreach ($users as $u){
             $firstletter = strtoupper($u->name[0]);
-            if (preg_match(new RegExp('^[^a-z]$', 'i'), $firstletter))
+            if (preg_match('/^[^a-z]$/i', $firstletter))
               $firstletter = '#';
             $users_out[$firstletter][] = $u->toAnchor();
           }

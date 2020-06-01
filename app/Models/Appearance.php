@@ -11,7 +11,6 @@ use App\CoreUtils;
 use App\DB;
 use App\NSUriBuilder;
 use App\Permission;
-use App\RegExp;
 use App\Response;
 use App\ShowHelper;
 use App\Tags;
@@ -38,7 +37,7 @@ use function in_array;
  * @property DateTime            $created_at
  * @property DateTime            $updated_at
  * @property DateTime            $last_cleared
- * @property bool                $ishuman
+ * @property string              $guide
  * @property bool                $private
  * @property string              $token
  * @property string              $sprite_hash
@@ -52,9 +51,6 @@ use function in_array;
  * @property ShowAppearance[]    $show_appearances    (Via relations)
  * @property Show[]              $related_shows       (Via relations)
  * @property bool                $protected           (Via magic method)
- * @method static Appearance[] find_by_sql($sql, $values = null)
- * @method static Appearance find_by_owner_id_and_label(string $uuid, string $label)
- * @method static Appearance find_by_ishuman_and_label($ishuman, string $label)
  * @method static Appearance|Appearance[] find(...$args)
  * @method static Appearance[] all(...$args)
  */
@@ -158,8 +154,8 @@ class Appearance extends NSModel implements Linkable {
     return CoreUtils::makeUrlSafe($this->label);
   }
 
-  public static function find_dupe(bool $creating, bool $personalGuide, array $data) {
-    $firstcol = $personalGuide ? 'owner_id' : 'ishuman';
+  public static function find_dupe(bool $creating, array $data) {
+    $firstcol = $data['guide'] === null ? 'owner_id' : 'guide';
     $conds = [
       "$firstcol = ? AND label = ?",
       $data[$firstcol],
@@ -242,7 +238,7 @@ class Appearance extends NSModel implements Linkable {
    * @return string
    */
   public function getSpriteHTML(bool $canUpload, ?DeviantartUser $user = null):string {
-    if (Auth::$signed_in && $this->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite'))
+    if (Auth::$signed_in && $this->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite', $user))
       $canUpload = false;
 
     $imgPth = $this->getSpriteURL();
@@ -260,7 +256,7 @@ class Appearance extends NSModel implements Linkable {
 
   private static function _processNotes(string $notes):string {
     $notes = CoreUtils::sanitizeHtml($notes);
-    $notes = preg_replace(new RegExp('(\s)(&gt;&gt;(\d+))(\D|$)'), "$1<a href='https://derpibooru.org/$3'>$2</a>$4", $notes);
+    $notes = preg_replace('/(\s)(&gt;&gt;(\d+))(\D|$)/', "$1<a href='https://derpibooru.org/$3'>$2</a>$4", $notes);
     $notes = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/', function ($a) {
       $Ep = ShowHelper::getActual((int)$a[1], (int)$a[2]);
 
@@ -344,7 +340,7 @@ class Appearance extends NSModel implements Linkable {
 
     $HTML = '';
     if (!empty($tags)) foreach ($tags as $t)
-      $HTML .= $t->getHTML($this->ishuman);
+      $HTML .= $t->getHTML($this->guide);
 
     return $wrap ? "<div class='tags'>$HTML</div>" : $HTML;
   }
@@ -505,7 +501,7 @@ class Appearance extends NSModel implements Linkable {
     $safe_label = $this->getURLSafeLabel();
     $pcg = $this->owner_id !== null;
     $owner = !$pcg || $sharing ? '' : $this->owner->toURL();
-    $guide = $pcg || $sharing ? '' : ($this->ishuman ? 'eqg' : 'pony').'/';
+    $guide = $pcg || $sharing ? '' : "{$this->guide}/";
 
     return "$owner/cg/{$guide}v/{$this->id}-$safe_label";
   }
@@ -581,7 +577,7 @@ class Appearance extends NSModel implements Linkable {
       'label' => $this->label,
       'order' => $this->order,
       'private' => $this->private,
-      'guide' => $this->ishuman ? 'eqg' : 'pony',
+      'guide' => $this->guide,
       'tags' => $tag_names,
     ];
   }
@@ -755,7 +751,7 @@ class Appearance extends NSModel implements Linkable {
     if (ColorGroup::exists(['conditions' => ['appearance_id = ?', $this->id]]))
       throw new RuntimeException('Template can only be applied to empty appearances');
 
-    $Scheme = $this->ishuman
+    $Scheme = $this->guide === 'eqg'
       ? self::HUMAN_TEMPLATE
       : self::PONY_TEMPLATE;
 
@@ -856,11 +852,11 @@ class Appearance extends NSModel implements Linkable {
 
     $color_mapping = [];
     foreach ($colors as $row){
-      $cglabel = preg_replace(new RegExp('^(Costume|Dress)$'), 'Coat', $row['cglabel']);
-      $cglabel = preg_replace(new RegExp('^(Coat|Mane & Tail) \([^)]+\)$'), '$1', $cglabel);
+      $cglabel = preg_replace('/^(Costume|Dress)$/', 'Coat', $row['cglabel']);
+      $cglabel = preg_replace('/^(Coat|Mane & Tail) \([^)]+\)$/', '$1', $cglabel);
       $eye = $row['cglabel'] === 'Iris';
-      $colorlabel = preg_replace(new RegExp('^(?:(?:(?:Purple|Yellow|Red)\s)?(?:Main|First|Normal'.(!$eye
-          ? '|Gradient(?:\s(?:Light|(?:\d+\s)?(?:Top|Botom)))?\s' : '').'))?(.+?)(?:\s\d+)?(?:/.*)?$'), '$1', $row['clabel']);
+      $eye_regex = !$eye ? '|Gradient(?:\s(?:Light|(?:\d+\s)?(?:Top|Botom)))?\s' : '';
+      $colorlabel = preg_replace("~^(?:(?:(?:Purple|Yellow|Red)\\s)?(?:Main|First|Normal{$eye_regex}))?(.+?)(?:\\s\\d+)?(?:/.*)?\$~", '$1', $row['clabel']);
       $label = "$cglabel $colorlabel";
       if (isset($DefaultColorMapping[$label]) && !isset($color_mapping[$label]))
         $color_mapping[$label] = $row['hex'];
@@ -891,7 +887,7 @@ class Appearance extends NSModel implements Linkable {
     return Tags::getList($tags, $separator);
   }
 
-  public function processTagChanges(string $old_tags, string $new_tags, bool $eqg) {
+  public function processTagChanges(string $old_tags, string $new_tags, ?string $guide) {
     $old = array_map([CoreUtils::class, 'trim'], explode(',', $old_tags));
     $new = array_map([CoreUtils::class, 'trim'], explode(',', $new_tags));
     $added_tag_names = array_diff($new, $old);
@@ -929,8 +925,8 @@ class Appearance extends NSModel implements Linkable {
         ]);
 
       $this->addTag($tag);
-      if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$eqg ? 'eqg' : 'pony'][$tag->id]))
-        Appearances::getSortReorder($eqg);
+      if (!empty(CGUtils::GROUP_TAG_IDS_ASSOC[$guide][$tag->id]))
+        Appearances::getSortReorder($guide);
     }
   }
 

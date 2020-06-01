@@ -25,9 +25,9 @@
     {{ pagination }}
   </div>
   {{ export_vars({
-    'EQG': false,
+    'GUIDE': null,
     'AppearancePage': false,
-    'PersonalGuide': user.id,
+    'OwnerId': user.id,
   }) }}
   {% if owner_or_staff %}
     {{ export_vars({

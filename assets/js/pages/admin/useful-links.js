@@ -1,8 +1,8 @@
 (function() {
   'use strict';
 
-  const PRINTABLE_ASCII_PATTERN = $.attributifyRegex(window.PRINTABLE_ASCII_PATTERN),
-    ROLES_ASSOC = window.ROLES_ASSOC;
+  const PRINTABLE_ASCII_PATTERN = $.attributifyRegex(window.PRINTABLE_ASCII_PATTERN);
+  const { ROLES_ASSOC } = window;
 
   let $uflol = $('.useful-links').find('ol'),
     $sbUflContainer = $('#sidebar').find('.welcome .links'),

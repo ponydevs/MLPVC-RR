@@ -4,8 +4,8 @@
   let $sortBy = $('#sort-by'),
     $fullList = $('#full-list'),
     $ReorderBtn = $('#guide-reorder'),
-    $ReorderCancelBtn = $('#guide-reorder-cancel'),
-    EQG = !!window.EQG;
+    $ReorderCancelBtn = $('#guide-reorder-cancel');
+  const { GUIDE } = window;
   $sortBy.on('change', function() {
     let baseUrl = $sortBy.data('base-url'),
       val = $sortBy.val(),
@@ -94,8 +94,8 @@
           list: list.join(','),
           ordering: $sortBy.val(),
         };
-        if (EQG)
-          data.eqg = true;
+        if (GUIDE)
+          data.guide = GUIDE;
 
         $.API.post('/cg/full/reorder', data, function() {
           if (!this.status) return $.Dialog.fail(false, this.message);
