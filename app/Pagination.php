@@ -4,6 +4,9 @@ namespace App;
 
 use ActiveRecord\SQLBuilder;
 use HtmlGenerator\HtmlTag;
+use League\Uri\Components\Query;
+use League\Uri\Uri;
+use League\Uri\UriModifier;
 use RuntimeException;
 
 /**
@@ -112,15 +115,15 @@ class Pagination {
     );
   }
 
-  private function _makeLink($i) {
-    $href = new NSUriBuilder($this->base_path);
-    $href->append_query_raw($this->getPageQueryString($i, false));
+  private function _makeLink($i): string {
+    $href = $this->toURI(false, $i);
     $get = $_GET;
     if (isset($get["{$this->query_prefix}page"]))
       unset($get["{$this->query_prefix}page"]);
-    $href->append_query_array($get);
 
-    return $href->build_http_string();
+    $query = Query::createFromParams($get);
+
+    return (string) UriModifier::appendQuery($href, $query);
   }
 
   private function _makeItem(int $i, &$currentIndex = null, $nr = null) {
@@ -247,7 +250,7 @@ class Pagination {
   /**
    * Returns the raw query string parameter for the page
    *
-   * @param int|null $page                Page number, or current page if not specified
+   * @param string|int|null $page         Page number, '*', or current page if not specified
    * @param bool     $force_fixpath_empty Force an "empty" value so fixPath knows to remove the parameter
    *
    * @return string
@@ -263,11 +266,8 @@ class Pagination {
     return "{$this->query_prefix}page=$page_number";
   }
 
-  public function toURI(bool $force_fixpath_empty = true):NSUriBuilder {
-    $uri = new NSUriBuilder($this->base_path);
-    $uri->append_query_raw($this->getPageQueryString(null, $force_fixpath_empty));
-
-    return $uri;
+  public function toURI(bool $force_fixpath_empty = true, $force_page = null): Uri {
+    return Uri::createFromString($this->base_path)->withQuery($this->getPageQueryString($force_page, $force_fixpath_empty));
   }
 
   public function getPage():?int {

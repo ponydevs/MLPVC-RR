@@ -9,7 +9,6 @@ use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
-use App\NSUriBuilder;
 use App\Permission;
 use App\Response;
 use App\ShowHelper;
@@ -22,6 +21,9 @@ use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exce
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
 use Exception;
+use League\Uri\Components\Query;
+use League\Uri\Uri;
+use League\Uri\UriModifier;
 use RuntimeException;
 use SeinopSys\RGBAColor;
 use function count;
@@ -185,25 +187,29 @@ class Appearance extends NSModel implements Linkable {
   public function getSpriteURL(?int $size = null, string $fallback = ''):string {
     if ($this->hasSprite()){
       $sprite_hash = $this->sprite_hash ?? $this->regenerateSpriteHash();
-      $url = new NSUriBuilder(PUBLIC_API_V0_PATH."/appearances/{$this->id}/sprite");
+      $url = Uri::createFromString(PUBLIC_API_V0_PATH."/appearances/{$this->id}/sprite");
+      $query_params = [];
       if (!empty($sprite_hash))
-        $url->append_query_param('hash', $sprite_hash);
+        $query_params['hash'] = $sprite_hash;
       if ($size !== null)
-        $url->append_query_param('size', $size);
+        $query_params['size'] = $size;
       if (!empty($_GET['token']))
-        $url->append_query_param('token', $_GET['token']);
+        $query_params['token'] = $_GET['token'];
 
-      return (string)$url;
+      if (!empty($query_params))
+        $url = UriModifier::appendQuery($url, Query::createFromParams($query_params));
+
+      return (string) $url;
     }
 
     return $fallback;
   }
 
   public function getStaticSpriteURL() {
-    $url = new NSUriBuilder("/img/sprites/{$this->id}.png");
+    $url = Uri::createFromString("/img/sprites/{$this->id}.png");
     $sprite_hash = $this->sprite_hash ?? $this->regenerateSpriteHash();
     if (!empty($sprite_hash))
-      $url->append_query_param('hash', $sprite_hash);
+      $url = UriModifier::appendQuery($url, Query::createFromParams([ 'hash' => $sprite_hash ]));
 
     return (string)$url;
   }
@@ -255,23 +261,23 @@ class Appearance extends NSModel implements Linkable {
   }
 
   private static function _processNotes(string $notes):string {
-    $notes = CoreUtils::sanitizeHtml($notes);
-    $notes = preg_replace('/(\s)(&gt;&gt;(\d+))(\D|$)/', "$1<a href='https://derpibooru.org/$3'>$2</a>$4", $notes);
-    $notes = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/', function ($a) {
+    $notes_rend = CoreUtils::sanitizeHtml($notes);
+    $notes_rend = preg_replace('/(\s)(&gt;&gt;(\d+))(\D|$)/', "$1<a href='https://derpibooru.org/$3'>$2</a>$4", $notes_rend);
+    $notes_rend = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/', function ($a) {
       $Ep = ShowHelper::getActual((int)$a[1], (int)$a[2]);
 
       return !empty($Ep)
         ? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY, 'title')).'</a>'
         : "<strong>{$a[0]}</strong>";
-    }, $notes);
-    $notes = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/', function ($a) {
+    }, $notes_rend);
+    $notes_rend = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/', function ($a) {
       $Ep = ShowHelper::getActual(0, (int)$a[1], true);
 
       return !empty($Ep)
         ? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(ShowHelper::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY, 'title'))).'</a>'
         : "<strong>{$a[0]}</strong>";
-    }, $notes);
-    $notes = preg_replace_callback('/(^|[^\\\\])(?:#(\d+))(\'s?)?\b/', function ($a) {
+    }, $notes_rend);
+    $notes_rend = preg_replace_callback('/(^|[^\\\\])(?:#(\d+))(\'s?)?\b/', function ($a) {
 
       $appearance = DB::$instance->where('id', $a[2])->getOne('appearances');
 
@@ -280,9 +286,9 @@ class Appearance extends NSModel implements Linkable {
         ? "{$a[1]}<a href='/cg/v/{$appearance->id}'>{$appearance->label}</a>".(!empty($a[3]) ? CoreUtils::posess($appearance->label, true) : '')
         : (string)$a[0]
       );
-    }, $notes);
+    }, $notes_rend);
 
-    return str_replace('\#', '#', $notes);
+    return str_replace('\#', '#', $notes_rend);
   }
 
   /**

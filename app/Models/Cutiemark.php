@@ -7,9 +7,11 @@ use App\CGUtils;
 use App\CoreUtils;
 use App\DeviantArt;
 use App\File;
-use App\NSUriBuilder;
 use App\Permission;
 use App\Users;
+use League\Uri\Components\Query;
+use League\Uri\Uri;
+use League\Uri\UriModifier;
 
 /**
  * @property int            $id
@@ -149,13 +151,17 @@ class Cutiemark extends NSModel {
   }
 
   public function getDownloadURL($source = false):string {
-    $url = new NSUriBuilder("/cg/cutiemark/download/{$this->id}");
+    $url = Uri::createFromString("/cg/cutiemark/download/{$this->id}");
+    $query_params = [];
     if (!empty($_GET['token']))
-      $url->append_query_param('token', $_GET['token']);
+      $query_params['token'] = $_GET['token'];
     if ($source)
-      $url->append_query_param('source', null);
+      $query_params['source'] = null;
 
-    return $url;
+    if (!empty($query_params))
+      $url = UriModifier::appendQuery($url, Query::createFromParams($query_params));
+
+    return (string) $url;
   }
 
   public function to_js_response() {

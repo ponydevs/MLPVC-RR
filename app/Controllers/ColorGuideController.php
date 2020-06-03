@@ -12,7 +12,6 @@ use App\Input;
 use App\Models\Appearance;
 use App\Models\MajorChange;
 use App\Models\DeviantartUser;
-use App\NSUriBuilder;
 use App\Pagination;
 use App\Permission;
 use App\Regexes;
@@ -20,6 +19,9 @@ use App\Response;
 use App\Time;
 use App\UserPrefs;
 use App\Users;
+use League\Uri\Components\Query;
+use League\Uri\Uri;
+use League\Uri\UriModifier;
 
 class ColorGuideController extends Controller {
   /** @var bool */
@@ -128,9 +130,9 @@ class ColorGuideController extends Controller {
     }
     $appearances = Appearances::get($this->guide, null, null, 'id,label,private');
 
-    $path = new NSUriBuilder("{$this->path}/full");
+    $path = Uri::createFromString("{$this->path}/full");
     if ($sort_by !== 'relevance')
-      $path->append_query_param('sort_by', $sort_by);
+      $path = UriModifier::appendQuery($path, Query::createFromParams(['sort_by'=>$sort_by]));
 
     if (CoreUtils::isJSONExpected())
       Response::done([
@@ -250,7 +252,7 @@ class ColorGuideController extends Controller {
     $path = $pagination->toURI();
     $remove_params = null;
     if (!empty($search_query))
-      $path->append_query_param('q', $search_query);
+      $path = UriModifier::appendQuery($path, Query::createFromParams(['q' => $search_query]));
     else $remove_params = ['q'];
     CoreUtils::fixPath($path, $remove_params);
     $heading = CGUtils::GUIDE_MAP[$this->guide].' Color Guide';

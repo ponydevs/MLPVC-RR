@@ -3,6 +3,9 @@
 namespace App;
 
 use Exception;
+use League\Uri\Components\Query;
+use League\Uri\Uri;
+use League\Uri\UriModifier;
 use RuntimeException;
 use SeinopSys\RGBAColor;
 use function count;
@@ -385,14 +388,14 @@ class Image {
 
     $file_portion = strtok($relative_path, '?');
     $query_string = strtok('?');
-    $path_build = new NSUriBuilder($file_portion);
-    if (!empty($query_string))
-      $path_build->append_query_raw($query_string);
+    $query = Query::createFromRFC3986($query_string)->withPair('t', $last_modified);
+    $path_build = Uri::createFromString($file_portion);
     $remove_params = null;
     if (!empty($_GET['token']))
-      $path_build->append_query_param('token', $_GET['token']);
+      $query = $query->appendTo('token', $_GET['token']);
     else $remove_params = ['token'];
-    $path_build->append_query_param('t', $last_modified);
+
+    $path_build = UriModifier::appendQuery($path_build, $query);
 
     CoreUtils::fixPath($path_build, $remove_params);
     self::_store($data, $file_path, $write_callback, $content_type, true);
