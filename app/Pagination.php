@@ -267,7 +267,13 @@ class Pagination {
   }
 
   public function toURI(bool $force_fixpath_empty = true, $force_page = null): Uri {
-    return Uri::createFromString($this->base_path)->withQuery($this->getPageQueryString($force_page, $force_fixpath_empty));
+    $query_string = $this->getPageQueryString($force_page, $force_fixpath_empty);
+    $url = Uri::createFromString($this->base_path);
+
+    if ($query_string !== null)
+      $url = UriModifier::appendQuery($url, $query_string);
+
+    return $url;
   }
 
   public function getPage():?int {
