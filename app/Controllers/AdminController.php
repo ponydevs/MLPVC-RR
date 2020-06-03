@@ -19,6 +19,7 @@ use App\Response;
 use App\Users;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use IPTools\IP;
+use League\Uri\UriModifier;
 use SeinopSys\PostgresDb;
 use Throwable;
 use function in_array;
@@ -132,26 +133,26 @@ class AdminController extends Controller {
 
     $title = '';
     $where_args = [];
-    $q = [];
+    $query_params = [];
     $remove_params = [];
     if ($type !== null){
       $where_args[] = ['reftype', $type];
-      $q[] = "type=$type";
+      $query_params['type'] = $type;
       $title .= Logs::LOG_DESCRIPTION[$type].' entries ';
     }
-    else if (isset($q))
+    else if (isset($query_params))
       $remove_params[] = 'type';
     if (isset($initiator)){
       $_params = $initiator === 0 ? ['"initiator" IS NULL'] : ['initiator', $initiator];
       $where_args[] = $_params;
       if (isset($by)){
-        $q[] = "by=$by";
+        $query_params['by'] = $by;
         $title .= ($type === null ? 'Entries ' : '')."by $by ";
       }
     }
     else if (isset($ip)){
       $where_args[] = ['ip', in_array($ip, Logs::LOCALHOST_IPS, true) ? Logs::LOCALHOST_IPS : $ip];
-      $q[] = "by=$ip";
+      $query_params['by'] = $ip;
       $title .= ($type === null ? 'Entries ' : '')."from $ip ";
     }
     else $remove_params[] = 'by';
@@ -165,9 +166,8 @@ class AdminController extends Controller {
     $title .= "Page {$pagination->getPage()} - $heading - Admin Area";
 
     $path = $pagination->toURI();
-    if (!empty($q))
-      foreach ($q as $item)
-        $path->append_query_raw($item);
+    if (!empty($query_params))
+      $path = UriModifier::appendQuery($path, $query_params);
     CoreUtils::fixPath($path, $remove_params);
 
     foreach ($where_args as $arg)
