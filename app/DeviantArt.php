@@ -123,6 +123,7 @@ class DeviantArt {
    * @param null|string $provider
    *
    * @return CachedDeviation|null
+   * @throws CURLRequestException
    */
   public static function getCachedDeviation($id, $provider = 'fav.me'):?CachedDeviation {
     if ($provider === 'sta.sh')

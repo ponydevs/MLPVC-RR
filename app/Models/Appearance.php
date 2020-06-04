@@ -539,7 +539,7 @@ class Appearance extends NSModel implements Linkable {
    * Re-index the appearance in ElasticSearch
    */
   public function reindex() {
-    // We don't want to index private appearances
+    // We don't want to index pcg appearances
     if ($this->owner_id !== null)
       return;
 

@@ -7,6 +7,7 @@ use App\Auth;
 use App\CoreUtils;
 use App\DB;
 use App\DeviantArt;
+use App\Exceptions\CURLRequestException;
 use App\Permission;
 use App\Posts;
 use App\Response;
@@ -209,16 +210,21 @@ class Post extends NSModel implements Linkable {
   }
 
   public function getFinishedImage(bool $view_only, string $cachebust = ''):string {
-    $Deviation = DeviantArt::getCachedDeviation($this->deviation_id);
-    if (empty($Deviation)){
+    try {
+      $deviation = DeviantArt::getCachedDeviation($this->deviation_id);
+    } catch (CURLRequestException $e) {
+      CoreUtils::error_log($e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
+      $deviation = null;
+    }
+    if ($deviation === null){
       $ImageLink = $view_only ? $this->toURL() : "http://fav.me/{$this->deviation_id}";
       $Image = "<a class='image deviation error' href='$ImageLink'>Preview unavailable<br><small>Click to view</small></a>";
     }
     else {
-      $alt = CoreUtils::aposEncode($Deviation->title);
-      $ImageLink = $view_only ? $this->toURL() : "http://fav.me/{$Deviation->id}";
+      $alt = CoreUtils::aposEncode($deviation->title);
+      $ImageLink = $view_only ? $this->toURL() : "http://fav.me/{$deviation->id}";
       $approved = $this->lock ? ' approved' : '';
-      $Image = "<div class='image deviation$approved'><a href='$ImageLink'><img src='{$Deviation->preview}$cachebust' alt='$alt'>";
+      $Image = "<div class='image deviation$approved'><a href='$ImageLink'><img src='{$deviation->preview}$cachebust' alt='$alt'>";
       if ($this->lock)
         $Image .= "<span class='approved-info' title='This submission has been accepted into the group gallery'></span>";
       $Image .= '</a></div>';

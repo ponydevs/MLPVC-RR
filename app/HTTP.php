@@ -15,6 +15,7 @@ class HTTP {
    * @param bool        $skipBody
    *
    * @return array
+   * @throws CURLRequestException
    */
   public static function legitimateRequest($url, $cookies = null, $referrer = null, bool $skipBody = false):array {
     $r = curl_init($url);

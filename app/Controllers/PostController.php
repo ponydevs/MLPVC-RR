@@ -817,7 +817,7 @@ class PostController extends Controller {
     if (empty($this->post))
       HTTP::statusCode(404, AND_DIE);
 
-    Response::done(['html' => $this->post->getFinishedImage(isset($_GET['viewonly']))]);
+    Response::done(['html' => $this->post->getFinishedImage(array_key_exists('viewonly', $_GET))]);
   }
 
   public function addReservation() {

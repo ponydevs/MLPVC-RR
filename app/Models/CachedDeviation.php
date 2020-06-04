@@ -7,13 +7,13 @@ use App\JSON;
 use App\RedisHelper;
 
 class CachedDeviation {
-  public ?string   $provider;
-  public ?string   $id;
-  public ?string   $title;
-  public ?string   $author;
-  public ?string   $preview;
-  public ?string   $fullsize;
-  public ?string   $type;
+  public ?string $provider;
+  public ?string $id;
+  public ?string $title;
+  public ?string $author;
+  public ?string $preview;
+  public ?string $fullsize;
+  public ?string $type;
 
   public function __construct(array $data) {
     foreach ($data as $k => $v){
