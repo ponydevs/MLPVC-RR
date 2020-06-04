@@ -1127,15 +1127,15 @@ class AppearanceController extends ColorGuideController {
     if ($this->action !== 'GET')
       CoreUtils::notAllowed();
 
-    if (empty($_GET['q']) || empty($_GET['GUIDE']))
+    if (empty($_GET['q']) || empty($_GET['guide']))
       CGUtils::autocompleteRespond('[]');
 
-    if (!array_key_exists($_GET['GUIDE'], CGUtils::GUIDE_MAP))
+    if (!array_key_exists($_GET['guide'], CGUtils::GUIDE_MAP))
       CoreUtils::badRequest();
 
     $pagination = new Pagination('', 5);
     /** @var $appearances Appearance[] */
-    [$appearances] = CGUtils::searchGuide($pagination, $_GET['GUIDE']);
+    [$appearances] = CGUtils::searchGuide($pagination, $_GET['guide']);
 
     if (empty($appearances))
       CGUtils::autocompleteRespond('[]');
