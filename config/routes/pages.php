@@ -30,7 +30,6 @@ $router->map('GET', '/[cg]/[guide:guide]?/[i]?', 'ColorGuideController#guide');
 $router->map('GET', '/[cg]/[guide:guide]?/full', 'ColorGuideController#fullList');
 $router->map('GET', '/[cg]/[guide:guide]?/changes/[i]?', 'ColorGuideController#changeList');
 $router->map('GET', '/[cg]/[guide:guide]?/[v]', 'ColorGuideController#guide');
-$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]', 'ColorGuideController#guide');
 # AppearanceController
 $router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id]-?', 'AppearanceController#view');
 $router->map('GET', '/[cg]/[guide:guide]?/[v]/[i:id]-[adi]', 'AppearanceController#view');
@@ -85,6 +84,7 @@ $router->map('GET', '/u/[uuid:uuid]', 'UserController#profileByUuid');
 $router->map('GET', '/@[un:name]/contrib/[ad:type]/[i]?', 'UserController#contrib');
 $router->map('GET', '/user/contrib/lazyload/[favme:favme]', 'UserController#contribLazyload');
 # PersonalGuideController
+$router->map('GET', '/@[un:name]/[cg]/[guide:guide]?/[v]', 'PersonalGuideController#list');
 $router->map('GET', '/@[un:name]/[cg]/[i]?', 'PersonalGuideController#list');
 $router->map('GET', '/@[un:name]/[cg]/slot-history/[i]?', 'PersonalGuideController#pointHistory');
 $router->map('GET', '/@[un:name]/[cg]/point-history/[i]?', 'PersonalGuideController#pointHistory');
