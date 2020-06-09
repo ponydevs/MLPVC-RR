@@ -122,10 +122,11 @@ $TCharacter: adjust_hue($_TBase, 240);
   }
 
   .clri {
-    width: 65px;
+    width: 70px;
     font-family: $monospace;
     height: $height;
     box-sizing: border-box;
+    text-align: center;
   }
 
   .clrid {
