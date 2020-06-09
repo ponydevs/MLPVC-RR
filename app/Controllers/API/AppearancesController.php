@@ -2,6 +2,7 @@
 
 namespace App\Controllers\API;
 
+use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
@@ -333,6 +334,8 @@ class AppearancesController extends APIController {
    *   ),
    *   @OA\Property(
    *     property="linkedTo",
+   *     deprecated=true,
+   *     description="This field used to indicate if this color was linked to another color, however, this feature was removed and this field now only ever returns null"
    *     type="object",
    *     nullable=true,
    *     ref="#/components/schemas/Color",
@@ -344,14 +347,12 @@ class AppearancesController extends APIController {
    * @return array
    */
   static function mapColor(Color $c) {
-    $is_linked = $c->linked_to !== null;
-
     return [
       'id' => $c->id,
       'label' => $c->label,
       'order' => $c->order,
-      'hex' => $is_linked ? $c->linked->hex : $c->hex,
-      'linkedTo' => $is_linked ? self::mapColor($c->linked) : null,
+      'hex' => $c->hex,
+      'linkedTo' => null,
     ];
   }
 
@@ -542,6 +543,8 @@ class AppearancesController extends APIController {
 
   private static function _handlePrivateAppearanceCheck(Appearance $appearance):void {
     if ($appearance->private && Permission::insufficient('staff')){
+      if (Auth::$signed_in && $appearance->owner_id === Auth::$user->id)
+        return;
       // TODO check for token param and allow if correct
       HTTP::statusCode(403);
       Response::fail('COLOR_GUIDE.APPEARANCE_PRIVATE');

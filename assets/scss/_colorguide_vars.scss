@@ -130,9 +130,8 @@ $TCharacter: adjust_hue($_TBase, 240);
 
   .clrid {
     flex: 0 0 auto;
-    font-family: $monospace;
     font-size: .9em;
-    padding: 0 8px;
+    padding-left: 8px;
     line-height: $height;
   }
 

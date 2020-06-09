@@ -8,12 +8,9 @@ namespace App\Models;
  * @property int        $order
  * @property string     $label
  * @property string     $hex
- * @property int        $linked_to
  * @property ColorGroup $color_group      (Via relations)
- * @property Color      $linked           (Via magic method)
  * @property int        $appearance_id    (Via magic method)
  * @property Appearance $appearance       (Via magic method)
- * @property Color[]    $dependant_colors (Via magic method)
  * @method static Color|Color[] find(...$args)
  * @method static Color[] find_all_by_group_id(int $group_id)
  */
@@ -24,18 +21,12 @@ class Color extends OrderedModel {
     ['color_group', 'foreign_key' => 'group_id'],
   ];
 
-  public static $after_save = ['update_dependant_colors'];
-
   public function get_appearance_id() {
     return $this->color_group->appearance_id;
   }
 
   public function get_appearance() {
     return $this->color_group->appearance;
-  }
-
-  public function get_linked() {
-    return $this->linked_to === null ? null : self::find($this->linked_to);
   }
 
   /** @inheritdoc */
@@ -59,16 +50,5 @@ class Color extends OrderedModel {
     self::addOrderOption($opts);
 
     return self::find('all', $opts);
-  }
-
-  public function get_dependant_colors() {
-    return self::find('all', ['conditions' => ['linked_to = ?', $this->id]]);
-  }
-
-  public function update_dependant_colors() {
-    foreach ($this->dependant_colors as $item){
-      $item->hex = $this->hex;
-      $item->save();
-    }
   }
 }

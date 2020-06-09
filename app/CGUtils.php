@@ -1071,10 +1071,7 @@ class CGUtils {
     if (empty($colors))
       return null;
 
-    $return = [];
-    foreach ($colors as $c){
-      $return[] = ($c->linked_to !== null ? '@'.$c->linked_to : $c->hex).' '.$c->label;
-    }
+    $return = array_map(fn($c) => "{$c->hex} {$c->label}", $colors);
 
     return implode("\n", $return);
   }
@@ -1108,19 +1105,6 @@ class CGUtils {
     }
 
     return $color->toHex();
-  }
-
-  /**
-   * @return int|null
-   */
-  public static function validateAppearancePageID():?int {
-    return (new Input('APPEARANCE_PAGE', 'int', [
-      Input::IS_OPTIONAL => true,
-      Input::IN_RANGE => [0, null],
-      Input::CUSTOM_ERROR_MESSAGES => [
-        Input::ERROR_RANGE => 'Appearance ID must be greater than or equal to @min',
-      ],
-    ]))->out();
   }
 
   public static function getExportData() {
@@ -1181,7 +1165,7 @@ class CGUtils {
               foreach ($colors as $c)
                 /** @noinspection UnsupportedStringOffsetOperationsInspection */
                 $append_color_group['Colors'][] = $c->to_array([
-                  'except' => ['id', 'group_id', 'linked_to'],
+                  'except' => ['id', 'group_id'],
                 ]);
             }
 

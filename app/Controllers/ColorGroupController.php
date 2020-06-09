@@ -48,17 +48,10 @@ class ColorGroupController extends ColorGuideController {
         $out = $this->colorgroup->to_array();
         $out['Colors'] = [];
         foreach ($this->colorgroup->colors as $c){
-          $append = $c->to_array([
+          /** @noinspection UnsupportedStringOffsetOperationsInspection */
+          $out['Colors'][] = $c->to_array([
             'except' => 'group_id',
           ]);
-          if ($c->linked_to !== null)
-            $append['appearance'] = DB::$instance->querySingle(
-              'SELECT p.id, p.label FROM appearances p
-							LEFT JOIN color_groups cg ON cg.appearance_id = p.id
-							LEFT JOIN colors c ON c.group_id = cg.id
-							WHERE c.id = ?', [$c->linked_to]);
-          /** @noinspection UnsupportedStringOffsetOperationsInspection */
-          $out['Colors'][] = $append;
         }
         Response::done($out);
       break;
@@ -161,48 +154,15 @@ class ColorGroupController extends ColorGuideController {
             Response::fail("The color name must be between 3 and 30 characters in length $index");
           $append->label = $label;
 
-          if (empty($c['hex'])){
-            if (!empty($c['linked_to'])){
-              $link_target = Color::find($c['linked_to']);
-              if (empty($link_target))
-                Response::fail("Link target color does not exist $index");
-              // Regular guide
-              if ($link_target->appearance->owner_id === null){
-                // linking to PCG
-                if ($append->appearance->owner_id !== null)
-                  Response::fail("Colors of appearances in the official guide cannot link to colors in personal color guides $index");
-                // not Staff
-                if (Permission::insufficient('staff'))
-                  Response::fail("Only staff members can edit colors in the official guide $index");
-              }
-              // Personal color guide
-              else {
-                // linking to regular guide
-                if ($append->appearance->owner_id === null)
-                  Response::fail("Colors of appearances in personal color guides cannot link to colors in the official guide $index");
-                // not (owner of both appearances) and not Staff
-                if ($append->appearance->owner_id !== Auth::$user->id && $link_target->appearance->owner_id !== Auth::$user->id && Permission::insufficient('staff'))
-                  Response::fail();
-              }
-              if ($link_target->linked_to !== null)
-                Response::fail("The target color is already linked to a different color $index");
-              if (!empty((array)$append->dependant_colors))
-                Response::fail("Some colors point to this color which means it cannot be changed to a link $index");
-              $append->linked_to = $link_target->id;
-              $append->hex = $link_target->hex;
-              if (!isset($check_colors_of[$link_target->appearance_id]))
-                $check_colors_of[$link_target->appearance_id] = $link_target->appearance;
-            }
-          }
-          else {
-            $hex = CoreUtils::trim($c['hex']);
-            if (!Regexes::$hex_color->match($hex, $_match))
-              Response::fail('Hex color '.CoreUtils::escapeHTML($hex)." is invalid, please leave empty or fix $index");
-            $append->hex = '#'.strtoupper($_match[1]);
-            if ($this->colorgroup->appearance->owner_id === null)
-              $append->hex = CGUtils::roundHex($append->hex);
-            $append->linked_to = null;
-          }
+          if (empty($c['hex']))
+            Response::fail("The HEX color value is required $index");
+
+          $hex = CoreUtils::trim($c['hex']);
+          if (!Regexes::$hex_color->match($hex, $_match))
+            Response::fail('Hex color '.CoreUtils::escapeHTML($hex)." is invalid, please leave empty or fix $index");
+          $append->hex = '#'.strtoupper($_match[1]);
+          if ($this->colorgroup->appearance->owner_id === null)
+            $append->hex = CGUtils::roundHex($append->hex);
 
           $newcolors[] = $append;
         }
@@ -211,24 +171,8 @@ class ColorGroupController extends ColorGuideController {
           $removedColorIDs = CoreUtils::array_subtract($oldColorIDs, $recvColorIDs);
           $removedColors = [];
           if (!empty($removedColorIDs)){
-            /** @var $Affected Color[] */
-            $Affected = DB::$instance->where('id', $removedColorIDs)->get('colors');
-            foreach ($Affected as $color){
-              if (count((array)$color->dependant_colors) > 0){
-                $links = [];
-                foreach ($color->dependant_colors as $dep){
-                  $arranged[$dep->appearance->id][$dep->group_id][$dep->id] = $dep;
-                  $links[] = implode(' &rsaquo; ', [
-                    $dep->appearance->toAnchor(),
-                    $dep->color_group->label,
-                    $dep->label,
-                  ]);
-                }
-                Response::fail("<p>The colors listed below depend on color #{$color->id} (".CoreUtils::escapeHTML($color->label).'). Please unlink them before deleting this color.</p><ul><li>'.implode('</li><li>', $links).'</li></ul>');
-              }
-
-              $removedColors[] = $color;
-            }
+            /** @var $removedColors Color[] */
+            $removedColors = DB::$instance->where('id', $removedColorIDs)->get('colors');
           }
         }
         $newlabels = [];
@@ -280,7 +224,7 @@ class ColorGroupController extends ColorGuideController {
           else $response['update'] = $this->colorgroup->appearance->getUpdatesHTML();
         }
 
-        if (isset($_REQUEST['APPEARANCE_PAGE']))
+        if ($this->appearance_page)
           $response['cm_list'] = Cutiemarks::getListForAppearancePage(CutieMarks::get($this->colorgroup->appearance), NOWRAP);
         else $response['notes'] = Appearance::find($this->colorgroup->appearance_id)->getNotesHTML(NOWRAP);
 

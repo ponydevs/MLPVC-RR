@@ -362,52 +362,6 @@
     });
   }
 
-  const AppearanceListCache = (function() {
-    let _list;
-    return {
-      read(){
-        if (_list)
-          return Promise.resolve(_list);
-
-        return new Promise((resolve, reject) => {
-          const data = {};
-          if (OwnerId)
-            data.owner_id = OwnerId;
-          if (GUIDE)
-            data.guide = GUIDE;
-          $.API.get('/cg/appearances/list', data, function() {
-            if (!this.status) return $.Dialog.fail('Appearance list retrieval', this.message);
-
-            _list = this.list;
-            resolve(_list);
-          }).fail(function() {
-            reject();
-          });
-        });
-      }
-    };
-  })();
-
-  const ColorListCache = (function() {
-    let _list = {};
-    const loadItems = appearance_id => {
-      if (typeof _list[appearance_id] !== 'undefined'){
-        return Promise.resolve(_list[appearance_id]);
-      }
-      return new Promise((resolve, reject) => {
-        $.API.get(`/cg/appearance/${appearance_id}/link-targets`, function() {
-          if (!this.status) return $.Dialog.fail('Color group list retrieval', this.message);
-
-          _list[appearance_id] = this.list;
-          resolve(_list[appearance_id]);
-        }).fail(function() {
-          reject();
-        });
-      });
-    };
-    return { read: appearance_id => loadItems(appearance_id) };
-  })();
-
   class ColorGroupEditor {
     constructor($group, data = {}) {
       this.mode = 'gui';
@@ -419,73 +373,8 @@
         }
         else this.appearance_id = parseInt($group, 10);
       }
-      this.colorAppearanceDataCache = {};
 
       this.templates = {
-        $inputMethodDropdown:
-          $.mk('select').attr({ 'class': 'clrmthd', required: true }).html(
-            `<option value="hex">Hex</option>
-						<option value="link">Link</option>`,
-          ).on('change', e => {
-            const
-              $this = $(e.target),
-              $clr = $this.closest('.clr');
-            $clr.removeClass('mthd-hex mthd-link').addClass('mthd-' + $this.children('option:selected').attr('value'));
-          }),
-        $appearanceSelector:
-          $.mk('select').attr('class', 'clrla').html(
-            `<option value="" selected data-default>(appearance)</option>`,
-          ).on('mouseenter', e => {
-            const $this = $(e.target);
-            if ($this.hasClass('loaded'))
-              return;
-
-            $this.disable();
-            AppearanceListCache.read().then(list => {
-              const
-                $pony = $.mk('optgroup').attr('label', 'Pony Guide'),
-                $eqg = $.mk('optgroup').attr('label', 'EQG Guide'),
-                $pcg = $.mk('optgroup').attr('label', 'Personal Color Guide');
-              switch (GUIDE){
-                case 'eqg': $this.append($eqg, $pony); break;
-                case 'pony': $this.append($pony, $eqg); break;
-                default: $this.append($pcg);
-              }
-
-              $.each(list, (_, el) => {
-                (el.guide === null ? $pcg : (el.guide === 'eqg' ? $eqg : $pony)).append(
-                  $.mk('option').attr({
-                    value: el.id,
-                  }).text(el.label),
-                );
-              });
-
-              $this.addClass('loaded').enable();
-            });
-          }).on('change', e => {
-            const
-              $this = $(e.target),
-              $appearance = $this.find('option:selected'),
-              appeareance_id = $appearance.attr('value'),
-              appearance_name = $appearance.text();
-            if (isNaN(appeareance_id))
-              return;
-
-            this.loadColorSelectFor($this, appeareance_id, appearance_name);
-          }),
-        $colorSelector:
-          $.mk('select').attr({ 'class': 'clrlc hidden', disabled: true }).html(
-            `<option value="" selected data-default>(color)</option>
-						<option value="\n" class="appearance-name-option" disabled></option>
-						<option value="\n" data-appearance-switch>(change appearance)</option>
-						<option value="\n" disabled>----------</option>`,
-          ).on('change', e => {
-            const $this = $(e.target);
-            if (!$this.children('option:selected').hasAttr('data-appearance-switch'))
-              return;
-
-            $this.addClass('hidden').disable().prev().val('').removeClass('hidden');
-          }),
         $colorInput:
           $.mk('input').attr({
             'class': 'clri',
@@ -716,15 +605,12 @@
     makeColorDiv(color) {
       // TODO Organize input options inside a container with a child for each method
       // TODO Add RGB input method alongside Hex and Link
-      let $mthd = this.templates.$inputMethodDropdown.clone(true, true),
+      let
         $ci = this.templates.$colorInput.clone(true, true),
         $cl = this.templates.$colorLabel.clone(),
         $ca = this.templates.$colorActions.clone(true, true),
-        $cla = this.templates.$appearanceSelector.clone(true, true),
-        $clc = this.templates.$colorSelector.clone(true, true),
         $el = $.mk('div').attr('class', 'clr mthd-hex'),
         $cid;
-      $el.append($mthd, $cla, $clc);
 
       if (typeof color === 'object'){
         if (color.hex)
@@ -732,22 +618,14 @@
         if (color.label)
           $cl.val(color.label);
         if (color.id)
-          $cid = $.mk('span').attr('class', 'clrid').text('ID:' + color.id);
-        if (color.linked_to){
-          $mthd.val('link').triggerHandler('change');
-
-          // Save appearance data for when switching back from plaintext editor
-          if (typeof color.appearance !== 'undefined')
-            this.colorAppearanceDataCache[color.id] = color.appearance;
-          else color.appearance = this.colorAppearanceDataCache[color.id];
-
-          this.loadColorSelectFor($cla, color.appearance.id, color.appearance.label).then(function($colorSelector) {
-            $colorSelector.val(color.linked_to);
+          $cid = $.mk('span').attr({
+            'class': 'clrid typcn typcn-database',
+            'data-color-id': color.id,
+            title: `ID: ${color.id}`,
           });
-        }
       }
 
-      $el.append('<span class=\'clrp\'></span>', $ci, $cl, $cid, $ca);
+      $el.append(`<span class='clrp'/>`, $ci, $cl, $cid, $ca);
       $ci.triggerHandler('change');
       if (typeof color === 'object' && color.deleted)
         $ca.find('.remove').triggerHandler('click');
@@ -802,40 +680,20 @@
         $colors.children('.clr').each(function() {
           const
             $row = $(this),
-            $method = $row.children('.clrmthd'),
-            deleted = $method.is(':disabled'),
-            method = $method.find('option:selected').attr('value'),
+            deleted = $row.hasClass('faded'),
             $clrid = $row.children('.clrid'),
-            id = $clrid.length ? $clrid.text().replace('ID:', '') : undefined;
+            id = $clrid.length ? $clrid.attr('data-color-id') : undefined,
+            $ci = $row.children('.clri'),
+            val = $ci.val(),
+            rgb = $.RGBAColor.parse(val),
+            valid = rgb !== null;
 
-          switch (method){
-            case 'hex':{
-              const
-                $ci = $row.children('.clri'),
-                val = $ci.val(),
-                rgb = $.RGBAColor.parse(val),
-                valid = rgb !== null;
-
-              data.push({
-                id,
-                hex: valid ? rgb.toHex() : (val || ''),
-                label: $row.children('.clrl').val(),
-                deleted,
-              });
-            }
-              break;
-            case 'link':{
-              const $clc = $row.children('.clrlc');
-              data.push({
-                id,
-                hex: undefined,
-                label: $row.children('.clrl').val(),
-                linked_to: $clc.val(),
-                deleted,
-              });
-            }
-              break;
-          }
+            data.push({
+              id,
+              hex: valid ? rgb.toHex() : (val || ''),
+              label: $row.children('.clrl').val(),
+              deleted,
+            });
         });
         this.colorValues = data;
         if (storeState)
@@ -848,9 +706,7 @@
 
           if (typeof color === 'object'){
             let line = [];
-            if (color.linked_to)
-              line.push('@' + color.linked_to);
-            else line.push(color.hex || '#');
+            line.push(color.hex || '#');
             line.push(color.label || '');
             if (color.id)
               line.push('ID:' + color.id);
@@ -908,16 +764,15 @@
           continue;
         }
 
-        const matches = trimmedLine.match(/^(?:(\/\/)?#?(?:([a-f\d]{0,6})?|@(\d+)))?\s+(?:([ -~]{3,30}))?(?:\s*ID:(\d+))?$/i);
+        const matches = trimmedLine.match(/^(?:(\/\/)?#?([a-f\d]{0,6})?)?\s+(?:([ -~]{3,30}))?(?:\s*ID:(\d+))?$/i);
         // Valid line
-        if (matches && matches[4]){
+        if (matches && matches[3]){
           const color = $.RGBAColor.parse(matches[2]);
           colors.push({
             hex: color !== null ? color.toHex() : (matches[2] ? '#' + matches[2] : ''),
-            label: matches[4],
-            id: matches[5],
-            linked_to: matches[3] || null,
-            deleted: !!matches[1],
+            label: matches[3],
+            id: matches[4],
+            deleted: Boolean(matches[1]),
           });
           continue;
         }
@@ -953,37 +808,6 @@
 
       this.getClrsDiv().replaceWith($colors);
       return $colors;
-    }
-
-    loadColorSelectFor($this, appearance_id, appearance_name) {
-      const
-        $colorSelector = $this.next(),
-        color_id = parseInt($this.siblings().filter('.clrid').text().replace('ID:', ''), 10);
-      $this.disable();
-      return new Promise(resolve => {
-        ColorListCache.read(appearance_id).then(function(groups) {
-          $colorSelector.children('optgroup').remove();
-          $colorSelector.children('.appearance-name-option').text(appearance_name);
-
-          $.each(groups, (_, group) => {
-            const $og = $.mk('optgroup').attr('label', group.label);
-            $colorSelector.append($og);
-
-            $.each(group.colors, (_, color) => {
-              $og.append(
-                $.mk('option').attr({
-                  value: color.id,
-                  disabled: typeof color.id === 'undefined' || color.id === color_id,
-                }).text(color.label),
-              );
-            });
-          });
-
-          $this.enable().addClass('hidden');
-          $colorSelector.enable().val('').removeClass('hidden');
-          resolve($colorSelector);
-        });
-      });
     }
   }
 

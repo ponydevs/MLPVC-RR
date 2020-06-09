@@ -979,41 +979,6 @@ class AppearanceController extends ColorGuideController {
     Response::done(['list' => $list, 'pcg' => $owner_id !== null]);
   }
 
-  /**
-   * Responds with an array of potential colors to link other colors to for the color group editor
-   *
-   * @param $params
-   */
-  public function linkTargets($params):void {
-    if (!$this->action === 'GET')
-      CoreUtils::notAllowed();
-
-    $this->load_appearance($params);
-    $this->appearance->enforceManagePermission();
-
-    $returned_color_fields = [
-      isset($_GET['hex']) ? 'hex' : 'id',
-      'label',
-    ];
-
-    $list = [];
-    foreach ($this->appearance->color_groups as $item){
-      $group = [
-        'label' => $item->label,
-        'colors' => [],
-      ];
-      foreach ($item->colors as $c){
-        $arr = $c->to_array(['only' => $returned_color_fields]);
-        if ($c->linked_to !== null)
-          unset($arr['id']);
-        $group['colors'][] = $arr;
-      }
-      if (count($group['colors']) > 0)
-        $list[] = $group;
-    }
-    Response::done(['list' => $list]);
-  }
-
   public function sanitizeSvg($params):void {
     if ($this->action !== 'POST')
       CoreUtils::notAllowed();

@@ -29,12 +29,6 @@ CodeMirror.defineSimpleMode('colorguide', {
       sol: true,
     },
     {
-      token: 'colorlink.identifier',
-      regex: /@\d+/,
-      next: 'colorname',
-      sol: true,
-    },
-    {
       token: 'meta',
       regex: /\s*/,
       next: 'colorname',

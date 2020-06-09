@@ -32,7 +32,6 @@ $private_api_endpoint('/cg/appearance/[i:id]/tagged', 'AppearanceController#tagg
 $private_api_endpoint('/cg/appearance/[i:id]/template', 'AppearanceController#applyTemplate');
 $private_api_endpoint('/cg/appearance/[i:id]/sanitize-svg', 'AppearanceController#sanitizeSvg');
 $private_api_endpoint('/cg/appearance/[i:id]/selective', 'AppearanceController#selectiveClear');
-$private_api_endpoint('/cg/appearance/[i:id]/link-targets', 'AppearanceController#linkTargets');
 $private_api_endpoint('/cg/appearance/[i:id]/guide-relations', 'AppearanceController#guideRelationsApi');
 $private_api_endpoint('/cg/sprite-color-checkup', 'ColorGuideController#spriteColorCheckup');
 $private_api_endpoint('/cg/full/reorder', 'ColorGuideController#reorderFullList');

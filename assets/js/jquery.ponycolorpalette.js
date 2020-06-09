@@ -9,7 +9,7 @@
     constructor(appearanceId, defaultHex, pickCallback) {
       this.appearanceId = appearanceId;
       this.shown = false;
-      this.colorData = null;
+      this.colorData = {};
       this.getColorData();
 
       this.$picker = $.mk('div').attr('class', 'hidden pony-color-palette').appendTo($body);
@@ -21,14 +21,15 @@
       this.$picker.on('click', '.color', e => {
         e.stopPropagation();
 
-        const
-          $color = $(e.target).closest('.color'),
-          color = $color.children().text();
+        const $color = $(e.target).closest('.color');
 
-        this.$picker.find('.color.selected').removeClass('selected');
-        $color.addClass('selected');
+        if ($color.hasClass('group-icon'))
+          return;
 
-        pickCallback(color.length > 0 ? color : null);
+        const color = $color.children().text();
+
+        this.selectColor(color);
+        pickCallback(color || null);
         this.hide(true);
       });
     }
@@ -40,17 +41,25 @@
     getColorData() {
       if (typeof waitingList[this.appearanceId] !== 'undefined'){
         waitingList[this.appearanceId].push(this);
+        if (this.appearanceId in this.colorData) {
+          this.processWaitingList();
+        }
         return;
       }
 
       waitingList[this.appearanceId] = [this];
 
-      $.API.post(`/cg/appearance/${this.appearanceId}/link-targets?hex`, data => {
+      $.API.get(`/../v0/appearances/${this.appearanceId}/color-groups`, data => {
         if (!data.status) return this.displayError(data.message);
 
-        $.each(waitingList[this.appearanceId], (_, picker) => {
-          picker.fillSwatchBox(data.list);
-        });
+        this.colorData[this.appearanceId] = data.colorGroups;
+        this.processWaitingList();
+      });
+    }
+
+    processWaitingList() {
+      $.each(waitingList[this.appearanceId], (_, picker) => {
+        picker.fillSwatchBox(this.colorData[this.appearanceId]);
       });
     }
 
@@ -101,21 +110,21 @@
     }
 
     selectColor(color) {
-      this.$picker.find('.color').removeClass('selected').filter(function() {
-        return $(this).text() === color;
-      }).addClass('selected');
+      this.$picker.find('.color')
+        .removeClass('selected')
+        .filter((i, el) => $(el).text() === color)
+        .addClass('selected');
     }
   }
 
   $.fn.ponyColorPalette = function(appearanceId, defaultHex, pickCallback) {
     this.each(function() {
-      const
-        $el = $(this);
-      $el.data(DATA_KEY, new PonyColorPalette(appearanceId, defaultHex, function(color) {
-        pickCallback($el, color);
-      }));
+      const $el = $(this);
+      $el.data(DATA_KEY, new PonyColorPalette(appearanceId, defaultHex, color => pickCallback($el, color)));
       $el.on('focus', e => {
-        $(e.target).data(DATA_KEY).display(e);
+        const palette = $(e.target).data(DATA_KEY);
+        palette.selectColor(e.target.value);
+        palette.display(e);
       });
       $el.on('keydown', e => {
         if ($.isKey(Key.Escape, e)){
