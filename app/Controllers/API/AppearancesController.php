@@ -335,7 +335,7 @@ class AppearancesController extends APIController {
    *   @OA\Property(
    *     property="linkedTo",
    *     deprecated=true,
-   *     description="This field used to indicate if this color was linked to another color, however, this feature was removed and this field now only ever returns null"
+   *     description="This field used to indicate if this color was linked to another color, however, this feature was removed and this field now only ever returns null",
    *     type="object",
    *     nullable=true,
    *     ref="#/components/schemas/Color",
