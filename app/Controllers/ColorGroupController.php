@@ -154,15 +154,14 @@ class ColorGroupController extends ColorGuideController {
             Response::fail("The color name must be between 3 and 30 characters in length $index");
           $append->label = $label;
 
-          if (empty($c['hex']))
-            Response::fail("The HEX color value is required $index");
-
-          $hex = CoreUtils::trim($c['hex']);
-          if (!Regexes::$hex_color->match($hex, $_match))
-            Response::fail('Hex color '.CoreUtils::escapeHTML($hex)." is invalid, please leave empty or fix $index");
-          $append->hex = '#'.strtoupper($_match[1]);
-          if ($this->colorgroup->appearance->owner_id === null)
-            $append->hex = CGUtils::roundHex($append->hex);
+          if (!empty($c['hex'])) {
+            $hex = CoreUtils::trim($c['hex']);
+            if (!Regexes::$hex_color->match($hex, $_match))
+              Response::fail('Hex color '.CoreUtils::escapeHTML($hex)." is invalid, please leave empty or fix $index");
+            $append->hex = '#'.strtoupper($_match[1]);
+            if ($this->colorgroup->appearance->owner_id === null)
+              $append->hex = CGUtils::roundHex($append->hex);
+          }
 
           $newcolors[] = $append;
         }
