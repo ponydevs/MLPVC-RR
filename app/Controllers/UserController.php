@@ -115,7 +115,7 @@ class UserController extends Controller {
     }
 
     $settings = [
-      'title' => $error === null ? ($same_user ? 'Your' : CoreUtils::posess($user->name)).' '.($same_user || $can_edit ? 'account' : 'profile')
+      'title' => $error === null ? ($same_user ? 'Your' : "{$user->name} -").' '.($same_user || $can_edit ? 'Account' : 'Profile')
         : 'Account',
       'noindex' => true,
       'css' => [true],
