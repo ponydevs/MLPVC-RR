@@ -20,6 +20,6 @@ class LockedPost extends NSModel {
   ];
 
   public static function record(int $post_id) {
-    self::create(['post_id' => $post_id]);
+    self::create(['post_id' => $post_id, 'user_id' => Auth::$user->id ?? null]);
   }
 }
