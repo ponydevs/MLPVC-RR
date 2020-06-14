@@ -35,7 +35,7 @@ class ColorGroupController extends ColorGuideController {
       $this->colorgroup = ColorGroup::find($groupID);
       if (empty($this->colorgroup))
         Response::fail("There's no color group with the ID of $groupID");
-      if (Permission::insufficient('staff') && ($this->colorgroup->appearance->owner_id === null || $this->colorgroup->appearance->owner_id !== Auth::$user->id))
+      if (($this->colorgroup->appearance->owner_id === null || $this->colorgroup->appearance->owner_id !== Auth::$user->id) && Permission::insufficient('staff'))
         Response::fail();
     }
   }

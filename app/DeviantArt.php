@@ -5,8 +5,10 @@ namespace App;
 use App\Exceptions\CURLRequestException;
 use App\Exceptions\JSONParseException;
 use App\Models\CachedDeviation;
+use App\Models\PreviousUsername;
 use App\Models\Session;
 use App\Models\DeviantartUser;
+use App\Models\User;
 use DOMDocument;
 use DOMElement;
 use DOMText;
@@ -241,7 +243,7 @@ class DeviantArt {
     return $data;
   }
 
-  private static function _authRequest(bool $refresh, string $code):?DeviantartUser {
+  private static function authenticationRequest(bool $refresh, string $code):?DeviantartUser {
     /** @noinspection PhpUnusedLocalVariableInspection */
     global $http_response_header;
 
@@ -291,51 +293,59 @@ class DeviantArt {
     $da_user_data = $provider->getResourceOwner($access_token)->toArray();
     $user_id = strtolower($da_user_data['userid']);
 
-    $user = DeviantartUser::find($user_id);
-
     $local_user_data = [
       'name' => $da_user_data['username'],
       'avatar_url' => URL::makeHttps($da_user_data['usericon']),
     ];
+    $session_data = [];
     $auth_data = [
       'access' => $access_token->getToken(),
       'refresh' => $access_token->getRefreshToken(),
-      'expires' => date('c', $access_token->getExpires()),
+      'access_expires' => date('c', $access_token->getExpires()),
       'scope' => $access_token->getValues()['scope'],
     ];
 
     if (!$refresh){
       $cookie = Session::generateCookie();
-      $auth_data['token'] = CoreUtils::sha256($cookie);
+      $session_data['token'] = CoreUtils::sha256($cookie);
 
       $browser = CoreUtils::detectBrowser();
       foreach ($browser as $k => $v)
         if (!empty($v))
-          $auth_data[$k] = $v;
+          $session_data[$k] = $v;
     }
 
     $first_user = false;
-    if (empty($user)){
-      $more_info = [
+    $da_user = DeviantartUser::find($user_id);
+    if ($da_user === null){
+      /** @var User $user */
+      $user = User::create([
+        'name' => $local_user_data['name'],
+      ]);
+      $da_user = DeviantartUser::create(array_merge($local_user_data, $auth_data, [
         'id' => $user_id,
-        'role' => 'user',
-      ];
-      $user = DeviantartUser::create(array_merge($local_user_data, $more_info));
-      if (DeviantartUser::count() === 1) {
+        'user_id' => $user->id,
+      ]));
+      if (User::count() === 1) {
         $first_user = true;
         $user->updateRole('developer');
       }
     }
-    else $user->update_attributes($local_user_data);
+    else {
+      $da_user->update_attributes(array_merge($local_user_data, $auth_data));
+      if ($da_user->user->name !== $da_user->name) {
+        $da_user->user->update_attributes(['name' => $da_user->name]);
+        PreviousUsername::record($da_user->id, $da_user->user->name, $da_user->name);
+      }
+    }
 
-    if (!$first_user)
-      $user->assignCorrectRole();
+    if (!$first_user && $da_user->user->role !== 'developer')
+      $da_user->user->assignCorrectRole();
 
     if ($refresh)
-      Auth::$session->update_attributes($auth_data);
+      Auth::$session->update_attributes($session_data);
     else {
-      Session::delete_all(['conditions' => ['user_id = ? AND scope != ?', $user->id, $auth_data['scope']]]);
-      $update = array_merge($auth_data, ['user_id' => $user->id]);
+      $update = array_merge($session_data, ['user_id' => $da_user->user->id]);
       if (Auth::$session !== null){
         Auth::$session->update_attributes($update);
         Auth::$session->unsetData('refresh_attempts');
@@ -344,18 +354,18 @@ class DeviantArt {
     }
 
     // Clear out old sessions
-    Session::delete_all(['conditions' => ["user_id = ? AND last_visit <= NOW() - INTERVAL '1 MONTH'", $user->id]]);
+    Session::delete_all(['conditions' => ["user_id = ? AND last_visit <= NOW() - INTERVAL '1 MONTH'", $da_user->user->id]]);
 
     if (!$refresh)
       Session::setCookie($cookie);
 
-    return $user ?? null;
+    return $da_user ?? null;
   }
 
   /**
-   * Updates the (current) session for seamless browsing even if the session expires beetween requests
+   * Updates the (current) session for seamless browsing even if the session expires between requests
    *
-   * @return DeviantartUser|void
+   * @return DeviantartUser|null
    * @throws RuntimeException
    * @throws InvalidArgumentException
    */
@@ -363,19 +373,19 @@ class DeviantArt {
     if (empty(Auth::$session))
       throw new RuntimeException('Auth::$session must be set');
 
-    return self::_authRequest(true, Auth::$session->refresh);
+    return self::authenticationRequest(true, Auth::$session->refresh);
   }
 
   /**
-   * Requests an Access Token
+   * Requests an Access Token and return the DeviantARt user it was created for
    *
    * @param string $code
    *
    * @return DeviantartUser|void
    * @throws InvalidArgumentException
    */
-  public static function getAccessToken(string $code):?DeviantartUser {
-    return self::_authRequest(false, $code);
+  public static function exchangeForAccessToken(string $code):?DeviantartUser {
+    return self::authenticationRequest(false, $code);
   }
 
   public static function gracefullyRefreshAccessTokenImmediately(bool $die_on_failure = false): bool {
@@ -385,7 +395,7 @@ class DeviantArt {
       }
       catch (Throwable $e){
         $code = ($e instanceof CURLRequestException ? 'HTTP ' : '').$e->getCode();
-        CoreUtils::logToTtyOrFile(__FILE__, sprintf('Session refresh failed for %s (%s) | %s (%s)', Auth::$user->name, Auth::$user->id, $e->getMessage(), $code));
+        CoreUtils::logToTtyOrFile(__FILE__, sprintf('Session refresh failed for user #%d | %s (%s)', Auth::$user->id, $e->getMessage(), $code));
         Auth::$session->delete();
         Auth::$signed_in = false;
         Auth::$user = null;
@@ -492,15 +502,6 @@ class DeviantArt {
     $cache->update($usernames);
 
     return $usernames;
-  }
-
-  /**
-   * @param DeviantartUser $user
-   *
-   * @return null|string
-   */
-  public static function getClubRole(DeviantartUser $user):?string {
-    return self::getClubRoleByName($user->name);
   }
 
   /**

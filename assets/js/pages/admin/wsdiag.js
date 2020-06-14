@@ -61,30 +61,36 @@
           ips.forEach(ip => {
             const ipConns = conns[ip];
             const pages = {};
-            const usernames = {};
+            const users = {};
             ipConns.forEach(conn => {
               if (conn.page)
                 pages[conn.page] = {
                   since: conn.connectedSince,
                 };
-              if (conn.username)
-                usernames[conn.username] = (usernames[conn.username] || 0) + 1;
+              if (conn.user) {
+                if (typeof users[conn.user.id] === 'undefined')
+                  users[conn.user.id] = {
+                    ...conn.user,
+                    count: 1,
+                  };
+                else users[conn.user.id].count += 1;
+              }
             });
-            const usernameKeys = Object.keys(usernames);
+            const userIds = Object.keys(users);
             let $li = $(document.getElementById(ip));
             if ($li.length === 0){
               $li = $.mk('li', ip);
               $connectionList.append($li);
             }
             $li.empty().append(`<h3>${ipConns[0].ip}</h3>`);
-            if (usernameKeys.length)
+            if (userIds.length)
               $li.append(
                 `<p><strong>Users:</strong></p>`,
                 $.mk('ul').append(
-                  usernameKeys.map(el => {
-                    const count = usernames[el];
+                  userIds.map(id => {
+                    const { count, name } = users[id];
                     return $.mk('li').html(
-                      `<a href="/@${el}" target="_blank">${el}</a>${count > 1 ? ` (${count})` : ''}`,
+                      `<a href="/users/${id}" target="_blank">${name}</a>${count > 1 ? ` (${count})` : ''}`,
                     );
                   }),
                 ),

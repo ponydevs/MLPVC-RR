@@ -900,7 +900,7 @@ class CoreUtils {
         ['/events', 'Events'],
       ];
       if (Auth::$signed_in)
-        $NavItems[] = [Auth::$user->toURL(), 'Account'];
+        $NavItems[] = [Auth::$user->toURL(false), 'Account'];
       if (Permission::sufficient('staff')){
         $NavItems[] = ['/users', 'Users'];
         $NavItems[] = ['/admin', 'Admin'];

@@ -3,9 +3,9 @@
 namespace App;
 
 use App\Models\Appearance;
-use App\Models\DeviantartUser;
 use App\Models\Session;
 use App\Models\Show;
+use App\Models\User;
 use RuntimeException;
 use function array_slice;
 
@@ -50,7 +50,7 @@ class View {
               /** @var $session Session */
               $session = $scope['session'];
               $bc = (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'))->setChild(
-                (new NavBreadcrumb($session->user->name, $session->user->toURL()))->setChild('Session #'.$session->id)
+                (new NavBreadcrumb($session->user->name, $session->user->toURL(false)))->setChild('Session #'.$session->id)
               );
             }
             else $bc->setChild($scope['title']);
@@ -182,9 +182,9 @@ class View {
       case 'user':
         $bc = (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'));
         if ($this->method !== 'list'){
-          /** @var $User \App\Models\DeviantartUser */
+          /** @var $User User */
           $user = $scope['user'];
-          if ($user instanceof DeviantartUser){
+          if ($user instanceof User){
             switch ($this->method){
               case 'colorguide':
                 return $user->getPCGBreadcrumb(true);
@@ -197,7 +197,7 @@ class View {
                 return $bc;
             }
 
-            $subbc = new NavBreadcrumb($user->name, $user->toURL());
+            $subbc = new NavBreadcrumb($user->name, $user->toURL(false));
           }
           else $subbc = new NavBreadcrumb('Profile', null);
           switch ($this->method){

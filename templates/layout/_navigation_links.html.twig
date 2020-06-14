@@ -4,7 +4,7 @@
   <li><a href='/cg'>Color Guide</a></li>
   <li><a href='/events'>Events</a></li>
   {% if signed_in %}
-    {# @var current_user \App\Models\DeviantartUser #}
+    {# @var current_user \App\Models\User #}
     <li><a href='{{ current_user.toURL() }}'>Account</a></li>
   {% endif %}
   {% if permission('staff') %}

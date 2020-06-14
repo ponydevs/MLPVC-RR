@@ -10,27 +10,28 @@ class AddDataToLogTable extends AbstractMigration {
       ->addColumn('data', 'jsonb', ["null" => true])
       ->update();
 
-        $this->renameLogTable(true, 'log__da_namechange', 'previous_usernames', function (Table $table) {
+        $this->renameLogTable('log__da_namechange', 'previous_usernames', function (Table $table) {
       $table
         ->renameColumn('old', 'username')
         ->renameColumn('new', '_new');
     });
-    $this->renameLogTable(true, 'log__major_changes', 'major_changes', function (Table $table) {
+    $this->renameLogTable('log__major_changes', 'major_changes', function (Table $table) {
       $this->laravelTimestamps(true, $table)
         ->addColumn('user_id', 'uuid', ['null' => true]);
     });
-    $this->renameLogTable(true, 'log__failed_auth_attempts', 'failed_auth_attempts', function (Table $table) {
+    $this->renameLogTable('log__failed_auth_attempts', 'failed_auth_attempts', function (Table $table) {
       $this->laravelTimestamps(true, $table)
         ->addColumn('ip', 'inet', ['null' => true]);
     });
-    $this->renameLogTable(true, 'log__post_lock', 'locked_posts', function (Table $table) {
+    $this->renameLogTable('log__post_lock', 'locked_posts', function (Table $table) {
       $this->laravelTimestamps(true, $table)
         ->addColumn('user_id', 'uuid', ['null' => true])
+        ->addForeignKey('user_id', 'users', 'id', ['delete' => 'restrict', 'update' => 'cascade'])
         ->renameColumn('old_id', 'old_post_id')
         ->renameColumn('id', 'post_id')
         ->update();
     });
-    $this->renameLogTable(true, 'log__post_break', 'broken_posts', function (Table $table) {
+    $this->renameLogTable('log__post_break', 'broken_posts', function (Table $table) {
       $this->laravelTimestamps(true, $table)
         ->renameColumn('old_id', 'old_post_id')
         ->renameColumn('id', 'post_id')
@@ -101,38 +102,25 @@ class AddDataToLogTable extends AbstractMigration {
   }
 
   /**
-   * @param bool          $up
    * @param string        $log_table_name
    * @param string        $new_name
    * @param callable|null $table_transformer A function that will receive the $table variable.
    *                                         May optionally return with another function that will be called
    *                                         after the changes this method makes to the table.
    */
-  private function renameLogTable(bool $up, string $log_table_name, string $new_name, callable $table_transformer = null):void {
-    $table = $this->table($up ? $log_table_name : $new_name);
+  private function renameLogTable(string $log_table_name, string $new_name, callable $table_transformer = null):void {
+    $table = $this->table($log_table_name);
     $post_rename = null;
     if ($table_transformer)
       $post_rename = $table_transformer($table);
 
-    if ($up){
-      $table
-        ->rename($new_name)
-        ->renameColumn('entryid', 'id');
-    }
-    else {
-      $table
-        ->rename($log_table_name)
-        ->renameColumn('id', 'entryid');
-    }
+    $table
+      ->rename($new_name)
+      ->renameColumn('entryid', 'id');
     if (is_callable($post_rename))
       $post_rename($table);
     $table->update();
 
-    if ($up){
-      $this->execute("ALTER SEQUENCE {$log_table_name}_entryid_seq RENAME TO {$new_name}_id_seq");
-    }
-    else {
-      $this->execute("ALTER SEQUENCE {$new_name}_id_seq RENAME TO {$log_table_name}_entryid_seq");
-    }
+    $this->execute("ALTER SEQUENCE {$log_table_name}_entryid_seq RENAME TO {$new_name}_id_seq");
   }
 }

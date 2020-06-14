@@ -8,28 +8,31 @@ use App\Logs;
 use function in_array;
 
 /**
- * @property int            $id
- * @property int            $refid
- * @property string         $initiator
- * @property string         $reftype
- * @property DateTime       $created_at
- * @property DateTime       $updated_at
- * @property string         $ip
- * @property DeviantartUser $actor      (Via relations)
- * @property array          $data       (Via magic method)
- * @method static Log find_by_reftype_and_refid(string $reftype, int $refid)
+ * @property int      $id
+ * @property int      $initiator
+ * @property string   $entry_type
+ * @property DateTime $created_at
+ * @property DateTime $updated_at
+ * @property string   $ip
+ * @property User     $actor      (Via relations)
+ * @property array    $data       (Via magic method)
  * @method static Log[] find_all_by_ip(string $ip)
  */
 class Log extends NSModel {
   public static $table_name = 'logs';
 
   public static $belongs_to = [
-    ['actor', 'class' => 'DeviantartUser', 'foreign_key' => 'initiator'],
+    ['actor', 'class' => 'User', 'foreign_key' => 'initiator'],
   ];
 
   /** For Twig */
-  public function getActor():DeviantartUser {
+  public function getActor() {
     return $this->actor;
+  }
+
+  /** For Twig */
+  public function getData() {
+    return $this->data;
   }
 
   public function get_data():?array {
@@ -38,8 +41,20 @@ class Log extends NSModel {
     if ($attr === null)
       return null;
 
-    if (is_string($attr))
-      return JSON::decode($attr);
+    static $decoded;
+
+    if (isset($decoded))
+      return $decoded;
+
+    if (is_string($attr)) {
+      $decoded = JSON::decode($attr);
+      foreach ($decoded as $key => $value) {
+        if (is_array($value) && isset($value['date'])) {
+          $decoded[$key] = $value['date'];
+        }
+      }
+      return $decoded;
+    }
 
     return $attr;
   }

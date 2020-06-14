@@ -621,36 +621,6 @@
           });
         });
       });
-    })
-    .on('click', 'li[id] .pls-transfer', function(e) {
-      e.preventDefault();
-
-      const $li = $(this).closest('li');
-      const { id, type } = $.getLiTypeId();
-
-      let reservedBy = $li.children('.reserver').find('.name').text();
-      $.Dialog.confirm(`Take on reservation of ${type} #${id}`,
-        `<p>Using this option, you can express your interest in finishing the ${type} which ${reservedBy} already reserved.</p>
-				<p>They will be sent a notification letting them know you're interested and they'll be able to allow/deny the transfer of the reserver status as they see fit.</p>
-				<p>Once ${reservedBy} responds to your inquiry you'll receive a notification informing you about their decision. If they agreed, the post's reservation will be transferred to you immediately.</p>
-				<p><strong>Are you sure you can handle this ${type}?</strong></p>`, sure => {
-          if (!sure) return;
-
-          $.Dialog.wait(false);
-
-          $.API.post(`/post/${id}/transfer`, function() {
-            if (this.canreserve)
-              return $.Dialog.confirm(false, this.message, function(sure) {
-                if (!sure) return;
-
-                reservePost($li, false, id);
-              });
-            else if (!this.status)
-              return $.Dialog.fail(false, this.message);
-
-            $.Dialog.success(false, this.message, true);
-          });
-        });
     });
   $body
     .on('click', '#dialog-update-image', function(e) {

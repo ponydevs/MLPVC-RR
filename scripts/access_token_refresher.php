@@ -14,11 +14,13 @@ try {
     exit(1);
   }
 
-  $session_id = strtolower($argv[1]);
-  if (!preg_match('~^[a-f\d-]+$~', $session_id)){
-    CoreUtils::logToTtyOrFile(__FILE__, "Session ID is malformed: $session_id");
+  $raw_session_id = $argv[1];
+  if (!preg_match('~^\d+$~', $raw_session_id)){
+    CoreUtils::logToTtyOrFile(__FILE__, "Session ID is malformed: {$raw_session_id}");
     exit(2);
   }
+
+  $session_id = (int) $raw_session_id;
 
   Auth::$session = Session::find($session_id);
   if (empty(Auth::$session)){

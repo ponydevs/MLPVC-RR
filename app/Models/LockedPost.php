@@ -3,19 +3,20 @@
 namespace App\Models;
 
 use ActiveRecord\DateTime;
+use App\Auth;
 
 /**
- * @property int            $id
- * @property int            $post_id
- * @property DateTime       $created_at
- * @property DateTime       $updated_at
- * @property string         $user_id
- * @property DeviantartUser $user          (Via relations)
- * @property Post           $post          (Via magic method)
+ * @property int      $id
+ * @property int      $post_id
+ * @property DateTime $created_at
+ * @property DateTime $updated_at
+ * @property int      $user_id
+ * @property User     $user       (Via relations)
+ * @property Post     $post       (Via magic method)
  */
 class LockedPost extends NSModel {
   public static $belongs_to = [
-    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
+    ['user'],
     ['post'],
   ];
 

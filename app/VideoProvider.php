@@ -3,17 +3,15 @@
 namespace App;
 
 use App\Models\ShowVideo;
-use Exception;
 use RuntimeException;
 
 class VideoProvider {
-  public static $id, $embed;
-  /** @var ShowVideo */
-  public $episodeVideo;
+  public ?ShowVideo $episodeVideo;
+  public ?int $id;
 
   public function __construct(string $url) {
     $this->episodeVideo = self::getEpisodeVideo(CoreUtils::trim($url));
-    self::$id = $this->episodeVideo->id;
+    $this->id = $this->episodeVideo->provider_id;
     self::getEmbed($this->episodeVideo);
   }
 
@@ -35,8 +33,8 @@ class VideoProvider {
     $match = [];
     if (preg_match("~^(?:https?://(?:www\\.)?)?$pattern~", $url, $match))
       return new ShowVideo([
-        'provider' => $name,
-        'id' => $match[1],
+        'provider_abbr' => $name,
+        'provider_id' => $match[1],
       ]);
 
     return null;
@@ -48,7 +46,7 @@ class VideoProvider {
       if (!empty($test))
         return $test;
     }
-    throw new Exception('Unsupported provider');
+    throw new RuntimeException('Unsupported provider');
   }
 
   public const URL_ONLY = true;
@@ -56,21 +54,21 @@ class VideoProvider {
   public static function getEmbed(ShowVideo $video, bool $urlOnly = false):string {
     $urlOnly = $urlOnly === self::URL_ONLY;
 
-    switch ($video->provider){
+    switch ($video->provider_abbr){
       case 'yt':
-        $url = $urlOnly ? "http://youtu.be/$video->id" : "https://www.youtube.com/embed/$video->id";
+        $url = $urlOnly ? "http://youtu.be/$video->provider_id" : "https://www.youtube.com/embed/$video->provider_id";
       break;
       case 'dm':
-        $url = $urlOnly ? "http://dai.ly/$video->id" : "https://www.dailymotion.com/embed/video/$video->id?related=0&quality=1080&highlight=2C73B1";
+        $url = $urlOnly ? "http://dai.ly/$video->provider_id" : "https://www.dailymotion.com/embed/video/$video->provider_id?related=0&quality=1080&highlight=2C73B1";
       break;
       case 'sv':
-        $url = $urlOnly ? "https://sendvid.com/$video->id" : "https://sendvid.com/embed/$video->id";
+        $url = $urlOnly ? "https://sendvid.com/$video->provider_id" : "https://sendvid.com/embed/$video->provider_id";
       break;
       case 'mg':
-        $url = $urlOnly ? "https://mega.nz/#!$video->id" : "https://mega.nz/embed#!$video->id";
+        $url = $urlOnly ? "https://mega.nz/#!$video->provider_id" : "https://mega.nz/embed#!$video->provider_id";
       break;
       default:
-        throw new RuntimeException("Unrecognized provider: {$video->provider}");
+        throw new RuntimeException("Unrecognized provider: {$video->provider_abbr}");
     }
 
     /** @noinspection HtmlUnknownAttribute */

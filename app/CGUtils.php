@@ -319,10 +319,13 @@ class CGUtils {
         return "$label <span class='color-red typcn typcn-trash' title='Deleted'></span>";
       case 'manual_give':
       case 'manual_take':
-        $by = Users::get($data['by']);
-        $link = empty($by) ? 'an unknown user' : $by->toAnchor();
+        if (Permission::sufficient('staff')) {
+          $by = Users::resolveById($data['by']);
+          $link = empty($by) ? 'an unknown user' : $by->toAnchor();
+        }
+        else $link = 'a staff member';
 
-        return 'By '.(Permission::sufficient('staff') ? $link : 'a staff member').
+        return "By $link".
           (!empty($data['comment']) ? '<br><q>'.CoreUtils::escapeHTML($data['comment']).'</q>' : '');
       default:
         return '<pre>'.htmlspecialchars(JSON::encode($data, JSON_PRETTY_PRINT)).'</pre>';
@@ -1142,7 +1145,7 @@ class CGUtils {
           if ($cm->favme !== null)
             $arr['source'] = "http://fav.me/{$cm->favme}";
           if ($cm->contributor_id !== null)
-            $arr['contributor'] = $cm->contributor->toDALink();
+            $arr['contributor'] = $cm->contributor->toURL();
           $append_cms[$cm->id] = $arr;
         }
         $append_appearance['CutieMark'] = $append_cms;

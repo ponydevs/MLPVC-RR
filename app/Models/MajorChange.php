@@ -7,30 +7,21 @@ use App\DB;
 use function is_string;
 
 /**
- * @property int            $id
- * @property int            $appearance_id
- * @property int            $user_id
- * @property string         $reason
- * @property DateTime       $created_at
- * @property DateTime       $updated_at
- * @property Appearance     $appearance
- * @property DeviantartUser $user
- * @property null           $log
+ * @property int        $id
+ * @property int        $appearance_id
+ * @property int        $user_id
+ * @property string     $reason
+ * @property DateTime   $created_at
+ * @property DateTime   $updated_at
+ * @property Appearance $appearance
+ * @property User       $user
+ * @property null       $log
  */
 class MajorChange extends NSModel {
   public static $belongs_to = [
     ['appearance'],
-    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
+    ['user'],
   ];
-
-  /** For Twig */
-  public function getAppearance():Appearance {
-    return $this->appearance;
-  }
-
-  public function getUser():DeviantartUser {
-    return $this->user;
-  }
 
   public static function total(string $guide):int {
     $query = DB::$instance->querySingle(

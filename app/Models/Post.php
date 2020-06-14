@@ -14,47 +14,48 @@ use App\Response;
 use App\Time;
 use App\UserPrefs;
 use Exception;
+use Throwable;
 use function count;
 
 /**
  * This is a blanket class for both requests and reservations.
  * Requests always have a non-null requested_by value which is to be used for post type detection.
  *
- * @property int            $id
- * @property string         $type
- * @property int            $season
- * @property int            $episode
- * @property int            $show_id
- * @property string         $preview
- * @property string         $fullsize
- * @property string         $label
- * @property string         $requested_by
- * @property DateTime       $requested_at
- * @property string         $reserved_by
- * @property DateTime       $reserved_at
- * @property string         $deviation_id
- * @property bool           $lock
- * @property DateTime       $finished_at
- * @property bool           $broken
- * @property DeviantartUser $reserver       (Via relations)
- * @property DeviantartUser $requester      (Via relations)
- * @property DateTime       $posted_at      (Via magic method)
- * @property string         $posted_by      (Via magic method)
- * @property DeviantartUser $poster         (Via magic method)
- * @property Show           $show           (Via magic method)
- * @property string         $kind           (Via magic method)
- * @property bool           $finished       (Via magic method)
- * @property LockedPost     $approval_entry (Via magic method)
- * @property bool           $is_request     (Via magic method)
- * @property bool           $is_reservation (Via magic method)
+ * @property int        $id
+ * @property string     $type
+ * @property int        $season
+ * @property int        $episode
+ * @property int        $show_id
+ * @property string     $preview
+ * @property string     $fullsize
+ * @property string     $label
+ * @property int        $requested_by
+ * @property DateTime   $requested_at
+ * @property int        $reserved_by
+ * @property DateTime   $reserved_at
+ * @property string     $deviation_id
+ * @property bool       $lock
+ * @property DateTime   $finished_at
+ * @property bool       $broken
+ * @property User       $reserver       (Via relations)
+ * @property User       $requester      (Via relations)
+ * @property DateTime   $posted_at      (Via magic method)
+ * @property int        $posted_by      (Via magic method)
+ * @property User       $poster         (Via magic method)
+ * @property Show       $show           (Via magic method)
+ * @property string     $kind           (Via magic method)
+ * @property bool       $finished       (Via magic method)
+ * @property LockedPost $approval_entry (Via magic method)
+ * @property bool       $is_request     (Via magic method)
+ * @property bool       $is_reservation (Via magic method)
  * @method static Post|Post[] find(...$args)
  * @method static Post find_by_deviation_id(string $deviation_id)
  * @method static Post find_by_preview(string $preview_url)
  */
 class Post extends NSModel implements Linkable {
   public static $belongs_to = [
-    ['reserver', 'class' => 'DeviantartUser', 'foreign_key' => 'reserved_by'],
-    ['requester', 'class' => 'DeviantartUser', 'foreign_key' => 'requested_by'],
+    ['reserver', 'class' => 'User', 'foreign_key' => 'reserved_by'],
+    ['requester', 'class' => 'User', 'foreign_key' => 'requested_by'],
     ['show'],
   ];
 
@@ -71,11 +72,9 @@ class Post extends NSModel implements Linkable {
         'id' => $this->id,
       ]);
     }
-    catch (Exception $e){
+    catch (Throwable $e){
       CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
     }
-
-    Posts::clearTransferAttempts($this, 'del');
   }
 
   /* For Twig */
@@ -93,12 +92,12 @@ class Post extends NSModel implements Linkable {
     else $this->reserved_at = $value;
   }
 
-  public function get_posted_by() {
+  public function get_posted_by(): ?int {
     return $this->is_request ? $this->requested_by : $this->reserved_by;
   }
 
-  public function get_poster() {
-    return DeviantartUser::find($this->posted_by);
+  public function get_poster(): ?User {
+    return User::find($this->posted_by);
   }
 
   public function get_finished() {
@@ -172,13 +171,6 @@ class Post extends NSModel implements Linkable {
     $target = $newtab ? 'target="_blank"' : '';
 
     return "<a href='$link' {$target}>$label</a>";
-  }
-
-  public function isTransferable(?int $ts = null):bool {
-    if ($this->reserved_by === null)
-      return true;
-
-    return ($ts ?? time()) - $this->reserved_at->getTimestamp() >= Time::IN_SECONDS['day'] * 5;
   }
 
   /**
@@ -267,7 +259,7 @@ class Post extends NSModel implements Linkable {
 
       $posted_at .= "Requested $permalink";
       if (Auth::$signed_in && ($isStaff || $isRequester || $isReserver)){
-        $posted_at .= ' by '.($isRequester ? "<a href='/@".Auth::$user->name."'>You</a>" : $this->requester->toAnchor());
+        $posted_at .= ' by '.($isRequester ? "<a href='".Auth::$user->toURL(false)."'>You</a>" : $this->requester->toAnchor());
       }
     }
     else {
@@ -319,7 +311,7 @@ class Post extends NSModel implements Linkable {
         if (!empty($this->fullsize))
           $HTML .= "<span class='info-line'><a href='{$this->fullsize}' class='original' target='_blank' rel='noopener'><span class='typcn typcn-link'></span> Original image</a></span>";
         if (!$approved && Permission::sufficient('staff'))
-          $HTML .= "<span class='info-line'><a href='{$this->reserver->getOpenSubmissionsURL()}' target='_blank' rel='noopener'><span class='typcn typcn-arrow-forward'></span> View open submissions</a></span>";
+          $HTML .= "<span class='info-line'><a href='{$this->reserver->deviantart_user->getOpenSubmissionsURL()}' target='_blank' rel='noopener'><span class='typcn typcn-arrow-forward'></span> View open submissions</a></span>";
       }
       else $HTML .= $post_label.$posted_at.$reserved_at;
     }
@@ -353,52 +345,48 @@ class Post extends NSModel implements Linkable {
    * @return string
    */
   public function getActionsHTML($view_only, bool $hide_reserver_status, bool $enablePromises):string {
-    $By = $hide_reserver_status ? null : $this->reserver;
-    $requestedByUser = $this->is_request && Auth::$signed_in && $this->requested_by === Auth::$user->id;
-    $isNotReserved = empty($By);
-    $sameUser = Auth::$signed_in && $this->reserved_by === Auth::$user->id;
-    $CanEdit = (empty($this->lock) && Permission::sufficient('staff')) || Permission::sufficient('developer') || ($requestedByUser && $isNotReserved);
-    $Buttons = [];
+    $by = $hide_reserver_status ? null : $this->reserver;
+    $requested_by_user = $this->is_request && Auth::$signed_in && $this->requested_by === Auth::$user->id;
+    $is_not_reserved = empty($by);
+    $same_user = Auth::$signed_in && $this->reserved_by === Auth::$user->id;
+    $can_edit = (empty($this->lock) && Permission::sufficient('staff')) || Permission::sufficient('developer') || ($requested_by_user && $is_not_reserved);
+    $buttons = [];
 
-    $HTML = Posts::getPostReserveButton($By, $view_only, false, $enablePromises);
+    $HTML = Posts::getPostReserveButton($by, $view_only, false, $enablePromises);
     if (!empty($this->reserved_by)){
-      $staffOrSameUser = ($sameUser && Permission::sufficient('member')) || Permission::sufficient('staff');
-      if (!$this->finished){
-        if (!$sameUser && Permission::sufficient('member') && $this->isTransferable() && !$this->isOverdue())
-          $Buttons[] = ['user-add darkblue pls-transfer', 'Take on'];
-        if ($staffOrSameUser){
-          $Buttons[] = ['user-delete red cancel', 'Cancel Reservation'];
-          $Buttons[] = ['attachment green finish', ($sameUser ? "I'm" : 'Mark as').' finished'];
-        }
+      $staffOrSameUser = ($same_user && Permission::sufficient('member')) || Permission::sufficient('staff');
+      if (!$this->finished && $staffOrSameUser){
+        $buttons[] = ['user-delete red cancel', 'Cancel Reservation'];
+        $buttons[] = ['attachment green finish', ($same_user ? "I'm" : 'Mark as').' finished'];
       }
       if ($this->finished && !$this->lock){
         if (Permission::sufficient('staff'))
-          $Buttons[] = [
+          $buttons[] = [
             (empty($this->preview) ? 'trash delete-only red' : 'media-eject orange').' unfinish', empty($this->preview)
               ? 'Delete' : 'Unfinish',
           ];
         if ($staffOrSameUser)
-          $Buttons[] = ['tick green check', 'Check'];
+          $buttons[] = ['tick green check', 'Check'];
       }
     }
 
-    if (empty($this->lock) && empty($Buttons) && (Permission::sufficient('staff') || ($requestedByUser && $isNotReserved)))
-      $Buttons[] = ['trash red delete', 'Delete'];
-    if ($CanEdit)
-      array_splice($Buttons, 0, 0, [['pencil darkblue edit', 'Edit']]);
+    if (empty($this->lock) && empty($buttons) && (Permission::sufficient('staff') || ($requested_by_user && $is_not_reserved)))
+      $buttons[] = ['trash red delete', 'Delete'];
+    if ($can_edit)
+      array_splice($buttons, 0, 0, [['pencil darkblue edit', 'Edit']]);
     if ($this->lock && Permission::sufficient('staff'))
-      $Buttons[] = ['lock-open orange unlock', 'Unlock'];
+      $buttons[] = ['lock-open orange unlock', 'Unlock'];
 
     $HTML .= "<div class='actions'>";
     if ($view_only === false){
-      $Buttons[] = ['export blue share', 'Share'];
+      $buttons[] = ['export blue share', 'Share'];
     }
-    if (!empty($Buttons)){
+    if (!empty($buttons)){
       if ($view_only !== false)
         $HTML .= "<div><a href='$view_only' class='btn link typcn typcn-arrow-forward'>View</a></div>";
       else {
-        $regularButton = count($Buttons) < 3;
-        foreach ($Buttons as $b){
+        $regularButton = count($buttons) < 3;
+        foreach ($buttons as $b){
           $WriteOut = "'".($regularButton ? ">{$b[1]}" : " title='".CoreUtils::aposEncode($b[1])."'>");
           $HTML .= "<button class='typcn typcn-{$b[0]}$WriteOut</button>";
         }

@@ -22,7 +22,7 @@ class Notifications {
   public static function get($only = self::ALL) {
     if (!Auth::$signed_in)
       return null;
-    $UserID = Auth::$user->id;
+    $user_id = Auth::$user->id;
 
     switch ($only){
       case self::UNREAD_ONLY:
@@ -33,7 +33,7 @@ class Notifications {
       break;
     }
 
-    return DB::$instance->where('recipient_id', $UserID)->get('notifications');
+    return DB::$instance->where('recipient_id', $user_id)->get('notifications');
   }
 
   /**

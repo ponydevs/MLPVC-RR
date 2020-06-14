@@ -4,14 +4,14 @@ namespace App\Controllers;
 
 use App\Auth;
 use App\CoreUtils;
+use App\DB;
 use App\HTTP;
 use App\JSON;
 use App\Models\DiscordMember;
-use App\Models\DeviantartUser;
+use App\Models\User;
 use App\Permission;
 use App\Response;
 use App\Time;
-use App\Users;
 use GuzzleHttp\Exception\RequestException;
 use Wohali\OAuth2\Client\Provider\Discord;
 use Wohali\OAuth2\Client\Provider\Exception\DiscordIdentityProviderException;
@@ -39,8 +39,8 @@ class DiscordAuthController extends Controller {
     $this->provider = self::getProvider();
   }
 
-  private function _getReturnUrl():string {
-    return Auth::$user->toURL().'#discord-connect';
+  private function getReturnUrl():string {
+    return Auth::$user->toURL(false).'#discord-connect';
   }
 
   public static function getProvider():Discord {
@@ -51,13 +51,13 @@ class DiscordAuthController extends Controller {
     ]);
   }
 
-  private function _redirectIfAlreadyLinked() {
+  private function redirectIfAlreadyLinked():void {
     if (Auth::$user->isDiscordLinked())
-      HTTP::tempRedirect($this->_getReturnUrl());
+      HTTP::tempRedirect($this->getReturnUrl());
   }
 
   public function begin() {
-    $this->_redirectIfAlreadyLinked();
+    $this->redirectIfAlreadyLinked();
 
     $authUrl = $this->provider->getAuthorizationUrl([
       'scope' => ['identify', 'guilds'],
@@ -67,9 +67,9 @@ class DiscordAuthController extends Controller {
   }
 
   public function end() {
-    $this->_redirectIfAlreadyLinked();
+    $this->redirectIfAlreadyLinked();
 
-    $returnUrl = $this->_getReturnUrl();
+    $returnUrl = $this->getReturnUrl();
 
     if (!isset($_GET['code'], $_GET['state']) || $_GET['state'] !== Auth::$session->pullData('discord_state'))
       HTTP::tempRedirect($returnUrl);
@@ -84,50 +84,52 @@ class DiscordAuthController extends Controller {
       }
       throw $e;
     }
-    $user = DiscordMember::getUserData($this->provider, $token);
-    if ($user === null)
+    $discord_user_res = DiscordMember::getUserData($this->provider, $token);
+    if ($discord_user_res === null) {
+      sd('No discord user res');
       HTTP::tempRedirect($returnUrl);
-
-    $discordUser = DiscordMember::find($user->getId());
-    if (empty($discordUser)){
-      $discordUser = new DiscordMember();
-      $discordUser->id = $user->getId();
     }
-    $discordUser->user_id = Auth::$user->id;
-    $discordUser->last_synced = date('c');
-    $discordUser->updateFromApi($user);
-    $discordUser->updateAccessToken($token);
-    $discordUser->checkServerMembership();
+
+    $discord_id = (int) $discord_user_res->getId();
+
+    $discord_user = DiscordMember::find($discord_id);
+    if (empty($discord_user)){
+      $discord_user = new DiscordMember();
+      $discord_user->id = $discord_id;
+    }
+
+    // Delete any existing member records for this user that do not have this Discord user ID
+    DB::$instance->where('user_id', Auth::$user->id)->where('id', $discord_id, '!=')->delete('discord_members');
+
+    $discord_user->user_id = Auth::$user->id;
+    $discord_user->last_synced = date('c');
+    $discord_user->updateFromApi($discord_user_res);
+    $discord_user->updateAccessToken($token);
+    $discord_user->checkServerMembership();
 
     HTTP::tempRedirect($returnUrl);
   }
 
-  /** @var DeviantartUser */
-  private $_target;
-  /** @var bool */
-  private $_sameUser;
+  private ?User $target;
+  private bool $same_user;
 
-  private function _setTarget($params) {
-    if ($params['name'] === Auth::$user->name)
-      $this->_target = Auth::$user;
-    else {
-      $this->_target = Users::get($params['name'], 'name');
-      if (false === $this->_target instanceof DeviantartUser)
-        CoreUtils::notFound();
-      if ($this->_target->id !== Auth::$user->id && Permission::insufficient('staff'))
-        Response::fail();
-    }
+  private function setTarget($params):void {
+    $this->target = User::find($params['user_id']);
+    if (false === $this->target instanceof User)
+      CoreUtils::notFound();
+    if ($this->target->id !== Auth::$user->id && Permission::insufficient('staff'))
+      Response::fail();
 
-    if ($this->_target->discord_member === null)
+    if (!$this->target->boundToDiscordMember())
       Response::fail('You must be bound to a Discord user to perform this action');
 
-    $this->_sameUser = $this->_target->id === Auth::$user->id;
+    $this->same_user = $this->target->id === Auth::$user->id;
   }
 
   public function sync($params) {
-    $this->_setTarget($params);
+    $this->setTarget($params);
 
-    $discordUser = $this->_target->discord_member;
+    $discordUser = $this->target->discord_member;
     if ($discordUser->access === null)
       Response::fail('The Discord account must be linked before syncing');
 
@@ -139,9 +141,9 @@ class DiscordAuthController extends Controller {
   }
 
   public function unlink($params) {
-    $this->_setTarget($params);
+    $this->setTarget($params);
 
-    $discord_user = $this->_target->discord_member;
+    $discord_user = $this->target->discord_member;
     if ($discord_user->isLinked()){
       $status_code = null;
       try {
@@ -165,7 +167,7 @@ class DiscordAuthController extends Controller {
       }
       if ($status_code !== 200){
         // Revoke failed
-        CoreUtils::error_log("Revoking Discord access failed for {$this->_target->name}, details:\n".JSON::encode([
+        CoreUtils::error_log("Revoking Discord access failed for {$this->target->name}, details:\n".JSON::encode([
             'statusCode' => $res->getStatusCode(),
             'body' => (string)$res->getBody(),
           ], JSON_PRETTY_PRINT));
@@ -176,8 +178,8 @@ class DiscordAuthController extends Controller {
     // Revoke successful
     $discord_user->delete();
 
-    $Your = $this->_sameUser ? 'Your' : 'This';
-    Response::success("$Your Discord account was successfully unlinked.".($this->_sameUser
+    $Your = $this->same_user ? 'Your' : 'This';
+    Response::success("$Your Discord account was successfully unlinked.".($this->same_user
         ? ' If you want to verify it yourself, check your Authorized Apps in your settings.' : ''));
   }
 

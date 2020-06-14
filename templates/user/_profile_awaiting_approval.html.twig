@@ -1,3 +1,4 @@
+{# @var user \App\Models\User #}
 {# @var awaiting_approval \App\Models\Post[] #}
 {# @var same_user bool #}
 {% if wrap is not defined or wrap %}
@@ -30,7 +31,7 @@
   {% if await_count %}
     {% if permission('staff') %}
       <div class="button-block">
-        <a class="btn link typcn typcn-arrow-forward" href="{{ user.openSubmissionsURL }}" target="_blank" rel="noopener">View open submissions</a>
+        <a class="btn link typcn typcn-arrow-forward" href="{{ user.deviantart_user.openSubmissionsURL }}" target="_blank" rel="noopener">View open submissions</a>
       </div>
     {% endif %}
 

@@ -5,7 +5,7 @@
   {% endif %}
   {% for notice in notices %}
     <li class="notice-item">
-      <span class="text">{{ notice.message_html }}</span>
+      <span class="text">{{ notice.message }}</span>
       &ndash;
       <span class="time">Hidden {{ time_tag(notice.hide_after) }}</span>
       <span class="actions">

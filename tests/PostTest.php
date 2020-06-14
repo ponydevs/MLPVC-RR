@@ -4,22 +4,19 @@ use App\Models\Post;
 use App\Models\Show;
 use App\Time;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
-
-define('VALID_UUID', Uuid::uuid4());
 
 class PostTest extends TestCase {
   public function testGetIdString() {
     $request = new Post([
       'id' => 1,
-      'requested_by' => VALID_UUID,
+      'requested_by' => 1,
     ]);
     $result = $request->getIdString();
     self::assertEquals('post-1', $result);
 
     $reservation = new Post([
       'id' => 1,
-      'reserved_by' => VALID_UUID,
+      'reserved_by' => 1,
     ]);
     $result = $reservation->getIdString();
     self::assertEquals('post-1', $result);
@@ -35,7 +32,7 @@ class PostTest extends TestCase {
 
     $request = new Post([
       'id' => 1,
-      'requested_by' => VALID_UUID,
+      'requested_by' => 1,
       'show_id' => $episode->id,
     ]);
     $result = $request->toURL($episode);
@@ -43,7 +40,7 @@ class PostTest extends TestCase {
 
     $reservation = new Post([
       'id' => 1,
-      'reserved_by' => VALID_UUID,
+      'reserved_by' => 1,
       'show_id' => $episode->id,
     ]);
     $result = $reservation->toURL($episode);
@@ -59,7 +56,7 @@ class PostTest extends TestCase {
     ]);
     $request = new Post([
       'id' => 1,
-      'requested_by' => VALID_UUID,
+      'requested_by' => 1,
       'show_id' => $episode->id,
     ]);
     $result = $request->toAnchor(null, $episode);
@@ -70,48 +67,19 @@ class PostTest extends TestCase {
     self::assertEquals("<a href='/episode/S1E1#post-1' target=\"_blank\">Custom Text&lt;</a>", $result);
   }
 
-  public function testIsTransferable() {
-    $request = new Post([
-      'id' => 1,
-      'requested_by' => VALID_UUID,
-      'requested_at' => '2016-01-01T16:00:00Z',
-    ]);
-    $result = $request->isTransferable();
-    self::assertTrue($result, "Posts that aren't reserved by anyone must be transferable");
-
-    $request->reserved_by = 'c0592f2b-5adc-49c1-be1d-56efc4bdad88';
-    $request->reserved_at = '2016-01-14T00:00:00Z';
-    $now = strtotime('2016-01-15T00:00:00Z');
-
-    $result = $request->isTransferable($now);
-    self::assertFalse($result, 'The post must not be transferable yet (+4d)');
-
-    $request->reserved_at = '2016-01-10T00:00:01Z';
-    $result = $request->isTransferable($now);
-    self::assertFalse($result, 'The post must not be transferable yet (+1s)');
-
-    $request->reserved_at = '2016-01-10T00:00:00Z';
-    $result = $request->isTransferable($now);
-    self::assertTrue($result, 'The post must be transferable by now (0s)');
-
-    $request->reserved_at = '2016-01-09T23:59:59Z';
-    $result = $request->isTransferable($now);
-    self::assertTrue($result, 'The post must be transferable by now (-1s)');
-  }
-
   public function testIsOverdue() {
     $now = strtotime('2016-01-25T01:00:00Z');
     $eeservation = new Post([
       'id' => 1,
-      'reserved_by' => VALID_UUID,
+      'reserved_by' => 1,
     ]);
     self::assertFalse($eeservation->isOverdue($now), 'Reservations must not become overdue');
 
     $request = new Post([
       'id' => 1,
-      'requested_by' => VALID_UUID,
+      'requested_by' => 1,
       'requested_at' => '2015-01-01T00:00:00Z',
-      'reserved_by' => VALID_UUID,
+      'reserved_by' => 1,
       'reserved_at' => '2016-01-25T00:00:00Z',
       'deviation_id' => 'dXXXXXX',
     ]);

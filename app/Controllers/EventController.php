@@ -305,7 +305,7 @@ class EventController extends Controller {
       Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
 
     if (!empty($this->event->max_entries)){
-      $entrycnt = count(Auth::$user->getEntriesFor($this->event, 'id'));
+      $entrycnt = count($this->event->getEntriesFor(Auth::$user, 'id'));
       if ($entrycnt >= $this->event->max_entries)
         Response::fail("You've used all of your entries for this event. If you want to change your entry, edit it instead.");
       $remain = $this->event->max_entries - $entrycnt;

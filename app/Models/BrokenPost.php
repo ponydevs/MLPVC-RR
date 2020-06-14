@@ -5,15 +5,14 @@ namespace App\Models;
 use ActiveRecord\DateTime;
 
 /**
- * @property int            $id
- * @property int            $post_id
- * @property string         $reserved_by
- * @property int            $response_code
- * @property string         $failing_url
- * @property DateTime       $created_at
- * @property DateTime       $updated_at
- * @property DeviantartUser $user          (Via relations)
- * @property Post           $post          (Via magic method)
+ * @property int      $id
+ * @property int      $post_id
+ * @property int      $reserved_by
+ * @property int      $response_code
+ * @property string   $failing_url
+ * @property DateTime $created_at
+ * @property DateTime $updated_at
+ * @property Post     $post          (Via magic method)
  */
 class BrokenPost extends NSModel {
   public static $belongs_to = [

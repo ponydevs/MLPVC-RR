@@ -2,16 +2,13 @@
 
 namespace App;
 
-use App\Models\DeviantartUser;
-use Exception;
+use App\Models\User;
+use RuntimeException;
 
 class UserSettingForm {
-  /** @var string */
-  private $_setting_name;
-  /** @var DeviantartUser */
-  private $_current_user;
-  /** @var bool */
-  private $_can_save;
+  private string $setting_name;
+  private ?User $current_user;
+  private bool $can_save;
 
   public const INPUT_MAP = [
     'cg_itemsperpage' => [
@@ -73,7 +70,7 @@ class UserSettingForm {
       'options' => [
         'desc' => 'Choose which service to pull your avatar from: ',
         'optg' => 'Available providers',
-        'opts' => DeviantartUser::AVATAR_PROVIDERS,
+        'opts' => User::AVATAR_PROVIDERS,
         'optperm' => [
           'discord' => 'discord_member',
         ],
@@ -141,30 +138,30 @@ class UserSettingForm {
     ],
   ];
 
-  public function __construct(string $setting_name, ?DeviantartUser $current_user = null, ?string $req_perm = null) {
+  public function __construct(string $setting_name, ?User $current_user = null, ?string $req_perm = null) {
     if (!isset(UserPrefs::DEFAULTS[$setting_name]))
-      throw new Exception('Could not instantiate '.__CLASS__." for non-existant setting $setting_name");
+      throw new RuntimeException('Could not instantiate '.__CLASS__." for non-existing setting $setting_name");
     if (!isset(self::INPUT_MAP[$setting_name]))
-      throw new Exception('Could not instantiate '.__CLASS__." for $setting_name: Missing INPUT_MAP entry");
-    $this->_setting_name = $setting_name;
+      throw new RuntimeException('Could not instantiate '.__CLASS__." for $setting_name: Missing INPUT_MAP entry");
+    $this->setting_name = $setting_name;
     if ($current_user === null && Auth::$signed_in)
       $current_user = Auth::$user;
-    $this->_current_user = $current_user;
+    $this->current_user = $current_user;
     // By default only the user themselves can change this setting
     if ($req_perm === null)
-      $this->_can_save = Auth::$signed_in && $this->_current_user->id === Auth::$user->id;
+      $this->can_save = Auth::$signed_in && $this->current_user->id === Auth::$user->id;
     // If a permission is required, make sure the authenticated user has it
-    else $this->_can_save = Permission::sufficient($req_perm);
+    else $this->can_save = Permission::sufficient($req_perm);
   }
 
   private function _permissionCheck(string $check_name) {
     switch ($check_name){
       case 'discord_member':
       case 'not_discord_member':
-        if ($this->_current_user === null)
+        if ($this->current_user === null)
           return false;
 
-        if ($this->_current_user->isDiscordServerMember())
+        if ($this->current_user->isDiscordServerMember())
           return $check_name === 'discord_member';
         else return $check_name === 'not_discord_member';
       default:
@@ -183,8 +180,8 @@ class UserSettingForm {
           return '';
       }
     }
-    $disabled = !$this->_can_save ? 'disabled' : '';
-    $value = UserPrefs::get($this->_setting_name, $this->_current_user);
+    $disabled = !$this->can_save ? 'disabled' : '';
+    $value = UserPrefs::get($this->setting_name, $this->current_user);
     switch ($type){
       case 'select':
         $select = '';
@@ -219,7 +216,7 @@ class UserSettingForm {
   }
 
   public function render() {
-    $map = self::INPUT_MAP[$this->_setting_name];
+    $map = self::INPUT_MAP[$this->setting_name];
     $input = $this->_getInput($map['type'], $map['options'] ?? []);
     if ($input === '')
       return '';
@@ -227,9 +224,9 @@ class UserSettingForm {
     echo Twig::$env->render('user/_setting_form.html.twig', [
       'map' => $map,
       'input' => $input,
-      'can_save' => $this->_can_save,
-      'setting_name' => $this->_setting_name,
-      'current_user' => $this->_current_user,
+      'can_save' => $this->can_save,
+      'setting_name' => $this->setting_name,
+      'current_user' => $this->current_user,
       'signed_in' => Auth::$signed_in,
     ]);
   }

@@ -12,6 +12,7 @@ use App\Input;
 use App\Models\PreviousUsername;
 use App\Models\Session;
 use App\Models\DeviantartUser;
+use App\Models\User;
 use App\Pagination;
 use App\Permission;
 use App\Response;
@@ -32,41 +33,25 @@ class UserController extends Controller {
   }
 
   public function profile($params):void {
-    $un = $params['name'] ?? null;
+    $user_id = $params['user_id'] ?? null;
 
+    $discord_duplicate_attempt = Auth::$signed_in && Auth::$session->pullData('discord_duplicate_attempt') === true;
     $error = null;
     $sub_error = null;
-    if ($un === null){
+    if ($user_id === null){
       if (Auth::$signed_in)
         $user = Auth::$user;
       else $error = 'Sign in to view your settings';
     }
-    else $user = Users::get($un, 'name');
+    else $user = User::find($user_id);
 
-    if (empty($user) || !($user instanceof DeviantartUser)){
-      if (Auth::$signed_in && isset($user) && $user === false){
-        if (CoreUtils::contains(Auth::$session->scope, 'browse')){
-          $error = 'User does not exist';
-          $sub_error = 'Check the name for typos and try again';
-        }
-        else {
-          $error = 'Could not fetch user information';
-          $sub_error = 'Your session is missing the "browse" scope';
-        }
-      }
-      else if ($error === null){
-        $error = 'Local user data missing';
-        if (!Auth::$signed_in){
-          $exists = 'exists on DeviantArt';
-          if ($un !== null)
-            $exists = "<a href='https://www.deviantart.com/".CoreUtils::aposEncode(strtolower($un))."'>$exists</a>";
-          $sub_error = "If this user $exists, sign in to import their details.";
-        }
-      }
+    if (empty($user) || !($user instanceof User)){
+      $error = 'User does not exist';
+      $sub_error = 'Check the name for typos and try again';
       $can_edit = $same_user = $dev_on_dev = false;
     }
     else {
-      $pagePath = "/@{$user->name}";
+      $pagePath = $user->toURL(false);
       CoreUtils::fixPath($pagePath);
       $same_user = Auth::$signed_in && $user->id === Auth::$user->id;
       $can_edit = !$same_user && Permission::sufficient('staff') && Permission::sufficient($user->role);
@@ -81,8 +66,8 @@ class UserController extends Controller {
       $is_staff = Permission::sufficient('staff');
 
       if ($same_user || $is_staff){
-        if (count($user->previous_names) > 0){
-          $old_names = implode(', ', array_map(fn(PreviousUsername $p) => $p->username, $user->previous_names));
+        if (count($user->deviantart_user->previous_names) > 0){
+          $old_names = implode(', ', array_map(fn(PreviousUsername $p) => $p->username, $user->deviantart_user->previous_names));
         }
       }
 
@@ -141,6 +126,7 @@ class UserController extends Controller {
         'list_pcgs' => $list_pcgs ?? null,
         'personal_color_guides' => $personal_color_guides ?? null,
         'awaiting_approval' => $awaiting_approval ?? null,
+        'duplicate_attempt' => $discord_duplicate_attempt,
       ],
     ];
     if ($error !== null)
@@ -162,11 +148,11 @@ class UserController extends Controller {
     if (!isset($params['uuid']) || Permission::insufficient('developer'))
       CoreUtils::notFound();
 
-    $user = DeviantartUser::find($params['uuid']);
-    if (empty($user))
+    $da_user = DeviantartUser::find($params['uuid']);
+    if (empty($da_user))
       CoreUtils::notFound();
 
-    HTTP::permRedirect('/@'.$user->name);
+    HTTP::permRedirect($da_user->user->toURL(false));
   }
 
   public function sessionApi($params):void {
@@ -197,7 +183,7 @@ class UserController extends Controller {
     if (!isset($params['id']))
       Response::fail('Missing user ID');
 
-    $target_user = DeviantartUser::find($params['id']);
+    $target_user = User::find($params['id']);
     if (empty($target_user))
       Response::fail('User not found');
 
@@ -232,14 +218,14 @@ class UserController extends Controller {
     if (!isset(self::CONTRIB_NAMES[$params['type']]))
       CoreUtils::notFound();
 
-    $user = Users::get($params['name'], 'name');
+    $user = User::find($params['user_id']);
     if (empty($user))
       CoreUtils::notFound();
     if ($user->id !== (Auth::$user->id ?? null) && $params['type'] === 'requests' && Permission::insufficient('staff'))
       CoreUtils::notFound();
 
     $items_per_page = 10;
-    $pagination = new Pagination("/@{$user->name}/contrib/{$params['type']}", $items_per_page);
+    $pagination = new Pagination("{$user->toURL()}/contrib/{$params['type']}", $items_per_page);
 
     /** @var $cnt int */
     /** @var $data array */
@@ -309,7 +295,7 @@ class UserController extends Controller {
     if (!isset($params['id']))
       Response::fail('Missing user ID');
 
-    $user = DeviantartUser::find($params['id']);
+    $user = User::find($params['id']);
     if (empty($user))
       Response::fail('The specified user does not exist');
 
@@ -334,7 +320,8 @@ class UserController extends Controller {
     if (Permission::insufficient('staff'))
       CoreUtils::noPerm();
 
-    $users = DB::$instance->orderBy('name')->get(DeviantartUser::$table_name);
+    /** @var $users User[] */
+    $users = DB::$instance->orderBy('name')->get(User::$table_name);
     if (!empty($users)){
       $arranged = [];
       foreach ($users as $u){
@@ -346,7 +333,6 @@ class UserController extends Controller {
       $sections = [];
       foreach (array_reverse(Permission::ROLES) as $r => $v){
         if (empty($arranged[$r])) continue;
-        /** @var $users \App\Models\DeviantartUser[] */
         $users = $arranged[$r];
         $user_count = count($users);
         $group = CoreUtils::makePlural(Permission::ROLES_ASSOC[$r], $user_count, true);
@@ -354,10 +340,10 @@ class UserController extends Controller {
         if ($user_count > 10){
           $users_out = [];
           foreach ($users as $u){
-            $firstletter = strtoupper($u->name[0]);
-            if (preg_match('/^[^a-z]$/i', $firstletter))
-              $firstletter = '#';
-            $users_out[$firstletter][] = $u->toAnchor();
+            $first_letter = strtoupper($u->name[0]);
+            if (preg_match('/^[^a-z]$/i', $first_letter))
+              $first_letter = '#';
+            $users_out[$first_letter][] = $u->toAnchor();
           }
 
           ksort($users_out);
@@ -397,5 +383,25 @@ class UserController extends Controller {
     $this->load_user($params);
 
     Response::done(['html' => $this->user->getAvatarWrap()]);
+  }
+
+  public function forceRedirect($params):void {
+    if ($this->action !== 'GET')
+      CoreUtils::notAllowed();
+
+    if (empty($params['name']))
+      CoreUtils::notFound();
+
+    $da_user = DeviantartUser::find_by_name($params['name']);
+
+    if (empty($da_user))
+      $da_user = Users::fetchDA([$params['name']]);
+
+    if (empty($da_user))
+      CoreUtils::notFound();
+
+    $request_uri = $_SERVER['REQUEST_URI'];
+    $new_uri = preg_replace('~^/(@|u/)'.USERNAME_CHARACTERS_PATTERN.'+~', "/users/{$da_user->user_id}", $request_uri);
+    HTTP::tempRedirect($new_uri);
   }
 }

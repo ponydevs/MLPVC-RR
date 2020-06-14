@@ -9,11 +9,10 @@ use App\DB;
 use App\DeviantArt;
 use App\HTTP;
 use App\Models\FailedAuthAttempt;
-use App\Models\DeviantartUser;
+use App\Models\User;
 use App\Permission;
 use App\Response;
 use App\Twig;
-use App\Users;
 use Exception;
 
 class AuthController extends Controller {
@@ -45,14 +44,17 @@ class AuthController extends Controller {
 
     if (FailedAuthAttempt::canAuthenticate()){
       try {
-        Auth::$user = DeviantArt::getAccessToken($_GET['code']);
+        $da_user = DeviantArt::exchangeForAccessToken($_GET['code']);
       }
       catch (Exception $e){
         CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
         FailedAuthAttempt::record();
         $this->_error('server_error');
       }
-      Auth::$signed_in = !empty(Auth::$user);
+      if (!empty($da_user)) {
+        Auth::$signed_in = true;
+        Auth::$user = $da_user->user;
+      }
     }
     else {
       $_GET['error'] = 'time_out';
@@ -88,17 +90,16 @@ class AuthController extends Controller {
     if (isset($_REQUEST['everywhere'])){
       $col = 'user_id';
       $val = Auth::$user->id;
-      $username = Users::validateName('name');
-      if ($username !== null){
+      $user_id = $_REQUEST['user_id'] ?? null;
+      if ($user_id !== null){
         if (Permission::insufficient('staff'))
           Response::fail();
-        /** @var $TargetUser DeviantartUser */
-        $TargetUser = Users::get($username, 'name');
-        if (empty($TargetUser))
+        $target_user = User::find((int) $user_id);
+        if (empty($target_user))
           Response::fail("Target user doesn't exist");
-        if ($TargetUser->id !== Auth::$user->id)
-          $val = $TargetUser->id;
-        else unset($TargetUser);
+        if ($target_user->id !== Auth::$user->id)
+          $val = $target_user->id;
+        else unset($target_user);
       }
     }
     else {
@@ -109,7 +110,7 @@ class AuthController extends Controller {
     if (!DB::$instance->where($col, $val)->delete('sessions'))
       Response::fail('Could not remove information from database');
 
-    if (empty($TargetUser))
+    if (empty($target_user))
       Cookie::delete('access', Cookie::HTTP_ONLY);
     Response::done();
   }

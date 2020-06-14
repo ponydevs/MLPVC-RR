@@ -1,6 +1,6 @@
 {# @controller \App\Controllers\AppearanceController::view #}
 {# @var appearance \App\Models\Appearance #}
-{# @var owner \App\Models\DeviantartUser #}
+{# @var owner \App\Models\User #}
 {# @var guide string #}
 {# @var is_owner bool #}
 {# @var heading string #}
@@ -13,7 +13,7 @@
     <div class="sprite-wrap">{{ appearance.spriteHTML(owner_or_staff) }}</div>
     <h1><span class="appearance-name {%- if appearance.owner_id %} pcg-name{% endif %}">{{ heading | escape }}</span></h1>
     <p>from {% if owner is defined -%}
-        {{ owner.toAnchor ~ posess(owner.name, true) }} <a href='/@{{ owner.name }}/cg'>Personal Color Guide</a>
+        {{ owner.toAnchor ~ posess(owner.name, true) }} <a href='{{ owner.toURL }}/cg'>Personal Color Guide</a>
       {%- else -%}
         the MLP-VectorClub's <a href='/cg/{{ guide }}'>{{ guide == 'eqg' ? 'EQG ' : '' }}Color Guide</a>
       {%- endif %}</p>
@@ -87,7 +87,6 @@
     'GUIDE': guide,
     'AppearancePage': true,
     'OwnerId': owner.id ?? null,
-    'OwnerName': owner.name ?? null,
   }) }}
   {% if exports is defined %}
     {{ export_vars(exports) }}

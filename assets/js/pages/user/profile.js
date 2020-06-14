@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  const { username, userId } = window;
+  const { username, userId, sameUser } = window;
 
   $('.personal-cg-say-what').on('click', function(e) {
     e.preventDefault();
@@ -143,8 +143,7 @@
   }
 
   let $signoutBtn = $('#signout'),
-    $sessionList = $('.session-list'),
-    sameUser = username === $sidebar.children('.welcome').find('.un').text().trim();
+    $sessionList = $('.session-list');
   $sessionList.find('button.remove').off('click').on('click', function(e) {
     e.preventDefault();
 
@@ -193,7 +192,7 @@
 
       $.Dialog.wait(false, 'Signing out');
 
-      $.API.post('/da-auth/signout?everywhere', { name: username }, function() {
+      $.API.post('/da-auth/signout?everywhere', { userId }, function() {
         if (!this.status) return $.Dialog.fail(false, this.message);
 
         $.Navigation.reload(true);
@@ -207,7 +206,7 @@
 
     $.Dialog.wait('Syncing');
 
-    $.post(`/discord-connect/sync/${username}`, $.mkAjaxHandler(function() {
+    $.post(`/discord-connect/sync/${userId}`, $.mkAjaxHandler(function() {
       if (!this.status){
         if (this.segway)
           $.Dialog.segway(false, $.mk('div').attr('class', 'color-red').html(this.message));
@@ -221,7 +220,6 @@
   $discordConnect.find('.unlink').on('click', function(e) {
     e.preventDefault();
 
-    const sameUser = username === $sidebar.find('.user-data .name').text();
     const you = sameUser ? 'you' : 'they';
     const your = sameUser ? 'your' : 'their';
 
@@ -234,7 +232,7 @@
 
         $.Dialog.wait(false);
 
-        $.post(`/discord-connect/unlink/${username}`, $.mkAjaxHandler(function() {
+        $.post(`/discord-connect/unlink/${userId}`, $.mkAjaxHandler(function() {
           if (!this.status) return $.Dialog.fail(false, this.message);
 
           $.Dialog.segway(false, this.message);

@@ -19,18 +19,18 @@ use function in_array;
  * @property string       $type
  * @property string       $entry_role
  * @property string       $vote_role
- * @property DateTime       $starts_at
- * @property DateTime       $ends_at
- * @property string         $added_by
- * @property DateTime       $created_at
- * @property string         $desc_src
- * @property string         $desc_rend
- * @property string         $result_favme
- * @property string         $finalized_by
- * @property DateTime       $finalized_at
- * @property EventEntry[]   $entries      (Via relations)
- * @property DeviantartUser $creator      (Via relations)
- * @property DeviantartUser $finalizer    (Via relations)
+ * @property DateTime     $starts_at
+ * @property DateTime     $ends_at
+ * @property int          $added_by
+ * @property DateTime     $created_at
+ * @property string       $desc_src
+ * @property string       $desc_rend
+ * @property string       $result_favme
+ * @property int          $finalized_by
+ * @property DateTime     $finalized_at
+ * @property EventEntry[] $entries      (Via relations)
+ * @property User         $creator      (Via relations)
+ * @property User         $finalizer    (Via relations)
  * @method static Event find(...$args)
  */
 class Event extends NSModel implements Linkable {
@@ -38,8 +38,8 @@ class Event extends NSModel implements Linkable {
     ['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, created_at asc'],
   ];
   public static $belongs_to = [
-    ['creator', 'class' => 'DeviantartUser', 'foreign_key' => 'added_by'],
-    ['finalizer', 'class' => 'DeviantartUser', 'foreign_key' => 'finalized_by'],
+    ['creator', 'class' => 'User', 'foreign_key' => 'added_by'],
+    ['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],
   ];
 
   /** For Twig */
@@ -80,7 +80,7 @@ class Event extends NSModel implements Linkable {
     return CoreUtils::makeUrlSafe($this->name);
   }
 
-  public function checkCanEnter(DeviantartUser $user):bool {
+  public function checkCanEnter(User $user):bool {
     switch ($this->entry_role){
       case 'user':
       case 'member':
@@ -93,7 +93,7 @@ class Event extends NSModel implements Linkable {
     }
   }
 
-  public function checkCanVote(DeviantartUser $user):bool {
+  public function checkCanVote(User $user):bool {
     return !$this->hasEnded() && Permission::sufficient($this->vote_role, $user->role);
   }
 
@@ -156,7 +156,7 @@ class Event extends NSModel implements Linkable {
           $preview = isset($entry->prev_full)
             ? "<a href='{$entry->prev_src}'><img src='{$entry->prev_thumb}' alt=''><span class='title'>$title</span></a>"
             : "<span class='title'>$title</span>";
-          $by = '<div>'.$entry->submitter->toAnchor(DeviantartUser::WITH_AVATAR).'</div>';
+          $by = '<div>'.$entry->submitter->toAnchor(WITH_AVATAR).'</div>';
           $HTML .= "<div class='winning-entry'>$preview$by</div>";
         }
       }
@@ -169,5 +169,16 @@ class Event extends NSModel implements Linkable {
     $diff = Time::difference($this->starts_at->getTimestamp(), $this->ends_at->getTimestamp());
 
     return Time::differenceToString($diff, true);
+  }
+
+
+  /**
+   * @param User   $user
+   * @param string $cols
+   *
+   * @return EventEntry[]
+   */
+  public function getEntriesFor(User $user, string $cols = '*'):?array {
+    return DB::$instance->where('submitted_by', $user->id)->where('event_id', $this->id)->get(EventEntry::$table_name, null, $cols);
   }
 }

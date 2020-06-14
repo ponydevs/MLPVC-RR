@@ -545,7 +545,9 @@ class AppearancesController extends APIController {
     if ($appearance->private && Permission::insufficient('staff')){
       if (Auth::$signed_in && $appearance->owner_id === Auth::$user->id)
         return;
-      // TODO check for token param and allow if correct
+
+      // Usage with token is postponed for the rewrite
+
       HTTP::statusCode(403);
       Response::fail('COLOR_GUIDE.APPEARANCE_PRIVATE');
     }

@@ -6,8 +6,9 @@ use App\Auth;
 use App\CoreUtils;
 use App\DeviantArt;
 use App\HTTP;
-use App\Models\DeviantartUser;
+use App\Models\User;
 use App\Response;
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\Schema(
@@ -93,11 +94,11 @@ class UsersController extends APIController {
    *     ref="#/components/schemas/AvatarProvider"
    *   )
    * )
-   * @param DeviantartUser $u
+   * @param User $u
    *
    * @return array
    */
-  static function mapUser(DeviantartUser $u) {
+  static function mapUser(User $u) {
     return [
       'id' => $u->id,
       'name' => $u->name,

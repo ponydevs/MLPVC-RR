@@ -12,13 +12,14 @@ use App\Models\Log;
 use App\Models\Notice;
 use App\Models\Post;
 use App\Models\UsefulLink;
+use App\Models\User;
 use App\Pagination;
 use App\Permission;
 use App\Posts;
 use App\Response;
-use App\Users;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use IPTools\IP;
+use League\Uri\Components\Query;
 use League\Uri\UriModifier;
 use SeinopSys\PostgresDb;
 use Throwable;
@@ -84,7 +85,7 @@ class AdminController extends Controller {
   }
 
   public function log() {
-    $type = Logs::validateRefType('type', true, true);
+    $type = Logs::validateEntryType('type', true, true);
     /** @noinspection NotOptimalIfConditionsInspection */
     if (isset($_GET['type']) && preg_match('/^[a-z_]+$/', $_GET['type']) && isset(Logs::LOG_DESCRIPTION[$_GET['type']]))
       $type = $_GET['type'];
@@ -109,10 +110,10 @@ class AdminController extends Controller {
           $by = 'Web server';
         break;
         default:
-          $by = Users::validateName('by', null, true, true);
+          $by = $_GET['by'] ?? null;
           if ($by !== null){
-            $by = Users::get($by, 'name');
-            if (!empty($by)){
+            $by = User::find(['name' => $by]);
+            if ($by !== null){
               $initiator = $by->id;
               $by = $initiator === Auth::$user->id ? 'me' : $by->name;
             }
@@ -136,7 +137,7 @@ class AdminController extends Controller {
     $query_params = [];
     $remove_params = [];
     if ($type !== null){
-      $where_args[] = ['reftype', $type];
+      $where_args[] = ['entry_type', $type];
       $query_params['type'] = $type;
       $title .= Logs::LOG_DESCRIPTION[$type].' entries ';
     }
@@ -167,7 +168,7 @@ class AdminController extends Controller {
 
     $path = $pagination->toURI();
     if (!empty($query_params))
-      $path = UriModifier::appendQuery($path, $query_params);
+      $path = UriModifier::appendQuery($path, Query::createFromParams($query_params));
     CoreUtils::fixPath($path, $remove_params);
 
     foreach ($where_args as $arg)
@@ -203,20 +204,12 @@ class AdminController extends Controller {
     if (!isset($params['id']) || !is_numeric($params['id']))
       Response::fail('Entry ID is missing or invalid');
 
-    $entry = (int)$params['id'];
-
     /** @var Log|null $main_entry */
-    $main_entry = DB::$instance->where('id', $entry)->getOne(Log::$table_name);
-    if (empty($main_entry))
+    $main_entry = Log::find($params['id']);
+    if ($main_entry === null)
       Response::fail('Log entry does not exist');
-    if (empty($main_entry->refid))
+    if ($main_entry->data === null)
       Response::fail('There are no details to show', ['unclickable' => true]);
-
-    if (empty($main_entry->data)){
-      CoreUtils::error_log("Could not find details for entry {$main_entry->reftype}#{$main_entry->refid}, NULL-ing refid of Main#{$main_entry->id}");
-      DB::$instance->where('id', $main_entry->id)->update(Log::$table_name, ['refid' => null]);
-      Response::fail('Failed to retrieve details', ['unclickable' => true]);
-    }
 
     Response::done(Logs::formatEntryDetails($main_entry, $main_entry->data));
   }
@@ -487,15 +480,14 @@ class AdminController extends Controller {
     ]);
   }
 
-  /** @var Notice|null */
-  private $_notice;
+  private ?Notice $notice;
 
   private function load_notice($params) {
     if (empty($params['id']))
       CoreUtils::notFound();
-    $this->_notice = Notice::find($params['id']);
+    $this->notice = Notice::find($params['id']);
 
-    if (!$this->creating && empty($this->_notice))
+    if (!$this->creating && empty($this->notice))
       Response::fail('The specified notice does not exist');
   }
 
@@ -507,12 +499,12 @@ class AdminController extends Controller {
 
     switch ($this->action){
       case 'GET':
-        Response::done($this->_notice->to_array());
+        Response::done($this->notice->to_array());
       break;
       case 'POST':
       case 'PUT':
         if ($this->creating){
-          $this->_notice = new Notice([
+          $this->notice = new Notice([
             'posted_by' => Auth::$user->id,
           ]);
         }
@@ -526,7 +518,7 @@ class AdminController extends Controller {
           ],
         ]))->out();
         CoreUtils::checkStringValidity($message_html, INVERSE_PRINTABLE_ASCII_PATTERN, 'Message');
-        $this->_notice->message_html = CoreUtils::sanitizeHtml($message_html);
+        $this->notice->message_html = CoreUtils::sanitizeHtml($message_html);
 
         $hide_after = (new Input('hide_after', 'timestamp', [
           Input::IN_RANGE => [time(), null],
@@ -536,16 +528,16 @@ class AdminController extends Controller {
             Input::ERROR_RANGE => 'Hide after date cannot be in the past',
           ],
         ]))->out();
-        $this->_notice->hide_after = $hide_after;
+        $this->notice->hide_after = $hide_after;
 
         # TODO Validate notice type
-        $this->_notice->type = (new Input('type', 'string'))->out();
+        $this->notice->type = (new Input('type', 'string'))->out();
 
-        $this->_notice->save();
-        Response::done(['notice' => $this->_notice->to_array()]);
+        $this->notice->save();
+        Response::done(['notice' => $this->notice->to_array()]);
       break;
       case 'DELETE':
-        $this->_notice->delete();
+        $this->notice->delete();
 
         Response::done();
       break;

@@ -9,13 +9,13 @@ use RuntimeException;
 use function is_int;
 
 /**
- * @property int            $id
- * @property string         $user_id
- * @property string         $change_type
- * @property string         $change_data
- * @property float          $change_amount
- * @property DateTime       $created_at
- * @property DeviantartUser $user          (Via relations)
+ * @property int      $id
+ * @property int      $user_id
+ * @property string   $change_type
+ * @property string   $change_data
+ * @property float    $change_amount
+ * @property DateTime $created_at
+ * @property User     $user          (Via relations)
  */
 class PCGSlotHistory extends NSModel {
   public static $table_name = 'pcg_slot_history';
@@ -55,7 +55,7 @@ class PCGSlotHistory extends NSModel {
   ];
 
   public static $belongs_to = [
-    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
+    ['user'],
   ];
 
   /**

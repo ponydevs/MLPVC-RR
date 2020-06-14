@@ -11,13 +11,16 @@ namespace App\Models;
  */
 class PreviousUsername extends NSModel {
   public static $belongs_to = [
-    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
+    ['user', 'class' => 'DeviantartUser'],
   ];
 
-  public static function record(string $user_id, string $old_name, string $new_name) {
+  public static function record(string $user_id, string $username, string $_new) {
+    if (self::exists(['username' => $username]))
+      return;
+
     self::create([
-      'old' => $old_name,
-      'new' => $new_name,
+      'username' => $username,
+      '_new' => $_new,
       'user_id' => $user_id,
     ]);
   }

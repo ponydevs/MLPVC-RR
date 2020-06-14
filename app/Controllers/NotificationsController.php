@@ -7,12 +7,9 @@ use App\Auth;
 use App\CoreUtils;
 use App\Input;
 use App\JSON;
-use App\Logs;
 use App\Models\Appearance;
 use App\Models\Notification;
-use App\Models\Post;
 use App\Notifications;
-use App\Posts;
 use App\Response;
 use Throwable;
 
@@ -61,48 +58,6 @@ class NotificationsController extends Controller {
       /** @var $data array */
       $data = !empty($notif->data) ? JSON::decode($notif->data) : null;
       switch ($notif->type){
-        case 'post-passon':
-          /** @var $post Post */
-          $post = Post::find($data['id']);
-          if (empty($post)){
-            $post = new Post([
-              'id' => $data['id'],
-            ]);
-            Posts::clearTransferAttempts($post, 'del');
-            Response::fail("The post doesn't exist or has been deleted");
-          }
-          if ($read_action === 'true'){
-            if ($post->reserved_by !== Auth::$user->id){
-              Posts::clearTransferAttempts($post, 'perm', Auth::$user);
-              Response::fail('You are not allowed to transfer this reservation');
-            }
-
-            $notif->safeMarkRead($read_action);
-            Notification::send($data['user'], 'post-passallow', [
-              'id' => $data['id'],
-              'by' => Auth::$user->id,
-            ]);
-            $post->reserved_by = $data['user'];
-            $post->reserved_at = date('c');
-            $post->save();
-
-            Posts::clearTransferAttempts($post, 'deny');
-
-            Logs::logAction('res_transfer', [
-              'id' => $data['id'],
-              'to' => $data['user'],
-            ]);
-          }
-          else {
-            $notif->safeMarkRead($read_action);
-            Notification::send($data['user'], 'post-passdeny', [
-              'id' => $data['id'],
-              'by' => Auth::$user->id,
-            ]);
-          }
-
-          Response::done();
-        break;
         case 'sprite-colors':
           $appearance = Appearance::find($data['appearance_id']);
           if (empty($appearance)){

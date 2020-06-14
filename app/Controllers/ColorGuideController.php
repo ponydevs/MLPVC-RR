@@ -12,13 +12,13 @@ use App\Input;
 use App\Models\Appearance;
 use App\Models\MajorChange;
 use App\Models\DeviantartUser;
+use App\Models\User;
 use App\Pagination;
 use App\Permission;
 use App\Regexes;
 use App\Response;
 use App\Time;
 use App\UserPrefs;
-use App\Users;
 use League\Uri\Components\Query;
 use League\Uri\Uri;
 use League\Uri\UriModifier;
@@ -29,7 +29,7 @@ class ColorGuideController extends Controller {
   /** @var string|null Guide identifier or null for personal color guides */
   protected ?string $guide = 'pony';
 
-  protected ?DeviantartUser $owner = null;
+  protected ?User $owner = null;
   protected bool $is_owner = false;
 
   public function __construct() {
@@ -44,18 +44,18 @@ class ColorGuideController extends Controller {
     if (!empty($params['guide']) && array_key_exists($params['guide'], CGUtils::GUIDE_MAP)) {
       $this->guide = $params['guide'];
     }
-    $name_set = isset($params['name']);
+    $user_id_set = isset($params['user_id']);
 
-    if ($name_set){
-      $this->owner = Users::get($params['name'], 'name');
+    if ($user_id_set){
+      $this->owner = User::find($params['user_id']);
       if (empty($this->owner))
         CoreUtils::notFound();
       $this->guide = null;
     }
-    $this->is_owner = $name_set ? (Auth::$signed_in && Auth::$user->id === $this->owner->id) : false;
+    $this->is_owner = $user_id_set ? (Auth::$signed_in && Auth::$user->id === $this->owner->id) : false;
 
-    if ($name_set)
-      $this->path = "/@{$this->owner->name}/cg";
+    if ($user_id_set)
+      $this->path = "{$this->owner->toURL()}/cg";
     else $this->path = rtrim("/cg/{$this->guide}", '/');
   }
 
@@ -75,8 +75,8 @@ class ColorGuideController extends Controller {
       $this->owner = $this->appearance->owner;
     }
     if ($this->guide === null){
-      $OwnerName = $this->appearance->owner->name;
-      $this->path = "/@$OwnerName/cg";
+      $owner_path = $this->appearance->owner->toURL();
+      $this->path = "$owner_path/cg";
       $this->is_owner = Auth::$signed_in && ($this->appearance->owner_id === Auth::$user->id);
     }
     else if ($this->guide !== $this->appearance->guide){
@@ -312,10 +312,10 @@ class ColorGuideController extends Controller {
     CoreUtils::fixPath('/cg/blending');
 
     $hex_pattern = preg_replace('~^/(.*)/.*$~', '$1', Regexes::$hex_color->jsExport());
-    $dasprid = Users::get('dasprid', 'name');
+    $dasprid = DeviantartUser::find_by_name('dasprid');
     $dasprid_link = empty($dasprid)
       ? "<a href='https://www.deviantart.com/dasprid'>dasprid</a>"
-      : $dasprid->toAnchor(DeviantartUser::WITH_AVATAR);
+      : $dasprid->user->toAnchor(WITH_AVATAR);
     CoreUtils::loadPage(__METHOD__, [
       'title' => 'Color Blending Calculator',
       'css' => [true],
@@ -396,8 +396,8 @@ class ColorGuideController extends Controller {
 
     CoreUtils::callScript('sprite_color_checkup');
 
-    $nagUser = DeviantartUser::find(Appearances::SPRITE_NAG_USERID);
-    $The_authorities = Appearances::SPRITE_NAG_USERID === Auth::$user->id ? 'You' : $nagUser->toAnchor();
-    Response::success('Checkup started.'.($nagUser !== null ? " $The_authorities will be notified if there are any issues." : ''));
+    $nag_da_user = DeviantartUser::find(Appearances::SPRITE_NAG_USER_ID);
+    $The_authorities = Appearances::SPRITE_NAG_USER_ID === Auth::$user->id ? 'You' : $nag_da_user->user->toAnchor();
+    Response::success('Checkup started.'.($nag_da_user !== null ? " $The_authorities will be notified if there are any issues." : ''));
   }
 }

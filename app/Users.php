@@ -8,6 +8,7 @@ use App\Models\PreviousUsername;
 use App\Models\DeviantartUser;
 use App\Models\Post;
 use App\Models\Session;
+use App\Models\User;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
@@ -17,15 +18,16 @@ use function count;
 class Users {
   public const RESERVATION_LIMIT = 4;
 
-  // Global cache for storing user details
-  public static $_USER_CACHE = [];
-  public static $_PREF_CACHE = [];
+  // Global cache for storing DA user details
+  public static array $da_user_cache = [];
+  public static array $preferences_cache = [];
 
   /**
    * User Information Retriever
    * --------------------------
    * Gets a single row from the 'users' database where $column is equal to $value
    * Returns null if user is not found and false if user data could not be fetched
+   * @deprecated Until all redundant occurrences are scrubbed, the method itself is actually useful
    *
    * @param string $value
    * @param string $column
@@ -33,23 +35,23 @@ class Users {
    * @return DeviantartUser|null
    * @throws Exception
    */
-  public static function get(string $value, string $column = 'id'):?DeviantartUser {
+  public static function getDA(string $value, string $column = 'id'):?DeviantartUser {
     if ($column === 'id')
       return DeviantartUser::find($value);
 
-    if ($column === 'name' && !empty(self::$_USER_CACHE[$value]))
-      return self::$_USER_CACHE[$value];
+    if ($column === 'name' && !empty(self::$da_user_cache[$value]))
+      return self::$da_user_cache[$value];
 
     $user = DB::$instance->where($column, $value)->getOne('deviantart_users');
 
     if (empty($user) && $column === 'name'){
       if (Regexes::$username->match($value)){
-        $user = self::fetch([$value]);
+        $user = self::fetchDA([$value]);
       }
     }
 
     if (isset($user->name))
-      self::$_USER_CACHE[$user->name] = $user;
+      self::$da_user_cache[$user->name] = $user;
 
     return $user;
   }
@@ -65,7 +67,7 @@ class Users {
    * @return DeviantartUser|null
    * @throws Exception
    */
-  public static function fetch(array $usernames):?DeviantartUser {
+  public static function fetchDA(array $usernames):?DeviantartUser {
     $count = count($usernames);
     if ($count < 1)
       throw new RuntimeException('No usernames specified');
@@ -86,6 +88,9 @@ class Users {
       $fetch_index++;
     }
 
+    if (Auth::$session->access === null)
+      return null;
+
     try {
       $user_data = DeviantArt::request('user/whois', null, $fetch_params);
     }
@@ -99,33 +104,45 @@ class Users {
       return null;
 
     foreach ($user_data['results'] as $user_data){
+      $save_success = false;
       $id = strtolower($user_data['userid']);
 
-      $db_user = DeviantartUser::find($id);
-      $user_exists = !empty($db_user);
-      if (!$user_exists)
-        $db_user = new DeviantartUser([
-          'id' => $id,
-          'created_at' => date('c'),
+      $da_user = DeviantartUser::find($id);
+      $user_exists = $da_user !== null;
+      if (!$user_exists) {
+        /** @var User $user */
+        $user = User::create([
+          'name' => $user_data['username'],
         ]);
 
-      $db_user->name = $user_data['username'];
-      $db_user->avatar_url = URL::makeHttps($user_data['usericon']);
-      $save_success = $db_user->assignCorrectRole();
+        $da_user = new DeviantartUser([
+          'id' => $id,
+          'created_at' => date('c'),
+          'user_id' => $user->id,
+        ]);
+      }
+      else $user = $da_user->user;
+
+      $da_user->name = $user_data['username'];
+      $da_user->avatar_url = URL::makeHttps($user_data['usericon']);
+      if ($da_user->save())
+        $save_success = true;
+
+      $user->assignCorrectRole();
 
       if (!$save_success)
         throw new RuntimeException('Saving user data failed'.(Permission::sufficient('developer') ? ': '.DB::$instance->getLastError() : ''));
 
       $names = array_slice($usernames, 0);
-      if ($user_exists && $db_user->name !== $usernames[0])
-        $names[] = $db_user->name;
+      if ($user_exists && $da_user->name !== $usernames[0])
+        $names[] = $da_user->name;
       foreach ($names as $name){
-        if (strcasecmp($name, $db_user->name) !== 0){
-          PreviousUsername::record($id, $name, $db_user->name);
+        if (strcasecmp($name, $da_user->name) !== 0){
+          PreviousUsername::record($id, $name, $da_user->name);
         }
       }
       if ($single_user)
-        return $db_user;
+        return $da_user;
     }
   }
 
@@ -213,7 +230,7 @@ class Users {
   }
 
   public static function getContributionsCacheDuration(string $unit = 'hour'):string {
-    $cache_dur = DeviantartUser::CONTRIB_CACHE_DURATION / Time::IN_SECONDS[$unit];
+    $cache_dur = User::CONTRIB_CACHE_DURATION / Time::IN_SECONDS[$unit];
 
     return CoreUtils::makePlural($unit, $cache_dur, PREPEND_NUMBER);
   }
@@ -393,5 +410,22 @@ class Users {
     }
 
     return $wrap ? "<table id='contribs'>$TABLE</table>" : $TABLE;
+  }
+
+  /**
+   * Conditionally map users to either legacy or new user records
+   * based on the type of the ID
+   *
+   * TODO Remove if log data has been migrated
+   *
+   * @param string|int $user_id Legacy uuid or integer
+   *
+   * @return User|null
+   */
+  public static function resolveById($user_id):?User {
+    if (is_int($user_id)) return User::find($user_id);
+
+    $da_user = DeviantartUser::find($user_id);
+    return $da_user === null ? null : $da_user->user;
   }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 /**
+ * @property int        $id
  * @property int        $show_id
  * @property int        $appearance_id
  * @property Show       $show          (Via relations)
@@ -11,7 +12,7 @@ namespace App\Models;
  */
 class ShowAppearance extends NSModel {
   public static $table_name = 'show_appearances';
-  public static $primary_key = ['show_id', 'appearance_id'];
+
   public static $belongs_to = [
     ['show'],
     ['appearance'],

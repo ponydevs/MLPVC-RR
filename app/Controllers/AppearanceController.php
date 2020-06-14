@@ -824,7 +824,7 @@ class AppearanceController extends ColorGuideController {
               if (empty($deviation))
                 Response::fail('The provided deviation could not be fetched');
               $cm->favme = $deviation->id;
-              $contributor = Users::get($deviation->author, 'name');
+              $contributor = Users::getDA($deviation->author, 'name');
               if (empty($contributor))
                 Response::fail("The provided deviation's creator could not be fetched");
               $cm->contributor_id = $contributor->id;
@@ -834,7 +834,7 @@ class AppearanceController extends ColorGuideController {
                 Response::fail('Username is missing');
               if (!preg_match(Regexes::$username, $item['username']))
                 Response::fail("Username ({$item['username']}) is invalid");
-              $contributor = Users::get($item['username'], 'name');
+              $contributor = Users::getDA($item['username'], 'name');
               if (empty($contributor))
                 Response::fail("The provided deviation's creator could not be fetched");
               $cm->favme = null;

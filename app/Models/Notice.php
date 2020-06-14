@@ -9,7 +9,7 @@ use App\Time;
  * @property string   id
  * @property string   message_html
  * @property string   type
- * @property string   posted_by
+ * @property int      posted_by
  * @property DateTime created_at
  * @property DateTime updated_at
  * @property DateTime hide_after
