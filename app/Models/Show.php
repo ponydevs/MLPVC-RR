@@ -22,7 +22,7 @@ use function count;
  * @property int              $parts
  * @property string           $title
  * @property DateTime         $created_at
- * @property string           $posted_by
+ * @property int              $posted_by
  * @property DateTime         $airs
  * @property int              $no
  * @property string|null      $score                 (Uses magic method)
@@ -34,10 +34,10 @@ use function count;
  * @property DateTime         $willair               (Via magic method)
  * @property int              $willairts             (Via magic method)
  * @property string           $short_title           (Via magic method)
- * @property ShowAppearance[] $show_appearances      (Via magic method)
- * @property Appearance[]     $related_appearances   (Via magic method)
+ * @property ShowAppearance[] $show_appearances      (Via relations)
+ * @property Appearance[]     $related_appearances   (Via relations)
  * @property ShowVideo[]      $videos                (Via relations)
- * @property DeviantartUser   $poster                (Via relations)
+ * @property User             $poster                (Via relations)
  * @method static Show find_by_season_and_episode(int $season, int $episode)
  * @method static Show|Show[] find(...$params)
  */
@@ -45,7 +45,7 @@ class Show extends NSModel implements Linkable {
   public static $table_name = 'show';
 
   public static $has_many = [
-    ['videos', 'class' => 'ShowVideo', 'order' => 'provider asc, part asc'],
+    ['videos', 'class' => 'ShowVideo', 'order' => 'provider_abbr asc, part asc'],
     ['show_appearances'],
     ['related_appearances', 'class' => 'Appearance', 'order' => 'label asc', 'through' => 'show_appearances'],
   ];
@@ -56,7 +56,7 @@ class Show extends NSModel implements Linkable {
   }
 
   public static $belongs_to = [
-    ['poster', 'class' => 'DeviantartUser', 'foreign_key' => 'posted_by'],
+    ['poster', 'class' => 'User', 'foreign_key' => 'posted_by'],
   ];
 
   public function get_is_episode():bool {
@@ -324,16 +324,18 @@ class Show extends NSModel implements Linkable {
 
   /**
    * Gets the rating given to the episode by the user, or null if not voted
+   * USED IN TWIG - DO NOT REMOVE
    *
-   * @param DeviantartUser $user
+   * @param User $user
    *
    * @return ShowVote|null
+   * @noinspection PhpUnused
    */
-  public function getUserVote(?DeviantartUser $user = null):?ShowVote {
+  public function getUserVote(?User $user = null):?ShowVote {
     if ($user === null && Auth::$signed_in)
       $user = Auth::$user;
 
-    return ShowVote::find_for($this, $user);
+    return ShowVote::findFor($this, $user);
   }
 
   public const
@@ -383,14 +385,14 @@ class Show extends NSModel implements Linkable {
    *  for the keys 'season' and 'episode'
    * Return's the user's vote entry from the DB
    *
-   * @param DeviantartUser $user
+   * @param User $user
    *
    * @return ShowVote|null
    */
-  public function getVoteOf(?DeviantartUser $user = null):?ShowVote {
+  public function getVoteOf(?User $user = null):?ShowVote {
     if ($user === null) return null;
 
-    return ShowVote::find_for($this, $user);
+    return ShowVote::findFor($this, $user);
   }
 
   /**
@@ -404,7 +406,7 @@ class Show extends NSModel implements Linkable {
     if (count($this->videos) > 0){
       $Videos = [];
       foreach ($this->videos as $v)
-        $Videos[$v->provider][$v->part] = $v;
+        $Videos[$v->provider_abbr][$v->part] = $v;
       // YouTube embed preferred
       $Videos = !empty($Videos['yt']) ? $Videos['yt'] : ($Videos['dm'] ?? $Videos['sv'] ?? $Videos['mg']);
       /** @var $Videos ShowVideo[] */

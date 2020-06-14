@@ -3,12 +3,10 @@
 namespace App;
 
 use App\Exceptions\MismatchedProviderException;
-use App\Models\Notification;
 use App\Models\Post;
-use App\Models\DeviantartUser;
+use App\Models\User;
 use ElephantIO\Exception\ServerConnectionFailureException;
 use Exception;
-use InvalidArgumentException;
 
 class Posts {
 
@@ -168,40 +166,40 @@ class Posts {
   /**
    * Checks the image which allows a post to be finished
    *
-   * @param string|null $ReserverID
+   * @param string|null $reserver_id
    *
    * @return array
    */
-  public static function checkPostFinishingImage($ReserverID = null) {
-    $deviation = (new Input('deviation', 'string', [
+  public static function checkPostFinishingImage($reserver_id = null) {
+    $deviation_url = (new Input('deviation', 'string', [
       Input::CUSTOM_ERROR_MESSAGES => [
         Input::ERROR_MISSING => 'Please specify a deviation URL',
       ],
     ]))->out();
     try {
-      $Image = new ImageProvider($deviation, ImageProvider::PROV_DEVIATION);
+      $Image = new ImageProvider($deviation_url, ImageProvider::PROV_DEVIATION);
 
       $already_used = Post::find_by_deviation_id($Image->id);
       if (!empty($already_used))
         Response::fail("This exact deviation has already been marked as the finished version of  a {$already_used->toAnchor($already_used->kind,null,true)} under {$already_used->show->toAnchor()}");
 
       $return = ['deviation_id' => $Image->id];
-      $Deviation = DeviantArt::getCachedDeviation($Image->id);
-      if ($Deviation && !empty($Deviation->author)){
-        $Author = Users::get($Deviation->author, 'name');
+      $cached_deviation = DeviantArt::getCachedDeviation($Image->id);
+      if ($cached_deviation && !empty($cached_deviation->author)){
+        $author = Users::getDA($cached_deviation->author, 'name');
 
-        if (empty($Author))
-          Response::fail("Could not fetch local user data for username: $Deviation->author");
+        if (empty($author))
+          Response::fail("Could not fetch local user data for username: $cached_deviation->author");
 
-        if (!isset($_REQUEST['allow_overwrite_reserver']) && !empty($ReserverID) && $Author->id !== $ReserverID){
-          $sameUser = Auth::$user->id === $ReserverID;
+        if (!isset($_REQUEST['allow_overwrite_reserver']) && !empty($reserver_id) && $author->id !== $reserver_id){
+          $sameUser = Auth::$user->id === $reserver_id;
           $person = $sameUser ? 'you' : 'the user who reserved this post';
-          Response::fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$Author->name} the new reserver.".($sameUser
-              ? "<br><br>This means that you'll no longer be able to interact with this post until {$Author->name} or an administrator cancels the reservation on it."
+          Response::fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$author->name} the new reserver.".($sameUser
+              ? "<br><br>This means that you'll no longer be able to interact with this post until {$author->name} or an administrator cancels the reservation on it."
               : ''), ['retry' => true]);
         }
 
-        $return['reserved_by'] = $Author->id;
+        $return['reserved_by'] = $author->id;
       }
 
       if (CoreUtils::isDeviationInClub($return['deviation_id']) === true)
@@ -251,57 +249,6 @@ class Posts {
   }
 
   /**
-   * @param Post                $Post
-   * @param DeviantartUser|null $sent_by
-   * @param string              $cols
-   *
-   * @return Notification[]|null
-   */
-  public static function getTransferAttempts(Post $Post, ?DeviantartUser $sent_by = null, $cols = 'read_at,created_at') {
-    if ($Post->reserved_by !== null)
-      DB::$instance->where('recipient_id', $Post->reserved_by);
-    if (!empty($sent_by))
-      DB::$instance->where("data->>'user'", $sent_by->id);
-
-    return DB::$instance
-      ->where('type', 'post-passon')
-      ->where("data->>'id'", $Post->id)
-      ->orderBy('created_at', NEWEST_FIRST)
-      ->get('notifications', null, $cols);
-  }
-
-  /**
-   * @param Post                $Post
-   * @param string              $reason
-   * @param DeviantartUser|null $sent_by
-   *
-   * @throws InvalidArgumentException
-   */
-  public static function clearTransferAttempts(Post $Post, string $reason, ?DeviantartUser $sent_by = null) {
-    if (empty(Post::TRANSFER_ATTEMPT_CLEAR_REASONS[$reason]))
-      throw new InvalidArgumentException("Invalid clear reason $reason");
-
-    DB::$instance->where('read_at IS NULL');
-    $transfer_attempts = self::getTransferAttempts($Post, $sent_by, 'id,data');
-    if (!empty($transfer_attempts)){
-      $sent_for = [];
-      foreach ($transfer_attempts as $n){
-        Notifications::safeMarkRead($n->id);
-
-        $data = JSON::decode($n->data);
-        if (!empty($sent_for[$data['user']][$reason]["{$data['type']}-{$data['id']}"]))
-          continue;
-
-        Notification::send($data['user'], "post-pass$reason", [
-          'id' => $data['id'],
-          'by' => Auth::$user->id,
-        ]);
-        $sent_for[$data['user']][$reason]["{$data['type']}-{$data['id']}"] = true;
-      }
-    }
-  }
-
-  /**
    * List item generator function for reservation suggestions
    * This function assumes that the post it's being used for is not reserved or it can be contested.
    *
@@ -336,31 +283,31 @@ class Posts {
   }
 
   /**
-   * @param DeviantartUser|null $reservedBy
-   * @param bool|string         $view_only
-   * @param bool                $forceAvailable
-   * @param bool                $enablePromises
+   * @param User|null   $reserved_by
+   * @param bool|string $view_only
+   * @param bool        $force_available
+   * @param bool        $enable_promises
    *
    * @return string
    */
-  public static function getPostReserveButton($reservedBy, $view_only, bool $forceAvailable = false, bool $enablePromises = false):string {
-    if (empty($reservedBy) || $forceAvailable)
+  public static function getPostReserveButton(?User $reserved_by, $view_only, bool $force_available = false, bool $enable_promises = false):string {
+    if (empty($reserved_by) || $force_available)
       return Permission::sufficient('member') && $view_only === false && UserPrefs::get('a_reserve', Auth::$user)
         ? "<button class='reserve-request typcn typcn-user-add'>Reserve</button>" : '';
 
-    $dAlink = $reservedBy->toAnchor(DeviantartUser::WITH_AVATAR, $enablePromises);
-    $vectorapp = $reservedBy->getVectorAppClassName();
-    if (!empty($vectorapp))
-      $vectorapp .= "' title='Uses ".$reservedBy->getVectorAppReadableName().' to make vectors';
+    $dAlink = $reserved_by->toAnchor(WITH_AVATAR, $enable_promises);
+    $vector_app = $reserved_by->getVectorAppClassName();
+    if (!empty($vector_app))
+      $vector_app .= "' title='Uses ".$reserved_by->getVectorAppReadableName().' to make vectors';
 
-    return "<div class='reserver$vectorapp'>$dAlink</div>";
+    return "<div class='reserver$vector_app'>$dAlink</div>";
   }
 
   public static function checkReserveAs(Post $post) {
     if (Permission::sufficient('developer')){
       $reserve_as = self::validatePostAs();
       if ($reserve_as !== null){
-        $User = Users::get($reserve_as, 'name');
+        $User = Users::getDA($reserve_as, 'name');
         if (empty($User))
           Response::fail('User to reserve as does not exist');
         if (!isset($_POST['screwit']) && Permission::insufficient('member', $User->role))

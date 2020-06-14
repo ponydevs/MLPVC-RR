@@ -3,7 +3,7 @@
 namespace App\Models;
 
 /**
- * @inheritdoc
+ * @inheritDoc
  * @property int    $id
  * @property string $url
  * @property string $label

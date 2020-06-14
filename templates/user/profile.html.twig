@@ -1,5 +1,6 @@
 {# @controller \App\Controllers\UserController::profile #}
-{# @var user \App\Models\DeviantartUser #}
+{# @var user \App\Models\User #}
+{# @var current_user \App\Models\User #}
 {# @var same_user bool #}
 {# @var is_staff bool #}
 {# @var can_edit bool #}
@@ -26,7 +27,7 @@
           {% apply spaceless %}
             <h1>
               <span class="username">{{ user.name }}</span>
-              <a class="da" title="Visit DeviantArt profile" href="{{ user.toDALink }}">{{ da_logo }}</a>
+              <a class="da" title="Visit DeviantArt profile" href="{{ user.deviantart_user.toURL }}">{{ da_logo }}</a>
               {{ user.vectorAppIcon }}
               {% if user.isDiscordServerMember %}
                 <img class='discord-logo' src='/img/discord-logo.svg' alt='Discord logo' title='This user is a member of our Discord server{{ discord_membership.get_name != user.name ? (' as ' ~ discord_membership.get_name) | escape : '' }}'>
@@ -42,7 +43,9 @@
               <button id='change-role' class='blue typcn typcn-spanner' title='Change {{ posess(user.name) }} role' data-for='{{ user.id }}'></button>
             {% endif %}
             {% if permission('developer') %}
-              &bullet; <span class='user-id'>{{ user.id }}</span>
+              {% if user.boundToDeviantartUser %}
+                &bullet; <span class='da-user-id'>{{ user.deviantart_user.id }}</span>
+              {% endif %}
               {% if user.boundToDiscordMember %}
                 &bullet; <span class='discord-id'>{{ discord_membership.id }}</span>
               {% endif %}
@@ -53,7 +56,7 @@
       <div class="details section-container">
         {% if old_names is not empty %}
           <section class="old-names">
-            <h2>{{ same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').staff : '' }}Previous names <span class="typcn typcn-info color-blue cursor-help" title="Upper/lower-case letters may not match"></span></h2>
+            <h2>{{ same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').staff : '' }}Previous DeviantArt usernames <span class="typcn typcn-info color-blue cursor-help" title="Upper/lower-case letters may not match"></span></h2>
             <div>{{ old_names }}</div>
           </section>
         {% endif %}
@@ -155,7 +158,7 @@
                 </div>
               {% endif %}
             {% endif %}
-            {% if discord_membership is empty %}
+            {% if discord_membership is empty or discord_membership.access is null %}
               {% if same_user %}
                 <p>Link your account to be able to choose between your Discord and DeviantArt avatars as well as to participate in events for Discord server members.</p>
               {% elseif user.boundToDiscordMember %}
@@ -167,7 +170,7 @@
                 {% if same_user %}
                   <a href="/discord-connect/begin" class="btn link typcn typcn-link">Link account</a>
                 {% endif %}
-                {% if discord_membership is same as(false) %}
+                {% if discord_membership is not empty and discord_membership.access is null %}
                   {{ unlink_btn }}
                 {% endif %}
               </div>
@@ -178,7 +181,7 @@
             <section>
               <h2>{{ same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').private }}Revoke access to your account data</h2>
               <p>We have no access to any information that isn't publicly available on your DeviantArt profile, except for your user ID, which is used to keep track of which user you are even if you change your name. Nonetheless, if you no longer want to let this site verify your identity you may use the link below to visit your authorized apps on DeviantArt and revoke access to any you wish, including this website. After you sign out or your current token expires you will have to re-allow the application access to your basic user information to continue using the site. Keep in mind that the site is not notified when you do this.</p>
-              <a href="https://www.deviantart.com/settings/applications" class="btn link typcn typcn-arrow-forward">Visit authorized apps page</a>
+              <a href="{{ constant('DA_AUTHORIZED_APPS_URL') }}" class="btn link typcn typcn-arrow-forward">Visit authorized apps page</a>
             </section>
           {% endif %}
         </div>
@@ -191,8 +194,9 @@
   {% endif %}
   {% if user is not empty %}
     {{ export_vars({
-      'username': user.name,
-      'userId': user.id,
+      username: user.name,
+      userId: user.id,
+      sameUser: user.id == (current_user.id ?? null),
     }) }}
   {% endif %}
 {% endblock %}

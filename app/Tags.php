@@ -72,7 +72,7 @@ class Tags {
    * @return Tag|bool
    */
   public static function getActual($value, $column = 'id', $as_bool = false) {
-    $arg1 = $as_bool === RETURN_AS_BOOL ? 'synonym_of,id' : '*';
+    $arg1 = $as_bool ? 'synonym_of,id' : '*';
 
     /** @var $Tag Tag */
     $Tag = DB::$instance->where($column, $value)->getOne('tags', $arg1);
@@ -80,7 +80,7 @@ class Tags {
     if ($Tag !== null && $Tag->synonym_of !== null)
       $Tag = $Tag->synonym;
 
-    return $as_bool === RETURN_AS_BOOL ? !empty($Tag) : $Tag;
+    return $as_bool ? !empty($Tag) : $Tag;
   }
 
   /**

@@ -227,7 +227,7 @@ class Appearances {
     Response::fail('Bulk index update failed, see the errors below.<br><pre>'.CoreUtils::escapeHTML(implode("\n", $error_messages)).'</pre>');
   }
 
-  public const SPRITE_NAG_USERID = '06af57df-8755-a533-8711-c66f0875209a';
+  public const SPRITE_NAG_USER_ID = 139;
 
   /**
    * @param int    $appearance_id
@@ -235,7 +235,7 @@ class Appearances {
    *
    * @return Notification[]
    */
-  public static function getSpriteColorIssueNotifications(int $appearance_id, ?string $nag_id = self::SPRITE_NAG_USERID) {
+  public static function getSpriteColorIssueNotifications(int $appearance_id, ?string $nag_id = self::SPRITE_NAG_USER_ID) {
     if ($nag_id !== null)
       DB::$instance->where('recipient_id', $nag_id);
 
@@ -252,7 +252,7 @@ class Appearances {
    * @param string             $action What to set as the notification clearing action
    * @param string             $nag_id ID of user to nag
    */
-  public static function clearSpriteColorIssueNotifications($appearance_id, string $action = 'clear', ?string $nag_id = self::SPRITE_NAG_USERID) {
+  public static function clearSpriteColorIssueNotifications($appearance_id, string $action = 'clear', ?string $nag_id = self::SPRITE_NAG_USER_ID) {
     if (is_int($appearance_id))
       $notifs = self::getSpriteColorIssueNotifications($appearance_id, $nag_id);
     else $notifs = $appearance_id;

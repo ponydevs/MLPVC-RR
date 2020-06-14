@@ -367,10 +367,10 @@ class ShowController extends Controller {
         ];
         $videos = $this->show->videos;
         foreach ($videos as $part => $vid){
-          if (!empty($vid->id))
-            $response['vidlinks']["{$vid->provider}_{$vid->part}"] = VideoProvider::getEmbed($vid, VideoProvider::URL_ONLY);
+          if (!empty($vid->provider_id))
+            $response['vidlinks']["{$vid->provider_abbr}_{$vid->part}"] = VideoProvider::getEmbed($vid, VideoProvider::URL_ONLY);
           if ($vid->fullep)
-            $response['fullep'][] = $vid->provider;
+            $response['fullep'][] = $vid->provider_abbr;
         }
         Response::done($response);
       break;
@@ -385,11 +385,11 @@ class ShowController extends Controller {
                 $vid_provider = new VideoProvider(DeviantArt::trimOutgoingGateFromUrl($_REQUEST[$post_key]));
               }
               catch (Exception $e){
-                Response::fail("$provider_name link issue: ".$e->getMessage());
+                Response::fail("$provider_name#$part link issue: ".$e->getMessage());
               }
-              if ($vid_provider->episodeVideo === null || $vid_provider->episodeVideo->provider !== $provider)
-                Response::fail("Incorrect $provider_name URL specified");
-              $set = $vid_provider::$id;
+              if ($vid_provider->episodeVideo === null || $vid_provider->episodeVideo->provider_abbr !== $provider)
+                Response::fail("Incorrect $provider_name#$part URL specified");
+              $set = $vid_provider->id;
             }
 
             $fullep = $this->show->parts === 1;
@@ -401,30 +401,30 @@ class ShowController extends Controller {
 
             $video_count = DB::$instance
               ->where('show_id', $this->show->id)
-              ->where('provider', $provider)
+              ->where('provider_abbr', $provider)
               ->where('part', $part)
               ->count(ShowVideo::$table_name);
             if ($video_count === 0){
               if (!empty($set))
                 ShowVideo::create([
                   'show_id' => $this->show->id,
-                  'provider' => $provider,
+                  'provider_abbr' => $provider,
                   'part' => $part,
-                  'id' => $set,
+                  'provider_id' => $set,
                   'fullep' => $fullep,
                 ]);
             }
             else {
               DB::$instance
                 ->where('show_id', $this->show->id)
-                ->where('provider', $provider)
+                ->where('provider_abbr', $provider)
                 ->where('part', $part);
               if (empty($set))
                 DB::$instance->delete(ShowVideo::$table_name);
               else DB::$instance->update(ShowVideo::$table_name, [
-                'id' => $set,
+                'provider_id' => $set,
                 'fullep' => $fullep,
-                'modified' => date('c'),
+                'updated_at' => date('c'),
               ]);
             }
           }

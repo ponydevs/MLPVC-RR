@@ -23,30 +23,38 @@ require __DIR__.'/init/env.php';
 
 // Some constants \\
 # integer
-define('ONLY_REQUESTS', 1); // Posts::Get
-define('ONLY_RESERVATIONS', 2); // Posts::Get
+/** @see Posts::Get */
+define('ONLY_REQUESTS', 1);
+/** @see Posts::Get */
+define('ONLY_RESERVATIONS', 2);
 define('POSTGRES_INTEGER_MIN', -2_147_483_648);
 define('POSTGRES_INTEGER_MAX', 2_147_483_647);
 # string
 define('FULL_LOG_PATH', PROJPATH.'logs/'.CoreUtils::env('LOG_PATH'));
 define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
 define('GDPR_IP_PLACEHOLDER', '127.168.80.82');
+define('DA_AUTHORIZED_APPS_URL', 'https://www.deviantart.com/settings/apps');
 # boolean
-define('AND_DIE', true); // CoreUtils::StatusCode
-define('AS_ARRAY', true); // Episode::FormatTitle
-define('RETURN_AS_BOOL', true); // CSRFProtection::Protect & DeviantartUser::ReservationLimitCheck
-define('STAY_ALIVE', false); // HTTP::Redirect
-define('HTML_ONLY', true); // CoreUtils::_processHeaderLink
-define('PREPEND_NUMBER', true); // CoreUtils::MakePlural
+/** @see \App\HTTP::statusCode() */
+define('AND_DIE', true);
+/** @see \App\Models\Show::formatTitle() */
+define('AS_ARRAY', true);
+/** @see CoreUtils::makePlural() */
+define('PREPEND_NUMBER', true);
+/**
+ * @see \App\Tags::getActual()
+ * @see \App\Users::checkReservationLimitReached()
+ */
+define('RETURN_AS_BOOL', true);
+/** @see \App\Models\User::toAnchor */
+define('WITH_AVATAR', true);
+define('LAZYLOAD', true);
 define('NOWRAP', false);
 define('WRAP', !NOWRAP);
-define('IS_REQUEST', true); // Posts::GetRequestsSection
-define('WITH_GIT_INFO', true); // CoreUtils::GetFooter
-define('RETURN_MAP', true); // CGUtils::RenderSpritePNG
-define('LAZYLOAD', true); // Posts::getLi
 
 // Color Guide constants \\
-define('DEFAULT_SPRITE', '/img/blank-pixel.png'); // \CG\Appearances::GetSpriteURL
+/** @see Appearances::GetSpriteURL */
+define('DEFAULT_SPRITE', '/img/blank-pixel.png');
 # CM direction
 define('CM_FACING_RIGHT', 'right');
 define('CM_FACING_LEFT', 'left');
@@ -68,7 +76,8 @@ define('HEIGHT', 1);
 
 // Site-wide regular expressions \\
 # User
-define('USERNAME_PATTERN', '([A-Za-z\-\d]{1,20})');
+define('USERNAME_CHARACTERS_PATTERN', '[A-Za-z\-\d]');
+define('USERNAME_PATTERN', '('.USERNAME_CHARACTERS_PATTERN.'{1,20})');
 Regexes::$username = new RegExp('^'.USERNAME_PATTERN.'$');
 define('GUEST_AVATAR', '/img/guest.svg');
 # Episode

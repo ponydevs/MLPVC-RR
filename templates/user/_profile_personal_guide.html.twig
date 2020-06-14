@@ -1,4 +1,4 @@
-{# @var user \App\Models\DeviantartUser #}
+{# @var user \App\Models\User #}
 {# @var same_user bool #}
 {% if list_pcgs %}
   <section class='personal-cg'>
@@ -33,7 +33,7 @@
     {% endif %}
 
     <div class="button-block">
-      <a href='/@{{ user.name }}/cg' class='btn link typcn typcn-arrow-forward'>{{ same_user ? 'Manage' : 'View' }} Personal Color Guide</a>
+      <a href='{{ user.toURL }}/cg' class='btn link typcn typcn-arrow-forward'>{{ same_user ? 'Manage' : 'View' }} Personal Color Guide</a>
       {{ user.getPCGPointHistoryButtonHTML(show_private) }}
       {{ user.getPCGPointGiveButtonHTML }}
     </div>

@@ -42,7 +42,7 @@ class GlobalSettings {
       $setting = GlobalSetting::find($key);
       if ($value == $default)
         return $setting->delete();
-      else return $setting->update_attributes(['value' => $value]);
+      else return $setting->update_attributes(['val' => $value]);
     }
     else if ($value != $default)
       return (new GlobalSetting([

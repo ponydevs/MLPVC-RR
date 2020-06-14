@@ -6,6 +6,7 @@ use AltoRouter;
 
 $router = new AltoRouter();
 $router->addMatchTypes([
+  'uc' => USERNAME_CHARACTERS_PATTERN.'+',
   'un' => USERNAME_PATTERN,
   'au' => '[A-Za-z_]+',
   'ad' => '[A-Za-z\-]+',

@@ -5,14 +5,14 @@ namespace App\Models;
 use ActiveRecord\DateTime;
 
 /**
- * @property string         $receiver_id
- * @property string         $sender_id
- * @property int            $amount
- * @property null|string    $comment
- * @property DateTime       $created_at
- * @property DateTime       $updated_at
- * @property DeviantartUser $receiver    (Via relations)
- * @property DeviantartUser $sender      (Via relations)
+ * @property int         $receiver_id
+ * @property int         $sender_id
+ * @property int         $amount
+ * @property null|string $comment
+ * @property DateTime    $created_at
+ * @property DateTime    $updated_at
+ * @property User        $receiver    (Via relations)
+ * @property User        $sender      (Via relations)
  * @method static PCGPointGrant create(array $attrs)
  * @method static PCGPointGrant|PCGPointGrant[] find(...$args)
  */
@@ -22,22 +22,22 @@ class PCGPointGrant extends NSModel {
   public static $after_create = ['make_related_entries'];
 
   public static $belongs_to = [
-    ['sender', 'class' => 'DeviantartUser', 'foreign_key' => 'sender_id'],
-    ['receiver', 'class' => 'DeviantartUser', 'foreign_key' => 'receiver_id'],
+    ['sender', 'class' => 'User', 'foreign_key' => 'sender_id'],
+    ['receiver', 'class' => 'User', 'foreign_key' => 'receiver_id'],
   ];
 
   /**
-   * @param string      $to
-   * @param string      $by
+   * @param int         $receiver_id
+   * @param int         $sender_id
    * @param int         $amount
    * @param null|string $comment
    *
    * @return self
    */
-  public static function record(string $to, string $by, int $amount, ?string $comment = null):self {
+  public static function record(int $receiver_id, int $sender_id, int $amount, ?string $comment = null):self {
     $instance = new self();
-    $instance->receiver_id = $to;
-    $instance->sender_id = $by;
+    $instance->receiver_id = $receiver_id;
+    $instance->sender_id = $sender_id;
     $instance->amount = $amount;
     $instance->comment = $comment;
     $instance->save();

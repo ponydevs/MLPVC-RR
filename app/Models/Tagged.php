@@ -7,6 +7,7 @@ namespace App\Models;
 use InvalidArgumentException;
 
 /**
+ * @property int        $id
  * @property int        $tag_id
  * @property int        $appearance_id
  * @property Tag        $tag
@@ -16,8 +17,6 @@ use InvalidArgumentException;
  */
 class Tagged extends NSModel {
   public static $table_name = 'tagged';
-
-  public static $primary_key = ['tag_id', 'appearance_id'];
 
   public static $belongs_to = [
     ['tag'],

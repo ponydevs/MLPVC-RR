@@ -237,7 +237,7 @@ class EventEntryController extends EventController {
     if ($userVote->isLockedIn($this->entry))
       Response::fail('You already voted on this post '.Time::tag($userVote->cast_at).'. Your vote is now locked in until the post is edited.');
 
-    if (!DB::$instance->where('userid', Auth::$user->id)->where('entryid', $this->entry->id)->delete(EventEntryVote::$table_name))
+    if (!DB::$instance->where('user_id', Auth::$user->id)->where('entry_id', $this->entry->id)->delete(EventEntryVote::$table_name))
       Response::dbError('Vote could not be removed');
   }
 

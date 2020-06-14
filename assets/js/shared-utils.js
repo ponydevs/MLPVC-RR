@@ -155,7 +155,6 @@
 
     class Time {
       static update() {
-        // TODO Rework dyntime
         $('time[datetime]:not(.nodt)').addClass('dynt').each(function() {
           let $this = $(this),
             date = $this.attr('datetime');

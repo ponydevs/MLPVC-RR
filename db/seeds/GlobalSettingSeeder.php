@@ -18,6 +18,10 @@ class GlobalSettingSeeder extends AbstractSeed {
 	<li>Please remember that <strong>you have to be a member of the group in order to make a reservation</strong>. The idea is to add the finished vector to our gallery, so it has to meet all of our quality requirements.</li>
 </ol>',
       ],
+      [
+        'key' => 'dev_role_label',
+        'value' => 'staff',
+      ],
     ];
 
     $this->table('global_settings')

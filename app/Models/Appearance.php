@@ -35,7 +35,7 @@ use function in_array;
  * @property string              $label
  * @property string              $notes_src
  * @property string              $notes_rend
- * @property string|null         $owner_id
+ * @property int|null            $owner_id
  * @property DateTime            $created_at
  * @property DateTime            $updated_at
  * @property DateTime            $last_cleared
@@ -45,7 +45,7 @@ use function in_array;
  * @property string              $sprite_hash
  * @property Cutiemark[]         $cutiemarks          (Via relations)
  * @property ColorGroup[]        $color_groups        (Via relations)
- * @property DeviantartUser|null $owner               (Via relations)
+ * @property User|null           $owner               (Via relations)
  * @property RelatedAppearance[] $related_appearances (Via relations)
  * @property Tag[]               $tags                (Via relations)
  * @property Tagged[]            $tagged              (Via relations)
@@ -80,7 +80,7 @@ class Appearance extends NSModel implements Linkable {
   }
 
   public static $belongs_to = [
-    ['owner', 'class' => 'DeviantartUser', 'foreign_key' => 'owner_id'],
+    ['owner', 'class' => 'User', 'foreign_key' => 'owner_id'],
   ];
 
   /** For Twig */
@@ -139,7 +139,7 @@ class Appearance extends NSModel implements Linkable {
    * @return string
    */
   public function getPaletteURL():string {
-    $pcg_prefix = $this->owner_id !== null ? '/@'.$this->owner->name : '';
+    $pcg_prefix = $this->owner_id !== null ? $this->owner->toURL() : '';
     $palette_path = $this->getPaletteFilePath();
     $file_mod = CoreUtils::filemtime($palette_path);
     $token = !empty($_GET['token']) ? '&token='.urlencode($_GET['token']) : '';
@@ -237,13 +237,15 @@ class Appearance extends NSModel implements Linkable {
 
   /**
    * Returns the HTML for sprite images
+   * USED IN TWIG - DO NOT REMOVE
    *
    * @param bool $canUpload
-   * @param DeviantartUser $user
+   * @param User $user
    *
    * @return string
+   * @noinspection PhpUnused
    */
-  public function getSpriteHTML(bool $canUpload, ?DeviantartUser $user = null):string {
+  public function getSpriteHTML(bool $canUpload, ?User $user = null):string {
     if (Auth::$signed_in && $this->owner_id === Auth::$user->id && !UserPrefs::get('a_pcgsprite', $user))
       $canUpload = false;
 
@@ -678,7 +680,7 @@ class Appearance extends NSModel implements Linkable {
   }
 
   public function checkSpriteColors():bool {
-    $check_who = $this->owner_id ?? Appearances::SPRITE_NAG_USERID;
+    $check_who = $this->owner_id ?? Appearances::SPRITE_NAG_USER_ID;
     $has_color_issues = $this->spriteHasColorIssues();
     $old_notifs = Appearances::getSpriteColorIssueNotifications($this->id, $check_who);
     if ($has_color_issues && empty($old_notifs))
@@ -983,7 +985,7 @@ class Appearance extends NSModel implements Linkable {
       Appearances::clearSpriteColorIssueNotifications($this->id, 'del', null);
   }
 
-  public static function checkCreatePermission(DeviantartUser $user, bool $personal) {
+  public static function checkCreatePermission(User $user, bool $personal) {
     if (!$personal){
       if (!$user->perm('staff'))
         Response::fail("You don't have permission to add appearances to the official Color Guide");

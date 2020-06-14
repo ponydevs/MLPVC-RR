@@ -8,47 +8,55 @@ use App\CoreUtils;
 use App\JSON;
 use App\Time;
 use App\Twig;
-use Ramsey\Uuid\Uuid;
 
 /**
- * @property string   $id
- * @property string   $user_id
- * @property string   $platform
- * @property string   $browser_name
- * @property string   $browser_ver
- * @property string   $user_agent
- * @property string         $token     (Cookie Auth)
- * @property string         $access    (oAuth)
- * @property string         $refresh   (oAuth)
- * @property string         $scope     (oAuth)
- * @property DateTime       $expires   (oAuth)
+ * @property int            $id
+ * @property int            $user_id
+ * @property string         $platform
+ * @property string         $browser_name
+ * @property string         $browser_ver
+ * @property string         $user_agent
+ * @property string         $token           (Cookie Auth)
  * @property DateTime       $created
  * @property DateTime       $last_visit
  * @property string         $data
  * @property bool           $updating
- * @property bool           $expired   (Via magic method)
- * @property DeviantartUser $user      (Via relations)
+ * @property string         $access          (Via magic method)
+ * @property string         $refresh         (Via magic method)
+ * @property DateTime       $expires         (Via magic method)
+ * @property bool           $expired         (Via magic method)
+ * @property User           $user            (Via relations)
  * @method static Session find_by_token(string $token)
  * @method static Session find_by_access(string $access)
  * @method static Session find_by_refresh(string $code)
- * @method static Session find(string $id)
+ * @method static Session find(int $id)
  */
 class Session extends NSModel {
   public static $belongs_to = [
-    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
+    ['user'],
   ];
 
   /** For Twig */
-  public function getUser():DeviantartUser {
+  public function getUser():User {
     return $this->user;
   }
 
   public static $attr_protected = ['data'];
 
-  public static $before_create = ['generate_id'];
+  public function get_access() {
+    return $this->user->deviantart_user->access;
+  }
+
+  public function get_refresh() {
+    return $this->user->deviantart_user->refresh;
+  }
+
+  public function get_expires() {
+    return $this->user->deviantart_user->access_expires;
+  }
 
   public function get_expired() {
-    return $this->expires->getTimestamp() < time();
+    return $this->user->deviantart_user->access_expires->getTimestamp() < time();
   }
 
   public function detectBrowser(?string $ua = null) {
@@ -153,10 +161,6 @@ class Session extends NSModel {
     ];
 
     return Twig::$env->render('user/_profile_session.html.twig', $data);
-  }
-
-  public function generate_id() {
-    $this->id = Uuid::uuid4()->toString();
   }
 }
 

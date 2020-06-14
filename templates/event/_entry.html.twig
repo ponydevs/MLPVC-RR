@@ -3,7 +3,7 @@
 {# @var wrap bool #}
 {# @var lazyload bool #}
 {# @var signed_in bool #}
-{# @var current_user \App\Models\DeviantartUser #}
+{# @var current_user \App\Models\User #}
 {% apply spaceless %}
   {% set is_staff = permission('staff') %}
   {% if wrap %}

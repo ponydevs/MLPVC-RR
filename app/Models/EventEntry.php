@@ -13,25 +13,25 @@ use Exception;
 /**
  * @property int      $id
  * @property int      $event_id
- * @property int            $score
- * @property string         $prev_src
- * @property string         $prev_full
- * @property string         $prev_thumb
- * @property string         $sub_prov
- * @property string         $sub_id
- * @property string         $submitted_by
- * @property string         $title
- * @property DateTime       $created_at
- * @property DateTime       $updated_at
- * @property DeviantartUser $submitter    (Via relations)
- * @property Event          $event        (Via relations)
+ * @property int      $score
+ * @property string   $prev_src
+ * @property string   $prev_full
+ * @property string   $prev_thumb
+ * @property string   $sub_prov
+ * @property string   $sub_id
+ * @property int      $submitted_by
+ * @property string   $title
+ * @property DateTime $created_at
+ * @property DateTime $updated_at
+ * @property User     $submitter    (Via relations)
+ * @property Event    $event        (Via relations)
  * @method static EventEntry find(...$args)
  */
 class EventEntry extends NSModel {
   public static $table_name = 'event_entries';
 
   public static $belongs_to = [
-    ['submitter', 'class' => 'DeviantartUser', 'foreign_key' => 'submitted_by'],
+    ['submitter', 'class' => 'User', 'foreign_key' => 'submitted_by'],
     ['event'],
   ];
 
@@ -62,7 +62,7 @@ class EventEntry extends NSModel {
     }
   }
 
-  public function getUserVote(DeviantartUser $user):?EventEntryVote {
+  public function getUserVote(User $user):?EventEntryVote {
     return EventEntryVote::find_by_entry_id_and_user_id($this->id, $user->id);
   }
 

@@ -1,5 +1,5 @@
 {# @controller App\Controllers\AdminController::log #}
-{# @var current_user App\Models\DeviantartUser #}
+{# @var current_user App\Models\User #}
 {# @var pagination App\Pagination #}
 {# @var log_items \App\Models\Log[] #}
 {# @var type string #}
@@ -42,7 +42,7 @@
         <th class="entryid">#</th>
         <th class="timestamp">Timestamp</th>
         <th class="ip">Initiator</th>
-        <th class="reftype">Event</th>
+        <th class="entry-type">Event</th>
       </tr>
       </thead>
       {% apply spaceless %}
@@ -64,8 +64,9 @@
                 {% set me_class = same_user ? ' your-name' : '' %}
                 {% set me_by = same_user ? 'you' : 'this user' %}
                 {% set strong_name = same_user ? "<strong title='You'>#{init_user.name}</strong>" : init_user.name %}
+                {# @var init_user \App\Models\User #}
                 {% set init_user %}
-                  <a class='search-user typcn typcn-zoom{{ me_class }}' title='Search for all entries by {{ me_by }}'></a> <a class='typcn typcn-user' href='{{ init_user.toURL }}' title='Visit profile'></a> <span class='name'>{{ strong_name }}</span>
+                  <a class='search-user typcn typcn-zoom{{ me_class }}' title='Search for all entries by {{ me_by }}'></a> <a class='typcn typcn-user' href='{{ init_user.toURL(false) }}' title='Visit profile'></a> <span class='name'>{{ strong_name }}</span>
                 {% endset %}
               {% endif %}
             {% else %}
@@ -83,8 +84,8 @@
             {% else %}
               {% set ip = '<em>IP wiped (GDPR)</em>' %}
             {% endif %}
-            {% set event = constant('App\\Logs::LOG_DESCRIPTION')[item.reftype] ?? item.reftype %}
-            {% if item.refid is not null %}
+            {% set event = constant('App\\Logs::LOG_DESCRIPTION')[item.entry_type] ?? item.entry_type %}
+            {% if item.data is not null %}
               {% set event %}
                 <span class="expand-section typcn typcn-plus">{{ event }}</span>
               {% endset %}
@@ -93,7 +94,7 @@
               <td class='entryid'>{{ item.id }}</td>
               <td class='timestamp'>{{ time_tag(item.created_at, constant('App\\Time::TAG_EXTENDED')) }}<span class="dynt-el"></span></td>
               <td class='ip'>{{ init_user }}<br>{{ ip }}</td>
-              <td class='reftype'>{{ event }}</td>
+              <td class='entry-type'>{{ event }}</td>
             </tr>
           {% endfor %}
         {% endif %}

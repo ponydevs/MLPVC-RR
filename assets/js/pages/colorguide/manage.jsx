@@ -9,11 +9,10 @@
       PRINTABLE_ASCII_PATTERN,
       AppearancePage,
       OwnerId,
-      OwnerName,
       TAG_NAME_REGEX,
     } = window,
     isWebkit = 'WebkitAppearance' in document.documentElement.style,
-    PGRq = OwnerName ? `/@${OwnerName}` : '',
+    PGRq = OwnerId ? `/users/${OwnerId}` : '',
     ColorTextParseError = function(line, lineNumber, matches) {
       let missing = [];
       if (!matches || !matches[1])
@@ -67,8 +66,6 @@
     ponyEditorActions = {
       selectiveWipe: (data, appearanceID) => e => {
         e.preventDefault();
-
-        // TODO Add some toggleable explanations on what each option clears exactly
 
         const
           ponyLabel = data.label,
@@ -603,8 +600,6 @@
     }
 
     makeColorDiv(color) {
-      // TODO Organize input options inside a container with a child for each method
-      // TODO Add RGB input method alongside Hex and Link
       let
         $ci = this.templates.$colorInput.clone(true, true),
         $cl = this.templates.$colorLabel.clone(),

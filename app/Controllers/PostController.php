@@ -18,12 +18,11 @@ use App\Models\Notification;
 use App\Models\PCGSlotHistory;
 use App\Models\Post;
 use App\Models\Show;
-use App\Models\DeviantartUser;
+use App\Models\User;
 use App\Permission;
 use App\Posts;
 use App\Response;
 use App\ShowHelper;
-use App\Time;
 use App\UserPrefs;
 use App\Users;
 use ElephantIO\Exception\ServerConnectionFailureException;
@@ -205,13 +204,11 @@ class PostController extends Controller {
 
         if (!$is_new_reserver){
           Logs::logAction('res_overtake', $overdue);
-
-          Posts::clearTransferAttempts($this->post, 'snatch');
         }
 
         if ($suggested){
           $response['button'] = Posts::getPostReserveButton($this->post->reserver, false);
-          $response['pendingReservations'] = DeviantartUser::find($suggested ? $this->post->reserved_by : $old_reserver)->getPendingReservationsHTML($suggested
+          $response['pendingReservations'] = User::find($suggested ? $this->post->reserved_by : $old_reserver)->getPendingReservationsHTML($suggested
             ? true : $this->is_user_reserver);
         }
         else $response['li'] = $this->post->getLi();
@@ -239,13 +236,11 @@ class PostController extends Controller {
           if (!$this->post->save())
             Response::dbError();
 
-          Posts::clearTransferAttempts($this->post, 'free');
-
           Posts::sendUpdate($this->post);
 
           $response = ['li' => $this->post->getLi()];
           if ($from_profile)
-            $response['pendingReservations'] = DeviantartUser::find($old_reserver)->getPendingReservationsHTML($this->is_user_reserver);
+            $response['pendingReservations'] = User::find($old_reserver)->getPendingReservationsHTML($this->is_user_reserver);
 
           Response::done($response);
         }
@@ -403,15 +398,15 @@ class PostController extends Controller {
         if (Permission::sufficient('developer')){
           $username = Posts::validatePostAs();
           if ($username !== null){
-            $PostAs = Users::get($username, 'name');
+            $post_as = Users::getDA($username, 'name');
 
-            if (empty($PostAs))
+            if (empty($post_as))
               Response::fail('The user you wanted to post as does not exist');
 
-            if ($kind === 'reservation' && Permission::insufficient('member', $PostAs->role) && !isset($_POST['allow_nonmember']))
+            if ($kind === 'reservation' && Permission::insufficient('member', $post_as->role) && !isset($_POST['allow_nonmember']))
               Response::fail('The user you wanted to post as is not a club member, do you want to post as them anyway?', ['canforce' => true]);
 
-            $by_id = $PostAs->id;
+            $by_id = $post_as->id;
           }
         }
 
@@ -698,63 +693,6 @@ class PostController extends Controller {
     }
 
     Response::done();
-  }
-
-  public function transfer($params) {
-    if ($this->action !== 'POST')
-      CoreUtils::notAllowed();
-
-    if (Permission::insufficient('member'))
-      Response::fail();
-
-    $this->_authorizeMember();
-    $this->load_post($params, 'view');
-
-    $reserved_by = $this->post->reserver;
-    $checkIfUserCanReserve = function (&$message, &$data) {
-      Posts::clearTransferAttempts($this->post, 'free', Auth::$user);
-      if (!Users::checkReservationLimitReached(RETURN_AS_BOOL)){
-        $message .= '<br>Would you like to reserve it now?';
-        $data = ['canreserve' => true];
-      }
-      else {
-        $message .= "<br>However, you have 4 reservations already which means you can't reserve any more posts. Please review your pending reservations on your <a href='/u'>Account page</a> and cancel/finish at least one before trying to take on another.";
-        $data = [];
-      }
-    };
-
-    $data = null;
-    if (empty($reserved_by)){
-      $message = "This post is not reserved by anyone so there no need to ask for anyone's confirmation.";
-      $checkIfUserCanReserve($message, $data);
-      Response::fail($message, $data);
-    }
-    if ($reserved_by->id === Auth::$user->id)
-      Response::fail("You've already reserved this {$params['thing']}");
-    if ($this->post->isOverdue()){
-      $message = 'This post was reserved '.Time::tag($this->post->reserved_at)." so anyone's free to reserve it now.";
-      $checkIfUserCanReserve($message, $data);
-      Response::fail($message, $data);
-    }
-
-    Users::checkReservationLimitReached();
-
-    if (!$this->post->isTransferable())
-      Response::fail("This {$params['thing']} was reserved recently, please allow up to 5 days before asking for a transfer");
-
-    $ReserverLink = $reserved_by->toAnchor();
-
-    $PreviousAttempts = Posts::getTransferAttempts($this->post, Auth::$user);
-
-    if (!empty($PreviousAttempts[0]) && empty($PreviousAttempts[0]->read_at))
-      Response::fail("You already expressed your interest in this post to $ReserverLink ".Time::tag($PreviousAttempts[0]->created_at).', please wait for them to respond.');
-
-    Notification::send($this->post->reserved_by, 'post-passon', [
-      'id' => $this->post->id,
-      'user' => Auth::$user->id,
-    ]);
-
-    Response::success("A notification has been sent to $ReserverLink, please wait for them to react.<br>If they don't visit the site often, it'd be a good idea to send them a note asking them to consider your inquiry.");
   }
 
   public function setImage($params) {

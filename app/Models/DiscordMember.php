@@ -10,31 +10,35 @@ use App\Time;
 use App\UserPrefs;
 use GuzzleHttp\Command\Exception\CommandClientException;
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 use RestCord\DiscordClient;
 use Wohali\OAuth2\Client\Provider\Discord;
 use Wohali\OAuth2\Client\Provider\DiscordResourceOwner;
 use Wohali\OAuth2\Client\Provider\Exception\DiscordIdentityProviderException;
 
 /**
- * @inheritdoc
- * @property string   $user_id
+ * @property string   $id
+ * @property string   $name
+ * @property int      $user_id
  * @property string   $username
- * @property string         $nick
- * @property string         $avatar_hash
- * @property DateTime       $joined_at
- * @property string         $discriminator
- * @property string         $access        (oAuth)
- * @property string         $refresh       (oAuth)
- * @property string         $scope         (oAuth)
- * @property DateTime       $expires       (oAuth)
- * @property DateTime       $last_synced
- * @property string         $discord_tag   (Via magic method)
- * @property DeviantartUser $user          (Via relations)
+ * @property string   $nick
+ * @property string   $avatar_hash
+ * @property DateTime $joined_at
+ * @property string   $discriminator
+ * @property string   $access        (oAuth)
+ * @property string   $refresh       (oAuth)
+ * @property string   $scope         (oAuth)
+ * @property DateTime $expires       (oAuth)
+ * @property DateTime $last_synced
+ * @property string   $discord_tag   (Via magic method)
+ * @property string   $avatar_url    (Via magic method)
+ * @property User     $user          (Via relations)
  * @method static DiscordMember|DiscordMember[] find(...$args)
+ * @method static DiscordMember|null find_by_user_id(int $user_id)
  */
-class DiscordMember extends AbstractUser {
+class DiscordMember extends NSModel {
   public static $belongs_to = [
-    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
+    ['user'],
   ];
 
   public static $before_destroy = ['update_avatar_provider'];
@@ -116,7 +120,7 @@ class DiscordMember extends AbstractUser {
     return $this->expires !== null && $this->expires->getTimestamp() <= time() + 10;
   }
 
-  public function updateAccessToken(?AccessToken $token = null, bool $save = true) {
+  public function updateAccessToken(?AccessTokenInterface $token = null, bool $save = true):void {
     if ($token === null){
       if (!$this->accessTokenExpired())
         return;

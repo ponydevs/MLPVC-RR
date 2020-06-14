@@ -3,20 +3,17 @@
 namespace App;
 
 use ActiveRecord\RecordNotFound;
-use App\Exceptions\JSONParseException;
 use App\Models\Appearance;
 use App\Models\ColorGroup;
+use App\Models\DeviantartUser;
 use App\Models\LegacyPostMapping;
 use App\Models\Log;
 use App\Models\Post;
 use App\Models\Show;
-use App\Models\DeviantartUser;
 use App\Models\ShowVideo;
 use cogpowered\FineDiff;
 use Exception;
 use RuntimeException;
-use function count;
-use function in_array;
 
 class Logs {
   public const LOG_DESCRIPTION = [
@@ -45,18 +42,17 @@ class Logs {
   /**
    * Logs a specific set of data (action) in the table belonging to the specified type
    *
-   * @param string $reftype Log entry type
-   * @param array  $data    Data to be inserted
-   * @param bool   $forcews Force initiator to be null
+   * @param string $entry_type Log entry type
+   * @param array  $data       Data to be inserted
+   * @param bool   $forcews    Force initiator to be null
    *
    * @return bool
    * @throws RuntimeException
    */
-  public static function logAction($reftype, $data = null, $forcews = false) {
+  public static function logAction($entry_type, $data = null, $forcews = false) {
     $log = new Log([
       'ip' => $_SERVER['REMOTE_ADDR'],
-      'refid' => null,
-      'reftype' => $reftype,
+      'entry_type' => $entry_type,
     ]);
 
     if (Auth::$signed_in && !$forcews)
@@ -67,7 +63,7 @@ class Logs {
     return $log->save();
   }
 
-  public static $ACTIONS = [
+  public const ACTIONS = [
     'add' => '<span class="color-green"><span class="typcn typcn-plus"></span> Create</span>',
     'del' => '<span class="color-red"><span class="typcn typcn-trash"></span> Delete</span>',
   ];
@@ -81,29 +77,31 @@ class Logs {
   /**
    * Format log entry details
    *
-   * @param Log $main_entry Main log entry
-   * @param array $data     Data to process (sub-log entry)
+   * @param Log   $log  Main log entry
+   * @param array $data Data to process (sub-log entry)
    *
    * @return array
-   * @throws JSONParseException
+   * @throws Exception
    */
-  public static function formatEntryDetails(Log $main_entry, array $data) {
+  public static function formatEntryDetails(Log $log, array $data):array {
     $details = [];
 
-    $reftype = $main_entry->reftype;
-    switch ($reftype){
+    switch ($log->entry_type){
       case 'rolechange':
-        /** @var $target DeviantartUser */
-        $target = DeviantartUser::find($data['target']);
+        $user = Users::resolveById($data['target']);
+
+        $suffix = ' (invalid role)';
+        $old_group = Permission::ROLES_ASSOC[$data['oldrole']] ?? '<del>'.CoreUtils::capitalize($data['oldrole'])."</del>$suffix";
+        $new_group = Permission::ROLES_ASSOC[$data['newrole']] ?? '<del>'.CoreUtils::capitalize($data['newrole'])."</del>$suffix";
 
         $details = [
-          ['Target user', $target->toAnchor()],
-          ['Old group', Permission::ROLES_ASSOC[$data['oldrole']]],
-          ['New group', Permission::ROLES_ASSOC[$data['newrole']]],
+          ['Target user', $user !== null ? $user->toAnchor() : "Deleted user #{$data['target']}"],
+          ['Old group', $old_group],
+          ['New group', $new_group],
         ];
       break;
       case 'userfetch':
-        $details[] = ['User', DeviantartUser::find($data['userid'])->toAnchor()];
+        $details[] = ['User', Users::resolveById($data['userid'])->toAnchor()];
       break;
       case 'post_lock':
         self::_genericPostInfo($data, $details);
@@ -120,12 +118,12 @@ class Logs {
         $details[] = ['Posted under', !empty($ep) ? $ep->toAnchor() : "Show #{$data['show_id']} <em>(deleted)</em>"];
         $details[] = ['Requested on', Time::tag($data['requested_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
         if (!empty($data['requested_by']))
-          $details[] = ['Requested by', DeviantartUser::find($data['requested_by'])->toAnchor()];
+          $details[] = ['Requested by', Users::resolveById($data['requested_by'])->toAnchor()];
         if (!empty($data['reserved_by']))
-          $details[] = ['Reserved by', DeviantartUser::find($data['reserved_by'])->toAnchor()];
+          $details[] = ['Reserved by', Users::resolveById($data['reserved_by'])->toAnchor()];
         $details[] = ['Finished', !empty($data['deviation_id'])];
         if (!empty($data['deviation_id'])){
-          $details[] = ['Deviation', self::_link("http://fav.me/{$data['deviation_id']}")];
+          $details[] = ['Deviation', self::link("http://fav.me/{$data['deviation_id']}")];
           $details[] = ['Approved', $data['lock']];
         }
       break;
@@ -136,19 +134,23 @@ class Logs {
       break;
       case 'res_overtake':
         self::_genericPostInfo($data, $details);
-        $details[] = ['Previous reserver', DeviantartUser::find($data['reserved_by'])->toAnchor()];
+        $details[] = ['Previous reserver', Users::resolveById($data['reserved_by'])->toAnchor()];
         $details[] = ['Previously reserved at', Time::tag($data['reserved_at'], Time::TAG_EXTENDED, Time::TAG_STATIC_DYNTIME)];
 
-        $diff = Time::difference(strtotime($main_entry->created_at), strtotime($data['reserved_at']));
+        $diff = Time::difference(strtotime($log->created_at), strtotime($data['reserved_at']));
         $diff_text = Time::differenceToString($diff);
         $details[] = ['In progress for', $diff_text];
       break;
       case 'appearances':
-        $details[] = ['Action', self::$ACTIONS[$data['action']]];
+        $details[] = ['Action', self::ACTIONS[$data['action']]];
 
-        $guide = CGUtils::GUIDE_MAP[empty($data['ishuman']) ? ($data['guide'] ?: null) : ($data['ishuman'] ? 'pony' : 'eqg')];
-        if ($guide !== null)
-          $details[] = ['Guide', $guide];
+        if (isset($data['ishuman']))
+          $guide = CGUtils::GUIDE_MAP[$data['ishuman'] ? 'pony' : 'eqg'];
+        else if (isset($data['guide']))
+          $guide = CGUtils::GUIDE_MAP[$data['guide']];
+        else $guide = 'Personal Color Guide';
+
+        $details[] = ['Guide', $guide];
         $details[] = ['ID', self::_getAppearanceLink($data['id'])];
         $details[] = ['Label', $data['label']];
         if (!empty($data['order']))
@@ -163,7 +165,7 @@ class Logs {
       break;
       case 'res_transfer':
         self::_genericPostInfo($data, $details);
-        $details[] = ['New reserver', DeviantartUser::find($data['to'])->toAnchor()];
+        $details[] = ['New reserver', Users::resolveById($data['to'])->toAnchor()];
       break;
       case 'cg_modify':
         $details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
@@ -179,7 +181,7 @@ class Logs {
           $details[] = ['Colors', self::diff($data['oldcolors'] ?? '', $data['newcolors'], 'block')];
       break;
       case 'cgs':
-        $details[] = ['Action', self::$ACTIONS[$data['action']]];
+        $details[] = ['Action', self::ACTIONS[$data['action']]];
         $details[] = ['Color group ID', '#'.$data['group_id']];
         $details[] = ['Label', $data['label']];
         $details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
@@ -192,7 +194,7 @@ class Logs {
       break;
       case 'appearance_modify':
         $details[] = ['Appearance', self::_getAppearanceLink($data['appearance_id'])];
-        $changes = $data['changes'];
+        $changes = is_string($data['changes']) ? JSON::decode($data['changes']) : $data['changes'];
         $newOld = self::_arrangeNewOld($changes);
 
         if (isset($newOld['label']['new']))
@@ -202,11 +204,11 @@ class Logs {
           $details[] = ['Notes', self::diff($newOld['notes']['old'] ?? '', $newOld['notes']['new'] ?? '', 'block smaller', new FineDiff\Granularity\Word())];
 
         if (isset($newOld['cm_favme']['old']))
-          $details[] = ['Old CM Submission', self::_link('http://fav.me/'.$newOld['cm_favme']['old'])];
+          $details[] = ['Old CM Submission', self::link('http://fav.me/'.$newOld['cm_favme']['old'])];
         else if (isset($newOld['cm_favme']['new']))
           $details[] = ['Old CM Submission', null];
         if (isset($newOld['cm_favme']['new']))
-          $details[] = ['New CM Submission', self::_link('http://fav.me/'.$newOld['cm_favme']['new'])];
+          $details[] = ['New CM Submission', self::link('http://fav.me/'.$newOld['cm_favme']['new'])];
         else if (isset($newOld['cm_favme']['old']))
           $details[] = ['New CM Submission', null];
 
@@ -225,21 +227,20 @@ class Logs {
           $details[] = ['New Custom CM Preview', null];
       break;
       case 'da_namechange':
-        $User = DeviantartUser::find($data['user_id']);
-        $newIsCurrent = $User->name === $data['new'];
-        $details[] = ['User', $User->toAnchor()];
+        $da_user = DeviantartUser::find($data['user_id']);
+        $newIsCurrent = $da_user->name === $data['new'];
+        $details[] = ['User', $da_user->user->toAnchor()];
         if ($newIsCurrent)
           $details[] = ['Old name', $data['old']];
-        else {
-          $details[] = ['Name', Logs::diff($data['old'], $data['new'])];
-        }
+        else
+          $details[] = ['Name', self::diff($data['old'], $data['new'])];
       break;
       case 'video_broken':
         $show = Show::find($data['show_id']);
         $details[] = ['Episode', $show->toAnchor()];
         $url = VideoProvider::getEmbed(new ShowVideo([
-          'provider' => $data['provider'],
-          'id' => $data['id'],
+          'provider_abbr' => $data['provider'],
+          'provider_id' => $data['id'],
         ]), VideoProvider::URL_ONLY);
         $details[] = ['Link', "<a href='$url'>$url</a>"];
       break;
@@ -249,9 +250,11 @@ class Logs {
         $keys = [];
         if (isset($data['olddata'])){
           $keys[] = 'olddata';
+          $data['olddata'] = is_string($data['olddata']) ? JSON::decode($data['olddata']) : $data['olddata'];
         }
         if (isset($data['newdata'])){
           $keys[] = 'newdata';
+          $data['newdata'] = is_string($data['newdata']) ? JSON::decode($data['newdata']) : $data['newdata'];
         }
 
         foreach ($keys as $key){
@@ -307,7 +310,7 @@ class Logs {
       break;
       break;
       case 'staff_limits':
-        $details[] = ['For', DeviantartUser::find($data['user_id'])->toAnchor()];
+        $details[] = ['For', Users::resolveById($data['user_id'])->toAnchor()];
         $details[] = ['Limitation', UserSettingForm::INPUT_MAP[$data['setting']]['options']['desc']];
         $icon = $data['allow'] ? 'tick' : 'times';
         $text = $data['allow'] ? 'Now allowed' : 'Now disallowed';
@@ -417,67 +420,13 @@ class Logs {
     return $newOld;
   }
 
-  private static function _link($url, $blank = false) {
+  private static function link($url, $blank = false) {
     return "<a href='".CoreUtils::aposEncode($url)."' ".($blank ? 'target="_blank" rel="noopener"' : '').">$url</a>";
   }
 
   public const LOCALHOST_IPS = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
 
-  public const SEARCH_USER_LINK = '';
-
-  /**
-   * Render log page <tbody> content
-   *
-   * @param Log[] $LogItems
-   *
-   * @return string
-   */
-  public static function getTbody($LogItems):string {
-    $HTML = '';
-    if (count($LogItems) > 0) foreach ($LogItems as $item){
-      if (!empty($item->initiator)){
-        $inituser = $item->actor;
-        if (empty($inituser))
-          $inituser = 'Deleted user';
-        else {
-          $sameUser = $inituser->id === Auth::$user->id;
-          $me_class = $sameUser ? ' your-name' : '';
-          $me_by = $sameUser ? ' you' : 'this user';
-          $strongName = $sameUser ? "<strong title='You'>{$inituser->name}</strong>" : $inituser->name;
-          $inituser = "<a class='search-user typcn typcn-zoom$me_class' title='Search for all entries by $me_by'></a> <a class='typcn typcn-user' href='{$inituser->toURL()}' title='Visit profile'></a> <span class='name'>$strongName</span>";
-        }
-      }
-      else $inituser = '<a class="search-user typcn typcn-zoom" title="Search for all entries by the server"></a> <spac class="name">Web server</spac>';
-
-      if ($item->ip !== GDPR_IP_PLACEHOLDER){
-        $ip = in_array(strtolower($item->ip), self::LOCALHOST_IPS, true) ? 'localhost' : $item->ip;
-        $ownIP = $item->ip === $_SERVER['REMOTE_ADDR'];
-        $strongIP = $ownIP ? "<strong title='Your current IP'>$ip</strong>" : $ip;
-        $ip = "<a class='typcn typcn-zoom search-ip".($ownIP ? ' your-ip'
-            : '')."' title='Search for all entries from this IP'></a> <span class='address'>$strongIP</span>";
-      }
-      else $ip = '<em>IP wiped (GDPR)</em>';
-
-      $event = self::LOG_DESCRIPTION[$item->reftype] ?? $item->reftype;
-      if (isset($item->refid))
-        $event = '<span class="expand-section typcn typcn-plus">'.$event.'</span>';
-      $ts = Time::tag($item->created_at, Time::TAG_EXTENDED);
-
-      $HTML .= <<<HTML
-				<tr>
-					<td class='entryid'>{$item->id}</td>
-					<td class='timestamp'>$ts<span class="dynt-el"></span></td>
-					<td class='ip'>$inituser<br>$ip</td>
-					<td class='reftype'>$event</td>
-				</tr>
-				HTML;
-    }
-    else $HTML = '<tr><td colspan="4"><div class="notice info align-center"><label>No log items found</label></td></tr>';
-
-    return $HTML;
-  }
-
-  public static function validateRefType($key, $optional = false, $method_get = false) {
+  public static function validateEntryType($key, $optional = false, $method_get = false) {
     return (new Input($key, function ($value) {
       if (!isset(self::LOG_DESCRIPTION[$value]))
         return Input::ERROR_INVALID;
@@ -500,4 +449,5 @@ class Logs {
 
     return "<span class='btn darkblue view-switch' title='Left/Right click to change view mode'>diff</span><div class='log-diff $type'>$diff</div>";
   }
+
 }

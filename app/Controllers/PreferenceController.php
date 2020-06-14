@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Auth;
 use App\CoreUtils;
-use App\Models\DeviantartUser;
+use App\Models\User;
 use App\Permission;
 use App\Response;
 use App\UserPrefs;
@@ -18,23 +18,22 @@ class PreferenceController extends Controller {
       CoreUtils::noPerm();
   }
 
-  /** @var string */
-  private $preference, $value;
-  /** @var DeviantartUser|null */
-  private $user;
+  private $value;
+  private string $preference;
+  private ?User $user;
 
   public function load_preference($params) {
     $this->preference = $params['key'];
 
     if (empty($params['id']))
       CoreUtils::notFound();
-    $user = DeviantartUser::find($params['id']);
+    $user = User::find($params['id']);
     if (empty($user))
       Response::fail('The specified user does not exist');
     if (Auth::$user->id !== $user->id && Permission::insufficient('staff'))
       Response::fail();
-    $this->user = $user;
 
+    $this->user = $user;
     $this->value = UserPrefs::get($this->preference, $this->user);
   }
 

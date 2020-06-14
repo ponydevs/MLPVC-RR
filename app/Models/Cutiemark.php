@@ -5,10 +5,8 @@ namespace App\Models;
 use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
-use App\DeviantArt;
 use App\File;
 use App\Permission;
-use App\Users;
 use League\Uri\Components\Query;
 use League\Uri\Uri;
 use League\Uri\UriModifier;
@@ -21,8 +19,8 @@ use League\Uri\UriModifier;
  * @property int            $rotation
  * @property string|null    $label
  * @property Appearance     $appearance     (Via relations)
+ * @property DeviantartUser $contributor    (Via relations)
  * @property string|null    $contributor_id (Via magic method)
- * @property DeviantartUser $contributor    (Via magic method)
  * @method static Cutiemark find(int $id)
  * @method static Cutiemark[] find_by_sql($sql, $data = null)
  * @method static Cutiemark[] find_all_by_appearance_id(int $appearance_id)
@@ -32,6 +30,7 @@ class Cutiemark extends NSModel {
 
   public static $belongs_to = [
     ['appearance'],
+    ['contributor', 'class' => 'DeviantartUser', 'foreign_key' => 'contributor_id'],
   ];
 
   /** For Twig */
@@ -39,34 +38,12 @@ class Cutiemark extends NSModel {
     return $this->appearance;
   }
 
-  public static $after_destroy = ['remove_files'];
-
-  public function get_contributor_id() {
-    $attrval = $this->read_attribute('contributor_id');
-    if ($attrval === null && $this->favme !== null){
-      $deviation = DeviantArt::getCachedDeviation($this->favme);
-      if (!empty($deviation)){
-        $cont = Users::get($deviation->author, 'name');
-        if (!empty($cont)){
-          $this->contributor_id = $cont->id;
-          $this->save();
-
-          return $cont->id;
-        }
-      }
-    }
-
-    return $attrval;
-  }
-
-  public function get_contributor() {
-    return $this->contributor_id !== null ? DeviantartUser::find($this->contributor_id) : null;
-  }
-
   /** For Twig */
   public function getContributor():?DeviantartUser {
     return $this->contributor;
   }
+
+  public static $after_destroy = ['remove_files'];
 
   public function getTokenizedFilePath() {
     return FSPATH."cm_tokenized/{$this->id}.svg";
@@ -146,10 +123,22 @@ class Cutiemark extends NSModel {
 			HTML;
   }
 
+  /**
+   * USED IN TWIG - DO NOT REMOVE
+   * @noinspection PhpUnused
+   */
   public function canEdit():bool {
     return Permission::sufficient('staff') || (Auth::$signed_in && $this->appearance->owner_id === Auth::$user->id);
   }
 
+  /**
+   * USED IN TWIG - DO NOT REMOVE
+   *
+   * @param bool $source
+   *
+   * @return string
+   * @noinspection PhpUnused
+   */
   public function getDownloadURL($source = false):string {
     $url = Uri::createFromString("/cg/cutiemark/download/{$this->id}");
     $query_params = [];
