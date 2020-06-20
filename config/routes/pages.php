@@ -80,6 +80,7 @@ $router->map('GET', '/', 'UserController#homepage');
 $router->map('GET', '/users', 'UserController#list');
 $router->map('GET', '/users/[i:user_id]', 'UserController#profile');
 $router->map('GET', '/users/[i:user_id]-[uc]?', 'UserController#profile');
+$router->map('GET', '/u', 'UserController#profile');
 $router->map('GET', '/u/[uuid:uuid]', 'UserController#profileByUuid');
 $router->map('GET', '/users/[i:user_id]/contrib/[ad:type]/[i]?', 'UserController#contrib');
 $router->map('GET', '/user/contrib/lazyload/[favme:favme]', 'UserController#contribLazyload');

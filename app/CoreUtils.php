@@ -57,13 +57,13 @@ class CoreUtils {
     $path = urldecode($split[0]);
     $query = empty($split[1]) ? '' : "?{$split[1]}";
 
-    $fix_split = explode('?', $fix_uri, 2);
+    $fix_split = explode('?', strtok($fix_uri, '#'), 2);
     $fix_path = $fix_split[0];
     $fix_query = self::mergeQuery($query, empty($fix_split[1]) ? '' : "?{$fix_split[1]}", $remove_params);
-    self::appendFragment($fix_uri, $fix_query);
+    $fragment = self::appendFragment($fix_uri);
 
     if ($path !== $fix_path || $query !== $fix_query)
-      HTTP::tempRedirect("$fix_path$fix_query");
+      HTTP::tempRedirect("$fix_path$fix_query$fragment");
   }
 
   public static function mergeQuery(string $query, string $fix_query, ?array $remove_params = null):string {
@@ -88,14 +88,14 @@ class CoreUtils {
     return $fix_query;
   }
 
-  public static function appendFragment($fix_uri, string &$fix_query):void {
-    if (!self::contains($fix_uri, '#'))
-      return;
+  public static function appendFragment($fix_query):string {
+    if (!self::contains($fix_query, '#'))
+      return "";
 
-    strtok($fix_uri, '#');
+    strtok($fix_query, '#');
     $fragment = strtok('#');
-    if (!empty($fragment))
-      $fix_query = rtrim($fix_query, '#')."#$fragment";
+
+    return !empty($fragment) ? "#$fragment" : "";
   }
 
   /**

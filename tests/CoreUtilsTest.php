@@ -192,15 +192,14 @@ class CoreUtilsTest extends TestCase {
   }
 
   public function testAppendFragment():void {
-    $result = '';
-    CoreUtils::appendFragment('/a#c', $result);
+    $result = CoreUtils::appendFragment('/a');
+    self::assertEquals('', $result, 'Should return empty string if there is no fragment');
+    $result = CoreUtils::appendFragment('/a#c');
     self::assertEquals('#c', $result);
-    $result = '?b';
-    CoreUtils::appendFragment('/a?b#c', $result);
-    self::assertEquals('?b#c', $result);
-    $result = '?c=#';
-    CoreUtils::appendFragment('/?c=#d', $result);
-    self::assertEquals('?c=#d', $result, 'Should not explode if empty parameter is encountered');
+    $result = CoreUtils::appendFragment('/a?b#c');
+    self::assertEquals('#c', $result);
+    $result = CoreUtils::appendFragment('/?c=#');
+    self::assertEquals('', $result, 'Should return empty string if empty parameter is encountered');
   }
 
   public function testAbsoluteUrl():void {
