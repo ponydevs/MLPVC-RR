@@ -23,6 +23,16 @@ class MajorChange extends NSModel {
     ['user'],
   ];
 
+  /** For Twig */
+  public function getAppearance() {
+    return $this->appearance;
+  }
+
+  /** For Twig */
+  public function getUser() {
+    return $this->user;
+  }
+
   public static function total(string $guide):int {
     $query = DB::$instance->querySingle(
       'SELECT COUNT(mc.id) as total
