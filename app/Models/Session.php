@@ -55,8 +55,11 @@ class Session extends NSModel {
     return $this->user->deviantart_user->access_expires;
   }
 
-  public function get_expired() {
-    return $this->user->deviantart_user->access_expires->getTimestamp() < time();
+  public function get_expired(): bool {
+    return
+      $this->user !== null
+      && $this->user->isDeviantartLinked()
+      && $this->expires->getTimestamp() < time();
   }
 
   public function detectBrowser(?string $ua = null) {

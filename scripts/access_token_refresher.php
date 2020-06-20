@@ -27,12 +27,19 @@ try {
     CoreUtils::logToTtyOrFile(__FILE__, "Session not found for ID: $session_id");
     exit(3);
   }
-  if (empty(Auth::$session->refresh)){
+
+  $user = Auth::$session->user;
+  if ($user === null || !$user->isDeviantartLinked()) {
+    // Session doesn't have an associated DeviantArt user, do nothing
+    return;
+  }
+
+  if (empty($user->deviantart_user->refresh)){
     CoreUtils::logToTtyOrFile(__FILE__, "Session $session_id had no refresh token, deleting.");
     Auth::$session->delete();
     exit(4);
   }
-  Auth::$user = Auth::$session->user;
+  Auth::$user = $user;
 
   DeviantArt::gracefullyRefreshAccessTokenImmediately(AND_DIE);
 }
