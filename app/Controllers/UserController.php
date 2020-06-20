@@ -46,12 +46,14 @@ class UserController extends Controller {
     else $user = User::find($user_id);
 
     if (empty($user) || !($user instanceof User)){
-      $error = 'User does not exist';
-      $sub_error = 'Check the name for typos and try again';
+      if (!isset($error)){
+        $error = 'User does not exist';
+        $sub_error = 'Check the name for typos and try again';
+      }
       $can_edit = $same_user = $dev_on_dev = false;
     }
     else {
-      $pagePath = $user->toURL(false);
+      $pagePath = $user->toURL(false).($user_id === null ? '#settings' : '');
       CoreUtils::fixPath($pagePath);
       $same_user = Auth::$signed_in && $user->id === Auth::$user->id;
       $can_edit = !$same_user && Permission::sufficient('staff') && Permission::sufficient($user->role);
