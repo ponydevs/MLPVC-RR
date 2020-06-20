@@ -10,13 +10,13 @@ use App\Models\Session;
 
 try {
   if (empty($argv[1])){
-    CoreUtils::logToTtyOrFile(__FILE__, 'Session ID is not specified');
+    CoreUtils::error_log(__FILE__, 'Session ID is not specified');
     exit(1);
   }
 
   $raw_session_id = $argv[1];
   if (!preg_match('~^\d+$~', $raw_session_id)){
-    CoreUtils::logToTtyOrFile(__FILE__, "Session ID is malformed: {$raw_session_id}");
+    CoreUtils::error_log(__FILE__, "Session ID is malformed: {$raw_session_id}");
     exit(2);
   }
 
@@ -24,7 +24,7 @@ try {
 
   Auth::$session = Session::find($session_id);
   if (empty(Auth::$session)){
-    CoreUtils::logToTtyOrFile(__FILE__, "Session not found for ID: $session_id");
+    CoreUtils::error_log(__FILE__, "Session not found for ID: $session_id");
     exit(3);
   }
 
@@ -35,14 +35,18 @@ try {
   }
 
   if (empty($user->deviantart_user->refresh)){
-    CoreUtils::logToTtyOrFile(__FILE__, "Session $session_id had no refresh token, deleting.");
-    Auth::$session->delete();
+    CoreUtils::error_log(__FILE__, "DeviantArt user {$user->deviantart_user->id} had no refresh token, signing out all sessions.");
+    Session::update_all([
+      'set' => ['user_id' => null],
+      'conditions' => ['user_id' => $user->id],
+    ]);
     exit(4);
   }
+
   Auth::$user = $user;
 
   DeviantArt::gracefullyRefreshAccessTokenImmediately(AND_DIE);
 }
 catch (Throwable $e){
-  CoreUtils::logToTtyOrFile(__FILE__, 'Uncaught error: '.$e->getMessage());
+  CoreUtils::error_log(__FILE__, 'Uncaught error: '.$e->getMessage());
 }

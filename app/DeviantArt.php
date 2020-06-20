@@ -395,7 +395,7 @@ class DeviantArt {
       }
       catch (Throwable $e){
         $code = ($e instanceof CURLRequestException ? 'HTTP ' : '').$e->getCode();
-        CoreUtils::logToTtyOrFile(__FILE__, sprintf('Session refresh failed for user #%d | %s (%s)', Auth::$user->id, $e->getMessage(), $code));
+        CoreUtils::error_log(__FILE__, sprintf('Session refresh failed for user #%d | %s (%s)', Auth::$user->id, $e->getMessage(), $code));
         Auth::$session->delete();
         Auth::$signed_in = false;
         Auth::$user = null;

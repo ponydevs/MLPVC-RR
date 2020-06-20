@@ -1590,12 +1590,6 @@ class CoreUtils {
     }
   }
 
-  public static function logToTtyOrFile(string $path, string $message):void {
-    if (posix_isatty(STDOUT))
-      echo "$message\n";
-    else self::error_log(basename($path).": $message");
-  }
-
   public static bool $useNutshellNames;
 
   public static function checkNutshell() {
