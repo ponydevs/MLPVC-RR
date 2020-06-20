@@ -1377,24 +1377,11 @@ class CoreUtils {
     return mb_strlen($data, '8bit');
   }
 
-  public static function error_log(string $message) {
+  public static function error_log(string $message, int $severity = Logger::ERROR) {
     global $logger;
 
-    if (PHP_SAPI === 'cli'){
-      echo $message;
-
-      return;
-    }
-
-    if (self::env('DISABLE_MONOLOG')){
-      /** @noinspection ForgottenDebugOutputInspection */
-      error_log("$message\nStack trace:\n".(new RuntimeException())->getTraceAsString());
-
-      return;
-    }
-
     /** @var $logger Logger */
-    $logger->log(Logger::ERROR, $message);
+    $logger->log($severity, $message);
   }
 
   public static function responseSmiley(string $face):string {

@@ -20,12 +20,7 @@ function monolog_setup() {
   $logger = new Logger('logger');
   $logger->pushHandler($stream);
 
-  $handler = new GracefulErrorHandler($logger);
-  $handler->registerErrorHandler([], false);
-  $handler->registerExceptionHandler();
-  $handler->registerFatalHandler();
+  GracefulErrorHandler::register($logger);
 }
 
-if (!CoreUtils::env('DISABLE_MONOLOG'))
-  monolog_setup();
-else ini_set('error_log', FULL_LOG_PATH);
+monolog_setup();

@@ -2,22 +2,15 @@
 
 namespace App;
 
-use Exception;
 use Monolog\ErrorHandler;
 
 class GracefulErrorHandler extends ErrorHandler {
-  /**
-   * @param Exception $e
-   */
-  private function _outputErrorPage($e) {
-    [$msec, $sec] = explode(' ', microtime());
-    File::put(PROJPATH.'logs/error-at-'.date('YmdHis', (int)$sec).substr($msec, 2).'.log', $e->getMessage()."\n".$e->getTraceAsString());
-
-    if (headers_sent())
-      return;
-
+  private function outputErrorPage() {
     $title = '500 Internal Server Error';
-    header($_SERVER['SERVER_PROTOCOL']." $title");
+    if (!headers_sent()) {
+      header($_SERVER['SERVER_PROTOCOL']." $title");
+    }
+
     echo <<<HTML
 <!DOCTYPE html>
 <html lang="en"><head><title>$title</title></head><style>
@@ -26,32 +19,38 @@ html, body, #wr {
 	height: 100%;
 	margin: 0;
 	padding: 0;
+	color: #eef; 
+	background-color: #1E3DB3;
 }
 #wr {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	text-align: center;
-	background: black;
 }
 #c {
 	display: flex;
 	flex-flow: column nowrap;
-	color: #fff; 
 }
 #c > * { margin: 0 0 10px }
 #c > :last-child { margin-bottom: 0 }
-#emoji {
+#penny {
 	display: block;
-	font-size: 10vh;
-    font-family: "Apple Color Emoji","Segoe UI Emoji","NotoColorEmoji","Segoe UI Symbol","Android Emoji","EmojiSymbols";
+	font-size: .75rem;
+}
+#penny > img {
+  padding: 0 1rem;
+  max-width: 100%;
 }
 a { color: #def }
-p, h1 { font-family: sans-serif }
+body { font-family: sans-serif }
 </style><body>
 <div id="wr">
 	<div id="c">
-		<span id="emoji">&#x1F5A5;&#x1F525;&#x1F692;</span>
+		<figure id="penny">
+		  <img src="/img/penny-gone-mad.png" alt="The club mascot with a crazy facial expression">
+		  <figcaption>Artwork by <a href="https://www.deviantart.com/Pirill-Poveniy">Pirill-Poveniy</a> &bull; <a href="https://derpibooru.org/images/1159625" rel="noopener noreferrer">Derpibooru source</a></figcaption>
+    </figure>
 		<h1>$title</h1>
 		<p>The issue has been logged & the developer will be notified.</p>
 		<p>You can also <a href="http://fav.me/d9zt1wv">join our Discord server</a> to notify the rest of the staff.</p>
@@ -62,7 +61,8 @@ HTML;
   }
 
   public function handleException($e) {
-    $this->_outputErrorPage($e);
+    $this->outputErrorPage();
+
     parent::handleException($e);
   }
 }

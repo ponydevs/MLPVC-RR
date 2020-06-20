@@ -7,7 +7,6 @@ use App\Permission;
 use App\Twig;
 use PDOException;
 use RuntimeException;
-use Twig\Error\RuntimeError;
 
 class DiagnoseController extends Controller {
   public function __construct() {
@@ -19,7 +18,7 @@ class DiagnoseController extends Controller {
 
   const TESTABLE_EXCEPTIONS = [
     'runtime' => RuntimeException::class,
-    'twig' => RuntimeError::class,
+    'twig' => true,
     'pdo' => PDOException::class,
   ];
 
@@ -49,7 +48,12 @@ class DiagnoseController extends Controller {
 
     CoreUtils::fixPath("/diagnose/lt/$time");
 
-    sleep($time);
-    echo "Loaded after waiting $time second(s).";
+    for ($i = 0; $i < $time; $i++) {
+      $since = $time - $i;
+      echo sprintf("Sleeping for %d second%s&hellip;<br>\n", $since, $since !== 1 ? 's' : '');
+      sleep(1);
+    }
+
+    echo sprintf("Loaded after waiting %d second%s.", $time, $time !== 1 ? 's' : '');
   }
 }

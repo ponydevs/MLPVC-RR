@@ -577,7 +577,7 @@
 
         if (this.deleted === true)
           $.Dialog.fail(sessionRefTitle, 'We couldn\'t refresh your DeviantArt session automatically so you have been signed out. Due to elements on the page assuming you are signed in some actions will not work as expected until the page is reloaded.');
-        $sessionUpdating.html(this.loggedIn).removeClass('updating-session');
+        $sessionUpdating.replaceWith(this.loggedIn);
       });
     }, pollInterval);
   }
