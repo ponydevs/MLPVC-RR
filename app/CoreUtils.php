@@ -1388,7 +1388,7 @@ class CoreUtils {
 
     if (self::env('DISABLE_MONOLOG')){
       /** @noinspection ForgottenDebugOutputInspection */
-      error_log($message);
+      error_log("$message\nStack trace:\n".(new RuntimeException())->getTraceAsString());
 
       return;
     }
@@ -1413,9 +1413,9 @@ class CoreUtils {
   }
 
   public static function callScript(string $name, array $args = [], &$output = null) {
-    $arguments = array_map('escapeshellarg', $args);
+    $arguments = array_map('escapeshellarg', [PROJPATH."scripts/$name.php", ...$args]);
 
-    return exec('nohup /usr/bin/php -f '.PROJPATH."scripts/$name.php ".implode(' ', $arguments).' > "'.FULL_LOG_PATH.'" 2>&1 &', $output);
+    return exec(sprintf('nohup /usr/bin/php -f %s >> "%s" 2>&1 &', implode(' ', $arguments), FULL_LOG_PATH), $output);
   }
 
   public static function parseMarkdown(string $text):string {
