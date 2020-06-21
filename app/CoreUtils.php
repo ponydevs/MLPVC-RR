@@ -536,6 +536,8 @@ class CoreUtils {
     if (!isset(self::$inflector))
       self::$inflector = InflectorFactory::create()->build();
 
+    $str = strtolower($str);
+
     if (!$all){
       $first_word = strtok($str, ' ');
       $rest = substr($str, strlen($first_word));

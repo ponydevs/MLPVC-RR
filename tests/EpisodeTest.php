@@ -161,18 +161,20 @@ class EpisodeTest extends TestCase {
       'season' => 1,
       'episode' => 1,
       'type' => 'episode',
+      'generation' => \App\ShowHelper::GEN_FIM,
     ]);
     $result = $episode->toURL();
-    self::assertEquals('/episode/S1E1', $result);
+    self::assertEquals('/episode/pony/S1E1', $result);
 
     $episode = new Show([
       'season' => 1,
       'episode' => 1,
       'parts' => 2,
       'type' => 'episode',
+      'generation' => \App\ShowHelper::GEN_PL,
     ]);
     $result = $episode->toURL();
-    self::assertEquals('/episode/S1E1-2', $result);
+    self::assertEquals('/episode/pl/S1E1-2', $result);
 
     $movie = new Show([
       'id' => 1,

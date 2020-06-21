@@ -28,6 +28,7 @@ class PostTest extends TestCase {
       'season' => 1,
       'episode' => 1,
       'type' => 'episode',
+      'generation' => \App\ShowHelper::GEN_FIM,
     ]);
 
     $request = new Post([
@@ -36,7 +37,7 @@ class PostTest extends TestCase {
       'show_id' => $episode->id,
     ]);
     $result = $request->toURL($episode);
-    self::assertEquals('/episode/S1E1#post-1', $result);
+    self::assertEquals('/episode/pony/S1E1#post-1', $result);
 
     $reservation = new Post([
       'id' => 1,
@@ -44,7 +45,7 @@ class PostTest extends TestCase {
       'show_id' => $episode->id,
     ]);
     $result = $reservation->toURL($episode);
-    self::assertEquals('/episode/S1E1#post-1', $result);
+    self::assertEquals('/episode/pony/S1E1#post-1', $result);
   }
 
   public function testToAnchor() {
@@ -53,6 +54,7 @@ class PostTest extends TestCase {
       'season' => 1,
       'episode' => 1,
       'type' => 'episode',
+      'generation' => \App\ShowHelper::GEN_FIM,
     ]);
     $request = new Post([
       'id' => 1,
@@ -60,11 +62,11 @@ class PostTest extends TestCase {
       'show_id' => $episode->id,
     ]);
     $result = $request->toAnchor(null, $episode);
-    self::assertEquals("<a href='/episode/S1E1#post-1' >S1E1</a>", $result);
+    self::assertEquals("<a href='/episode/pony/S1E1#post-1' >S1E1</a>", $result);
     $result = $request->toAnchor('Custom Text<', $episode);
-    self::assertEquals("<a href='/episode/S1E1#post-1' >Custom Text&lt;</a>", $result);
+    self::assertEquals("<a href='/episode/pony/S1E1#post-1' >Custom Text&lt;</a>", $result);
     $result = $request->toAnchor('Custom Text<', $episode, true);
-    self::assertEquals("<a href='/episode/S1E1#post-1' target=\"_blank\">Custom Text&lt;</a>", $result);
+    self::assertEquals("<a href='/episode/pony/S1E1#post-1' target=\"_blank\">Custom Text&lt;</a>", $result);
   }
 
   public function testIsOverdue() {
