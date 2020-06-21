@@ -117,6 +117,15 @@ class CoreUtilsTest extends TestCase {
     self::assertEquals('10 entries', $result);
   }
 
+  public function testMakeSingular():void {
+    $result = CoreUtils::makeSingular('Administrators');
+    self::assertEquals('Administrator', $result);
+    $result = CoreUtils::makeSingular('Staff');
+    self::assertEquals('Staff', $result);
+    $result = CoreUtils::makeSingular('Assistants');
+    self::assertEquals('Assistant', $result);
+  }
+
   public function testBrowserNameToClass():void {
     $result = CoreUtils::browserNameToClass('Chrome');
     self::assertEquals('chrome', $result);

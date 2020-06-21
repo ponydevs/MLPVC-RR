@@ -1013,7 +1013,7 @@ class CoreUtils {
     if (!isset(self::$inflector))
       self::$inflector = InflectorFactory::create()->build();
 
-    self::$inflector->singularize($word);
+    return self::$inflector->singularize($word);
   }
 
   /**

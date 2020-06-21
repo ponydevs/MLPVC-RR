@@ -135,7 +135,8 @@ class View {
           break;
           case 'guide':
           default:
-            $bc->setActive();
+            if (isset($bc))
+              $bc->setActive();
         }
 
         return $ret;
