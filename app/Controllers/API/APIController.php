@@ -11,7 +11,7 @@ use OpenApi\Annotations as OA;
  *   @OA\Info(
  *     title="MLP Vector Club API",
  *     version="0.1",
- *     description="A temporary API which allows programmatic access some existing features of the [MLPVector.Club](https://mlpvector.club) website. Will be superseded by the [next version](https://api.mlpvector.club) whenever its development is finished.",
+ *     description="A temporary API which allows programmatic access to some existing features of the [MLPVector.Club](https://mlpvector.club) website. Will be superseded by the [next version](https://api.mlpvector.club) whenever its development is finished.",
  *     @OA\License(name="MIT"),
  *     @OA\Contact(name="David Joseph Guzsik", url="https://seinopsys.dev", email="david@seinopsys.dev"),
  *   ),
