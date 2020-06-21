@@ -20,6 +20,7 @@ use App\DeviantArt;
  * @property PreviousUsername[] $previous_names (Via relations)
  * @method static DeviantartUser find(...$args)
  * @method static DeviantartUser find_by_name(string $name)
+ * @method static DeviantartUser find_by_user_id(int $user_id)
  */
 class DeviantartUser extends NSModel implements Linkable {
   public static $table_name = 'deviantart_users';

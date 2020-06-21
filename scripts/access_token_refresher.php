@@ -31,13 +31,15 @@ try {
   $user = Auth::$session->user;
   if ($user === null || !$user->isDeviantartLinked()) {
     // Session doesn't have an associated DeviantArt user, do nothing
+    Auth::$session->updating = false;
+    Auth::$session->save();
     return;
   }
 
   if (empty($user->deviantart_user->refresh)){
     CoreUtils::error_log(__FILE__ . ": DeviantArt user {$user->deviantart_user->id} had no refresh token, signing out all sessions.");
     Session::update_all([
-      'set' => ['user_id' => null],
+      'set' => ['user_id' => null, 'updating' => false],
       'conditions' => ['user_id' => $user->id],
     ]);
     exit(4);

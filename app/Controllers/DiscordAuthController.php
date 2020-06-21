@@ -86,7 +86,6 @@ class DiscordAuthController extends Controller {
     }
     $discord_user_res = DiscordMember::getUserData($this->provider, $token);
     if ($discord_user_res === null) {
-      sd('No discord user res');
       HTTP::tempRedirect($returnUrl);
     }
 

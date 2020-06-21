@@ -405,7 +405,9 @@ class DeviantArt {
       }
     }
 
-    Auth::$signed_in = true;
+    if (Auth::$session->access) {
+      Auth::$signed_in = true;
+    }
     Auth::$session->updating = false;
     Auth::$session->save();
     return true;

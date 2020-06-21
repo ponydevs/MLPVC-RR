@@ -25,11 +25,13 @@ use App\Twig;
  * @property string         $refresh         (Via magic method)
  * @property DateTime       $expires         (Via magic method)
  * @property bool           $expired         (Via magic method)
+ * @property DeviantartUser $deviantart_user (Via magic method)
  * @property User           $user            (Via relations)
  * @method static Session find_by_token(string $token)
  * @method static Session find_by_access(string $access)
  * @method static Session find_by_refresh(string $code)
  * @method static Session find(int $id)
+ * @method static Session create(array $attributes)
  */
 class Session extends NSModel {
   public static $belongs_to = [
@@ -37,22 +39,26 @@ class Session extends NSModel {
   ];
 
   /** For Twig */
-  public function getUser():User {
+  public function getUser():?User {
     return $this->user;
+  }
+
+  public function get_deviantart_user():?DeviantartUser {
+    return DeviantartUser::find_by_user_id($this->user_id);
   }
 
   public static $attr_protected = ['data'];
 
   public function get_access() {
-    return $this->user->deviantart_user->access;
+    return $this->deviantart_user->access;
   }
 
   public function get_refresh() {
-    return $this->user->deviantart_user->refresh;
+    return $this->deviantart_user->refresh;
   }
 
   public function get_expires() {
-    return $this->user->deviantart_user->access_expires;
+    return $this->deviantart_user->access_expires;
   }
 
   public function get_expired(): bool {
