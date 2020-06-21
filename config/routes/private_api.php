@@ -21,7 +21,6 @@ $private_api_endpoint('/admin/mass-approve', 'AdminController#massApprove');
 $private_api_endpoint('/admin/notices/[i:id]?', 'AdminController#noticesApi');
 $private_api_endpoint('/admin/stat-cache', 'AdminController#statCacheApi');
 $private_api_endpoint('/cg/appearances', 'AppearanceController#autocomplete');
-$private_api_endpoint('/cg/appearances/list', 'AppearanceController#listApi');
 $private_api_endpoint('/cg/appearance/[i:id]?', 'AppearanceController#api');
 $private_api_endpoint('/cg/appearance/[i:id]/colorgroups', 'AppearanceController#colorGroupsApi');
 $private_api_endpoint('/cg/appearance/[i:id]/sprite', 'AppearanceController#spriteApi');

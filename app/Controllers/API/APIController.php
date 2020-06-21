@@ -4,13 +4,14 @@ namespace App\Controllers\API;
 
 use App\Controllers\Controller;
 use App\CoreUtils;
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\OpenApi(
  *   @OA\Info(
  *     title="MLP Vector Club API",
  *     version="0.1",
- *     description="A work-in-progress API that will eventually allow programmatic access to all features of the [MLPVector.Club](https://mlpvector.club/) website.",
+ *     description="A temporary API which allows programmatic access some existing features of the [MLPVector.Club](https://mlpvector.club) website. Will be superseded by the [next version](https://api.mlpvector.club) whenever its development is finished.",
  *     @OA\License(name="MIT"),
  *     @OA\Contact(name="David Joseph Guzsik", url="https://seinopsys.dev", email="david@seinopsys.dev"),
  *   ),

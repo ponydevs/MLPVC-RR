@@ -5,7 +5,11 @@
 {% block content %}
   <div id="content">
     <h1>{{ title }}</h1>
-    <p>List of all users in the database</p>
+    {% if permission('staff') -%}
+      <p>List of all users in the database</p>
+    {%- else -%}
+      <p>The people in our community</p>
+    {%- endif %}
 
     {% apply spaceless %}
       <div id="users" class="section-container">

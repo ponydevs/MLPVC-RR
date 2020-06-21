@@ -76,6 +76,7 @@
           {% set staff_privacy = same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').staff : '' %}
           <section class="guide-settings">
             <h2>{{ staff_privacy }}Color Guide</h2>
+            {{ setting_form('cg_defaultguide', user) }}
             {{ setting_form('cg_itemsperpage', user) }}
             {{ setting_form('cg_hidesynon',    user) }}
             {{ setting_form('cg_hideclrinfo',  user) }}

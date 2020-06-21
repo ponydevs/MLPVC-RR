@@ -12,7 +12,7 @@
   {% set eqg = guide == 'eqg' %}
   {% set eqg_path = eqg ? '/eqg' : '' %}
   <div id="content" class="section-container">
-    <h1>Complete {{ eqg ? 'EQG Character' : 'Pony' }} List</h1>
+    <h1>Complete {{ constant('\App\\CGUtils::FULL_LIST_NOUN')[guide] }} List</h1>
     <p>Sorted <select id="sort-by" name="sort_by" data-base-url="/cg{{ eqg_path }}/full">
         {% for value, name in constant('App\\Controllers\\ColorGuideController::FULL_LIST_ORDER') %}
           <option value='{{ value }}'{{ sort_by == value ? ' selected' : '' }}>{{ name }}</option>
@@ -20,12 +20,11 @@
       </select></p>
 
     <div class='align-center button-block'>
-      <a class='btn link typcn typcn-arrow-back' href="/cg{{ eqg_path }}">Back to {{ eqg ? 'EQG ' : '' }}Color Guide</a>
+      <a class='btn link typcn typcn-arrow-back' href="/cg/{{ guide }}">Return to Guide</a>
       {% if permission('staff') %}
         <button class='darkblue typcn typcn-arrow-unsorted' id="guide-reorder"{{ sort_by != 'relevance' ? ' disabled' : '' }}>Re-order</button>
         <button class='red typcn typcn-times hidden' id="guide-reorder-cancel">Cancel</button>
       {% endif %}
-      <a class='btn link typcn typcn-world' href="/cg/{{ eqg ? 'pony' : 'eqg' }}/full{{ sort_by != 'relevance' ? ('?sort_by=' ~ sort_by) : '' }}">List of {{ eqg ? 'Ponies' : 'Equestria Girls' }}</a>
       <a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
       <a class='btn link typcn typcn-warning' href="/cg/{{ guide }}/changes">Major Changes</a>
     </div>

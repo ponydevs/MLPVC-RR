@@ -2,13 +2,13 @@
 (function() {
   'use strict';
 
-  const { USERNAME_REGEX, SHOW_ID } = window;
+  const { usernameRegex, showId } = window;
   let $epSection = $content.children('section.episode');
 
   $('#video').on('click', function() {
     $.Dialog.wait('Set video links', 'Requesting links from the server');
 
-    const endpoint = `/show/${SHOW_ID}/video-data`;
+    const endpoint = `/show/${showId}/video-data`;
     $.API.get(endpoint, function() {
       const data = this;
       const { type } = data;
@@ -97,7 +97,7 @@
   $('#cg-relations').on('click', function() {
     $.Dialog.wait('Guide relation editor', 'Retrieving relations from server');
 
-    const endpoint = `/show/${SHOW_ID}/guide-relations`;
+    const endpoint = `/show/${showId}/guide-relations`;
     $.API.get(endpoint, response => {
       if (!response.status) return $.Dialog.fail(false, response.message);
 
@@ -194,7 +194,7 @@
         });
       };
 
-    if (typeof USERNAME_REGEX === 'undefined' || !reserveAs)
+    if (typeof usernameRegex === 'undefined' || !reserveAs)
       send({});
     else {
       let $ReserveAsForm = $.mk('form').attr('id', 'reserve-as').append(
@@ -205,7 +205,7 @@
             name: 'post_as',
             required: true,
             placeholder: 'Username',
-          }).patternAttr(USERNAME_REGEX),
+          }).patternAttr(usernameRegex),
         ),
         $.mk('label').append(
           $.mk('span').text('Reserved at'),
@@ -473,7 +473,7 @@
           }),
         ),
       );
-      if (typeof USERNAME_REGEX !== 'undefined')
+      if (typeof usernameRegex !== 'undefined')
         $FinishResForm.append(
           $.mk('label').append(
             $.mk('span').text('Finished at'),

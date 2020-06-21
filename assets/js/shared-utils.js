@@ -2,6 +2,8 @@
 (function() {
   'use strict';
 
+  const SIDEBAR_BREAKPOINT = 1200, BREAKPOINT = 650;
+
   if (typeof $.Navigation !== 'undefined' && $.Navigation.firstLoadDone === true)
     return;
 
@@ -763,8 +765,8 @@
 
   $.isRunningStandalone = () => window.matchMedia('(display-mode: standalone)').matches;
 
-  window.sidebarForcedVisible = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= 1200;
-  window.withinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= 650;
+  window.sidebarForcedVisible = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) >= SIDEBAR_BREAKPOINT;
+  window.withinMobileBreakpoint = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0) <= BREAKPOINT;
 
   $.randomString = () => parseInt(Math.random().toFixed(20).replace(/[.,]/, ''), 10).toString(36);
 

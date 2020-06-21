@@ -29,7 +29,11 @@
         <div class="prev-ep">
           {%- if prev_episode is not empty -%}
             <div>
-              <a href="{{ prev_episode.toURL }}" class="btn link ep-button typcn typcn-media-rewind"><span class="typcn typcn-media-rewind"></span>{{ cutoff(prev_episode.get_short_title, constant('App\\ShowHelper::TITLE_CUTOFF')) }}</a>
+              <a href="{{ prev_episode.toURL }}" class="btn link ep-button typcn typcn-media-rewind">
+                <span class="typcn typcn-media-rewind"></span>
+                {%- include 'show/_generation_logo.html.twig' with { current: current_episode, adjacent: prev_episode } -%}
+                <span>{{- cutoff(prev_episode.get_short_title, constant('App\\ShowHelper::TITLE_CUTOFF')) -}}</span>
+              </a>
             </div>
           {%- else -%}
             &nbsp;
@@ -47,14 +51,20 @@
         <div class="next-ep">
           {%- if next_episode is not empty -%}
             <div>
-              <a href="{{ next_episode.toURL }}" class="btn link ep-button typcn typcn-media-fast-forward">{{ cutoff(next_episode.get_short_title, constant('App\\ShowHelper::TITLE_CUTOFF')) }}<span class="typcn typcn-media-fast-forward"></span></a>
+              <a href="{{ next_episode.toURL }}" class="btn link ep-button typcn typcn-media-fast-forward">
+                {%- include 'show/_generation_logo.html.twig' with { current: current_episode, adjacent: next_episode } -%}
+                <span>{{ cutoff(next_episode.get_short_title, constant('App\\ShowHelper::TITLE_CUTOFF')) }}</span>{#
+                #}<span class="typcn typcn-media-fast-forward"></span>
+              </a>
             </div>
           {%- else -%}
             &nbsp;
           {%- endif -%}
         </div>
       </div>
-      {% include 'show/_synopsis.html.twig' %}
+      {% if current_episode.generation == constant('\\App\\ShowHelper::GEN_FIM') %}
+        {% include 'show/_synopsis.html.twig' %}
+      {% endif %}
       {% include 'show/_watch.html.twig' %}
       <section class="about-res">
         <h2>What Vector Reservations Are{% if permission('staff') %}
@@ -82,27 +92,36 @@
             <button id="cg-relations" class="typcn typcn-pencil large darkblue">Guide relations</button>
           </p>
         </section>
-        {{ export_vars({ 'SHOW_TYPES': constant('App\\ShowHelper::VALID_TYPES') }) }}
+        {{ export_vars({ 'showTypes': constant('App\\ShowHelper::VALID_TYPES') }) }}
       {% endif %}
       {% include 'show/_reservations.html.twig' with { 'arranged': current_episode.reservations, lazyload: true } %}
-      {% include 'show/_requests.html.twig' with { 'arranged': current_episode.requests, lazyload: true } %}
+      {% if current_episode.generation == constant('\\App\\ShowHelper::GEN_FIM') %}
+        {% include 'show/_requests.html.twig' with { 'arranged': current_episode.requests, lazyload: true } %}
+      {% else %}
+        <br>
+        <br>
+        <div class="notice info">We are not accepting requests for this episode yet, please check back later.</div>
+      {% endif %}
       {{ export_vars({
-        'SHOW_ID': current_episode.id,
-        'SHOW_TYPE': current_episode.type,
+        showId: current_episode.id,
+        showType: current_episode.type,
       }) -}}
       {% if username_regex is defined and username_regex is not empty %}
-        {{ export_vars({ 'USERNAME_REGEX': username_regex }) }}
+        {{ export_vars({ usernameRegex: username_regex }) }}
       {% endif %}
     {% endif %}
   </div>
 
-  {{ export_vars({ 'EpisodePage': true }) -}}
+  {{ export_vars({
+    isEpisodePage: true,
+    generations: constant('\\App\\ShowHelper::GENERATIONS'),
+  }) -}}
   {% if ep_title_regex is defined %}
-    {{ export_vars({ 'EP_TITLE_REGEX': ep_title_regex }) -}}
+    {{ export_vars({ episodeTitleRegex: ep_title_regex }) -}}
   {% endif %}
   {# @var linked_post \App\Models\Post|null #}
   {% if linked_post is defined and linked_post is not empty %}
-    {{ export_vars({ 'linkedPostURL': linked_post.toURL }) -}}
+    {{ export_vars({ linkedPostURL: linked_post.toURL }) -}}
   {% endif %}
 {% endblock %}
 

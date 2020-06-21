@@ -1,14 +1,23 @@
 {% if fatal_error is not defined %}
-  <li><a href='/episode/latest'>Latest episode</a></li>
+  {% if signed_in %}
+    <li><a href='/' class="typcn typcn-home">&nbsp;Home</a></li>
+  {% endif %}
+  <li><a href='/episode/latest'>Latest Episode</a></li>
   <li><a href='/show'>Show</a></li>
-  <li><a href='/cg'>Color Guide</a></li>
+  <li><a href='/cg{% if signed_in %}/preferred{% endif %}'>Color Guides</a></li>
   <li><a href='/events'>Events</a></li>
   {% if signed_in %}
     {# @var current_user \App\Models\User #}
     <li><a href='{{ current_user.toURL() }}'>Account</a></li>
   {% endif %}
+  <li><a href='/users'>
+    {%- if permission('staff') -%}
+      Users
+    {%- else -%}
+      Members
+    {%- endif -%}
+  </a></li>
   {% if permission('staff') %}
-    <li><a href='/users'>Users</a></li>
     <li><a href='/admin'>Admin</a></li>
   {% endif %}
   <li><a href='/about'>About</a></li>

@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const { SHOW_TYPES, EP_TITLE_REGEX } = window;
+  const { showTypes, episodeTitleRegex, generations, showId } = window;
   let $tables = $('#content').find('table');
 
   /*!
@@ -18,15 +18,21 @@
   const sat_day = saturday.format('dddd');
 
   function EpisodeForm(id) {
+    const generationOptions = [];
     const typeOptions = [];
-    $.each(SHOW_TYPES, (type, name) => {
+    $.each(generations, (generation, name) => {
+      generationOptions.push(`<label>
+				<input type="radio" name="generation" required value="${generation}">
+				<span class="generation-option">${name}</span>
+			</label>`);
+    });
+    $.each(showTypes, (type, name) => {
       if (type === 'episode')
         return '';
 
-
       typeOptions.push(`<option value="${type}">${name}</option>`);
     });
-    let $form = $.mk('form').attr('id', id).append(
+    let $form = $.mk('form').attr({ id, class: 'episode-form' }).append(
       `<div class="label episode-only">
 				<span>Season, Episode & Overall #</span>
 				<div class=input-group-3>
@@ -39,6 +45,12 @@
 			<label class="episode-only"><input type="checkbox" name="twoparter"> Has two parts</label>
 			<div class="notice info align-center episode-only">
 				<p>If this is checked, enter the episode number of the first part</p>
+			</div>
+			<div class="label episode-only create-only">
+				<span>Generation</span><br>
+				<div class="generation-selector">
+          ${generationOptions.join('')}
+				</select>
 			</div>
 			<div class="label movie-only">
 				<span>Type</span>
@@ -62,7 +74,7 @@
           placeholder: 'Title',
           autocomplete: 'off',
           required: true,
-        }).patternAttr(EP_TITLE_REGEX),
+        }).patternAttr(episodeTitleRegex),
       ),
       `<div class="notice info align-center movie-only">
 				<p>Include "Equestria Girls: " if applicable. Prefixes don't count towards the character limit.</p>
@@ -163,9 +175,9 @@
     e.preventDefault();
 
     let $this = $(this),
-      EpisodePage = Boolean($this.attr('id')),
-      id = EpisodePage
-        ? window.SHOW_ID
+      isEpisodePage = Boolean($this.attr('id')),
+      id = isEpisodePage
+        ? showId
         : $this.closest('tr').attr('data-id');
 
     $.Dialog.wait(`Editing show entry #${id}`);
@@ -180,6 +192,7 @@
 
       let $EditEpForm = $EditEpFormTemplate.clone(true, true);
       $EditEpForm.find(isEpisode ? '.movie-only' : '.episode-only').remove();
+      $EditEpForm.find('.create-only').remove();
 
       if (isEpisode)
         $EditEpForm.find('input[name=twoparter]').prop('checked', !!show.twoparter);
@@ -196,7 +209,11 @@
         $EditEpForm.find(`:input[name=${k}]`).val(v);
       });
 
-      $.Dialog.request(`Editing ${show.type} #${show.id}`, $EditEpForm, 'Save', function($form) {
+      let type = show.type;
+      if (show.generation)
+        type = `${generations[show.generation]} ${type}`;
+
+      $.Dialog.request(`Editing ${type} #${show.id}`, $EditEpForm, 'Save', function($form) {
         let notesEditor = $.renderCodeMirror({
           $el: $form.find('.code-editor'),
           mode: 'html',

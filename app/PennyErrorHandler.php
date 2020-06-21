@@ -4,7 +4,10 @@ namespace App;
 
 use Monolog\ErrorHandler;
 
-class GracefulErrorHandler extends ErrorHandler {
+class PennyErrorHandler extends ErrorHandler {
+  /**
+   * Displays a cute error page if an error occurs
+   */
   private function outputErrorPage() {
     $title = '500 Internal Server Error';
     if (!headers_sent()) {

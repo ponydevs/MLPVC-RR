@@ -26,6 +26,7 @@
     "airmanbzh/php-html-generator": "^1.0",
     "altorouter/altorouter": "^2.0",
     "cogpowered/finediff": "0.3.*",
+    "doctrine/inflector": "^2.0",
     "elasticsearch/elasticsearch": "~7.0",
     "enshrined/svg-sanitize": "^0.13.2",
     "erusev/parsedown": "^1.7",

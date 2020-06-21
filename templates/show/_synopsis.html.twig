@@ -44,9 +44,7 @@
 
       {% apply spaceless %}
         <div class="synopsis-disclaimer">
-          {% if signed_in %}
-            <p>Don't want to see this? You can disable it in <a href="/u/#settings">your settings</a> ({{ constant('App\\UserSettingForm::INPUT_MAP').ep_hidesynopses.options.desc }}).</p>
-          {% endif %}
+          <p>Don't want to see this? You can disable it in <a href="{{ constant('SETTINGS_PAGE') }}">your settings</a> ({{ constant('App\\UserSettingForm::INPUT_MAP').ep_hidesynopses.options.desc }}).</p>
           <p>{{ constant('App\\TMDBHelper::REQUIRED_MESSAGE') }}</p>
         </div>
       {% endapply %}

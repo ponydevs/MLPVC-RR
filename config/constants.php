@@ -34,6 +34,7 @@ define('FULL_LOG_PATH', PROJPATH.'logs/'.CoreUtils::env('LOG_PATH'));
 define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
 define('GDPR_IP_PLACEHOLDER', '127.168.80.82');
 define('DA_AUTHORIZED_APPS_URL', 'https://www.deviantart.com/settings/apps');
+define('SETTINGS_PAGE', '/settings');
 # boolean
 /** @see \App\HTTP::statusCode() */
 define('AND_DIE', true);

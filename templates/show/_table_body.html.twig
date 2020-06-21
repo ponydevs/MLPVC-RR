@@ -12,8 +12,14 @@
     {% for show in shows %}
       <tr data-id='{{ show.id }}' data-type='{{ show.type }}'>
         {% if show.type == 'episode' %}
-          <td class='season' rowspan='2'>{{ show.season }}</td>
-          <td class='episode' rowspan='2'>{{ show.episode }}{% if show.parts == 2 %}-{{ show.episode + 1 }}{% endif %}</td>
+          <td class='generation' rowspan='2'>
+            {% set logo_path = constant('\\App\\CoreUtils::LOGO_PATH_MAP')[show.generation] %}
+            {% set title = constant('\\App\\ShowHelper::GENERATIONS')[show.generation] ?? '' %}
+            <img src="/img/blank-pixel.png" style="background-image: url('{{ logo_path }}')" alt="{{ title }}" title="{{ title }}">
+          </td>
+          <td class='season mobile-hide' rowspan='2'>{{ show.season }}</td>
+          <td class='episode mobile-hide' rowspan='2'>{{ show.episode }}{% if show.parts == 2 %}-{{ show.episode + 1 }}{% endif %}</td>
+          <th class="desktop-hide" rowspan='2'>{{ show.iD }}</th>
         {% else %}
           <td class='no' rowspan='2'>{{ show.no }}</td>
         {% endif %}

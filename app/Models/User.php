@@ -628,7 +628,7 @@ class User extends NSModel implements Linkable {
     if ($show_private === null)
       $show_private = (Auth::$signed_in && Auth::$user->id === $this->id) || Permission::sufficient('staff');
 
-    return $show_private ? "<a href='{$this->toURL()}/cg/point-history' class='btn link typcn typcn-eye'>Point history</a>" : '';
+    return $show_private ? "<a href='{$this->toURL()}/cg/point-history' class='btn link typcn typcn-document-text'>Point history</a>" : '';
   }
 
   public function canVisitorSeePCG():bool {

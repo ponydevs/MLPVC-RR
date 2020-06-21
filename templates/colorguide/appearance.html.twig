@@ -15,7 +15,7 @@
     <p>from {% if owner is defined -%}
         {{ owner.toAnchor ~ posess(owner.name, true) }} <a href='{{ owner.toURL }}/cg'>Personal Color Guide</a>
       {%- else -%}
-        the MLP-VectorClub's <a href='/cg/{{ guide }}'>{{ guide == 'eqg' ? 'EQG ' : '' }}Color Guide</a>
+        the <a href='/cg/{{ guide }}'>{{ constant('\App\\CGUtils::GUIDE_MAP')[guide] }} Color Guide</a>
       {%- endif %}</p>
 
     {% if owner_or_staff %}

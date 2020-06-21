@@ -1,9 +1,7 @@
 (function($) {
   'use strict';
 
-  const
-    showId = window.SHOW_ID,
-    showType = window.SHOW_TYPE;
+  const { showId, showType } = window;
 
   $.highlightHash = function(e) {
     $('.highlight').removeClass('highlight');

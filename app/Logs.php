@@ -145,7 +145,7 @@ class Logs {
         $details[] = ['Action', self::ACTIONS[$data['action']]];
 
         if (isset($data['ishuman']))
-          $guide = CGUtils::GUIDE_MAP[$data['ishuman'] ? 'pony' : 'eqg'];
+          $guide = CGUtils::GUIDE_MAP[$data['ishuman'] ? CGUtils::GUIDE_FIM : CGUtils::GUIDE_EQG];
         else if (isset($data['guide']))
           $guide = CGUtils::GUIDE_MAP[$data['guide']];
         else $guide = 'Personal Color Guide';

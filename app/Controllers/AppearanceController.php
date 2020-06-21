@@ -19,7 +19,6 @@ use App\Models\Appearance;
 use App\Models\CachedDeviation;
 use App\Models\ColorGroup;
 use App\Models\Cutiemark;
-use App\Models\DeviantartUser;
 use App\Models\Notification;
 use App\Models\PCGSlotHistory;
 use App\Models\RelatedAppearance;
@@ -180,10 +179,18 @@ class AppearanceController extends ColorGuideController {
       break;
       case 'PUT':
       case 'POST':
+        $guide = (new Input('guide', function ($value){
+          if (!isset(CGUtils::GUIDE_MAP[$value]))
+            return Input::ERROR_INVALID;
+        }, [
+          Input::IS_OPTIONAL => false,
+          Input::CUSTOM_ERROR_MESSAGES => [
+            Input::ERROR_INVALID => 'Guide is invalid: @value',
+          ],
+        ]))->out();
+
         /** @var $data array */
-        $data = [
-          'guide' => $this->guide,
-        ];
+        $data = ['guide' => $guide];
 
         $label = (new Input('label', 'string', [
           Input::IN_RANGE => [2, 70],
@@ -956,29 +963,6 @@ class AppearanceController extends ColorGuideController {
     }
   }
 
-  public function listApi():void {
-    if ($this->action !== 'GET')
-      CoreUtils::notAllowed();
-
-    $list = [];
-    $owner_id = $_REQUEST['owner_id'] ?? null;
-    if ($owner_id !== null){
-      $owner = DeviantartUser::find($owner_id);
-      if ($owner === null)
-        Response::fail('Personal Color Guide owner could not be found');
-      $cond = ['owner_id = ?', $owner->id];
-    }
-    else $cond = 'owner_id IS NULL';
-
-    foreach (Appearance::all([
-      'conditions' => $cond,
-      'select' => 'id, label, guide',
-      'order' => 'label asc',
-    ]) as $item)
-      $list[] = $item->to_array();
-    Response::done(['list' => $list, 'pcg' => $owner_id !== null]);
-  }
-
   public function sanitizeSvg($params):void {
     if ($this->action !== 'POST')
       CoreUtils::notAllowed();
@@ -1041,6 +1025,8 @@ class AppearanceController extends ColorGuideController {
           ->orderBy('season', 'DESC')
           ->orderBy('episode', 'DESC')
           ->orderBy('no', 'DESC')
+          ->where('generation', null)
+          ->orWhere('generation', CGUtils::GUIDE_GENERATION_MAP[$this->appearance->guide])
           ->get('show');
         $entries = [];
         foreach ($raw_entries as $entry){
@@ -1068,6 +1054,18 @@ class AppearanceController extends ColorGuideController {
         ]))->out() ?? [];
 
         $existing_relation_ids = array_map(fn($p) => $p->id, $this->appearance->related_shows);
+
+        // Prevent relations to guide for a different generation
+        if (in_array($this->appearance->guide, [CGUtils::GUIDE_FIM, CGUtils::GUIDE_PL], true)) {
+          /** @var $can_relate_to_shows Show[] */
+          $can_relate_to_shows = DB::$instance
+            ->where('type', 'episode')
+            ->where('generation', CGUtils::GUIDE_GENERATION_MAP[$this->appearance->guide])
+            ->get(Show::$table_name, null, 'id');
+
+          $can_relate_to_ids = array_map(fn(Show $show) => $show->id, $can_relate_to_shows);
+          $show_ids = array_intersect($can_relate_to_ids, $show_ids);
+        }
 
         $created_relations = array_diff($show_ids, $existing_relation_ids);
         if (!empty($created_relations)){

@@ -11,13 +11,13 @@ use App\Models\User;
  */
 class Auth {
   /** @var User|null Currently authenticated user (or null if guest) */
-  public static $user;
+  public static ?User $user = null;
 
   /** @var Session Current session */
-  public static $session;
+  public static ?Session $session = null;
 
   /** @var bool True if signed in, false if guest */
-  public static $signed_in = false;
+  public static bool $signed_in = false;
 
   public static function to_array():array {
     return [

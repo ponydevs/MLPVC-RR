@@ -20,6 +20,7 @@ class UserPrefs extends GlobalSettings {
     'p_hidediscord' => 0,
     'p_hidepcg' => 0,
     'p_homelastep' => 0,
+    'cg_defaultguide' => null,
     'ep_hidesynopses' => 0,
     'ep_noappprev' => 0,
     'ep_revstepbtn' => 0,
@@ -46,8 +47,7 @@ class UserPrefs extends GlobalSettings {
    * @return mixed
    */
   public static function get(string $key, ?User $for = null, bool $disable_cache = false) {
-    if (empty($for) && Auth::$signed_in)
-      $for = Auth::$user;
+    $for ??= Auth::$user;
 
     $for_set = $for !== null && !empty($for->id);
 
@@ -152,6 +152,13 @@ class UserPrefs extends GlobalSettings {
       case 'p_avatarprov':
         if (!empty($value) && !isset(User::AVATAR_PROVIDERS[$value]))
           throw new RuntimeException('The specified avatar provider is invalid');
+      break;
+      case 'cg_defaultguide':
+        if (!empty($value)) {
+          if (!isset(CGUtils::GUIDE_MAP[$value]))
+            throw new RuntimeException('The specified default guide is invalid');
+        }
+        else $value = null;
       break;
       case 'p_hidediscord':
       case 'cg_hidesynon':

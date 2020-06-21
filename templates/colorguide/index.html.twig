@@ -1,0 +1,52 @@
+{# @controller \App\Controllers\ColorGuideController::index #}
+{# @var heading string #}
+{# @var subheading string #}
+{# @var guide_counts int[] #}
+{# @var guides string[] #}
+{# @var json_export_url string #}
+{# @var json_export_time string #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+  <div id="content">
+    <h1>{{ heading }}</h1>
+    <p>{{ subheading }}</p>
+    <p class="align-center">
+      Resources for developers: <a href="{{ json_export_url }}" target="_blank" download="mlpvc-colorguide.json">JSON Export</a> (last updated {{ json_export_time }})
+      /
+      <a href="/docs/">API v0.1</a> (WIP)
+    </p>
+
+    <div class='align-center button-block'>
+      <a class='btn link typcn typcn-arrow-forward' href="/cg/blending">Blending Calculator</a>
+      <a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker</a>
+      <a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
+      {% if permission('staff') %}
+        <button class='blue typcn typcn-adjust-contrast cg-sprite-colors'>Sprite Color Checkup</button>
+      {% endif %}
+      {% if permission('developer') %}
+        <button class='blue typcn typcn-download cg-export'>Export</button>
+        <button class='orange typcn typcn-database cg-reindex'>Re-index</button>
+      {% endif %}
+    </div>
+
+    {% apply spaceless %}
+      <div class="notice info"><span class="typcn typcn-info-large"></span> You can configure which guide is loaded by default when you click the "Color Guides" navigation item in <a href="{{ constant('SETTINGS_PAGE') }}">your settings</a> ({{ constant('App\\UserSettingForm::INPUT_MAP').cg_defaultguide.options.desc | trim(': ') }}).</div>
+    {% endapply %}
+
+    <div id="guide-list">
+      {% for code, name in constant('\App\\CGUtils::GUIDE_MAP') %}
+        <a href="/cg/{{ code }}">
+          <figure>
+            {% set logo_path = constant('\\App\\CoreUtils::LOGO_PATH_MAP')[code] %}
+            <img src="/img/blank-pixel.png" class="guide-icon" alt="{{ name }} logo" style="background-image: url('{{ logo_path }}')">
+            <figcaption>
+              <span class="guide-name">{{ name }}</span>
+              <span class="guide-count">{{ make_plural('appearance', guide_counts[code] ?? 0, true) }}</span>
+            </figcaption>
+          </figure>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

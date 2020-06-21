@@ -41,7 +41,7 @@ class ColorGuideController extends Controller {
   }
 
   protected function _initialize($params):void {
-    if (!empty($params['guide']) && array_key_exists($params['guide'], CGUtils::GUIDE_MAP)) {
+    if (!empty($params['guide']) && isset(CGUtils::GUIDE_MAP[$params['guide']])) {
       $this->guide = $params['guide'];
     }
     $user_id_set = isset($params['user_id']);
@@ -103,8 +103,8 @@ class ColorGuideController extends Controller {
   ];
 
   protected static function _appendManageAssets(&$settings):void {
-    $settings['js'] = array_merge($settings['js'], self::GUIDE_MANAGE_JS);
-    $settings['css'] = array_merge($settings['css'], self::GUIDE_MANAGE_CSS);
+    $settings['js'] = array_merge($settings['js'] ?? [], self::GUIDE_MANAGE_JS);
+    $settings['css'] = array_merge($settings['css'] ?? [], self::GUIDE_MANAGE_CSS);
     $settings['libs'] = isset($settings['libs']) ? array_merge($settings['libs'], self::GUIDE_MANAGE_LIBS) : self::GUIDE_MANAGE_LIBS;
   }
 
@@ -113,6 +113,10 @@ class ColorGuideController extends Controller {
     'relevance' => 'by relevance',
     'added' => 'by date added',
   ];
+
+  public function preferredGuide() {
+    CGUtils::redirectToPreferredGuidePath();
+  }
 
   public function fullList($params):void {
     $this->_initialize($params);
@@ -214,6 +218,38 @@ class ColorGuideController extends Controller {
     ]);
   }
 
+  public function index():void {
+    $title = 'Color Guide List';
+    $subheading = 'List of all color guides maintained by the club staff';
+    $guide_counts_raw = DB::$instance->query('SELECT guide, count(guide) as count FROM appearances GROUP BY guide');
+    $guide_counts = [];
+    foreach ($guide_counts_raw as $item)
+      $guide_counts[$item['guide']] = $item['count'];
+
+    $json_export_url = CoreUtils::cachedAssetLink('mlpvc-colorguide', 'dist', 'json');
+    $json_export_time = Time::tag((int)explode('?', $json_export_url)[1]);
+    $settings = [
+      'title' => $title,
+      'heading' => $title,
+      'css' => [true],
+      'og' => [
+        'title' => $title,
+        'description' => $subheading,
+      ],
+      'import' => [
+        'guides' => CGUtils::GUIDE_MAP,
+        'guide_counts' => $guide_counts,
+        'subheading' => $subheading,
+        'json_export_url' => $json_export_url,
+        'json_export_time' => $json_export_time,
+      ],
+    ];
+    if (Permission::sufficient('staff')){
+      self::_appendManageAssets($settings);
+    }
+    CoreUtils::loadPage(__METHOD__, $settings);
+  }
+
   public function guide($params):void {
     $this->_initialize($params);
 
@@ -260,9 +296,9 @@ class ColorGuideController extends Controller {
 
     if (!file_exists(CGUtils::GUIDE_EXPORT_PATH))
       CGUtils::saveExportData();
-    $json_export_url = CoreUtils::cachedAssetLink('mlpvc-colorguide', 'dist', 'json');
-    $json_export_time = Time::tag((int)explode('?', $json_export_url)[1]);
-    $universal_appearance = Appearance::find(0);
+    if ($this->guide !== CGUtils::GUIDE_PL) {
+      $universal_appearance = Appearance::find(0);
+    }
     $settings = [
       'title' => $title,
       'heading' => $heading,
@@ -275,9 +311,7 @@ class ColorGuideController extends Controller {
         'appearances' => $appearances,
         'pagination' => $pagination,
         'elastic_avail' => $elastic_avail,
-        'json_export_url' => $json_export_url,
-        'json_export_time' => $json_export_time,
-        'universal_appearance' => $universal_appearance,
+        'universal_appearance' => $universal_appearance ?? null,
         'search_query' => $search_query ?? null,
       ],
     ];

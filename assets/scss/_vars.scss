@@ -156,13 +156,6 @@ $ColorPalette: #FFFF54, #C8E64C, #8CD446, #4DC742,
 #5240C3, #8C3FC0, #D145C1, #E64C8D,
 #FF5454, #FF8054, #FFA054, #FFB554;
 
-// Reserve(r) button style
-%reserve-button {
-  background: #d2dfc5;
-  border: 1px solid #93a98f;
-  border-radius: 5px;
-}
-
 $NoScrollbar: false;
 @mixin l33th4x($scrollbar:true) {
   $Lime: #0c0;
@@ -261,6 +254,62 @@ $NoScrollbar: false;
   color: black !important;
 }
 
+
+// Reserve(r) button style
+%reserve-button {
+  background: #d2dfc5;
+  border: 1px solid #93a98f;
+  border-radius: 5px;
+}
+
+%fancy-flex-select {
+  display: flex;
+  flex-flow: row wrap;
+  align-content: center;
+  user-select: none;
+  margin-top: 5px;
+
+  > span {
+    margin-bottom: 5px
+  }
+
+  label {
+    flex: 1 1 auto;
+    margin: 2px;
+    position: relative;
+    overflow: hidden;
+
+    * {
+      cursor: pointer
+    }
+  }
+
+  input {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    width: 0;
+    height: 0;
+
+    + * {
+      display: block;
+      height: auto;
+    }
+
+    &:not(:checked) + * {
+      opacity: .5
+    }
+
+    &:focus + * {
+      border-style: dashed
+    }
+
+    &:not(:checked):focus + * {
+      opacity: .75
+    }
+  }
+}
+
 %appearance-preview {
   display: inline-block;
   height: 1em;
@@ -304,6 +353,14 @@ $NoScrollbar: false;
 
   body.nutshell-names &:not(.personal-cg-appearances) li > a span {
     @include meme-font;
+  }
+}
+
+%clearfix {
+  &::after {
+    content: "";
+    clear: both;
+    display: table;
   }
 }
 

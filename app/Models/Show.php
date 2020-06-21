@@ -28,6 +28,7 @@ use function count;
  * @property string|null      $score                 (Uses magic method)
  * @property string           $notes
  * @property DateTime         $synopsis_last_checked
+ * @property string           $generation
  * @property bool             $is_episode            (Via magic method)
  * @property bool             $displayed             (Via magic method)
  * @property bool             $aired                 (Via magic method)
@@ -39,6 +40,7 @@ use function count;
  * @property ShowVideo[]      $videos                (Via relations)
  * @property User             $poster                (Via relations)
  * @method static Show find_by_season_and_episode(int $season, int $episode)
+ * @method static Show find_by_generation_and_season_and_episode(string $generation, int $season, int $episode)
  * @method static Show|Show[] find(...$params)
  */
 class Show extends NSModel implements Linkable {
@@ -182,15 +184,6 @@ class Show extends NSModel implements Linkable {
   }
 
   /**
-   * @return string
-   */
-  public function safeTitle():string {
-    $value = preg_replace('/[^a-z\d]/i', '-', $this->title);
-    $value = preg_replace('/-{2,}/', '-', $value);
-    return CoreUtils::trim($value, false, '-');
-  }
-
-  /**
    * @param Show $ep
    *
    * @return bool
@@ -273,9 +266,13 @@ class Show extends NSModel implements Linkable {
 
   public function toURL():string {
     if ($this->is_episode)
-      return '/episode/'.$this->getID();
+      $url = "/episode/{$this->generation}/{$this->getID()}";
+    else $url = "/{$this->type}/{$this->id}";
 
-    return "/{$this->type}/{$this->id}".(!empty($this->title) ? '-'.$this->safeTitle() : '');
+    if (!empty($this->title))
+      $url .= '-' . CoreUtils::makeUrlSafe($this->title);
+
+    return $url;
   }
 
   public function toAnchor(?string $text = null):string {
@@ -350,15 +347,48 @@ class Show extends NSModel implements Linkable {
   private function _getAdjacent($dir):?Show {
     $is = $this->is_episode ? '=' : '!=';
     $col = $this->is_episode ? 'no' : 'episode';
+    $sql_dir = $dir === self::NEXT ? 'asc' : 'desc';
 
-    return self::find('first', [
+    $initial_query = self::find('first', [
       'conditions' => [
-        "type $is 'episode' AND $col $dir ?",
+        "type $is 'episode' AND generation = ? AND $col $dir ?",
+        $this->generation,
         $this->{$col},
       ],
-      'order' => "$col ".($dir === self::NEXT ? 'asc' : 'desc'),
+      'order' => "$col $sql_dir",
       'limit' => 1,
     ]);
+
+    if (!empty($initial_query) || $this->type !== 'episode')
+      return $initial_query;
+
+    // Special handling for cross-generation navigation
+    switch ($this->generation) {
+      case ShowHelper::GEN_FIM:
+        if ($dir === self::PREVIOUS) return null;
+
+        return self::find('first', [
+          'conditions' => [
+            "type $is 'episode' AND generation = ?",
+            ShowHelper::GEN_PL,
+          ],
+          'order' => "$col $sql_dir",
+          'limit' => 1,
+        ]);
+      break;
+      case ShowHelper::GEN_PL:
+        if ($dir === self::NEXT) return null;
+
+        return self::find('first', [
+          'conditions' => [
+            "type $is 'episode' AND generation = ?",
+            ShowHelper::GEN_FIM,
+          ],
+          'order' => "$col $sql_dir",
+          'limit' => 1,
+        ]);
+      break;
+    }
   }
 
   /**

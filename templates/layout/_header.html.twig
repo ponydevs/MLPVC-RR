@@ -1,8 +1,8 @@
 {% apply spaceless %}
-  <nav class="dragscroll">
-    <ul>
+  <nav>
+    <ul class="dragscroll">
       <li class="sidebar-toggle"></li>
-      {% include 'layout/_navigation_links.html.twig' %}
+      {% include 'layout/_navigation_links.html.twig' with { sidebar: false } %}
     </ul>
     <div id="to-the-top" class="typcn typcn-arrow-up"></div>
   </nav>

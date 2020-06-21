@@ -11,6 +11,8 @@ use App\Models\Event;
 use App\Models\Notice;
 use App\Models\Show;
 use App\Models\UsefulLink;
+use Doctrine\Inflector\Inflector;
+use Doctrine\Inflector\InflectorFactory;
 use DOMDocument;
 use DOMElement;
 use Elasticsearch\Client;
@@ -41,9 +43,25 @@ use function is_string;
 use function OpenApi\scan;
 
 class CoreUtils {
+  private static Inflector $inflector;
+
+  /**
+   * Contains the HTML of the navigation element
+   *
+   * @var string
+   */
+  public static $NavHTML;
+
   public const FIXPATH_EMPTY = [
     '§' => true,
     '#' => true,
+  ];
+
+  /** Used in Twig */
+  public const LOGO_PATH_MAP = [
+    'pony' => '/img/logos/pony.svg',
+    'eqg' => '/img/logos/eqg.svg',
+    'pl' => '/img/logos/pl.png',
   ];
 
   /**
@@ -212,6 +230,7 @@ class CoreUtils {
   ];
   public const DEFAULT_LIBS = [
     'polyfill-io',
+    'dragscroll',
     'jquery',
     'moment',
     'react',
@@ -514,10 +533,17 @@ class CoreUtils {
    * @return string
    */
   public static function capitalize($str, $all = false) {
-    if ($all) return preg_replace_callback('/((?:^|\s)[a-z])(\w+\b)?/i', function ($match) {
-      return strtoupper($match[1]).strtolower($match[2]);
-    }, $str);
-    else return mb_strlen($str) === 1 ? strtoupper($str) : strtoupper($str[0]).mb_substr($str, 1);
+    if (!isset(self::$inflector))
+      self::$inflector = InflectorFactory::create()->build();
+
+    if (!$all){
+      $first_word = strtok($str, ' ');
+      $rest = substr($str, strlen($first_word));
+
+      return self::$inflector->capitalize($first_word) . $rest;
+    }
+
+    return self::$inflector->capitalize($str);
   }
 
   public static function rangeLimit(int $value, int $min, int $max) {
@@ -873,13 +899,6 @@ class CoreUtils {
   }
 
   /**
-   * Contains the HTML of the navigation element
-   *
-   * @var string
-   */
-  public static $NavHTML;
-
-  /**
    * Returns the HTML code of the main navigation in the header
    *
    * @param bool $disabled
@@ -963,34 +982,37 @@ class CoreUtils {
   /**
    * Appends 's' to the end of string if input is not 1
    *
-   * @param string $w    Text to pluralize
-   * @param float  $in   Number to base pluralization off of
-   * @param bool   $prep Prepend number to text
+   * @param string $word    Text to pluralize
+   * @param float  $count   Number to base pluralization off of
+   * @param bool   $prepend Prepend number to text
    *
    * @return string
    */
-  public static function makePlural($w, float $in = 0, $prep = false):string {
-    $ret = ($prep ? "$in " : '');
-    if ($in !== 1.0 && $w[-1] === 'y' && !in_array(strtolower($w), self::$_endsWithYButStillPlural, true))
-      return $ret.mb_substr($w, 0, -1).'ies';
+  public static function makePlural($word, float $count = 0, $prepend = false):string {
+    if (!isset(self::$inflector))
+      self::$inflector = InflectorFactory::create()->build();
 
-    return $ret.$w.($in !== 1.0 && !in_array(strtolower($w), self::$_uncountableWords, true) ? 's' : '');
+    if ((int)$count !== 1) {
+      $word = self::$inflector->pluralize($word);
+    }
+
+    if ($prepend)
+      return "$count $word";
+
+    return $word;
   }
 
   /**
-   * Tries to convert the specified word to a singular - currently by removing the S
-   * A more robust solution should be added for this if need be
-   *
-   * @param string $w
+   * @param string $word
    *
    * @return string
    */
-  public static function makeSingular(string $w):string {
-    return preg_replace('/s$/', '', $w);
-  }
+  public static function makeSingular(string $word):string {
+    if (!isset(self::$inflector))
+      self::$inflector = InflectorFactory::create()->build();
 
-  private static $_uncountableWords = ['staff'];
-  private static $_endsWithYButStillPlural = ['day', 'key'];
+    self::$inflector->singularize($word);
+  }
 
   /**
    * Detect user's web browser based on user agent

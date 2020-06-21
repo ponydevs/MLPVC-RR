@@ -10,6 +10,7 @@ use App\Models\MajorChange;
 use App\Models\PCGSlotHistory;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
@@ -28,8 +29,36 @@ use function in_array;
 use function is_array;
 
 class CGUtils {
+  public const GUIDE_FIM = 'pony';
+  public const GUIDE_EQG = 'eqg';
+  public const GUIDE_PL = 'pl';
+
+  public const GUIDE_MAP = [
+    self::GUIDE_FIM => 'Friendship is Magic',
+    self::GUIDE_EQG => 'Equestria Girls',
+    self::GUIDE_PL => 'Pony Life',
+  ];
+
+  public const GUIDE_GENERATION_MAP = [
+    self::GUIDE_FIM => ShowHelper::GEN_FIM,
+    self::GUIDE_PL => ShowHelper::GEN_PL,
+  ];
+
+  /** Used in Twig */
+  public const ADD_NEW_NOUN = [
+    self::GUIDE_FIM => 'Pony',
+    self::GUIDE_EQG => 'Character',
+    self::GUIDE_PL => 'Pony',
+  ];
+
+  public const FULL_LIST_NOUN = [
+    self::GUIDE_FIM => 'FiM Pony',
+    self::GUIDE_EQG => 'EQG Character',
+    self::GUIDE_PL => 'Pony Life Character',
+  ];
+
   public const GROUP_TAG_IDS_ASSOC = [
-    'pony' => [
+    self::GUIDE_FIM => [
       664 => 'Main Cast',
       45 => 'Cutie Mark Crusaders',
       59 => 'Royalty',
@@ -48,15 +77,29 @@ class CGUtils {
       64 => 'Objects',
       -1 => 'Other',
     ],
-    'eqg' => [
+    self::GUIDE_EQG => [
       76 => 'Humans',
       -1 => 'Other',
     ],
-  ];
-
-  public const GUIDE_MAP = [
-    'pony' => 'Pony',
-    'eqg' => 'EQG',
+    self::GUIDE_PL => [
+      664 => 'Main Cast',
+      45 => 'Cutie Mark Crusaders',
+      59 => 'Royalty',
+      666 => 'Student Six',
+      9 => 'Antagonists',
+      44 => 'Foals',
+      78 => 'Original Characters',
+      1 => 'Unicorns',
+      3 => 'Pegasi',
+      2 => 'Earth Ponies',
+      10 => 'Pets',
+      437 => 'Non-pony Characters',
+      385 => 'Creatures',
+      96 => 'Outfits & Clothing',
+      // add other tags here
+      64 => 'Objects',
+      -1 => 'Other',
+    ],
   ];
 
   /**
@@ -116,21 +159,21 @@ class CGUtils {
           }
         break;
         case 'relevance':
-          $Sorted = Appearances::sort($appearances, $guide);
+          $sorted = Appearances::sort($appearances, $guide);
           foreach (self::GROUP_TAG_IDS_ASSOC[$guide] as $Category => $CategoryName){
-            if (empty($Sorted[$Category]))
+            if (empty($sorted[$Category]))
               continue;
 
             $HTML .= "<section><h2>$CategoryName<button class='sort-alpha blue typcn typcn-sort-alphabetically hidden' title='Sort this section alphabetically'></button></h2><ul>";
-            /** @var $Sorted Appearance[][] */
-            foreach ($Sorted[$Category] as $p)
+            /** @var $sorted Appearance[][] */
+            foreach ($sorted[$Category] as $p)
               self::_processFullListLink($p, $HTML, $indexed_char_tags[$p->id] ?? [], $previews);
             $HTML .= '</ul></section>';
           }
         break;
         case 'added':
           $HTML .= "<section><ul class='justify'>";
-          /** @var $Sorted Appearance[][] */
+          /** @var $sorted Appearance[][] */
           foreach ($appearances as $p)
             self::_processFullListLink($p, $HTML, $indexed_char_tags[$p->id] ?? [], $previews);
           $HTML .= '</ul></section>';
@@ -1363,5 +1406,16 @@ class CGUtils {
       return 'default';
 
     return str_replace('#', '', implode('_', $output));
+  }
+
+  /**
+   * @param User|null $user
+   *
+   * @return string
+   */
+  public static function redirectToPreferredGuidePath(?User $user = null):string {
+    $pref = UserPrefs::get('cg_defaultguide', $user);
+
+    HTTP::tempRedirect('/cg'.($pref === null ? '' : "/$pref"));
   }
 }

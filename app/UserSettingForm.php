@@ -11,6 +11,15 @@ class UserSettingForm {
   private bool $can_save;
 
   public const INPUT_MAP = [
+    'cg_defaultguide' => [
+      'type' => 'select',
+      'options' => [
+        'desc' => 'Choose your preferred color guide: ',
+        'optg' => 'Available guides',
+        'opts' => CGUtils::GUIDE_MAP,
+        'null_opt' => 'Guide Index',
+      ],
+    ],
     'cg_itemsperpage' => [
       'type' => 'number',
       'options' => [
@@ -79,7 +88,7 @@ class UserSettingForm {
     'p_homelastep' => [
       'type' => 'checkbox',
       'options' => [
-        'desc' => 'Home page should open latest episode (instead of the color guide)',
+        'desc' => '<span class="typcn typcn-home">&nbsp;Home</span> should open latest episode (instead of preferred color guide)',
       ],
     ],
     'ep_hidesynopses' => [
@@ -139,7 +148,7 @@ class UserSettingForm {
   ];
 
   public function __construct(string $setting_name, ?User $current_user = null, ?string $req_perm = null) {
-    if (!isset(UserPrefs::DEFAULTS[$setting_name]))
+    if (!array_key_exists($setting_name, UserPrefs::DEFAULTS))
       throw new RuntimeException('Could not instantiate '.__CLASS__." for non-existing setting $setting_name");
     if (!isset(self::INPUT_MAP[$setting_name]))
       throw new RuntimeException('Could not instantiate '.__CLASS__." for $setting_name: Missing INPUT_MAP entry");
@@ -186,10 +195,9 @@ class UserSettingForm {
       case 'select':
         $select = '';
         $optgroup = '';
-        if (isset($options['opts'][''])){
-          $selected = $value === '' ? 'selected' : '';
-          $select .= "<option value='' $selected>".CoreUtils::escapeHTML($options['opts']['']).'</option>';
-          unset($options['opts']['']);
+        if (isset($options['null_opt'])){
+          $selected = $value === null ? 'selected' : '';
+          $select .= "<option value='' $selected>".CoreUtils::escapeHTML($options['null_opt']).'</option>';
         }
         /** @noinspection ForeachSourceInspection */
         foreach ($options['opts'] as $name => $label){

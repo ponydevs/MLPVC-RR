@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Auth;
+use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
 use App\DeviantArt;
@@ -29,7 +30,7 @@ class UserController extends Controller {
     if (UserPrefs::get('p_homelastep'))
       HTTP::tempRedirect('/episode/latest');
 
-    HTTP::tempRedirect('/cg');
+    CGUtils::redirectToPreferredGuidePath();
   }
 
   public function profile($params):void {
@@ -41,7 +42,10 @@ class UserController extends Controller {
     if ($user_id === null){
       if (Auth::$signed_in)
         $user = Auth::$user;
-      else $error = 'Sign in to view your settings';
+      else {
+        $error = 'Settings';
+        $sub_error = 'You must sign in to view your settings';
+      }
     }
     else $user = User::find($user_id);
 
@@ -319,8 +323,15 @@ class UserController extends Controller {
   }
 
   public function list():void {
-    if (Permission::insufficient('staff'))
-      CoreUtils::noPerm();
+    $is_staff = Permission::sufficient('staff');
+    if (!$is_staff) {
+      $can_see_users_with_roles = [];
+      foreach (Permission::ROLES as $role => $level) {
+        if ($level >= Permission::ROLES['member'])
+          $can_see_users_with_roles[] = $role;
+      }
+      DB::$instance->where('role', $can_see_users_with_roles);
+    }
 
     /** @var $users User[] */
     $users = DB::$instance->orderBy('name')->get(User::$table_name);
@@ -338,6 +349,7 @@ class UserController extends Controller {
         $users = $arranged[$r];
         $user_count = count($users);
         $group = CoreUtils::makePlural(Permission::ROLES_ASSOC[$r], $user_count, true);
+        $staff_section = Permission::sufficient($r, 'staff');
 
         if ($user_count > 10){
           $users_out = [];
@@ -356,10 +368,12 @@ class UserController extends Controller {
           }
         }
         else {
-          $users_out = [];
-          foreach ($users as $u)
-            $users_out[] = $u->toAnchor();
-          $users_str = implode(', ', $users_out);
+          $users_str = '';
+          if ($staff_section) {
+            foreach ($users as $user)
+              $users_str .= sprintf("<div class='staff-block'>%s</div>", $user->toAnchor(WITH_AVATAR));
+          }
+          else $users_str = implode(', ', array_map(fn($u) => $u->toAnchor(), $users));
         }
 
         $sections[] = [
@@ -370,7 +384,7 @@ class UserController extends Controller {
     }
 
     CoreUtils::loadPage(__METHOD__, [
-      'title' => 'Users',
+      'title' => $is_staff ? 'Users' : 'Club Members',
       'css' => [true],
       'import' => [
         'sections' => $sections ?? null,

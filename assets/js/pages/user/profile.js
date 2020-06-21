@@ -394,7 +394,8 @@
         this.value = Boolean(this.value);
         $input.prop('checked', this.value);
       }
-      $input.data('orig', this.value).triggerHandler('change');
+      const newOrig = this.value === null ? '' : this.value;
+      $input.data('orig', newOrig).triggerHandler('change');
 
       settingChanged(endpoint.split('/').pop(), orig, this.value);
     });

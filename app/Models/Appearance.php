@@ -122,7 +122,7 @@ class Appearance extends NSModel implements Linkable {
       return $this->notes_src;
 
     if ($this->read_attribute('notes_rend') === null){
-      $this->notes_rend = self::_processNotes($this->notes_src);
+      $this->notes_rend = $this->processNotes();
       $this->save();
     }
 
@@ -262,18 +262,21 @@ class Appearance extends NSModel implements Linkable {
     return "<div class='sprite'>$img</div>";
   }
 
-  private static function _processNotes(string $notes):string {
-    $notes_rend = CoreUtils::sanitizeHtml($notes);
+  private function processNotes():string {
+    $notes_rend = CoreUtils::sanitizeHtml($this->notes_src);
     $notes_rend = preg_replace('/(\s)(&gt;&gt;(\d+))(\D|$)/', "$1<a href='https://derpibooru.org/$3'>$2</a>$4", $notes_rend);
-    $notes_rend = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/', function ($a) {
-      $Ep = ShowHelper::getActual((int)$a[1], (int)$a[2]);
+    if (in_array($this->guide, [CGUtils::GUIDE_PL, CGUtils::GUIDE_FIM], true)) {
+      $generation = CGUtils::GUIDE_GENERATION_MAP[$this->guide];
+      $notes_rend = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/', function ($a) use ($generation) {
+        $episode = ShowHelper::getActual($generation, (int)$a[1], (int)$a[2]);
 
-      return !empty($Ep)
-        ? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode($Ep->formatTitle(AS_ARRAY, 'title')).'</a>'
-        : "<strong>{$a[0]}</strong>";
-    }, $notes_rend);
+        return !empty($episode)
+          ? "<a href='{$episode->toURL()}'>".CoreUtils::aposEncode($episode->formatTitle(AS_ARRAY, 'title')).'</a>'
+          : "<strong>{$a[0]}</strong>";
+      }, $notes_rend);
+    }
     $notes_rend = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/', function ($a) {
-      $Ep = ShowHelper::getActual(0, (int)$a[1], true);
+      $Ep = ShowHelper::getActual(null, 0, (int)$a[1], true);
 
       return !empty($Ep)
         ? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(ShowHelper::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY, 'title'))).'</a>'
@@ -759,31 +762,31 @@ class Appearance extends NSModel implements Linkable {
     if (ColorGroup::exists(['conditions' => ['appearance_id = ?', $this->id]]))
       throw new RuntimeException('Template can only be applied to empty appearances');
 
-    $Scheme = $this->guide === 'eqg'
+    $scheme = $this->guide === CGUtils::GUIDE_EQG
       ? self::HUMAN_TEMPLATE
       : self::PONY_TEMPLATE;
 
     $cgi = 1;
-    foreach ($Scheme as $GroupName => $ColorNames){
+    foreach ($scheme as $group_name => $color_names){
       /** @var $Group ColorGroup */
       $Group = ColorGroup::create([
         'appearance_id' => $this->id,
-        'label' => $GroupName,
+        'label' => $group_name,
         'order' => $cgi++,
       ]);
       $GroupID = $Group->id;
       if (!$GroupID)
-        throw new RuntimeException(rtrim("Color group \"$GroupName\" could not be created: ".DB::$instance->getLastError(), ': '));
+        throw new RuntimeException(rtrim(sprintf("Color group \"%s\" could not be created: %s", $group_name, DB::$instance->getLastError()), ': '));
 
       $ci = 1;
-      foreach ($ColorNames as $label){
-        if (
-        !(new Color([
+      foreach ($color_names as $label){
+        $new_color = new Color([
           'group_id' => $GroupID,
           'label' => $label,
           'order' => $ci++,
-        ]))->save()
-        ) throw new RuntimeException(rtrim("Color \"$label\" could not be added: ".DB::$instance->getLastError(), ': '));
+        ]);
+        if (!$new_color->save())
+          throw new RuntimeException(rtrim(sprintf("Color \"%s\" could not be added: %s", $label, DB::$instance->getLastError()), ': '));
       }
     }
 
@@ -880,7 +883,7 @@ class Appearance extends NSModel implements Linkable {
   public function render_notes() {
     if ($this->notes_src === null)
       $this->notes_rend = null;
-    else $this->notes_rend = self::_processNotes($this->notes_src);
+    else $this->notes_rend = $this->processNotes();
   }
 
   public function hidden(bool $ignoreStaff = false):bool {

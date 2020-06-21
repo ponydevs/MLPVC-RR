@@ -59,36 +59,36 @@ class Appearances {
    * @return array
    */
   public static function sort($Appearances, ?string $guide, bool $simpleArray = false) {
-    $GroupTagIDs = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC[$guide]);
-    $Sorted = [];
-    $Tagged = [];
-    $_tagged = DB::$instance->where('tag_id IN ('.implode(',', $GroupTagIDs).')')->orderBy('appearance_id')->get('tagged');
-    foreach ($_tagged as $row)
-      $Tagged[$row->appearance_id][] = $row->tag_id;
+    $group_tag_ids = array_keys(CGUtils::GROUP_TAG_IDS_ASSOC[$guide]);
+    $sorted = [];
+    $tagged_assoc = [];
+    $tagged = DB::$instance->where('tag_id IN ('.implode(',', $group_tag_ids).')')->orderBy('appearance_id')->get('tagged');
+    foreach ($tagged as $row)
+      $tagged_assoc[$row->appearance_id][] = $row->tag_id;
     foreach ($Appearances as $p){
-      if (!empty($Tagged[$p->id])){
-        if (count($Tagged[$p->id]) > 1)
-          usort($Tagged[$p->id], function ($a, $b) use ($GroupTagIDs) {
-            return array_search($a, $GroupTagIDs, true) - array_search($b, $GroupTagIDs, true);
+      if (!empty($tagged_assoc[$p->id])){
+        if (count($tagged_assoc[$p->id]) > 1)
+          usort($tagged_assoc[$p->id], function ($a, $b) use ($group_tag_ids) {
+            return array_search($a, $group_tag_ids, true) - array_search($b, $group_tag_ids, true);
           });
-        $tid = $Tagged[$p->id][0];
+        $tid = $tagged_assoc[$p->id][0];
       }
       else $tid = -1;
-      $Sorted[$tid][] = $p;
+      $sorted[$tid][] = $p;
     }
     if ($simpleArray){
-      $idArray = [];
+      $id_array = [];
       foreach (CGUtils::GROUP_TAG_IDS_ASSOC[$guide] as $Category => $CategoryName){
-        if (empty($Sorted[$Category]))
+        if (empty($sorted[$Category]))
           continue;
-        /** @var $Sorted Appearance[][] */
-        foreach ($Sorted[$Category] as $p)
-          $idArray[] = $p->id;
+        /** @var $sorted Appearance[][] */
+        foreach ($sorted[$Category] as $p)
+          $id_array[] = $p->id;
       }
 
-      return $idArray;
+      return $id_array;
     }
-    else return $Sorted;
+    else return $sorted;
   }
 
   /**
@@ -115,8 +115,6 @@ class Appearances {
   }
 
   public static function getSortReorder(?string $guide) {
-    if ($guide !== 'pony')
-      return;
     self::reorder(self::sort(self::get($guide, null, null, 'id'), $guide, SIMPLE_ARRAY));
   }
 

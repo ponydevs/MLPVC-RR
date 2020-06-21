@@ -5,8 +5,6 @@
 {# @var pagination \App\Pagination #}
 {# @var ponies array #}
 {# @var owner App\Models\User|array #}
-{# @var json_export_url string #}
-{# @var json_export_time string #}
 {# @var hex_color_regex \App\RegExp #}
 {# @var max_upload_size string #}
 {% extends "layout/base.html.twig" %}
@@ -19,25 +17,14 @@
     <p class="align-center">
       We add characters based on demand, please <a class="send-feedback">let us know</a> if you'd like us to make a guide for a character.<br>
       <small>Alternatively, use the old color guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a></small><br>
-      For developers: <a href="{{ json_export_url }}" target="_blank" download="mlpvc-colorguide.json">JSON</a> (last updated {{ json_export_time }}) / <a href="/docs/">API v0.1</a> (WIP)
+      Can't find links that were here previously? Some links were moved to the <a href="/cg">guide list</a>.
     </p>
     <div class='align-center button-block'>
       {% if permission('staff') %}
-        <button class='green typcn typcn-plus' id="new-appearance-btn">Add new {{ eqg ? 'Character' : 'Pony' }}</button>
+        <button class='green typcn typcn-plus' id="new-appearance-btn">Add new {{ constant('\App\\CGUtils::ADD_NEW_NOUN')[guide] }}</button>
       {% endif %}
-      <a class='btn link typcn typcn-world' href="/cg/{{ eqg ? 'pony' : 'eqg' }}">View {{ eqg ? 'Pony' : 'EQG' }} Guide</a>
       <a class='btn link typcn typcn-th-menu' href="/cg/{{ guide }}/full">Full List</a>
-      <a class='btn link typcn typcn-arrow-forward' href="/cg/blending">Blending Calculator</a>
-      <a class='btn link typcn typcn-pipette' href="/cg/picker">Color Picker</a>
-      <a class='btn link typcn typcn-tags' href="/cg/tags">Tags</a>
-      <a class='btn link typcn typcn-warning' href="/cg/changes">Major Changes</a>
-      {% if permission('staff') %}
-        <button class='blue typcn typcn-adjust-contrast cg-sprite-colors'>Sprite Color Checkup</button>
-      {% endif %}
-      {% if permission('developer') %}
-        <button class='blue typcn typcn-download cg-export'>Export</button>
-        <button class='orange typcn typcn-database cg-reindex'>Re-index</button>
-      {% endif %}
+      <a class='btn link typcn typcn-warning' href="/cg/{{ guide }}/changes">Major Changes</a>
     </div>
     {% if universal_appearance is not empty %}
       <ul id='universal' class='appearance-list'>

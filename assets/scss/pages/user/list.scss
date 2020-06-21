@@ -5,16 +5,39 @@
     margin-bottom: 10px;
   }
 
+  .staff-block {
+    display: inline-block;
+
+    &:not(:last-child) {
+      margin-right: .5rem;
+    }
+
+    .da-userlink {
+      font-size: 1.5rem;
+    }
+  }
+
   .letter-group {
     display: block;
+    @extend %clearfix;
+
+    &:first-child {
+      margin-top: 10px;
+    }
 
     &:not(:last-child) {
       margin-bottom: 10px;
     }
 
     strong {
-      margin: 0 1em 0 .75em;
+      float: left;
+      margin-right: .5em;
+      margin-bottom: .1em;
       font-family: $monospace;
+      font-size: 2em;
+      line-height: 1em;
+      position: relative;
+      top: -.1em;
     }
 
     .da-userlink {

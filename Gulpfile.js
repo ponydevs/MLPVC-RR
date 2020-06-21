@@ -12,7 +12,7 @@
     sourceMaps = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
     cleanCss = require('gulp-clean-css'),
-    terser = require('gulp-terser'),
+    terser = require('gulp-terser-js'),
     babel = require('gulp-babel'),
     cached = require('gulp-cached'),
     rename = require('gulp-rename'),
@@ -114,7 +114,7 @@
       }))
       .pipe(sourceMaps.init())
       .pipe(babel(babelrc))
-      .pipe(terser())
+      .pipe(terser({ compress: { drop_debugger: false } }))
       .pipe(appendMinSuffix())
       .pipe(sourceMaps.write('.'))
       .pipe(gulp.dest('public/js'));

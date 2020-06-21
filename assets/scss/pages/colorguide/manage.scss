@@ -136,50 +136,7 @@
 }
 
 #edit-tag .type-selector {
-  display: flex;
-  flex-flow: row wrap;
-  align-content: center;
-  user-select: none;
-
-  > span {
-    margin-bottom: 5px
-  }
-
-  label {
-    flex: 1 1 auto;
-    margin: 2px;
-    position: relative;
-    overflow: hidden;
-
-    * {
-      cursor: pointer
-    }
-  }
-
-  input {
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    width: 0;
-    height: 0;
-
-    ~ .tag {
-      display: block;
-      height: auto;
-    }
-
-    &:not(:checked) ~ .tag {
-      opacity: .5
-    }
-
-    &:focus ~ .tag {
-      border-style: dashed
-    }
-
-    &:not(:checked):focus ~ .tag {
-      opacity: .75
-    }
-  }
+  @extend %fancy-flex-select;
 }
 
 #cg-editor {

@@ -42,14 +42,6 @@ class EpisodeTest extends TestCase {
     self::assertNotEquals('Movie#1-2', $result);
   }
 
-  public function testMovieSafeTitle() {
-    $movie = new Show([
-      'title' => "A#bc-d'?e",
-    ]);
-    $result = $movie->safeTitle();
-    self::assertEquals('A-bc-d-e', $result);
-  }
-
   public function testIs() {
     $episode_one = new Show([
       'id' => 1,

@@ -80,10 +80,15 @@ class View {
 
         return $bc;
       case 'colorguide':
-        $guide = $scope['guide'] ?? 'pony';
-        $ret = new NavBreadcrumb('Color Guide');
-        $bc = new NavBreadcrumb(CGUtils::GUIDE_MAP[$guide], "/cg/$guide");
-        $ret->setChild($bc);
+        $guide = $scope['guide'] ?? null;
+        $ret = new NavBreadcrumb('Color Guides', '/cg');
+        if ($guide !== null) {
+          $bc = new NavBreadcrumb(CGUtils::GUIDE_MAP[$guide], "/cg/$guide");
+          $ret->setChild($bc);
+        }
+        else if (isset($scope['guides'])) {
+          $ret->setActive();
+        }
         switch ($this->method){
           case 'appearance':
             /** @var $appearance Appearance */
@@ -124,7 +129,10 @@ class View {
           break;
           case 'tag-list':
             $ret->setLink('/cg');
-            $ret->setChild(new NavBreadcrumb('List of Tags', '/cg/tags', true));
+            $ret->setChild(new NavBreadcrumb('Tags', '/cg/tags', true));
+          break;
+          case 'index':
+            /* $bc will be undefined in this case */
           break;
           case 'guide':
           default:
@@ -180,7 +188,8 @@ class View {
         }
       break;
       case 'user':
-        $bc = (new NavBreadcrumb('Users', '/users'))->setEnabled(Permission::sufficient('staff'));
+        $is_staff = Permission::sufficient('staff');
+        $bc = (new NavBreadcrumb('Users', '/users'))->setEnabled($is_staff);
         if ($this->method !== 'list'){
           /** @var $User User */
           $user = $scope['user'];
@@ -212,7 +221,10 @@ class View {
           }
           $bc->setChild($subbc);
         }
-        else $bc->setActive();
+        else {
+          if (!$is_staff) return (new NavBreadcrumb('Club Members', '/users'))->setActive();
+          $bc->setActive();
+        }
 
         return $bc;
     }

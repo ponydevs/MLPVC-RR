@@ -1,0 +1,7 @@
+{# @var current \App\Models\Show #}
+{# @var adjacent \App\Models\Show #}
+{%- if adjacent.generation != current.generation -%}
+  {% set gen_name = constant('\\App\\ShowHelper::GENERATIONS')[adjacent.generation] %}
+  {% set logo_path = constant('\\App\\CoreUtils::LOGO_PATH_MAP')[adjacent.generation] %}
+  <img src="{{ logo_path }}" class="generation-logo" alt="{{ gen_name }} logo" title="{{ gen_name }}">
+{%- endif -%}

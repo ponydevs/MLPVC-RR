@@ -23,7 +23,7 @@ class TagController extends ColorGuideController {
     $pagination = new Pagination('/cg/tags', 50, DB::$instance->count('tags'));
 
     CoreUtils::fixPath($pagination->toURI());
-    $heading = 'Tags';
+    $heading = 'All Tags';
     $title = "Page {$pagination->getPage()} - $heading - Color Guide";
 
     $tags = Tags::get($pagination->getLimit());

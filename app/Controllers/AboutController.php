@@ -12,7 +12,6 @@ class AboutController extends Controller {
     CoreUtils::loadPage(__METHOD__, [
       'title' => 'About',
       'css' => [true],
-      'js' => [true],
     ]);
   }
 
