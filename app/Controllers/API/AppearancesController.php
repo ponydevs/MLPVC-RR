@@ -360,8 +360,8 @@ class AppearancesController extends APIController {
    * @OA\Schema(
    *   schema="GuideName",
    *   type="string",
-   *   enum={"fim", "eqg", "pl"},
-   *   default="fim"
+   *   enum={"pony", "eqg", "pl"},
+   *   default="pony"
    * )
    * @OA\Schema(
    *   schema="GuidePageSize",
