@@ -1,6 +1,38 @@
 (function(undefined) {
   'use strict';
 
+  $('.cg-export').on('click', function() {
+    window.open(`${$.API.API_PATH}/cg/export`, '_blank');
+  });
+
+  $('.cg-reindex').on('click', function() {
+    $.Dialog.confirm('Re-index all appearances', 'Wipe and rebuild ElasticSearch index?', function(sure) {
+      if (!sure) return;
+
+      $.Dialog.wait(false);
+
+      $.API.post('/cg/reindex', function() {
+        if (!this.status) return $.Dialog.fail(false, this.message);
+
+        $.Dialog.segway(false, this.message);
+      });
+    });
+  });
+
+  $('.cg-sprite-colors').on('click', function() {
+    $.Dialog.confirm($(this).text(), 'Run a check on all sprites & look for missing colors?', function(sure) {
+      if (!sure) return;
+
+      $.Dialog.wait(false, 'Checking all sprite colors (this might take a while)');
+
+      $.API.post('/cg/sprite-color-checkup', function() {
+        if (!this.status) return $.Dialog.fail(false, this.message);
+
+        $.Dialog.success(false, this.message, true);
+      });
+    });
+  });
+
   const
     {
       HEX_COLOR_PATTERN,
@@ -2313,38 +2345,6 @@
       });
     }).always(() => {
       $editTagsBtn.html(oldHTML).enable();
-    });
-  });
-
-  $('.cg-export').on('click', function() {
-    window.open(`${$.API.API_PATH}/cg/export`, '_blank');
-  });
-
-  $('.cg-reindex').on('click', function() {
-    $.Dialog.confirm('Re-index all appearances', 'Wipe and rebuild ElasticSearch index?', function(sure) {
-      if (!sure) return;
-
-      $.Dialog.wait(false);
-
-      $.API.post('/cg/reindex', function() {
-        if (!this.status) return $.Dialog.fail(false, this.message);
-
-        $.Dialog.segway(false, this.message);
-      });
-    });
-  });
-
-  $('.cg-sprite-colors').on('click', function() {
-    $.Dialog.confirm($(this).text(), 'Run a check on all sprites & look for missing colors?', function(sure) {
-      if (!sure) return;
-
-      $.Dialog.wait(false, 'Checking all sprite colors (this might take a while)');
-
-      $.API.post('/cg/sprite-color-checkup', function() {
-        if (!this.status) return $.Dialog.fail(false, this.message);
-
-        $.Dialog.success(false, this.message, true);
-      });
     });
   });
 })();
