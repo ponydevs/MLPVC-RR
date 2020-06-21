@@ -151,7 +151,7 @@ class View {
               return new NavBreadcrumb('Home', null, true);
             /** @var $ep Show */
             $ep = $scope['current_episode'];
-            $cat = new NavBreadcrumb($ep->is_episode ? 'TV Episodes' : 'Movies, Shorts & Specials');
+            $cat = new NavBreadcrumb($ep->is_episode ? ShowHelper::GENERATIONS[$ep->generation].' Episodes' : 'Movies, Shorts & Specials');
             $cat->setChild(new NavBreadcrumb($scope['heading'], $ep->toURL(), true));
             $showbc->setChild($cat);
 
