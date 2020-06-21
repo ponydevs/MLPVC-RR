@@ -108,8 +108,7 @@ class View {
             $ret->setChild(new NavBreadcrumb('Color Blending Reverser', '/cg/blending-reverse', true));
           break;
           case 'change-list':
-            $ret->setLink('/cg');
-            $ret->setChild(new NavBreadcrumb('List of Major Changes', '/cg/changes', true));
+            $bc->setChild(new NavBreadcrumb('List of Major Changes', "/cg/$guide/changes", true));
           break;
           case 'full-list':
             $bc->setChild('Full List');
