@@ -95,12 +95,12 @@
         {{ export_vars({ 'showTypes': constant('App\\ShowHelper::VALID_TYPES') }) }}
       {% endif %}
       {% include 'show/_reservations.html.twig' with { 'arranged': current_episode.reservations, lazyload: true } %}
-      {% if current_episode.generation == constant('\\App\\ShowHelper::GEN_FIM') %}
-        {% include 'show/_requests.html.twig' with { 'arranged': current_episode.requests, lazyload: true } %}
+      {% if current_episode.generation == constant('\\App\\ShowHelper::GEN_PL') %}
+        <br>
+        <br>
+        <div class="notice info">{{ constant('\\App\\ShowHelper::REQUESTS_NOT_ALLOWED') }}</div>
       {% else %}
-        <br>
-        <br>
-        <div class="notice info">We are not accepting requests for this episode yet, please check back later.</div>
+        {% include 'show/_requests.html.twig' with { 'arranged': current_episode.requests, lazyload: true } %}
       {% endif %}
       {{ export_vars({
         showId: current_episode.id,

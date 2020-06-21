@@ -30,6 +30,8 @@ class ShowHelper {
     self::GEN_PL => 'Pony Life',
   ];
 
+  public const REQUESTS_NOT_ALLOWED = 'We are not accepting requests for this episode yet, please check back later.';
+
   /**
    * Returns all episodes from the database, properly sorted
    *
