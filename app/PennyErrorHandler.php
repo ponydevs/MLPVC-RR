@@ -9,9 +9,12 @@ class PennyErrorHandler extends ErrorHandler {
    * Displays a cute error page if an error occurs
    */
   private function outputErrorPage() {
+    if (PHP_SAPI === 'cli')
+      return;
+
     $title = '500 Internal Server Error';
     if (!headers_sent()) {
-      header($_SERVER['SERVER_PROTOCOL']." $title");
+      http_response_code(500);
     }
 
     echo <<<HTML
