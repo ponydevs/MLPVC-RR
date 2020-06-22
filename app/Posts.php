@@ -166,11 +166,11 @@ class Posts {
   /**
    * Checks the image which allows a post to be finished
    *
-   * @param string|null $reserver_id
+   * @param int|null $reserver_id
    *
    * @return array
    */
-  public static function checkPostFinishingImage($reserver_id = null) {
+  public static function checkPostFinishingImage(?int $reserver_id = null) {
     $deviation_url = (new Input('deviation', 'string', [
       Input::CUSTOM_ERROR_MESSAGES => [
         Input::ERROR_MISSING => 'Please specify a deviation URL',
@@ -191,7 +191,7 @@ class Posts {
         if (empty($author))
           Response::fail("Could not fetch local user data for username: $cached_deviation->author");
 
-        if (!isset($_REQUEST['allow_overwrite_reserver']) && !empty($reserver_id) && $author->id !== $reserver_id){
+        if (!isset($_REQUEST['allow_overwrite_reserver']) && $reserver_id !== null && $author->user_id !== $reserver_id){
           $sameUser = Auth::$user->id === $reserver_id;
           $person = $sameUser ? 'you' : 'the user who reserved this post';
           Response::fail("You've linked to an image which was not submitted by $person. If this was intentional, press Continue to proceed with marking the post finished <b>but</b> note that it will make {$author->name} the new reserver.".($sameUser
@@ -199,7 +199,7 @@ class Posts {
               : ''), ['retry' => true]);
         }
 
-        $return['reserved_by'] = $author->id;
+        $return['reserved_by'] = $author->user->id;
       }
 
       if (CoreUtils::isDeviationInClub($return['deviation_id']) === true)

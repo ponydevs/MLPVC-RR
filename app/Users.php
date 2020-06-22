@@ -27,7 +27,6 @@ class Users {
    * --------------------------
    * Gets a single row from the 'users' database where $column is equal to $value
    * Returns null if user is not found and false if user data could not be fetched
-   * @deprecated Until all redundant occurrences are scrubbed, the method itself is actually useful
    *
    * @param string $value
    * @param string $column
