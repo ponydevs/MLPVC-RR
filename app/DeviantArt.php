@@ -335,7 +335,7 @@ class DeviantArt {
       $da_user->update_attributes(array_merge($local_user_data, $auth_data));
       if ($da_user->user->name !== $da_user->name) {
         $da_user->user->update_attributes(['name' => $da_user->name]);
-        PreviousUsername::record($da_user->id, $da_user->user->name, $da_user->name);
+        PreviousUsername::record($da_user->id, $da_user->user->name);
       }
     }
 

@@ -411,7 +411,7 @@ class UserController extends Controller {
     $da_user = DeviantartUser::find_by_name($params['name']);
 
     if (empty($da_user))
-      $da_user = Users::fetchDA([$params['name']]);
+      $da_user = Users::fetchDA($params['name']);
 
     if (empty($da_user))
       CoreUtils::notFound();

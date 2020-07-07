@@ -14,13 +14,12 @@ class PreviousUsername extends NSModel {
     ['user', 'class' => 'DeviantartUser'],
   ];
 
-  public static function record(string $user_id, string $username, string $_new) {
+  public static function record(string $user_id, string $username) {
     if (self::exists(['username' => $username]))
       return;
 
     self::create([
       'username' => $username,
-      '_new' => $_new,
       'user_id' => $user_id,
     ]);
   }

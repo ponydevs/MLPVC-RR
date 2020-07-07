@@ -12,8 +12,6 @@ use App\Models\User;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
-use function array_slice;
-use function count;
 
 class Users {
   public const RESERVATION_LIMIT = 4;
@@ -45,7 +43,7 @@ class Users {
 
     if (empty($user) && $column === 'name'){
       if (Regexes::$username->match($value)){
-        $user = self::fetchDA([$value]);
+        $user = self::fetchDA($value);
       }
     }
 
@@ -61,88 +59,71 @@ class Users {
    * Fetch user info from DeviantArt's API
    * If multiple usernames are passed as an array it will not return a value
    *
-   * @param string[] $usernames
+   * @param string $username
    *
    * @return DeviantartUser|null
    * @throws Exception
    */
-  public static function fetchDA(array $usernames):?DeviantartUser {
-    $count = count($usernames);
-    if ($count < 1)
-      throw new RuntimeException('No usernames specified');
-    else if ($count > 50)
-      throw new RuntimeException("Too many usernames specified ($count)");
-    $single_user = $count === 1;
-    if ($single_user){
-      $previous_name = PreviousUsername::find_by_username($usernames[0]);
-      if (!empty($previous_name)) {
-        return $previous_name->user;
-      }
-    }
-
-    $fetch_index = 0;
-    $fetch_params = [];
-    foreach ($usernames as $un){
-      $fetch_params["usernames[{$fetch_index}]"] = $un;
-      $fetch_index++;
+  public static function fetchDA(string $username):?DeviantartUser {
+    $via_previous_name = PreviousUsername::find_by_username($username);
+    if (!empty($via_previous_name)) {
+      return $via_previous_name->user;
     }
 
     if (Auth::$session->access === null)
       return null;
 
+    $fetch_params = ["usernames[0]" => $username];
+
     try {
       $user_data = DeviantArt::request('user/whois', null, $fetch_params);
     }
     catch (CURLRequestException $e){
-      if ($single_user)
-        return null;
-      else throw new RuntimeException('Failed to fetch users: '.$e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
+      return null;
     }
 
-    if ($single_user && empty($user_data['results'][0]))
+    if (empty($user_data['results'][0]))
       return null;
 
-    foreach ($user_data['results'] as $user_data){
-      $save_success = false;
-      $id = strtolower($user_data['userid']);
+    $user_data  = $user_data['results'][0];
+    $save_success = false;
+    $id = strtolower($user_data['userid']);
 
-      $da_user = DeviantartUser::find($id);
-      $user_exists = $da_user !== null;
-      if (!$user_exists) {
-        /** @var User $user */
-        $user = User::create([
-          'name' => $user_data['username'],
-        ]);
+    $da_user = DeviantartUser::find($id);
+    $user_exists = $da_user !== null;
+    if (!$user_exists) {
+      /** @var User $user */
+      $user = User::create([
+        'name' => $user_data['username'],
+      ]);
 
-        $da_user = new DeviantartUser([
-          'id' => $id,
-          'created_at' => date('c'),
-          'user_id' => $user->id,
-        ]);
-      }
-      else $user = $da_user->user;
-
-      $da_user->name = $user_data['username'];
-      $da_user->avatar_url = URL::makeHttps($user_data['usericon']);
-      if ($da_user->save())
-        $save_success = true;
-
-      $user->assignCorrectRole();
-
-      if (!$save_success)
-        throw new RuntimeException('Saving user data failed'.(Permission::sufficient('developer') ? ': '.DB::$instance->getLastError() : ''));
-
-      $names = array_slice($usernames, 0);
-      if ($user_exists && $da_user->name !== $usernames[0])
-        $names[] = $da_user->name;
-      foreach ($names as $name){
-        if (strcasecmp($name, $da_user->name) !== 0){
-          PreviousUsername::record($id, $name, $da_user->name);
-        }
-      }
-      if ($single_user)
-        return $da_user;
+      $da_user = new DeviantartUser([
+        'id' => $id,
+        'created_at' => date('c'),
+        'user_id' => $user->id,
+      ]);
     }
+    else $user = $da_user->user;
+
+    $da_user->name = $user_data['username'];
+    $da_user->avatar_url = URL::makeHttps($user_data['usericon']);
+    if ($da_user->save())
+      $save_success = true;
+
+    $user->assignCorrectRole();
+
+    if (!$save_success)
+      throw new RuntimeException('Saving user data failed'.(Permission::sufficient('developer') ? ': '.DB::$instance->getLastError() : ''));
+
+    if ($user_exists) {
+      $previous_name = $da_user->user->name;
+      if (strcasecmp($previous_name, $da_user->name) !== 0) {
+        $da_user->user->update_attributes(['name' => $da_user->name]);
+        PreviousUsername::record($da_user->id, $previous_name);
+      }
+    }
+
+    return $da_user;
   }
 
   /**
