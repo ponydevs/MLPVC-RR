@@ -276,13 +276,13 @@ class Appearance extends NSModel implements Linkable {
       }, $notes_rend);
     }
     $notes_rend = preg_replace_callback('/'.MOVIE_ID_PATTERN.'/', function ($a) {
-      $Ep = ShowHelper::getActual(null, 0, (int)$a[1], true);
+      $show = Show::find((int)$a[1]);
 
-      return !empty($Ep)
-        ? "<a href='{$Ep->toURL()}'>".CoreUtils::aposEncode(ShowHelper::shortenTitlePrefix($Ep->formatTitle(AS_ARRAY, 'title'))).'</a>'
+      return !empty($show)
+        ? "<a href='{$show->toURL()}'>".CoreUtils::aposEncode(ShowHelper::shortenTitlePrefix($show->formatTitle(AS_ARRAY, 'title'))).'</a>'
         : "<strong>{$a[0]}</strong>";
     }, $notes_rend);
-    $notes_rend = preg_replace_callback('/(^|[^\\\\])(?:#(\d+))(\'s?)?\b/', function ($a) {
+    $notes_rend = preg_replace_callback('/(^|\s)(?:#(\d+))(\'s?)?\b/', function ($a) {
 
       $appearance = DB::$instance->where('id', $a[2])->getOne('appearances');
 
