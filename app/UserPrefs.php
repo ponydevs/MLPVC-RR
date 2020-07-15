@@ -71,46 +71,46 @@ class UserPrefs extends GlobalSettings {
   /**
    * Sets a preference item's value
    *
-   * @param string $key
+   * @param string $name
    * @param mixed  $value
    * @param User   $for
    *
    * @return bool
    */
-  public static function set(string $key, $value, ?User $for = null):bool {
+  public static function set(string $name, $value, ?User $for = null):bool {
     if (empty($for)){
       if (!Auth::$signed_in)
-        throw new RuntimeException("Empty \$for when setting user preference $key to".var_export($value, true));
+        throw new RuntimeException("Empty \$for when setting user preference $name to".var_export($value, true));
       $for = Auth::$user;
     }
 
-    if (!array_key_exists($key, static::DEFAULTS))
-      Response::fail("Key $key is not allowed");
-    $default = static::DEFAULTS[$key];
+    if (!array_key_exists($name, static::DEFAULTS))
+      Response::fail("Key $name is not allowed");
+    $default = static::DEFAULTS[$name];
 
-    if (strpos($key, "a_") === 0)
+    if (strpos($name, "a_") === 0)
       Logs::logAction('staff_limits', [
-        'setting' => $key,
+        'setting' => $name,
         'allow' => $value,
         'user_id' => $for->id,
       ]);
 
-    $strict = isset(self::STRICT_COMPARE[$key]);
+    $strict = isset(self::STRICT_COMPARE[$name]);
 
-    if (UserPref::has($key, $for)){
+    if (UserPref::has($name, $for)){
       /** @var UserPref $pref */
-      $pref = UserPref::findFor($key, $for);
-      unset(Users::$preferences_cache[$for->id][$key]);
+      $pref = UserPref::findFor($name, $for);
+      unset(Users::$preferences_cache[$for->id][$name]);
       if ($strict ? $value === $default : $value == $default)
         return $pref->delete();
       else return $pref->update_attributes(['value' => $value]);
     }
     else if ($strict ? $value !== $default : $value != $default){
-      unset(Users::$preferences_cache[$for->id][$key]);
+      unset(Users::$preferences_cache[$for->id][$name]);
 
       return (new UserPref([
         'user_id' => $for->id,
-        'key' => $key,
+        'key' => $name,
         'value' => $value,
       ]))->save();
     }
@@ -127,16 +127,16 @@ class UserPrefs extends GlobalSettings {
   /**
    * Processes a preference item's new value
    *
-   * @param string $key
+   * @param string $name
    * @param mixed  $value
    *
    * @return mixed
    */
-  public static function process(string $key, $value = null) {
+  public static function process(string $name, $value = null) {
     if ($value === null)
       $value = isset($_REQUEST['value']) ? CoreUtils::trim($_REQUEST['value']) : null;
 
-    switch ($key){
+    switch ($name){
       case 'cg_itemsperpage':
         $thing = 'Color Guide items per page';
         if (!is_numeric($value))
@@ -176,13 +176,13 @@ class UserPrefs extends GlobalSettings {
       case 'a_postres':
       case 'a_reserve':
         if (Permission::insufficient('staff'))
-          Response::fail("You cannot change the $key preference");
+          Response::fail("You cannot change the $name preference");
 
         $value = $value ? 1 : 0;
       break;
 
       case 'pcg_slots':
-        Response::fail("$key is an internal setting and cannot be modified by users");
+        Response::fail("$name is an internal setting and cannot be modified by users");
     }
 
     return $value;

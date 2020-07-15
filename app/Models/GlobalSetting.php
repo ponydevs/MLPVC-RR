@@ -3,12 +3,10 @@
 namespace App\Models;
 
 /**
- * @property string $key
+ * @property string $name
  * @property string $val
- * @method static GlobalSetting|GlobalSetting[] find(...$args)
+ * @method static GlobalSetting find_by_name(string $name)
  */
 class GlobalSetting extends NSModel {
-  public static $primary_key = 'key';
-
   public static $table_name = 'settings';
 }
