@@ -5,6 +5,7 @@ require __DIR__.'/../config/init/monolog.php';
 
 use App\Auth;
 use App\CoreUtils;
+use App\DB;
 use App\DeviantArt;
 use App\Models\Session;
 
@@ -38,10 +39,7 @@ try {
 
   if (empty($user->deviantart_user->refresh)){
     CoreUtils::error_log(__FILE__ . ": DeviantArt user {$user->deviantart_user->id} had no refresh token, signing out all sessions.");
-    Session::update_all([
-      'set' => ['user_id' => null, 'updating' => false],
-      'conditions' => ['user_id' => $user->id],
-    ]);
+    DB::$instance->where('user_id', $user->id)->update('sessions', ['user_id' => null, 'updating' => false]);
     exit(4);
   }
 
