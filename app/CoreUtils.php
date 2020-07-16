@@ -61,7 +61,7 @@ class CoreUtils {
   public const LOGO_PATH_MAP = [
     'pony' => '/img/logos/pony.svg',
     'eqg' => '/img/logos/eqg.svg',
-    'pl' => '/img/logos/pl.png',
+    'pl' => '/img/logos/pl.svg',
   ];
 
   /**
