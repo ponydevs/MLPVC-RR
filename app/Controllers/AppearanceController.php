@@ -179,18 +179,24 @@ class AppearanceController extends ColorGuideController {
       break;
       case 'PUT':
       case 'POST':
-        $guide = (new Input('guide', function ($value){
-          if (!isset(CGUtils::GUIDE_MAP[$value]))
-            return Input::ERROR_INVALID;
-        }, [
-          Input::IS_OPTIONAL => false,
-          Input::CUSTOM_ERROR_MESSAGES => [
-            Input::ERROR_INVALID => 'Guide is invalid: @value',
-          ],
-        ]))->out();
+        // Force personal guides for non-staff
+        $guide = null;
+        if (Permission::sufficient('staff')) {
+          $guide = (new Input('guide', function ($value){
+            if (!isset(CGUtils::GUIDE_MAP[$value]))
+              return Input::ERROR_INVALID;
+          }, [
+            Input::IS_OPTIONAL => true,
+            Input::CUSTOM_ERROR_MESSAGES => [
+              Input::ERROR_INVALID => 'Guide is invalid: @value',
+            ],
+          ]))->out();
+        }
+
+        $this->guide = $guide;
 
         /** @var $data array */
-        $data = ['guide' => $guide];
+        $data = ['guide' => $this->guide];
 
         $label = (new Input('label', 'string', [
           Input::IN_RANGE => [2, 70],
@@ -234,7 +240,7 @@ class AppearanceController extends ColorGuideController {
         ]))->out();
 
         if ($this->creating){
-          if ($this->guide === null || Permission::insufficient('staff')){
+          if ($this->guide === null){
             $data['owner_id'] = Auth::$user->id;
           }
           if (empty($data['owner_id'])){
