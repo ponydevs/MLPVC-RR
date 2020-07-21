@@ -96,7 +96,7 @@ class CoreUtils {
       $merged[$key] = $item;
     $fix_query_arr = [];
     foreach ($merged as $key => $item){
-      if ($item === null || isset($to_remove[$key]) || isset(self::FIXPATH_EMPTY[$item]))
+      if ($item === null || isset($to_remove[$key]) || (is_string($item) && isset(self::FIXPATH_EMPTY[$item])))
         continue;
 
       $fix_query_arr[] = rtrim(urlencode($key).'='.urlencode($item), '=');

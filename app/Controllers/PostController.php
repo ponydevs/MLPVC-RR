@@ -77,9 +77,8 @@ class PostController extends Controller {
         try {
           $fullsize_provider = ImageProvider::getProvider($original_fullsize);
         }
-        catch (UnsupportedProviderException $e){ /* Ignore */
-        }
-        if ($fullsize_provider->name === 'derpibooru'){
+        catch (UnsupportedProviderException $e){ /* Ignore */ }
+        if (isset($fullsize_provider) && $fullsize_provider->name === 'derpibooru'){
           $new_source = Posts::checkImage($original_fullsize);
           if (!empty($new_source->fullsize) && !empty($new_source->preview)){
             $images_available = true;

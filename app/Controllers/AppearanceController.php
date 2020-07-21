@@ -1026,14 +1026,15 @@ class AppearanceController extends ColorGuideController {
           $linked_ids[] = $s->id;
         }
 
-        /** @var $raw_entries Show[] */
-        $raw_entries = DB::$instance
+        $query = DB::$instance
           ->orderBy('season', 'DESC')
           ->orderBy('episode', 'DESC')
           ->orderBy('no', 'DESC')
-          ->where('generation', null)
-          ->orWhere('generation', CGUtils::GUIDE_GENERATION_MAP[$this->appearance->guide])
-          ->get('show');
+          ->where('generation', null);
+        if (isset(CGUtils::GUIDE_GENERATION_MAP[$this->appearance->guide]))
+          $query = $query->orWhere('generation', CGUtils::GUIDE_GENERATION_MAP[$this->appearance->guide]);
+        /** @var $raw_entries Show[] */
+        $raw_entries = $query->get('show');
         $entries = [];
         foreach ($raw_entries as $entry){
           $entries[] = [
