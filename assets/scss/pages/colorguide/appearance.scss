@@ -108,6 +108,10 @@
     border: 1px solid burlywood;
     display: inline-block;
 
+    .notes-text {
+      white-space: pre-wrap;
+    }
+
     > span:not(:first-child) {
       display: none;
     }

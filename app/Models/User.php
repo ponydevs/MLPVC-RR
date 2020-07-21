@@ -319,9 +319,10 @@ class User extends NSModel implements Linkable {
     $posts = $this->getApprovedFinishedRequestContributions(false);
     if (!empty($posts))
       foreach ($posts as $post){
+        $entry = $post->approval_entry;
         PCGSlotHistory::record($this->id, 'post_approved', null, [
           'id' => $post->id,
-        ], $post->approval_entry->created_at);
+        ], $entry ? $entry->created_at : null);
       }
 
     # Take slots for existing appearances
