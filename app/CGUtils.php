@@ -444,7 +444,7 @@ class CGUtils {
     $color_circle_size = 17;
     $color_circle_right_margin = 5;
     $color_name_font_size = 12;
-    $regular_font_file = APPATH.'font/Celestia Medium Redux.ttf';
+    $regular_font_file = APPATH.'font/Celestia Redux Alternate.ttf';
     $pixelated_font_file = APPATH.'font/PixelOperator.ttf';
     if (!file_exists($regular_font_file))
       throw new RuntimeException('Font file missing');
