@@ -32,7 +32,7 @@ class AboutController extends Controller {
       $browser['browser_class'] = CoreUtils::browserNameToClass($browser['browser_name']);
 
     if ($session !== null){
-      $session->platform = $browser['platform'];
+      $session->platform = $browser['platform'] ?? 'Unknown';
       $session->browser_name = $browser['browser_name'];
       $session->browser_ver = $browser['browser_ver'];
       $session->save();

@@ -37,8 +37,10 @@ try {
     return;
   }
 
-  if (empty($user->deviantart_user->refresh)){
-    CoreUtils::error_log(__FILE__ . ": DeviantArt user {$user->deviantart_user->id} had no refresh token, signing out all sessions.");
+  $da_user = $user->deviantart_user;
+  if ($da_user === null || empty($da_user->refresh)){
+    $user_line = $da_user !== null ? "DeviantArt user {$da_user->id}" : "User #{$user->id}";
+    CoreUtils::error_log(__FILE__ . ": $user_line had no refresh token, signing out all sessions.");
     DB::$instance->where('user_id', $user->id)->update('sessions', ['user_id' => null, 'updating' => false]);
     exit(4);
   }
