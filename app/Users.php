@@ -122,9 +122,9 @@ class Users {
           continue;
 
         PreviousUsername::record($da_user->id, $old_name);
-        if ($i === 0) {
-          $da_user->user->update_attributes(['name' => $da_user->name]);
-        }
+      }
+      if (strcasecmp($da_user->user->name, $da_user->name) !== 0) {
+        $da_user->user->update_attributes(['name' => $da_user->name]);
       }
     }
 
