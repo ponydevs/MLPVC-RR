@@ -11,7 +11,7 @@ namespace App\Models;
  */
 class PreviousUsername extends NSModel {
   public static $belongs_to = [
-    ['user', 'class' => 'DeviantartUser'],
+    ['user', 'class' => 'DeviantartUser', 'foreign_key' => 'user_id'],
   ];
 
   public static function record(string $user_id, string $username) {
