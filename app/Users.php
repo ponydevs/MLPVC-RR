@@ -117,9 +117,14 @@ class Users {
 
     if ($user_exists) {
       $previous_name = $da_user->user->name;
-      if (strcasecmp($previous_name, $da_user->name) !== 0) {
-        $da_user->user->update_attributes(['name' => $da_user->name]);
-        PreviousUsername::record($da_user->id, $previous_name);
+      foreach ([$previous_name, $username] as $i => $old_name) {
+        if (strcasecmp($old_name, $da_user->name) === 0)
+          continue;
+
+        PreviousUsername::record($da_user->id, $old_name);
+        if ($i === 0) {
+          $da_user->user->update_attributes(['name' => $da_user->name]);
+        }
       }
     }
 
