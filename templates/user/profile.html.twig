@@ -143,11 +143,7 @@
               {% if discord_membership.isLinked %}
                 {% set sync_cooldown = constant('App\\Models\\DiscordMember::SYNC_COOLDOWN') %}
                 <p id="discord-sync-info" data-cooldown="{{ sync_cooldown }}">
-                  {% if discord_membership.isServerMember %}
-                  Server members' DiscordTag and avatar is updated automatically, but you can always use the button below to force an update.
-                {% else %}
-                  else echo "You can use the button below to force an update to {{ same_user ? 'your' : 'their' }} account information at any time. Server members' data is updated automatically.
-                  {% endif %}<br>
+                  You can use the button below to update {{ same_user ? 'your' : 'their' }} account information at any time.<br>
                   {{ same_user ? 'Your' : 'Their' }} account information was last updated {{ time_tag(discord_membership.last_synced) }}.
                   {%- if not discord_membership.canBeSynced -%}
                     <span class="wait-message"> At least {{ make_plural('minute', sync_cooldown/60, constant('PREPEND_NUMBER')) }} must pass before syncing again.</span>

@@ -181,16 +181,4 @@ class DiscordAuthController extends Controller {
     Response::success("$Your Discord account was successfully unlinked.".($this->same_user
         ? ' If you want to verify it yourself, check your Authorized Apps in your settings.' : ''));
   }
-
-  public function botUpdate($params) {
-    if (!hash_equals(CoreUtils::env('WS_SERVER_KEY'), $_POST['key']))
-      CoreUtils::noPerm();
-
-    $discordUser = DiscordMember::find($params['id']);
-    if (empty($discordUser) || !$discordUser->isLinked())
-      Response::done();
-
-    $discordUser->sync($this->provider, true);
-    Response::done();
-  }
 }

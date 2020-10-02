@@ -88,4 +88,3 @@ $private_api_endpoint('/user/[i:id]/pcg/slots', 'PersonalGuideController#slotsAp
 // "API" Endpoints
 $router->map('POST', '/discord-connect/sync/[i:user_id]', 'DiscordAuthController#sync');
 $router->map('POST', '/discord-connect/unlink/[i:user_id]', 'DiscordAuthController#unlink');
-$router->map('POST', '/discord-connect/bot-update/[i:id]', 'DiscordAuthController#botUpdate');
