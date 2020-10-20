@@ -149,13 +149,11 @@ class Pagination {
     if (!($this->page === 1 && $this->max_pages === 1)){
       $Items = [];
       $previousPage = 0;
-      $nr = 0;
       $currentIndex = 0;
 
       if ($this->max_pages < 7){
         for ($i = 1; $i <= $this->max_pages; $i++){
-          $Items[$nr] = $this->_makeItem($i, $currentIndex, $nr++);
-          $nr++;
+          $Items[] = $this->_makeItem($i, $currentIndex, count($Items));
         }
       }
       else {
@@ -169,12 +167,11 @@ class Pagination {
               $item->attr('data-baseurl', $this->_makeLink('*'));
             }
             else $item = $this->_makeItem($previousPage + 1);
-            $Items[$nr++] = $item;
+            $Items[] = $item;
           }
           $previousPage = $i;
 
-          $Items[$nr] = $this->_makeItem($i, $currentIndex, $nr);
-          $nr++;
+          $Items[] = $this->_makeItem($i, $currentIndex, count($Items));
         }
       }
 
