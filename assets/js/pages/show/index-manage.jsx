@@ -66,7 +66,7 @@
 				<input type="number" min="1" name="no" placeholder="Overall #" required>
 			</div>`,
       $.mk('label').append(
-        '<span>Title (5-35 chars.)</span>',
+        '<span>Title (5-100 chars.)</span>',
         $.mk('input').attr({
           type: 'text',
           minlength: 5,

@@ -208,42 +208,11 @@ class ShowController extends Controller {
           ],
         ]))->out();
 
-        $update['title'] = (new Input('title', function (&$value, $range) use ($is_episode) {
-          $prefixed = Regexes::$ep_title_prefix->match($value, $match);
-          if ($prefixed){
-            if ($is_episode){
-              return 'prefix-movie-only';
-            }
-            if (!isset(ShowHelper::ALLOWED_PREFIXES[$match[1]])){
-              $most_similar = null;
-              $most_matching = 0;
-              foreach (ShowHelper::ALLOWED_PREFIXES as $prefix => $shorthand){
-                foreach ([$prefix, $shorthand] as $test){
-                  $matching_chars = similar_text(strtolower($match[1]), strtolower($test));
-                  if ($matching_chars >= 3 && $matching_chars > $most_matching){
-                    $most_matching = $matching_chars;
-                    $most_similar = $prefix;
-                  }
-                }
-              }
-              $did_you_mean = $most_similar !== null ? "<em>Did you mean <span class='color-ui'>$most_similar</span></em>?" : '';
-              Response::fail("Unsupported prefix: {$match[1]}. $did_you_mean");
-            }
-
-            $title = ShowHelper::removeTitlePrefix($value);
-            if (Input::checkStringLength($title, $range, $code))
-              return $code;
-
-            $value = "{$match[1]}: $title";
-          }
-          else if (Input::checkStringLength($value, $range, $code))
-            return $code;
-        }, [
-          Input::IN_RANGE => [5, 35],
+        $update['title'] = (new Input('title', 'string', [
+          Input::IN_RANGE => [5, 100],
           Input::CUSTOM_ERROR_MESSAGES => [
             Input::ERROR_MISSING => "$what title is missing",
             Input::ERROR_RANGE => "$what title must be between @min and @max characters",
-            'prefix-movie-only' => 'Prefixes can only be used for movies',
           ],
         ]))->out();
         CoreUtils::checkStringValidity($update['title'], "$what title", INVERSE_EP_TITLE_PATTERN);
