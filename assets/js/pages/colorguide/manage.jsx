@@ -167,7 +167,7 @@
           return;
         $ponyLabel = $content.children('h1');
       }
-      else $ponyLabel = $this.siblings().first();
+      else $ponyLabel = $li.find('.appearance-name');
 
       $.Dialog.request(title, $PonyEditorFormTemplate.clone(true, true), 'Save', function($form) {
         let appearanceID;
@@ -1901,7 +1901,7 @@
       $li = $this.closest('[id^=p]'),
       appearanceID = $li.attr('id').substring(1),
       ponyName = !AppearancePage
-        ? $this.parent().text().trim()
+        ? $li.find('.appearance-name').text().trim()
         : $content.children('h1').text(),
       title = 'Editing appearance: ' + ponyName;
 
