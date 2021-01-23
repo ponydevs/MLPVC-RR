@@ -220,8 +220,9 @@ class Show extends NSModel implements Linkable {
    */
   public function willHaveAiredBy():int {
     $airtime = $this->airs->getTimestamp();
-    if ($this->is_episode)
-      $add_minutes = $this->parts * 30;
+    if ($this->is_episode) {
+      $add_minutes = $this->generation === ShowHelper::GEN_PL ? 15 : ($this->parts * 30);
+    }
     else $add_minutes = 120;
 
     return strtotime("+{$add_minutes} minutes", $airtime);
