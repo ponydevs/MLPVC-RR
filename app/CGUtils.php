@@ -663,6 +663,10 @@ class CGUtils {
       }
       [$png_width, $png_height] = $img_size;
       $png = imagecreatefrompng($png_path);
+      if ($png === false) {
+        throw new RuntimeException("Could not create image from path $png_path");
+      }
+
       imagesavealpha($png, true);
 
       $all_colors = [];
