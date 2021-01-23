@@ -55,8 +55,10 @@ class AppearanceController extends ColorGuideController {
     $cm_count = count($this->appearance->cutiemarks);
     $cmv = $cm_count > 0 ? ' and cutie mark '.CoreUtils::makePlural('vector', $cm_count) : '';
 
+    $guide_name = CGUtils::GUIDE_MAP[$this->guide].' Color Guide';
+
     $settings = [
-      'title' => "{$this->appearance->label} - Color Guide",
+      'title' => "{$this->appearance->label} - $guide_name",
       'heading' => $this->appearance->getBabelLabel(),
       'css' => ['pages/colorguide/guide', true],
       'js' => ['jquery.ctxmenu', 'pages/colorguide/guide', true],
