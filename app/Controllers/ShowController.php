@@ -434,7 +434,7 @@ class ShowController extends Controller {
 
         /** @var $appearances Appearance[] */
         $entries = DB::$instance->disableAutoClass()
-          ->where('id', 0, '!=')
+          ->where('id', CGUtils::HIDDEN_APPEARANCES, '!=')
           ->where('owner_id IS NULL')
           ->orderBy('label')
           ->get('appearances', null, $columns);

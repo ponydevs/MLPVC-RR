@@ -186,7 +186,7 @@ class Appearances {
       Response::fail('Re-index failed, ElasticSearch server is down!');
     }
     /** @var $appearances Appearance[] */
-    $appearances = DB::$instance->where('id != 0')->where('owner_id IS NULL')->get('appearances');
+    $appearances = DB::$instance->where('id', CGUtils::HIDDEN_APPEARANCES, '!=')->where('owner_id IS NULL')->get('appearances');
 
     $params = ['body' => []];
     foreach ($appearances as $i => $a){

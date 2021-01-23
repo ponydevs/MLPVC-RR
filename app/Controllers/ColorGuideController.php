@@ -296,8 +296,13 @@ class ColorGuideController extends Controller {
 
     if (!file_exists(CGUtils::GUIDE_EXPORT_PATH))
       CGUtils::saveExportData();
-    if ($this->guide !== CGUtils::GUIDE_PL) {
-      $universal_appearance = Appearance::find(0);
+    switch ($this->guide) {
+      case CGUtils::GUIDE_FIM:
+        $universal_appearance = Appearance::find(CGUtils::HIDDEN_APPEARANCES[0]);
+      break;
+      case CGUtils::GUIDE_PL:
+        $universal_appearance = Appearance::find(CGUtils::HIDDEN_APPEARANCES[1]);
+      break;
     }
     $settings = [
       'title' => $title,

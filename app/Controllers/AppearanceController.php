@@ -678,7 +678,7 @@ class AppearanceController extends ColorGuideController {
 
         $Appearances = DB::$instance->disableAutoClass()
           ->where('guide', $this->guide)
-          ->where('id', [0, $this->appearance->id], '!=')
+          ->where('id', [...CGUtils::HIDDEN_APPEARANCES, $this->appearance->id], '!=')
           ->orderBy('label')
           ->get('appearances', null, 'id,label');
 
