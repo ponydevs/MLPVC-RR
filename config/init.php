@@ -2,8 +2,8 @@
 
 // Autoload classes \\
 require __DIR__.'/init/minimal.php';
-require __DIR__.'/init/kint.php';
 require __DIR__.'/init/monolog.php';
+require __DIR__.'/init/kint.php';
 require __DIR__.'/init/twig.php';
 
 // Wait a bit if assets are still compiling

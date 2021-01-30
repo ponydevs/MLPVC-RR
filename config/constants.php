@@ -1,6 +1,5 @@
 <?php
 
-use App\CoreUtils;
 use App\Regexes;
 use App\RegExp;
 
@@ -30,7 +29,7 @@ define('ONLY_RESERVATIONS', 2);
 define('POSTGRES_INTEGER_MIN', -2_147_483_648);
 define('POSTGRES_INTEGER_MAX', 2_147_483_647);
 # string
-define('FULL_LOG_PATH', PROJPATH.'logs/'.CoreUtils::env('LOG_PATH'));
+define('FULL_LOG_PATH', PROJPATH.'logs/'.$_ENV['LOG_PATH']);
 define('OAUTH_REDIRECT_URI', ABSPATH.'da-auth');
 define('GDPR_IP_PLACEHOLDER', '127.168.80.82');
 define('DA_AUTHORIZED_APPS_URL', 'https://www.deviantart.com/settings/apps');
@@ -40,7 +39,7 @@ define('SETTINGS_PAGE', '/settings');
 define('AND_DIE', true);
 /** @see \App\Models\Show::formatTitle() */
 define('AS_ARRAY', true);
-/** @see CoreUtils::makePlural() */
+/** @see \App\CoreUtils::makePlural() */
 define('PREPEND_NUMBER', true);
 /**
  * @see \App\Tags::getActual()
