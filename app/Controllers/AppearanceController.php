@@ -55,7 +55,7 @@ class AppearanceController extends ColorGuideController {
     $cm_count = count($this->appearance->cutiemarks);
     $cmv = $cm_count > 0 ? ' and cutie mark '.CoreUtils::makePlural('vector', $cm_count) : '';
 
-    $guide_name = CGUtils::GUIDE_MAP[$this->guide].' Color Guide';
+    $guide_name = ($this->owner ? CoreUtils::posess($this->owner->name).' Personal' : CGUtils::GUIDE_MAP[$this->guide]).' Color Guide';
 
     $settings = [
       'title' => "{$this->appearance->label} - $guide_name",
@@ -267,6 +267,7 @@ class AppearanceController extends ColorGuideController {
           $this->appearance->reindex();
         }
 
+        /** @var Appearance $edited_appearance */
         $edited_appearance = $this->creating ? $new_appearance : $this->appearance;
 
         if ($this->creating){
@@ -360,7 +361,7 @@ class AppearanceController extends ColorGuideController {
               throw $e;
           }
           catch (NoNodesAvailableException $e){
-            CoreUtils::error_log('ElasticSearch server was down when server attempted to remove appearance '.$this->appearance->id);
+            CoreUtils::logError('ElasticSearch server was down when server attempted to remove appearance '.$this->appearance->id);
           }
         }
 

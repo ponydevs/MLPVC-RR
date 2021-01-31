@@ -25,7 +25,7 @@ CoreUtils::outputCSPHeaders();
 function fatal_error(string $cause, ?Throwable $e = null) {
   HTTP::statusCode(503);
   if ($e !== null)
-    CoreUtils::error_log(sprintf("%s: Fatal error of type $cause; %s\nStack trace:\n%s", __FILE__, $e->getMessage(), $e->getTraceAsString()));
+    CoreUtils::logError(sprintf("%s: Fatal error of type $cause; %s\nStack trace:\n%s", __FILE__, $e->getMessage(), $e->getTraceAsString()));
   $bc = new NavBreadcrumb('Error');
   $bc->setChild(HTTP::STATUS_CODES[503]);
   $scope = [

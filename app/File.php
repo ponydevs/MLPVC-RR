@@ -39,7 +39,7 @@ class File {
     // @ required to avoid permission error messages causing premature output in local dev
     $result = @chmod($name, FILE_PERM);
     if ($result !== true){
-      CoreUtils::error_log(__METHOD__.": Fail for file $name");
+      CoreUtils::logError(__METHOD__.": Fail for file $name");
       $result = false;
     }
 

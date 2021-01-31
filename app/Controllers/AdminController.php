@@ -424,7 +424,7 @@ class AdminController extends Controller {
     }
     catch (Throwable $e){
       $errmsg = 'Failed to send hello: '.$e->getMessage();
-      CoreUtils::error_log($errmsg."\n".$e->getTraceAsString());
+      CoreUtils::logError($errmsg."\n".$e->getTraceAsString());
       Response::fail($errmsg);
     }
 

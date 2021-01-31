@@ -113,7 +113,7 @@ class PostController extends Controller {
           ]);
         }
         catch (Exception $e){
-          CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+          CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
         BrokenPost::record($this->post->id, $response_code, $failing_url, $old_reserver ?? $this->post->reserved_by);
 
@@ -290,7 +290,7 @@ class PostController extends Controller {
           $response['li'] = $this->post->getLi();
         }
         catch (Exception $e){
-          CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+          CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
         if ($this->is_user_reserver)
           $response['message'] .= ' '.self::$CONTRIB_THANKS;
@@ -374,7 +374,7 @@ class PostController extends Controller {
 
         $Image = $this->_checkImage();
         if (!is_object($Image)){
-          CoreUtils::error_log("Getting post image failed\n".var_export($Image, true));
+          CoreUtils::logError("Getting post image failed\n".var_export($Image, true));
           Response::fail('Getting post image failed. If this persists, please <a class="send-feedback">let us know</a>.');
         }
 
@@ -426,7 +426,7 @@ class PostController extends Controller {
           ]);
         }
         catch (Exception $e){
-          CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+          CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
 
         Response::done(['id' => $post->getIdString(), 'kind' => $kind]);
@@ -449,7 +449,7 @@ class PostController extends Controller {
           ]);
         }
         catch (Exception $e){
-          CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+          CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
 
         Response::done();
@@ -507,7 +507,7 @@ class PostController extends Controller {
           ]);
         }
         catch (Exception $e){
-          CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+          CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
 
         if (!empty($message))
@@ -548,7 +548,7 @@ class PostController extends Controller {
           ]);
         }
         catch (Exception $e){
-          CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+          CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
 
         Response::done();
@@ -691,7 +691,7 @@ class PostController extends Controller {
       ]);
     }
     catch (Exception $e){
-      CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+      CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
     }
 
     Response::done();
@@ -801,7 +801,7 @@ class PostController extends Controller {
       ]);
     }
     catch (Exception $e){
-      CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+      CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
     }
 
     Response::success('Reservation added', ['id' => $reservation->getIdString()]);

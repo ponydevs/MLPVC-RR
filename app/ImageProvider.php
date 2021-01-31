@@ -146,7 +146,7 @@ class ImageProvider {
         }
 
         if (!isset($data['processed'])){
-          CoreUtils::error_log("Invalid Derpibooru response for ID $id\n".var_export($data, true));
+          CoreUtils::logError("Invalid Derpibooru response for ID $id\n".var_export($data, true));
           throw new RuntimeException('Derpibooru returned an invalid API response. This issue has been logged, please <a class="send-feedback">remind us</a> to take a look.');
         }
 

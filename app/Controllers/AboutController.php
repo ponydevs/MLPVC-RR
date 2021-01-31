@@ -6,6 +6,7 @@ use App\CoreUtils;
 use App\Models\Session;
 use App\Permission;
 use App\Response;
+use Monolog\Logger;
 
 class AboutController extends Controller {
   public function index() {
@@ -26,8 +27,8 @@ class AboutController extends Controller {
     }
     else $session = null;
     $browser = CoreUtils::detectBrowser($user_agent);
-    if (empty($browser['platform']))
-      CoreUtils::error_log('Could not find platform based on the following UA string: '.preg_replace('/'.INVERSE_PRINTABLE_ASCII_PATTERN.'/', '', $user_agent));
+    if (!empty($user_agent) && empty($browser['platform']))
+      CoreUtils::logError('Could not find platform based on the following UA string: '.preg_replace('/'.INVERSE_PRINTABLE_ASCII_PATTERN.'/', '', $user_agent), Logger::WARNING);
     if (!empty($browser['browser_name']))
       $browser['browser_class'] = CoreUtils::browserNameToClass($browser['browser_name']);
 

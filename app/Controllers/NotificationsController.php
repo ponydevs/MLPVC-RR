@@ -30,7 +30,7 @@ class NotificationsController extends Controller {
       Response::done(['list' => $notifs]);
     }
     catch (Throwable $e){
-      CoreUtils::error_log('Exception caught when fetching notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
+      CoreUtils::logError('Exception caught when fetching notifications: '.$e->getMessage()."\n".$e->getTraceAsString());
       Response::fail('An error prevented the notifications from appearing. If this persists, <a class="send-feedback">let us know</a>.');
     }
   }

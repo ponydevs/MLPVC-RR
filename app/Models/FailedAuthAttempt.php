@@ -41,7 +41,7 @@ class FailedAuthAttempt extends NSModel {
     $allow = $avg > $threshold;
 
     if (!$allow)
-      CoreUtils::error_log("Blocked login attempt from $ip due to the average time between the last $last login attempts ({$avg}s) falling below the {$threshold}s threshold");
+      CoreUtils::logError("Blocked login attempt from $ip due to the average time between the last $last login attempts ({$avg}s) falling below the {$threshold}s threshold");
 
     return $allow;
   }

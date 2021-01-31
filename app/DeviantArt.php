@@ -107,7 +107,7 @@ class DeviantArt {
       throw new CURLRequestException(rtrim("cURL fail for URL \"$requestURI\"", ' ;'), $responseCode, $curlError);
 
     if (empty($response)){
-      CoreUtils::error_log(__METHOD__.": Empty response (HTTP $responseCode)\nURI: $requestURI\nResponse headers:\n$http_response_header\ncURL error: $curlError");
+      CoreUtils::logError(__METHOD__.": Empty response (HTTP $responseCode)\nURI: $requestURI\nResponse headers:\n$http_response_header\ncURL error: $curlError");
 
       return null;
     }
@@ -142,7 +142,7 @@ class DeviantArt {
         if ($deviation !== null)
           $deviation->save();
 
-        CoreUtils::error_log("Saving local data for $id@$provider failed: ".$e->getMessage()."\n".$e->getTraceAsString());
+        CoreUtils::logError("Saving local data for $id@$provider failed: ".$e->getMessage()."\n".$e->getTraceAsString());
 
         if ($e->getCode() === 404){
           if ($deviation !== null)
@@ -262,7 +262,7 @@ class DeviantArt {
         return null;
       }
 
-      CoreUtils::error_log('Caught '.get_class($e).': '.$e->getMessage()."\nTrace:\n".var_export($trace, true));
+      CoreUtils::logError('Caught '.get_class($e).': '.$e->getMessage()."\nTrace:\n".var_export($trace, true));
     }
     catch (IdentityProviderException $e){
       if (Cookie::exists('access')){
@@ -275,8 +275,11 @@ class DeviantArt {
           $data = $response_body;
         else $data = JSON::decode($response_body);
 
-        if ($data['error_description'] === 'User has revoked access.')
-          return null;
+        switch($data['error_description']){
+          case 'User has revoked access.':
+          case 'The refresh_token is invalid.':
+            return null;
+        }
 
         $_GET['error'] = rawurlencode($data['error']);
         $_GET['error_description'] = !empty($data['error_description']) ? $data['error_description'] : (self::OAUTH_RESPONSE[$data['error']] ?? '');
@@ -285,7 +288,7 @@ class DeviantArt {
         $_GET['error'] = 'server_error';
         $_GET['error_description'] = $e->getMessage();
       }
-      CoreUtils::error_log(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
+      CoreUtils::logError(__METHOD__.' threw IdentityProviderException: '.$e->getMessage()."\nResponse body:\n$response_body\nTrace:\n".$e->getTraceAsString());
 
       return null;
     }
@@ -395,7 +398,7 @@ class DeviantArt {
       }
       catch (Throwable $e){
         $code = ($e instanceof CURLRequestException ? 'HTTP ' : '').$e->getCode();
-        CoreUtils::error_log(__FILE__, sprintf('Session refresh failed for user #%d | %s (%s)', Auth::$user->id, $e->getMessage(), $code));
+        CoreUtils::logError(__FILE__, sprintf('Session refresh failed for user #%d | %s (%s)', Auth::$user->id, $e->getMessage(), $code));
         Auth::$session->delete();
         Auth::$signed_in = false;
         Auth::$user = null;

@@ -208,7 +208,7 @@ class Input {
           throw new RuntimeException(rtrim('Could not decode JSON; '.$e->getMessage(), '; '));
         }
         catch (Throwable $e){
-          CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
+          CoreUtils::logError(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
 
           return self::ERROR_INVALID;
         }
@@ -292,7 +292,7 @@ class Input {
     }
     if ($this->_silentFail){
       if (!$this->_noLog)
-        CoreUtils::error_log("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
+        CoreUtils::logError("Silenced Input validation error: $message\nKey: $this->_key\nOptions: _source={$this->_source}, _origValue={$this->_origValue}, _respond={$this->_respond}, request_uri={$_SERVER['REQUEST_URI']}");
 
       return;
     }

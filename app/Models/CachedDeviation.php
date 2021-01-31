@@ -68,4 +68,8 @@ class CachedDeviation {
 
     return "<a class='deviation-link with-preview' href='http://{$this->provider}/{$this->id}'><img src='{$this->preview}' alt='$stitle'><span>$stitle</span></a>";
   }
+
+  public function delete():void {
+    RedisHelper::del(self::getCacheKey($this->id, $this->provider));
+  }
 }

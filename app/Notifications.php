@@ -58,7 +58,7 @@ class Notifications {
       self::markRead($NotifID, $action);
     }
     catch (ServerConnectionFailureException $e){
-      CoreUtils::error_log("Notification server down!\n".$e->getMessage()."\n".$e->getTraceAsString());
+      CoreUtils::logError("Notification server down!\n".$e->getMessage()."\n".$e->getTraceAsString());
 
       // Attempt to mark as read if exists since users won't get a live update anyway if the server is down
       $notif = Notification::find($NotifID);
@@ -71,7 +71,7 @@ class Notifications {
         Response::fail('Notification server is down! Please <a class="send-feedback">let us know</a>.');
     }
     catch (Exception $e){
-      CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+      CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
       if (!$silent)
         Response::fail('SocketEvent Error: '.$e->getMessage());
     }

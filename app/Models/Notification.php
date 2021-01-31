@@ -115,7 +115,7 @@ class Notification extends NSModel {
       CoreUtils::socketEvent('notify-pls', ['user' => $recipient_id]);
     }
     catch (ServerConnectionFailureException $e){
-      CoreUtils::error_log("Error while notifying $recipient_id with type $type (data:".JSON::encode($data).")\nError message: {$e->getMessage()}\nTrace:\n{$e->getTraceAsString()}");
+      CoreUtils::logError("Error while notifying $recipient_id with type $type (data:".JSON::encode($data).")\nError message: {$e->getMessage()}\nTrace:\n{$e->getTraceAsString()}");
 
       return 'Notification server is down! Please <a class="send-feedback">let us know</a>.';
     }

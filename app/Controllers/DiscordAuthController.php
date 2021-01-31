@@ -79,7 +79,7 @@ class DiscordAuthController extends Controller {
     }
     catch (DiscordIdentityProviderException $e){
       if (CoreUtils::contains($e->getMessage(), 'invalid_grant')){
-        CoreUtils::error_log('Discord connection resulted in invalid_grant error, redirecting to beginning');
+        CoreUtils::logError('Discord connection resulted in invalid_grant error, redirecting to beginning');
         HTTP::tempRedirect('/discord-connect/begin');
       }
       throw $e;
@@ -159,14 +159,15 @@ class DiscordAuthController extends Controller {
         $status_code = $res->getStatusCode();
       }
       catch (RequestException $e){
-        if ((string)$e->getResponse()->getBody() === '{"error": "invalid_client"}'){
+        $response = $e->getResponse();
+        if ($response !== null && (string)$response->getBody() === '{"error": "invalid_client"}'){
           $status_code = 200;
         }
         else throw $e;
       }
       if ($status_code !== 200){
         // Revoke failed
-        CoreUtils::error_log("Revoking Discord access failed for {$this->target->name}, details:\n".JSON::encode([
+        CoreUtils::logError("Revoking Discord access failed for {$this->target->name}, details:\n".JSON::encode([
             'statusCode' => $res->getStatusCode(),
             'body' => (string)$res->getBody(),
           ], JSON_PRETTY_PRINT));

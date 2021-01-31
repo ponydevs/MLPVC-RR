@@ -14,6 +14,7 @@ use App\Permission;
 use App\Response;
 use App\Twig;
 use Exception;
+use Monolog\Logger;
 
 class AuthController extends Controller {
   public function begin() {
@@ -47,7 +48,7 @@ class AuthController extends Controller {
         $da_user = DeviantArt::exchangeForAccessToken($_GET['code']);
       }
       catch (Exception $e){
-        CoreUtils::error_log(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
+        CoreUtils::logError(__METHOD__.': '.$e->getMessage()."\n".$e->getTraceAsString());
         FailedAuthAttempt::record();
         $this->_error('server_error');
       }
@@ -120,9 +121,9 @@ class AuthController extends Controller {
       $this->_redirectBack();
 
     if ($err !== 'time_out')
-      CoreUtils::error_log(rtrim("DeviantArt authentication error ($err): $errdesc", ': '));
+      CoreUtils::logError(rtrim("DeviantArt authentication error ($err): $errdesc", ': '), Logger::WARNING);
 
-    HTTP::statusCode(500);
+    HTTP::statusCode(403);
     CoreUtils::loadPage('ErrorController::auth', [
       'title' => 'DeviantArt authentication error',
       'js' => [true],

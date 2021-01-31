@@ -556,7 +556,7 @@ class Appearance extends NSModel implements Linkable {
       CoreUtils::elasticClient()->update($this->toElasticArray(false, true));
     }
     catch (ElasticNoNodesAvailableException|ElasticServerErrorResponseException $e){
-      CoreUtils::error_log("ElasticSearch server was down when server attempted to index appearance {$this->id}");
+      CoreUtils::logError("ElasticSearch server was down when server attempted to index appearance {$this->id}");
     }
     catch (ElasticMissing404Exception $e){
       CoreUtils::elasticClient()->update($this->toElasticArray(false));
@@ -960,7 +960,7 @@ class Appearance extends NSModel implements Linkable {
       $created = false;
     }
     if (!$created){
-      CoreUtils::error_log(__METHOD__.": Failed to add tag {$tag->name} (#{$tag->id}) to appearance {$this->label} (#{$this->id}), skipping");
+      CoreUtils::logError(__METHOD__.": Failed to add tag {$tag->name} (#{$tag->id}) to appearance {$this->label} (#{$this->id}), skipping");
 
       return $this;
     }

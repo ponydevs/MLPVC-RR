@@ -190,7 +190,7 @@ class ColorGroupController extends ColorGuideController {
             continue;
 
           $colorError = true;
-          CoreUtils::error_log(__METHOD__.': Database error triggered by user '.Auth::$user->name.' ('.Auth::$user->id.") while saving colors:\n".JSON::encode($c->errors, JSON_PRETTY_PRINT));
+          CoreUtils::logError(__METHOD__.': Database error triggered by user '.Auth::$user->name.' ('.Auth::$user->id.") while saving colors:\n".JSON::encode($c->errors, JSON_PRETTY_PRINT));
         }
         if (!$this->creating && !empty($removedColors)){
           foreach ($removedColors as $color)

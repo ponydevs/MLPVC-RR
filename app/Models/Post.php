@@ -73,7 +73,7 @@ class Post extends NSModel implements Linkable {
       ]);
     }
     catch (Throwable $e){
-      CoreUtils::error_log("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
+      CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
     }
   }
 
@@ -205,7 +205,7 @@ class Post extends NSModel implements Linkable {
     try {
       $deviation = DeviantArt::getCachedDeviation($this->deviation_id);
     } catch (CURLRequestException $e) {
-      CoreUtils::error_log($e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
+      CoreUtils::logError($e->getMessage()."\nStack trace:\n".$e->getTraceAsString());
       $deviation = null;
     }
     if ($deviation === null){

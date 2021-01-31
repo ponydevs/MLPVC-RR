@@ -265,7 +265,7 @@ class CoreUtils {
   public static function loadPage(string $method_name, array $options = []) {
     if (self::isJSONExpected()){
       HTTP::statusCode(400);
-      self::error_log(__METHOD__.": JSON expected, but this was called instead.\nView: $method_name\nOptions:\n".var_export($options, true)."\nStacktrace:\n".(new Exception())->getTraceAsString());
+      self::logError(__METHOD__.": JSON expected, but this was called instead.\nView: $method_name\nOptions:\n".var_export($options, true)."\nStacktrace:\n".(new Exception())->getTraceAsString());
       $path = self::escapeHTML($_SERVER['REQUEST_URI']);
       Response::fail("The requested endpoint ($path) does not support JSON responses");
     }
@@ -1401,7 +1401,7 @@ class CoreUtils {
     return mb_strlen($data, '8bit');
   }
 
-  public static function error_log(string $message, int $severity = Logger::ERROR) {
+  public static function logError(string $message, int $severity = Logger::ERROR) {
     global $logger;
 
     /** @var $logger Logger */
