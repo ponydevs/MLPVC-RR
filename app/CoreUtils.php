@@ -265,7 +265,7 @@ class CoreUtils {
   public static function loadPage(string $method_name, array $options = []) {
     if (self::isJSONExpected()){
       HTTP::statusCode(400);
-      self::logError(__METHOD__.": JSON expected, but this was called instead.\nView: $method_name\nOptions:\n".var_export($options, true)."\nStacktrace:\n".(new Exception())->getTraceAsString());
+      self::logError(__METHOD__.": JSON expected, but this was called instead.\nView: $method_name\nOptions:\n".var_export($options, true)."\nStacktrace:\n".(new Exception())->getTraceAsString(), Logger::WARNING);
       $path = self::escapeHTML($_SERVER['REQUEST_URI']);
       Response::fail("The requested endpoint ($path) does not support JSON responses");
     }
@@ -1019,22 +1019,26 @@ class CoreUtils {
   /**
    * Detect user's web browser based on user agent
    *
-   * @param string|null $user_agent User-Agent string to check
+   * @param string|null $in_user_agent User-Agent string to check
    *
    * @return array
    */
-  public static function detectBrowser($user_agent = null) {
-    $return = ['user_agent' => !empty($user_agent) ? $user_agent : ($_SERVER['HTTP_USER_AGENT'] ?? '')];
-    $result = new Parser($return['user_agent']);
+  public static function detectBrowser($in_user_agent = null) {
+    $user_agent = !empty($in_user_agent) ? $in_user_agent : ($_SERVER['HTTP_USER_AGENT'] ?? '');
+    $result = new Parser($user_agent);
     if (!empty($result->browser->name)){
-      $return['browser_name'] = $result->browser->name;
+      $browser_name = $result->browser->name;
 
       if (!empty($result->browser->version))
-        $return['browser_ver'] = $result->browser->version->value;
+        $browser_ver = $result->browser->version->value;
     }
-    $return['platform'] = $result->os->toString();
 
-    return $return;
+    return [
+      'user_agent' => $user_agent,
+      'browser_name' => $browser_name ?? '',
+      'browser_ver' => $browser_ver ?? '',
+      'platform' => $result->os->toString() ?? '',
+    ];
   }
 
   // Converts a browser name to it's equivalent class name

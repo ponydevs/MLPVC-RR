@@ -188,7 +188,15 @@ class DeviantArt {
           }
         break;
         case 'link':
-          $stashpage = HTTP::legitimateRequest("http://$provider/$id");
+          try {
+            $stashpage = HTTP::legitimateRequest("http://$provider/$id");
+          } catch(CURLRequestException $e) {
+            if (str_contains($e->getMessage(), 'x-cache: Error from cloudfront')) {
+              return null;
+            }
+
+            throw $e;
+          }
           if (!empty($stashpage['response'])){
             preg_match('/<span class="text">([A-Za-z\d]+) download,/', $stashpage['response'], $matches);
             if (!empty($matches[1]))
