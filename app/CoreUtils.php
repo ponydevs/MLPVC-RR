@@ -1035,9 +1035,9 @@ class CoreUtils {
 
     return [
       'user_agent' => $user_agent,
-      'browser_name' => $browser_name ?? '',
-      'browser_ver' => $browser_ver ?? '',
-      'platform' => $result->os->toString() ?? '',
+      'browser_name' => $browser_name ?? null,
+      'browser_ver' => $browser_ver ?? null,
+      'platform' => $result->os->toString() ?? 'Unknown',
     ];
   }
 
