@@ -4,9 +4,10 @@
 {# @var elastic_avail bool #}
 {# @var pagination \App\Pagination #}
 {# @var ponies array #}
-{# @var owner App\Models\User|array #}
+{# @var owner \App\Models\User|array #}
 {# @var hex_color_regex \App\RegExp #}
 {# @var max_upload_size string #}
+{# @var pinned_appearances \App\Models\Appeareance[] #}
 {% extends "layout/base.html.twig" %}
 
 {% block content %}
@@ -19,16 +20,16 @@
       <small>Alternatively, use the old color guides: <a href="https://sta.sh/0kic0ngp3fy">Pony</a> / <a href="http://fav.me/d7120l1">EQG</a></small><br>
       Can't find links that were here previously? Some links were moved to the <a href="/cg">guide list</a>.
     </p>
-    <div class='align-center button-block'>
+    <div class="align-center button-block">
       {% if permission('staff') %}
-        <button class='green typcn typcn-plus' id="new-appearance-btn">Add new {{ constant('\App\\CGUtils::ADD_NEW_NOUN')[guide] }}</button>
+        <button class="green typcn typcn-plus" id="new-appearance-btn">Add new {{ constant('\App\\CGUtils::ADD_NEW_NOUN')[guide] }}</button>
       {% endif %}
-      <a class='btn link typcn typcn-th-menu' href="/cg/{{ guide }}/full">Full List</a>
-      <a class='btn link typcn typcn-warning' href="/cg/{{ guide }}/changes">Major Changes</a>
+      <a class="btn link typcn typcn-th-menu" href="/cg/{{ guide }}/full">Full List</a>
+      <a class="btn link typcn typcn-warning" href="/cg/{{ guide }}/changes">Major Changes</a>
     </div>
-    {% if universal_appearance is not empty %}
-      <ul id='universal' class='appearance-list'>
-        {% include 'colorguide/_appearance_list.html.twig' with { 'appearances': [universal_appearance], 'wrap': false } %}
+    {% if pinned_appearances is not empty %}
+      <ul id="universal" class="appearance-list">
+        {% include 'colorguide/_appearance_list.html.twig' with { 'appearances': pinned_appearances, 'wrap': false } %}
       </ul>
     {% endif %}
     {% if elastic_avail %}

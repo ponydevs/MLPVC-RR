@@ -154,8 +154,14 @@
         min-width: 150px;
       }
 
-      .appearance-header .appearance-name {
-        font-size: 1.5em;
+      .appearance-header {
+        .prefix-icon {
+          margin-right: .2em;
+        }
+
+        .appearance-name, .prefix-icon {
+          font-size: 1.5em;
+        }
       }
 
       > .update {

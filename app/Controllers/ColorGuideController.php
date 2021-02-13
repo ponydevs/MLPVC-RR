@@ -12,6 +12,7 @@ use App\Input;
 use App\Models\Appearance;
 use App\Models\MajorChange;
 use App\Models\DeviantartUser;
+use App\Models\PinnedAppearance;
 use App\Models\User;
 use App\Pagination;
 use App\Permission;
@@ -296,14 +297,7 @@ class ColorGuideController extends Controller {
 
     if (!file_exists(CGUtils::GUIDE_EXPORT_PATH))
       CGUtils::saveExportData();
-    switch ($this->guide) {
-      case CGUtils::GUIDE_FIM:
-        $universal_appearance = Appearance::find(CGUtils::HIDDEN_APPEARANCES[0]);
-      break;
-      case CGUtils::GUIDE_PL:
-        $universal_appearance = Appearance::find(CGUtils::HIDDEN_APPEARANCES[1]);
-      break;
-    }
+
     $settings = [
       'title' => $title,
       'heading' => $heading,
@@ -316,7 +310,7 @@ class ColorGuideController extends Controller {
         'appearances' => $appearances,
         'pagination' => $pagination,
         'elastic_avail' => $elastic_avail,
-        'universal_appearance' => $universal_appearance ?? null,
+        'pinned_appearances' => PinnedAppearance::getGuideAppearances($this->guide),
         'search_query' => $search_query ?? null,
       ],
     ];

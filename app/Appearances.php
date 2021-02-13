@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Appearance;
 use App\Models\Notification;
+use App\Models\PinnedAppearance;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception as ElasticBadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
@@ -29,8 +30,10 @@ class Appearances {
     else {
       DB::$instance->where('owner_id IS NULL');
       self::_order();
-      if ($guide !== null)
-        DB::$instance->where('guide', $guide)->where('id', 0, '!=');
+      if ($guide !== null) {
+        $pinned_ids = PinnedAppearance::getAllIds();
+        DB::$instance->where('guide', $guide)->where('id', $pinned_ids, '!=');
+      }
     }
     if ($cols === self::COUNT_COL)
       DB::$instance->disableAutoClass();
@@ -185,8 +188,10 @@ class Appearances {
     catch (ElasticNoNodesAvailableException $e){
       Response::fail('Re-index failed, ElasticSearch server is down!');
     }
+
+    $pinned_appearances = array_map(static fn(PinnedAppearance $a) => $a->appearance_id, PinnedAppearance::all());
     /** @var $appearances Appearance[] */
-    $appearances = DB::$instance->where('id', CGUtils::HIDDEN_APPEARANCES, '!=')->where('owner_id IS NULL')->get('appearances');
+    $appearances = DB::$instance->where('id', $pinned_appearances, '!=')->where('owner_id IS NULL')->get('appearances');
 
     $params = ['body' => []];
     foreach ($appearances as $i => $a){

@@ -29,7 +29,7 @@
         <button class='blue share typcn typcn-export'{{ appearance.private ? ' data-private="true"' : '' }} data-url="{{ appearance.shareURL(owner_or_staff) }}">Share</button>
         {% if owner_or_staff %}
           <button class='darkblue edit-appearance typcn typcn-pencil'>Edit metadata</button>
-          {% if not appearance.protected %}
+          {% if not appearance.pinned %}
             <button class='red delete-appearance typcn typcn-trash'>Delete appearance</button>
           {% endif %}
         {% endif %}
@@ -37,7 +37,7 @@
 
       {% if appearance.owner_id is null %}
         {{ appearance.changesHTML }}
-        {% if not appearance.protected and (appearance.hasTags or is_staff) %}
+        {% if not appearance.pinned and (appearance.hasTags or is_staff) %}
           <section id="tags">
             <h2><span class='typcn typcn-tags'></span>Tags</h2>
             {{ appearance.tagsHTML() }}

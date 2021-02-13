@@ -32,6 +32,7 @@ $private_api_endpoint('/cg/appearance/[i:id]/template', 'AppearanceController#ap
 $private_api_endpoint('/cg/appearance/[i:id]/sanitize-svg', 'AppearanceController#sanitizeSvg');
 $private_api_endpoint('/cg/appearance/[i:id]/selective', 'AppearanceController#selectiveClear');
 $private_api_endpoint('/cg/appearance/[i:id]/guide-relations', 'AppearanceController#guideRelationsApi');
+$private_api_endpoint('/cg/appearance/[i:id]/pin', 'AppearanceController#pinApi');
 $private_api_endpoint('/cg/sprite-color-checkup', 'ColorGuideController#spriteColorCheckup');
 $private_api_endpoint('/cg/full/reorder', 'ColorGuideController#reorderFullList');
 $private_api_endpoint('/cg/export', 'ColorGuideController#export');

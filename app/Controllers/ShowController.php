@@ -10,6 +10,7 @@ use App\DeviantArt;
 use App\HTTP;
 use App\Input;
 use App\Models\Appearance;
+use App\Models\PinnedAppearance;
 use App\Models\Show;
 use App\Models\ShowAppearance;
 use App\Models\ShowVideo;
@@ -434,7 +435,7 @@ class ShowController extends Controller {
 
         /** @var $appearances Appearance[] */
         $entries = DB::$instance->disableAutoClass()
-          ->where('id', CGUtils::HIDDEN_APPEARANCES, '!=')
+          ->where('id', PinnedAppearance::getAllIds(), '!=')
           ->where('owner_id IS NULL')
           ->orderBy('label')
           ->get('appearances', null, $columns);

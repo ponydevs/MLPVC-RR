@@ -1920,7 +1920,7 @@
       $li = $this.closest('[id^=p]'),
       appearanceID = $li.attr('id').substring(1),
       ponyName = !AppearancePage
-        ? $this.parent().text().trim()
+        ? $li.find('.appearance-name').text().trim()
         : $content.children('h1').text(),
       title = 'Deleting appearance: ' + ponyName;
 
@@ -1941,6 +1941,28 @@
           else $.Navigation.reload();
         }
         else $.Dialog.fail(title, this.message);
+      });
+    });
+  });
+  $('button.pin-appearance, button.unpin-appearance').on('click', function() {
+    let $this = $(this),
+      $li = $this.closest('[id^=p]'),
+      appearanceID = $li.attr('id').substring(1),
+      ponyName = !AppearancePage
+        ? $li.find('.appearance-name').text().trim()
+        : $content.children('h1').text(),
+      pinning = $this.hasClass('pin-appearance'),
+      title = `${pinning ? 'Pin' : 'Unpin'} ${ponyName}`;
+
+    $.Dialog.confirm(title, `Are you sure you want to ${pinning ? '' : 'un'}pin this appearance ${pinning? 'to' : 'from'} the top of the current guide?`, function(sure) {
+      if (!sure) return;
+
+      $.Dialog.wait(title, 'Sending request');
+
+      $.API[pinning ? 'post' : 'delete'](`/cg/appearance/${appearanceID}/pin`, function() {
+        if (!this.status) return $.Dialog.fail(title, this.message);
+
+        $.Dialog.success(title, `${this.message}<br><strong>Note:</strong> The changes won't be visible until you reload the page.`, true);
       });
     });
   });

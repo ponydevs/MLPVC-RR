@@ -21,6 +21,7 @@ use App\Models\ColorGroup;
 use App\Models\Cutiemark;
 use App\Models\Notification;
 use App\Models\PCGSlotHistory;
+use App\Models\PinnedAppearance;
 use App\Models\RelatedAppearance;
 use App\Models\Show;
 use App\Models\ShowAppearance;
@@ -34,8 +35,6 @@ use App\Tags;
 use App\UploadedFile;
 use App\UserPrefs;
 use App\Users;
-use Elasticsearch\Common\Exceptions\Missing404Exception;
-use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use function count;
@@ -341,38 +340,17 @@ class AppearanceController extends ColorGuideController {
         Response::done($response);
       break;
       case 'DELETE':
-        if ($this->appearance->protected)
-          Response::fail('This appearance cannot be deleted');
+        if ($this->appearance->pinned)
+          Response::fail('This appearance cannot be deleted because it\'s currently pinned');
 
-        $tagged = Tags::getFor($this->appearance->id, null);
+        $tagged = Tags::getFor($this->appearance->id);
 
-        if (!DB::$instance->where('id', $this->appearance->id)->delete(Appearance::$table_name))
+        if (!$this->appearance->delete())
           Response::dbError();
-
-        if ($this->appearance->owner_id === null){
-          try {
-            CoreUtils::elasticClient()->delete($this->appearance->toElasticArray(true));
-          }
-          catch (Missing404Exception $e){
-            $message = JSON::decode($e->getMessage());
-
-            // Eat error if appearance was not indexed
-            if (!isset($message['found']) || $message['found'] !== false)
-              throw $e;
-          }
-          catch (NoNodesAvailableException $e){
-            CoreUtils::logError('ElasticSearch server was down when server attempted to remove appearance '.$this->appearance->id);
-          }
-        }
 
         if (!empty($tagged))
           foreach ($tagged as $tag)
             $tag->updateUses();
-
-        $fpath = $this->appearance->getSpriteFilePath();
-        CoreUtils::deleteFile($fpath);
-
-        $this->appearance->clearRenderedImages();
 
         Logs::logAction('appearances', [
           'action' => 'del',
@@ -679,7 +657,7 @@ class AppearanceController extends ColorGuideController {
 
         $Appearances = DB::$instance->disableAutoClass()
           ->where('guide', $this->guide)
-          ->where('id', [...CGUtils::HIDDEN_APPEARANCES, $this->appearance->id], '!=')
+          ->where('id', [...PinnedAppearance::getAllIds(), $this->appearance->id], '!=')
           ->orderBy('label')
           ->get('appearances', null, 'id,label');
 
@@ -941,7 +919,7 @@ class AppearanceController extends ColorGuideController {
     if ($this->appearance->owner_id !== null)
       Response::fail('Tagging is unavailable for appearances in personal guides');
 
-    if ($this->appearance->protected)
+    if ($this->appearance->pinned)
       Response::fail('This appearance cannot be tagged');
 
     switch ($this->action){
@@ -1090,6 +1068,46 @@ class AppearanceController extends ColorGuideController {
         $this->appearance->reload();
 
         Response::done(['section' => $this->appearance->getRelatedShowsHTML()]);
+      break;
+      default:
+        CoreUtils::notAllowed();
+    }
+  }
+
+  public function pinApi($params):void {
+    if (Permission::insufficient('staff'))
+      Response::fail();
+
+    $this->load_appearance($params);
+
+    if ($this->appearance->guide === null) {
+      Response::fail('Appearances in personal guides cannot be pinned');
+    }
+
+    switch ($this->action){
+      case 'POST':
+        if (PinnedAppearance::existsForAppearance($this->appearance->id)) {
+          Response::success('This appearance is already pinned');
+        }
+
+        PinnedAppearance::create([
+          'appearance_id' => $this->appearance->id,
+          'guide' => $this->appearance->guide,
+          'order' => $this->appearance->order,
+        ]);
+
+        Response::success('The appearance has been pinned successfully');
+      break;
+      case 'DELETE':
+        $entry = PinnedAppearance::find_by_appearance_id($this->appearance->id);
+
+        if ($entry === null) {
+          Response::success('This appearance was not pinned before');
+        }
+
+        $entry->delete();
+
+        Response::success('The appearance has been unpinned successfully');
       break;
       default:
         CoreUtils::notAllowed();

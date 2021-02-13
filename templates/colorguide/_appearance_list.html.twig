@@ -16,7 +16,10 @@
           {% apply spaceless %}
             <div class="appearance-header">
               {% if p.private %}
-                <span class='typcn typcn-lock-closed color-orange'></span>
+                <span class="prefix-icon typcn typcn-lock-closed color-orange"></span>
+              {% endif %}
+              {% if p.pinned %}
+                <span class="prefix-icon typcn typcn-pin color-ui" title="Pinned"></span>
               {% endif %}
               <a href='{{ p.toURL }}' class="appearance-name {%- if p.owner_id %} pcg-name{% endif %}">{{ p.babelLabel | escape }}</a>
               <div class="button-block">
@@ -24,8 +27,13 @@
                 <button class='teal typcn typcn-brush get-swatch' title='Download swatch file'></button>
                 {% if upload_permission %}
                   <button class='edit-appearance typcn typcn-pencil darkblue' title='Edit'></button>
-                  {% if not p.get_protected %}
+                  {% if not p.pinned %}
+                    {% if p.owner_id is null %}
+                      <button class='pin-appearance typcn typcn-pin darkblue' title='Pin'></button>
+                    {% endif %}
                     <button class='delete-appearance typcn typcn-trash red' title='Delete'></button>
+                  {% elseif p.owner_id is null %}
+                    <button class='unpin-appearance typcn typcn-pin-outline orange' title='Unpin'></button>
                   {% endif %}
                 {% endif %}
               </div>
@@ -33,7 +41,7 @@
           {% endapply %}
           {{ p.updatesHTML }}
           {{ p.notesHTML }}
-          {% if p.owner_id is null and not p.get_protected %}
+          {% if p.owner_id is null and not p.pinned %}
             {{ p.tagsHTML }}
           {% endif %}
           {{ p.colorsHTML }}

@@ -102,11 +102,6 @@ class CGUtils {
     ],
   ];
 
-  public const HIDDEN_APPEARANCES = [
-    0, // FiM Universal Colors
-    584 // Pony Life Universal Colors
-  ];
-
   /**
    * Response creator for typeahead.js
    *

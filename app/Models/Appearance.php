@@ -9,6 +9,7 @@ use App\Auth;
 use App\CGUtils;
 use App\CoreUtils;
 use App\DB;
+use App\JSON;
 use App\Permission;
 use App\Response;
 use App\ShowHelper;
@@ -17,7 +18,9 @@ use App\Time;
 use App\Twig;
 use App\UserPrefs;
 use App\Users;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception as ElasticMissing404Exception;
+use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException as ElasticNoNodesAvailableException;
 use Elasticsearch\Common\Exceptions\ServerErrorResponseException as ElasticServerErrorResponseException;
 use Exception;
@@ -52,7 +55,7 @@ use function in_array;
  * @property MajorChange[]       $major_changes       (Via relations)
  * @property ShowAppearance[]    $show_appearances    (Via relations)
  * @property Show[]              $related_shows       (Via relations)
- * @property bool                $protected           (Via magic method)
+ * @property bool                $pinned              (Via magic method)
  * @method static Appearance|Appearance[] find(...$args)
  * @method static Appearance[] all(...$args)
  */
@@ -89,6 +92,7 @@ class Appearance extends NSModel implements Linkable {
   }
 
   public static $before_save = ['render_notes'];
+  public static $after_destroy = ['clearIndex', 'clearRenderedImages', 'deleteSprite'];
 
   /**
    * Ensure that this is only called after user is authenticated as we would leak colors otherwise
@@ -113,8 +117,8 @@ class Appearance extends NSModel implements Linkable {
     return $arr;
   }
 
-  public function get_protected():bool {
-    return $this->id < 1;
+  public function get_pinned():bool {
+    return $this->guide !== null && PinnedAppearance::existsForAppearance($this->id);
   }
 
   public function get_notes_rend():?string {
@@ -199,7 +203,7 @@ class Appearance extends NSModel implements Linkable {
       if (!empty($query_params))
         $url = UriModifier::appendQuery($url, Query::createFromParams($query_params));
 
-      return (string) $url;
+      return (string)$url;
     }
 
     return $fallback;
@@ -209,7 +213,7 @@ class Appearance extends NSModel implements Linkable {
     $url = Uri::createFromString("/img/sprites/{$this->id}.png");
     $sprite_hash = $this->sprite_hash ?? $this->regenerateSpriteHash();
     if (!empty($sprite_hash))
-      $url = UriModifier::appendQuery($url, Query::createFromParams([ 'hash' => $sprite_hash ]));
+      $url = UriModifier::appendQuery($url, Query::createFromParams(['hash' => $sprite_hash]));
 
     return (string)$url;
   }
@@ -265,7 +269,7 @@ class Appearance extends NSModel implements Linkable {
   private function processNotes():string {
     $notes_rend = CoreUtils::sanitizeHtml($this->notes_src);
     $notes_rend = preg_replace('/(\s)(&gt;&gt;(\d+))(\D|$)/', "$1<a href='https://derpibooru.org/$3'>$2</a>$4", $notes_rend);
-    if (in_array($this->guide, [CGUtils::GUIDE_PL, CGUtils::GUIDE_FIM], true)) {
+    if (in_array($this->guide, [CGUtils::GUIDE_PL, CGUtils::GUIDE_FIM], true)){
       $generation = CGUtils::GUIDE_GENERATION_MAP[$this->guide];
       $notes_rend = preg_replace_callback('/'.EPISODE_ID_PATTERN.'/', function ($a) use ($generation) {
         $episode = ShowHelper::getActual($generation, (int)$a[1], (int)$a[2]);
@@ -466,6 +470,7 @@ class Appearance extends NSModel implements Linkable {
     if (!file_exists($path))
       CGUtils::renderPreviewSVG($this, false);
     $relative_path = str_replace(FSPATH, '/img/', $path);
+
     return "$relative_path?t=".CoreUtils::filemtime($path);
   }
 
@@ -548,14 +553,21 @@ class Appearance extends NSModel implements Linkable {
     if ($this->owner_id !== null)
       return;
 
-    $this->updateIndex();
+    if (!$this->pinned){
+      $this->updateIndex();
+    }
   }
 
   public function updateIndex() {
+    if ($this->pinned) {
+      $this->clearIndex();
+      return;
+    }
+
     try {
       CoreUtils::elasticClient()->update($this->toElasticArray(false, true));
     }
-    catch (ElasticNoNodesAvailableException|ElasticServerErrorResponseException $e){
+    catch (ElasticNoNodesAvailableException | ElasticServerErrorResponseException $e){
       CoreUtils::logError("ElasticSearch server was down when server attempted to index appearance {$this->id}");
     }
     catch (ElasticMissing404Exception $e){
@@ -886,6 +898,24 @@ class Appearance extends NSModel implements Linkable {
     else $this->notes_rend = $this->processNotes();
   }
 
+  public function clearIndex() {
+    if ($this->owner_id === null){
+      try {
+        CoreUtils::elasticClient()->delete($this->toElasticArray(true));
+      }
+      catch (Missing404Exception $e){
+        $message = JSON::decode($e->getMessage());
+
+        // Eat error if appearance was not indexed
+        if (!isset($message['found']) || $message['found'] !== false)
+          throw $e;
+      }
+      catch (NoNodesAvailableException $e){
+        CoreUtils::logError("ElasticSearch server was down when server attempted to remove appearance {$this->id}");
+      }
+    }
+  }
+
   public function hidden(bool $ignoreStaff = false):bool {
     return $this->owner_id !== null && $this->private && $this->isPrivate($ignoreStaff);
   }
@@ -1022,8 +1052,8 @@ class Appearance extends NSModel implements Linkable {
    *
    * @return bool
    */
-  public function getProtected():bool {
-    return $this->protected;
+  public function getPinned():bool {
+    return $this->pinned;
   }
 
   /**
