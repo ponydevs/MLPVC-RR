@@ -306,7 +306,7 @@ class DeviantArt {
 
     $local_user_data = [
       'name' => $da_user_data['username'],
-      'avatar_url' => URL::makeHttps($da_user_data['usericon']),
+      'avatar_url' => str_replace('/avatars/', '/avatars-big/', URL::makeHttps($da_user_data['usericon'])),
     ];
     $session_data = [];
     $auth_data = [

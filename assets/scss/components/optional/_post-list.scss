@@ -249,17 +249,6 @@
         flex-flow: row nowrap;
         align-items: flex-end;
 
-        &.local.provider-discord {
-          padding-right: 7px;
-          $radius: $reserver-height / 2;
-          border-radius: $radius;
-
-          .avatar {
-            border-top-right-radius: $radius;
-            border-bottom-right-radius: $radius;
-          }
-        }
-
         > * {
           margin-right: 5px;
           display: block;

@@ -1019,12 +1019,6 @@ header, #sidebar .mobile-nav {
   &.provider-deviantart {
     border-radius: 5px;
   }
-
-  &.provider-discord {
-    &, .avatar {
-      border-radius: 100%
-    }
-  }
 }
 
 .da-userlink {
@@ -1041,12 +1035,6 @@ header, #sidebar .mobile-nav {
       $border: 1px solid lighten($HeaderFooterBG, 20);
       background: lighten($HeaderFooterBG, 47);
       border: $border;
-
-      &.provider-discord {
-        &, .avatar {
-          border-radius: ($image-height + .1em) / 2;
-        }
-      }
     }
 
     display: inline-block;
@@ -1347,15 +1335,6 @@ kbd {
       > .avatar {
         opacity: .3
       }
-    }
-
-    &.local.provider-discord:hover:after {
-      $size: 24px;
-      $spacearound: $avatarsize - $size - ($border*2);
-      width: $size;
-      height: $size;
-      top: $spacearound/2;
-      left: $spacearound/2;
     }
   }
 }
