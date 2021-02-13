@@ -18,7 +18,7 @@ class UserTest extends TestCase {
     $result = $user->toAnchor();
     static::assertEquals("<a href='/users/0-TestUser' class='da-userlink local'><span class='name'>TestUser</span></a>", $result, 'Testing default parameter return value format');
     $result = $user->toAnchor(WITH_AVATAR);
-    static::assertEquals("<a href='/users/0-TestUser' class='da-userlink local with-avatar provider-deviantart'><img src='/img/guest.svg' class='avatar' alt='avatar'><span class='name'>TestUser</span></a>", $result, 'Testing full format return value');
+    static::assertEquals("<a href='/users/0-TestUser' class='da-userlink local with-avatar'><img src='/img/guest.svg' class='avatar' alt='avatar'><span class='name'>TestUser</span></a>", $result, 'Testing full format return value');
   }
 
   public function testGetAvatarWrap() {
@@ -33,6 +33,6 @@ class UserTest extends TestCase {
     ]);
     $user->set_relationship_from_eager_load($da_user, 'deviantart_user');
     $result = $user->getAvatarWrap(' app-illustrator');
-    static::assertEquals("<div class='avatar-wrap provider-deviantart app-illustrator' data-for='$id'><img src='/img/guest.svg' class='avatar' alt='avatar'></div>", $result);
+    static::assertEquals("<div class='avatar-wrap app-illustrator' data-for='$id'><img src='/img/guest.svg' class='avatar' alt='avatar'></div>", $result);
   }
 }

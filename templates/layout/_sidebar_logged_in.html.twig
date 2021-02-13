@@ -1,7 +1,7 @@
 {# @var current_user \App\Models\User #}
 {% if wrap is not defined or wrap %}
 {% set session_updating = current_session is not empty and current_session.updating %}
-{% set classes = 'logged-in provider-' ~ (current_user.avatar_provider ?? 'deviantart') ~ (session_updating ? ' updating-session' : '') %}
+{% set classes = 'logged-in' ~ (session_updating ? ' updating-session' : '') %}
 <div class='{{ classes }}'{% if session_updating %} title='Updating your session'{% endif %}>
   {% endif %}
   {% include 'layout/_avatar_wrap.html.twig' %}

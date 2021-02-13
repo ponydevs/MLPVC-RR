@@ -678,7 +678,7 @@ header, #sidebar .mobile-nav {
     flex-flow: row nowrap;
     padding: 4px;
     margin-bottom: 6px;
-    border-radius: 50px;
+    border-radius: 5px;
     position: relative;
 
     &:before {
@@ -699,10 +699,6 @@ header, #sidebar .mobile-nav {
 
     > *, &:before {
       transition: opacity .5s;
-    }
-
-    &.provider-deviantart {
-      border-radius: 5px;
     }
 
     &.updating-session {
@@ -1015,10 +1011,7 @@ header, #sidebar .mobile-nav {
   color: #777;
   background-color: #efefef;
   overflow: hidden;
-
-  &.provider-deviantart {
-    border-radius: 5px;
-  }
+  border-radius: 5px;
 }
 
 .da-userlink {

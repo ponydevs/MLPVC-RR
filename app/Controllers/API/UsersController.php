@@ -21,7 +21,7 @@ use OpenApi\Annotations as OA;
  *   schema="AvatarProvider",
  *   type="string",
  *   description="List of supported avatar providers",
- *   enum={"deviantart","discord"}
+ *   enum={"deviantart"}
  * )
  * @OA\Schema(
  *   schema="ValueOfUser",
@@ -104,7 +104,7 @@ class UsersController extends APIController {
       'name' => $u->name,
       'role' => $u->role,
       'avatarUrl' => $u->avatar_url,
-      'avatarProvider' => $u->avatar_provider,
+      'avatarProvider' => 'deviantart',
     ];
   }
 

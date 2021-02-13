@@ -74,17 +74,6 @@ class UserSettingForm {
         'desc' => 'Hide my Personal Color Guide from the public',
       ],
     ],
-    'p_avatarprov' => [
-      'type' => 'select',
-      'options' => [
-        'desc' => 'Choose which service to pull your avatar from: ',
-        'optg' => 'Available providers',
-        'opts' => User::AVATAR_PROVIDERS,
-        'optperm' => [
-          'discord' => 'discord_member',
-        ],
-      ],
-    ],
     'p_homelastep' => [
       'type' => 'checkbox',
       'options' => [

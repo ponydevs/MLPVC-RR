@@ -3,7 +3,7 @@
 {# @var enable_promises bool #}
 {# @var with_vector_app_icon bool #}
 {% apply spaceless %}
-  <a href='{{ user.toURL(false) }}' class='da-userlink local{{ with_avatar ? ' with-avatar provider-' ~ user.get_avatar_provider : '' }}'>
+  <a href='{{ user.toURL(false) }}' class='da-userlink local{{ with_avatar ? ' with-avatar' : '' }}'>
     {% if with_avatar %}
       {% if enable_promises %}
         <div class='user-avatar-promise avatar image-promise' data-src='{{ user.get_avatar_url }}'></div>

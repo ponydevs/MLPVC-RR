@@ -15,7 +15,6 @@ class UserPrefs extends GlobalSettings {
     'cg_hideclrinfo' => 0,
     'cg_fulllstprev' => 1,
     'cg_nutshell' => 0,
-    'p_avatarprov' => 'deviantart',
     'p_vectorapp' => '',
     'p_hidediscord' => 0,
     'p_hidepcg' => 0,
@@ -148,10 +147,6 @@ class UserPrefs extends GlobalSettings {
       case 'p_vectorapp':
         if (!empty($value) && !isset(CoreUtils::VECTOR_APPS[$value]))
           throw new RuntimeException('The specified app is invalid');
-      break;
-      case 'p_avatarprov':
-        if (!empty($value) && !isset(User::AVATAR_PROVIDERS[$value]))
-          throw new RuntimeException('The specified avatar provider is invalid');
       break;
       case 'cg_defaultguide':
         if (!empty($value)) {

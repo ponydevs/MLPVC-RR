@@ -41,8 +41,6 @@ class DiscordMember extends NSModel {
     ['user'],
   ];
 
-  public static $before_destroy = ['update_avatar_provider'];
-
   public function get_name() {
     return !empty($this->nick) ? $this->nick : $this->username;
   }
@@ -171,10 +169,5 @@ class DiscordMember extends NSModel {
     $this->checkServerMembership();
 
     return true;
-  }
-
-  public function update_avatar_provider() {
-    if ($this->user->avatar_provider === 'discord')
-      UserPrefs::set('p_avatarprov', 'deviantart', $this->user);
   }
 }

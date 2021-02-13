@@ -42,7 +42,6 @@ use function count;
  * @property Log[]              $logs             (Via relations)
  * @property PCGSlotHistory[]   $pcg_slot_history (Via relations)
  * @property string             $role_label       (Via magic method)
- * @property string             $avatar_provider  (Via magic method)
  * @property string             $avatar_url       (Via magic method)
  * @property null $previous_names
  * @method static User find(...$args)
@@ -69,11 +68,6 @@ class User extends NSModel implements Linkable {
   }
 
   /** For Twig */
-  public function getAvatar_provider() {
-    return $this->avatar_provider;
-  }
-
-  /** For Twig */
   public function getAvatar_url() {
     return $this->avatar_url;
   }
@@ -83,42 +77,9 @@ class User extends NSModel implements Linkable {
     return $this->deviantart_user;
   }
 
-  public const AVATAR_PROVIDERS = [
-    'deviantart' => 'DeviantArt',
-    'discord' => 'Discord',
-  ];
-
-  public function get_avatar_provider() {
-    return UserPrefs::get('p_avatarprov', $this);
-  }
-
-  public function set_avatar_provider(string $value) {
-    try {
-      $newvalue = UserPrefs::process('p_avatarprov', $value);
-    }
-    catch (Exception $e){
-      Response::fail('Preference value error: '.$e->getMessage());
-    }
-
-    if ($newvalue === 'discord' && $this->discord_member === null)
-      Response::fail("You must <a href='{$this->toURL(false)}#discord-connect'>link your account</a> to use the Discord avatar provider");
-
-    return UserPrefs::set('p_avatarprov', $newvalue, $this);
-  }
-
   public function get_avatar_url(): ?string {
-    switch ($this->avatar_provider) {
-      case 'deviantart':
-        if ($this->deviantart_user)
-          return $this->deviantart_user->avatar_url;
-        break;
-      case 'discord':
-        if ($this->discord_member)
-          return $this->discord_member->avatar_url;
-        break;
-    }
-
-    return GUEST_AVATAR;
+    $da_user = $this->deviantart_user;
+    return $da_user->avatar_url ?? GUEST_AVATAR;
   }
 
   public function toURL(bool $id_only = true):string {
@@ -160,7 +121,7 @@ class User extends NSModel implements Linkable {
       $vectorapp = $this->getVectorAppClassName();
     $for = $this->id !== null ? "data-for='{$this->id}'" : '';
 
-    return "<div class='avatar-wrap provider-{$this->avatar_provider}$vectorapp' $for><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
+    return "<div class='avatar-wrap$vectorapp' $for><img src='{$this->avatar_url}' class='avatar' alt='avatar'></div>";
   }
 
   public function getVectorAppClassName():string {

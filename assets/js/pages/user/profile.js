@@ -324,35 +324,6 @@
         $.Dialog.close();
       }
         break;
-      case 'p_avatarprov':{
-        const forUser = {};
-        $(`.avatar-wrap:not(.provider-${to_what})`).each(function() {
-          const
-            $this = $(this),
-            forId = $this.attr('data-for');
-          if (typeof forUser[forId] === 'undefined')
-            forUser[forId] = [];
-          forUser[forId].push($this);
-        });
-        if (from)
-          $(`.provider-${from}:not(.avatar-wrap)`).removeClass('provider-' + from).addClass('provider-' + to_what);
-        let error = false;
-        $.each(forUser, (forId, elements) => {
-          $.API.get(`/user/${forId}/avatar-wrap`, function() {
-            if (!this.status){
-              error = true;
-              return $.Dialog.fail(`Update avatar elements for ${forId}`, false);
-            }
-
-            $.each(elements, (_, $el) => {
-              $el.replaceWith(this.html);
-            });
-          });
-        });
-        if (!error)
-          $.Dialog.close();
-      }
-        break;
       case 'p_disable_ga':{
         if (to_what){
           $.Dialog.wait(false, 'Performing a hard reload to remove user ID from the tracking code');

@@ -1,5 +1,5 @@
 {# @var current_user \App\Models\User #}
 {% set signed_in = signed_in or (current_user is defined and current_user is not null) %}
-<div class='avatar-wrap provider-{{ signed_in ? current_user.get_avatar_provider ~ current_user.vectorAppClassName : 'deviantart' }}'{{ signed_in ? " data-for='#{current_user.id}'" : '' }}>
-  <img src='{{ signed_in ? current_user.avatar_url : constant('GUEST_AVATAR') }}' class='avatar' alt='avatar'>
+<div class="avatar-wrap {% if signed_in %}{{ current_user.vectorAppClassName }}{% endif %}" {{- signed_in ? " data-for='#{current_user.id}'" : '' }}>
+  <img src="{{ signed_in ? current_user.avatar_url : constant('GUEST_AVATAR') }}" class="avatar" alt="avatar">
 </div>
