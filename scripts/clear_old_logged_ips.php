@@ -13,7 +13,10 @@ use Monolog\Logger;
 
 $log_done = Log::update_all(array(
   'set' => ['ip' => GDPR_IP_PLACEHOLDER],
-  'conditions' => "now() - created_at > INTERVAL '3 MONTH'",
+  'conditions' => [
+    "ip != ? and now() - created_at > INTERVAL '3 MONTH'",
+    GDPR_IP_PLACEHOLDER
+  ],
 ));
 
 $log_message = CoreUtils::makePlural('log entry', $log_done, PREPEND_NUMBER).' updated';
