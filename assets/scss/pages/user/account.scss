@@ -1,0 +1,101 @@
+@import "../../vars";
+@import "../../components/optional/browser-icons";
+
+#account {
+  text-align: center;
+
+  #sessions {
+    .session-list {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 0;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: center;
+
+      li {
+        display: inline-block;
+        padding: 8px;
+        border-radius: 5px;
+        background: rgba(0, 0, 0, .12);
+        margin: 0 5px 5px 0;
+        flex: 0 0 auto;
+
+        @include if-browser-has-icon {
+          //noinspection CssOptimizeSimilarProperties
+          &:before {
+            content: "";
+            display: block;
+            margin: 0 auto 8px;
+            height: 128px;
+            width: 100%;
+          }
+        }
+
+        @include browser-backgrounds(true);
+
+        span {
+          display: block
+        }
+
+        .browser {
+          font-weight: bold;
+
+          > button {
+            vertical-align: bottom
+          }
+
+          + .platform {
+            font-size: .9em !important
+          }
+
+          ~ * {
+            font-size: .8em
+          }
+        }
+
+        button ~ {
+          button, .btn {
+            margin-top: 0
+          }
+        }
+      }
+    }
+  }
+
+  form {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+
+    .padded {
+      display: block;
+      margin: .5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      width: 100%;
+      max-width: 300px;
+
+      > input {
+        display: block;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .form-help {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: .5rem;
+
+        .btn {
+          margin-left: .5rem;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{# @controller \App\Controllers\UserController::account #}
+{# @var user \App\Models\User #}
+{# @var current_user \App\Models\User #}
+{# @var same_user bool #}
+{# @var sessions \App\Models\Session[] #}
+{# @var discord_membership \App\Models\DiscordMember #}
+{# @var current_session \App\Models\Session #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+  <div id="content">
+    <h1>{{ heading }}</h1>
+    <p>Change settings related to {{ same_user ? 'your' : posess(user.name) }} account</p>
+
+    {% set staff_privacy = same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').staff : '' %}
+
+    <div id="account">
+      <section id="sessions">
+        <h2>{{ staff_privacy }}Sessions</h2>
+        {% if sessions is not empty %}
+          <p>Below is a list of all the browsers {{ same_user ? "you're" : 'this user is' }} currently signed into.</p>
+          <ul class="session-list">
+            {% for s in sessions %}
+              {{ s.profileCard(current_session.id == s.id) }}
+            {% endfor %}
+          </ul>
+          <p>
+            <button class="typcn typcn-arrow-back yellow" id="sign-out-everywhere">Sign out everywhere</button>
+          </p>
+        {% else %}
+          <p>{{ same_user ? 'You are' : 'This user is' }}n't logged in anywhere.</p>
+        {% endif %}
+      </section>
+      {% if permission('staff') %}
+        <section id="security">
+          <h2>{{ staff_privacy }}Security</h2>
+          <h3>{{ user.emailSet ? 'Change' : 'Set' }} E-mail Address</h3>
+          {% if same_user %}
+            <p>A valid e-mail will allow you to log in without using a DeviantArt account in the next version of our site.</p>
+            <p>You will not be signed up to any mailing lists or sent unsolicited spam, this is strictly for authentication and account recovery purposes.</p>
+          {% endif %}
+          <form id="change-email">
+            <label>
+              <span>Current E-mail Address</span>
+              {% if user.emailSet %}
+                <input type="email" name="current_email" id="current-email" readonly value="{{ user.email }}">
+                {% if user.email_verified_at is not empty %}
+                  <span class="form-help color-green">
+                  <span>
+                    <span class="typcn typcn-tick"></span>
+                    Verified {{ time_tag(user.email_verified_at) }}
+                  </span>
+                </span>
+                {% else %}
+                  <span class="form-help color-orange">
+                  <span>
+                    <span class="typcn typcn-at"></span>
+                    Not verified yet
+                  </span>
+                  <button class="btn link" type="button" id="resend-verification"><span class="typcn typcn-refresh"></span> Resend</button>
+                </span>
+                {% endif %}
+              {% else %}
+                <span class="form-help color-blue">
+                <span>
+                  <span class="typcn typcn-info-large"></span>
+                  No address has been set yet
+                </span>
+              </span>
+              {% endif %}
+            </label>
+            <label>
+              <span>New E-mail Address</span>
+              <input type="email" name="new_email" required>
+            </label>
+            {# Staf can change users' email without their password #}
+            {% if same_user %}
+              <label>
+                <span>Current Password</span>
+                <input type="password" name="current_password" autocomplete="current-password" required>
+              </label>
+            {% endif %}
+            <button class="btn green">
+              <span class="typcn typcn-mail"></span>
+              Request Confirmation
+            </button>
+          </form>
+
+          {% if same_user %}
+            <h3>{{ constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').private }}{{ user.passwordSet ? 'Change' : 'Create' }} Password</h3>
+            <p>A password will allow you to log in without using a DeviantArt account in the next version of our site.</p>
+            <p>Only a hashed version of your password is stored in our database, so even if our systems are compromised your password will not be leaked in plain text.</p>
+            <form id="change-password">
+              <label>
+                <span>Current Password</span>
+                {% if user.passwordSet %}
+                  <input type="password" name="current_password" autocomplete="current-password" {% if not user.passwordSet -%}
+                    disabled
+                  {%- else -%}
+                    required
+                  {%- endif %}>
+                {% else %}
+                  <span class="form-help color-blue">
+                  <span>
+                    <span class="typcn typcn-info-large"></span>
+                    {{ same_user ? "You haven't" : "This user hasn't" }} set a password yet, the current password is not needed.
+                  </span>
+                </span>
+                {% endif %}
+              </label>
+              <label>
+                <span>New Password</span>
+                <input type="password" name="new_password" autocomplete="new-password" id="new-password-input" minlength="8" required>
+                <button id="reveal-new-password" type="button" class="btn ui"><span class="typcn typcn-eye"></span> Reveal characters</button>
+                <button id="hide-new-password" type="button" class="btn ui hidden"><span class="typcn typcn-eye"></span> Conceal characters</button>
+                <span class="padded">Must be at least 8 characters long and not commonly used.</span>
+              </label>
+              <button class="btn green" type="submit">
+                <span class="typcn typcn-key"></span>
+                Update Password
+              </button>
+            </form>
+          {% endif %}
+        </section>
+      {% endif %}
+      <section id="discord-connect">
+        <h2>{{ staff_privacy }}Discord account</h2>
+        {% set unlink_btn %}
+          <button class="orange typcn typcn-user-delete unlink">Unlink</button>{% endset %}
+        {% if user.boundToDiscordMember %}
+          <p>
+            {{ same_user ? 'Your' : 'This' }} account {{ discord_membership.isLinked ? 'is linked' : 'was manually bound' }} to <strong>{{ discord_membership.get_discord_tag | escape }}</strong>
+            {% if discord_membership.isLinked -%}
+              {% set you = same_user ? 'you' : 'they' %}
+              {% if discord_membership.isServerMember %}
+                and {{ you }}'ve joined our <a href='https://discordapp.com/channels/{{ env('DISCORD_SERVER_ID') }}'>Discord server</a>.
+              {% else %}
+                but {{ you }} haven't joined our <a href='{{ constant('DISCORD_INVITE_LINK') }}'>Discord server</a> yet.
+              {% endif %}
+            {% else -%}
+              by a staff member, but manual bindings are no longer considered valid.
+            {% endif -%}
+          </p>
+          {% if discord_membership.isLinked %}
+            {% set sync_text = 'Sync' %}
+            {% set sync_cooldown = constant('App\\Models\\DiscordMember::SYNC_COOLDOWN') %}
+            <p id="discord-sync-info" data-cooldown="{{ sync_cooldown }}">
+              You can use the <strong>{{ sync_text }}</strong> button below to update {{ same_user ? 'your' : 'their' }} account information at any time.<br>
+              {{ same_user ? 'Your' : 'Their' }} account information was last updated {{ time_tag(discord_membership.last_synced) }}.
+              {%- if not discord_membership.canBeSynced -%}
+                <span class="wait-message"> At least {{ make_plural('minute', sync_cooldown/60, constant('PREPEND_NUMBER')) }} must pass before syncing again.</span>
+              {%- endif -%}
+            </p>
+            <div class="button-block align-center">
+              <button class="green typcn typcn-arrow-sync sync"{{ not discord_membership.canBeSynced ? ' disabled' : '' }}>{{ sync_text }}</button>
+              {{ unlink_btn }}
+            </div>
+          {% endif %}
+        {% endif %}
+        {% if discord_membership is empty or discord_membership.access is null %}
+          {% if same_user %}
+            <p>Link your account to be able to choose between your Discord and DeviantArt avatars as well as to participate in events for Discord server members.</p>
+          {% elseif user.boundToDiscordMember %}
+            <p>You may unlink this account if you feel it should not have been linked in the first place.</p>
+          {% else %}
+            <p>This user hasn't linked their Discord account yet.</p>
+          {% endif %}
+          <div class="button-block align-center">
+            {% if same_user %}
+              <a href="/discord-connect/begin" class="btn link typcn typcn-link">Link account</a>
+            {% endif %}
+            {% if discord_membership is not empty and discord_membership.access is null %}
+              {{ unlink_btn }}
+            {% endif %}
+          </div>
+        {% endif %}
+      </section>
+
+      {% if same_user %}
+        <section>
+          <h2>{{ same_user ? constant('App\\Users::PROFILE_SECTION_PRIVACY_LEVEL').private }}DeviantArt Account</h2>
+          <p>We have no access to any information that isn't publicly available on your DeviantArt profile, except for your user ID, which is used to keep track of which user you are even if you change your name. Nonetheless, if you no longer want to let this site verify your identity you may use the link below to visit your authorized apps on DeviantArt and revoke access to any you wish, including this website. After you sign out or your current token expires you will have to re-allow the application access to your basic user information to continue using the site. Keep in mind that the site is not notified when you do this.</p>
+          <a href="{{ constant('DA_AUTHORIZED_APPS_URL') }}" class="btn link typcn typcn-arrow-forward">Visit authorized apps page</a>
+        </section>
+      {% endif %}
+    </div>
+  </div>
+  {% if user is not empty %}
+    {{ export_vars({
+      username: user.name,
+      userId: user.id,
+      sameUser: user.id == (current_user.id ?? null),
+    }) }}
+  {% endif %}
+{% endblock %}

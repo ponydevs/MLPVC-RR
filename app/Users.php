@@ -3,15 +3,21 @@
 namespace App;
 
 use App\Exceptions\CURLRequestException;
+use App\Models\BlockedEmail;
 use App\Models\Cutiemark;
-use App\Models\PreviousUsername;
 use App\Models\DeviantartUser;
+use App\Models\EmailVerification;
 use App\Models\Post;
+use App\Models\PreviousUsername;
 use App\Models\Session;
 use App\Models\User;
+use EmailValidator\Validator as EmailValidator;
 use Exception;
+use Illuminate\Container\Container;
+use Illuminate\Hashing\HashManager;
 use InvalidArgumentException;
 use RuntimeException;
+use Throwable;
 
 class Users {
   public const RESERVATION_LIMIT = 4;
@@ -66,7 +72,7 @@ class Users {
    */
   public static function fetchDA(string $username):?DeviantartUser {
     $via_previous_name = PreviousUsername::find_by_username($username);
-    if (!empty($via_previous_name)) {
+    if (!empty($via_previous_name)){
       return $via_previous_name->user;
     }
 
@@ -85,13 +91,13 @@ class Users {
     if (empty($user_data['results'][0]))
       return null;
 
-    $user_data  = $user_data['results'][0];
+    $user_data = $user_data['results'][0];
     $save_success = false;
     $id = strtolower($user_data['userid']);
 
     $da_user = DeviantartUser::find($id);
     $user_exists = $da_user !== null;
-    if (!$user_exists) {
+    if (!$user_exists){
       /** @var User $user */
       $user = User::create([
         'name' => $user_data['username'],
@@ -115,15 +121,15 @@ class Users {
     if (!$save_success)
       throw new RuntimeException('Saving user data failed'.(Permission::sufficient('developer') ? ': '.DB::$instance->getLastError() : ''));
 
-    if ($user_exists) {
+    if ($user_exists){
       $previous_name = $da_user->user->name;
-      foreach ([$previous_name, $username] as $i => $old_name) {
+      foreach ([$previous_name, $username] as $i => $old_name){
         if (strcasecmp($old_name, $da_user->name) === 0)
           continue;
 
         PreviousUsername::record($da_user->id, $old_name);
       }
-      if (strcasecmp($da_user->user->name, $da_user->name) !== 0) {
+      if (strcasecmp($da_user->user->name, $da_user->name) !== 0){
         $da_user->user->update_attributes(['name' => $da_user->name]);
       }
     }
@@ -162,6 +168,7 @@ class Users {
 
     if (!Cookie::exists('access')){
       Auth::$session = Session::newGuestSession();
+
       return;
     }
     if (Cookie::exists('access')){
@@ -400,7 +407,6 @@ class Users {
   /**
    * Conditionally map users to either legacy or new user records
    * based on the type of the ID
-   *
    * TODO Remove if log data has been migrated
    *
    * @param string|int $user_id Legacy uuid or integer
@@ -411,6 +417,97 @@ class Users {
     if (is_int($user_id)) return User::find($user_id);
 
     $da_user = DeviantartUser::find($user_id);
+
     return $da_user === null ? null : $da_user->user;
+  }
+
+  public static function getHashManager():HashManager {
+    $container = new Container();
+    $container->singleton('config', fn() => new class {
+      function get(string $what):?string {
+        switch ($what){
+          case 'hashing.driver':
+            return 'bcrypt';
+          case 'hashing.bcrypt':
+            return null;
+          default:
+            throw new RuntimeException("Unhandled config value $what");
+        }
+      }
+    });
+
+    return new HashManager($container);
+  }
+
+  public static function validateCurrentPassword(User $user, HashManager $hash_manager = null) {
+    $current_password = (new Input('current_password', 'string', [
+      Input::IS_OPTIONAL => false,
+      Input::CUSTOM_ERROR_MESSAGES => [
+        Input::ERROR_MISSING => 'The current password is required',
+        Input::ERROR_INVALID => 'The current password is invalid',
+      ],
+    ]))->out();
+
+    if ($hash_manager === null){
+      $hash_manager = self::getHashManager();
+    }
+
+    if (!$hash_manager->check($current_password, $user->password)){
+      /** @noinspection RandomApiMigrationInspection */
+      usleep(rand(1, 3) * 1e6);
+      Response::fail('The provided current password is incorrect');
+    }
+  }
+
+  public static function sendEmailValidation(User $user, string $email = null): bool {
+    $recipient = $email ?? $user->email;
+
+    $block_entry = BlockedEmail::find_by_email($recipient);
+    if ($block_entry) {
+      Response::fail('The specified email address has been added to our do-not-send list. If you are the owner of this address and would like to be removed from this list please <a class="send-feedback">contact us</a>.');
+    }
+
+    $previous_validation_attempt = EmailVerification::find('first', [
+      'conditions' => [
+        "email = ? and now() - created_at <= INTERVAL '10 MINUTES'",
+        $recipient,
+      ],
+      'order' => 'created_at desc'
+    ]);
+    if ($previous_validation_attempt !== null) {
+      Response::fail('A confirmation email was sent to this address recently, please wait a bit before requesting another one');
+    }
+
+    try {
+      $hash = bin2hex(random_bytes(64));
+    }
+    catch (Exception $e){
+      CoreUtils::logError("Failed to get random_bytes for email verification link: {$e->getMessage()}\nStack trace:\n{$e->getTraceAsString()}");
+      Response::fail('Could not generate a secure verification link, please try again later');
+    }
+
+    $verification = EmailVerification::create([
+      'user_id' => $user->id,
+      'email' => $recipient,
+      'hash' => $hash,
+    ]);
+
+    $result = false;
+    try {
+      $result = $verification->send();
+    } catch (Throwable $e) {
+      $verification->delete();
+      CoreUtils::logError("Failed to send verification email: {$e->getMessage()}\nStack trace:\n{$e->getTraceAsString()}");
+    }
+
+    return $result;
+  }
+
+  public static function validateEmail(string $email):void {
+    CoreUtils::checkStringValidity($email, 'new e-mail');
+
+    if(!(new EmailValidator())->isValid($email)) {
+      Response::fail('The provided e-mail address does not pass our validity checks, please use an e-mail address which is properly set up to receive messages.');
+    }
   }
 }

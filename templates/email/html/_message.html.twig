@@ -1,0 +1,13 @@
+{# @var app_name string #}
+{# @var url string #}
+{# @var subcopy string #}
+{% extends 'email/html/_layout.html.twig' %}
+
+{# Header #}
+{% block header %}{% include 'email/html/_header.html.twig' %}{% endblock %}
+
+{# Subcopy #}
+{% block subcopy %}{% include 'email/html/_subcopy.html.twig' %}{% endblock %}
+
+{# Footer #}
+{% block footer %}{% include 'email/html/_footer.html.twig' with { footer: '© ' ~ ('now' | date('Y')) ~ ' ' ~ app_name } %}{% endblock %}

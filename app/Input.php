@@ -56,7 +56,7 @@ class Input {
    *     Input::$THROW_EXCEPTIONS => bool,
    *     // Range for length/size validation (choose one)
    *     Input::$IN_RANGE => [int],        // input >= int
-   *     Input::$IN_RANGE => [int1, int2], // input >= $mix && input <= $max
+   *     Input::$IN_RANGE => [int1, int2], // input >= int1 && input <= int2
    *     Input::$IN_RANGE => [null, int],  // input <= int
    *     // Custom error strings
    *     Input::$CUSTOM_ERROR_MESSAGES => array(

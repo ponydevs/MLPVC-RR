@@ -1,0 +1,11 @@
+{# @var string $app_name #}
+{% extends 'email/text/_layout.txt.twig' %}
+
+{# Header #}
+{% block header %}{% include 'email/text/_header.txt.twig' %}{% endblock %}
+
+{# Subcopy #}
+{% block subcopy %}{% include 'email/text/_subcopy.txt.twig' %}{% endblock %}
+
+{# Footer #}
+{% block footer %}{% include 'email/text/_footer.txt.twig' with { footer: '© ' ~ ('now' | date('Y')) ~ app_name } %}{% endblock %}

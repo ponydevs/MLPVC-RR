@@ -44,14 +44,15 @@
         {% include 'layout/_sidebar_useful_links.html.twig' %}
         <div class="button-block">
           {% if signed_in %}
-            <button id="signout" class="typcn typcn-arrow-back">Sign out</button>
+            <button id="signout" class="typcn typcn-arrow-back large">Sign out</button>
           {% else %}
-            <button class="typcn btn-da da-login" id="signin">Sign in</button>
-          {% endif %}
-          {% if not user_pref('p_hidediscord') and (not signed_in or not current_user.isDiscordServerMember) %}
-            <a class="btn typcn btn-discord discord-join" href="{{ constant('DISCORD_INVITE_LINK') }}">Join Discord</a>
+            <button class="typcn btn-da da-login large" id="signin">Sign in</button>
           {% endif %}
         </div>
+
+        {% if not user_pref('p_hidediscord') and (not signed_in or not current_user.isDiscordServerMember) %}
+          <a class="btn typcn btn-discord discord-join" href="{{ constant('DISCORD_INVITE_LINK') }}">Join Discord</a>
+        {% endif %}
       </section>
       {% block widgets %}{% endblock %}
       {# @var happening_soon string #}

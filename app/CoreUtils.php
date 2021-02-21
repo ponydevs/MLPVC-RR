@@ -216,6 +216,17 @@ class CoreUtils {
     ]);
   }
 
+  /**
+   * Force abort a request if the user does not have a specific role level
+   *
+   * @param string $role
+   */
+  public static function roleGate(string $role = 'developer') {
+    if (Permission::insufficient($role)) {
+      Response::fail('This API is currently under testing and is not available to all users, please try again later');
+    }
+  }
+
   public const DEFAULT_CSS = ['theme'];
   public const DEFAULT_JS = [
     'datastore',
@@ -1505,6 +1516,8 @@ class CoreUtils {
         return true;
       case 'false':
         return false;
+      case 'null':
+        return null;
       default:
         return $value;
     }

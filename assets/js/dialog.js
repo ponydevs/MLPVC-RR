@@ -224,7 +224,7 @@
     /**
      * Display a dialog asking for user input
      *
-     * @param {string}   title
+     * @param {string|false}   title
      * @param {string|$} content
      * @param {boolean}  forceNew
      */
@@ -373,7 +373,7 @@
     /**
      * Display a dialog that causes a page reload when dismissed
      *
-     * @param {string}   title
+     * @param {string|false}   title
      * @param {string|$} content
      * @param {string}   btnText
      * @param {function} handlerFunc

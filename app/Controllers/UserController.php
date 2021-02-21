@@ -10,9 +10,11 @@ use App\DeviantArt;
 use App\File;
 use App\HTTP;
 use App\Input;
+use App\Models\BlockedEmail;
+use App\Models\DeviantartUser;
+use App\Models\EmailVerification;
 use App\Models\PreviousUsername;
 use App\Models\Session;
-use App\Models\DeviantartUser;
 use App\Models\User;
 use App\Pagination;
 use App\Permission;
@@ -20,7 +22,11 @@ use App\Response;
 use App\Twig;
 use App\UserPrefs;
 use App\Users;
+use Monolog\Logger;
 use RuntimeException;
+use Square1\Pwned\Exception\ConnectionFailedException;
+use Square1\Pwned\Pwned;
+use Throwable;
 use function count;
 
 class UserController extends Controller {
@@ -36,7 +42,6 @@ class UserController extends Controller {
   public function profile($params):void {
     $user_id = $params['user_id'] ?? null;
 
-    $discord_duplicate_attempt = Auth::$signed_in && Auth::$session->pullData('discord_duplicate_attempt') === true;
     $error = null;
     $sub_error = null;
     if ($user_id === null){
@@ -67,8 +72,6 @@ class UserController extends Controller {
     if ($error !== null)
       HTTP::statusCode(404);
     else {
-      $sessions = $user->sessions;
-
       $is_staff = Permission::sufficient('staff');
 
       if ($same_user || $is_staff){
@@ -77,9 +80,7 @@ class UserController extends Controller {
         }
       }
 
-      if ($user->boundToDiscordMember()){
-        $discord_membership = $user->discord_member;
-      }
+      $discord_membership = $user->safelyGetDiscordMember();
 
       $contribs = $user->getCachedContributions();
       $contrib_cache_duration = Users::getContributionsCacheDuration();
@@ -122,7 +123,6 @@ class UserController extends Controller {
         'same_user' => $same_user,
         'is_staff' => $is_staff ?? null,
         'dev_on_dev' => $dev_on_dev,
-        'sessions' => $sessions ?? null,
         'da_logo' => str_replace(' fill="#FFF"', '', File::get(APPATH.'img/da-logo.svg')),
         'old_names' => $old_names ?? null,
         'contribs' => $contribs ?? null,
@@ -132,7 +132,6 @@ class UserController extends Controller {
         'list_pcgs' => $list_pcgs ?? null,
         'personal_color_guides' => $personal_color_guides ?? null,
         'awaiting_approval' => $awaiting_approval ?? null,
-        'duplicate_attempt' => $discord_duplicate_attempt,
       ],
     ];
     if ($error !== null)
@@ -159,6 +158,59 @@ class UserController extends Controller {
       CoreUtils::notFound();
 
     HTTP::permRedirect($da_user->user->toURL(false));
+  }
+
+  public function account($params):void {
+    if (!isset($params['id'])){
+      if (Auth::$signed_in){
+        $params['id'] = Auth::$user->id;
+      }
+      else {
+        CoreUtils::noPerm();
+      }
+    }
+
+    $this->load_user($params);
+    $same_user = Auth::$signed_in && $this->user->id === Auth::$user->id;
+    if (!$same_user && !Permission::sufficient('staff')){
+      CoreUtils::noPerm();
+    }
+
+    CoreUtils::fixPath($this->user->getAccountPagePath());
+
+    $whose = $same_user ? 'Your' : CoreUtils::posess($this->user->name);
+    $sessions = $this->user->sessions;
+
+    CoreUtils::loadPage(__METHOD__, [
+      'title' => "$whose Account",
+      'heading' => 'Account Settings',
+      'css' => [true],
+      'js' => [true],
+      'import' => [
+        'same_user' => $same_user,
+        'user' => $this->user,
+        'sessions' => $sessions ?? null,
+        'discord_membership' => $this->user->safelyGetDiscordMember(),
+      ],
+    ]);
+  }
+
+  public function verify() {
+    $hash = isset($_GET['hash']) && preg_match('/^[a-f\d]+$/i', $_GET['hash']) ? $_GET['hash'] : null;
+    $action = isset($_GET['action']) && $_GET['action'] === 'block' ? 'block' : 'verify';
+
+    $heading = CoreUtils::capitalize($action).' E-mail Address';
+    CoreUtils::loadPage(__METHOD__, [
+      'title' => $heading,
+      'heading' => $heading,
+      'noindex' => true,
+      'css' => [true],
+      'js' => [true],
+      'import' => [
+        'hash' => $hash,
+        'action' => $action,
+      ],
+    ]);
   }
 
   public function sessionApi($params):void {
@@ -210,6 +262,178 @@ class UserController extends Controller {
     $target_user->updateRole($new_role);
 
     Response::done();
+  }
+
+  public function passwordApi():void {
+    if ($this->action !== 'POST'){
+      CoreUtils::notAllowed();
+    }
+
+    if (!Auth::$signed_in){
+      CoreUtils::noPerm();
+    }
+
+    CoreUtils::roleGate('staff');
+
+    $hash_manager = Users::getHashManager();
+
+    $password_set = Auth::$user->getPasswordSet();
+    if ($password_set){
+      Users::validateCurrentPassword(Auth::$user, $hash_manager);
+    }
+
+    $new_password = (new Input('new_password', 'string', [
+      Input::IS_OPTIONAL => false,
+      Input::IN_RANGE => [8, 300],
+      Input::CUSTOM_ERROR_MESSAGES => [
+        Input::ERROR_MISSING => 'The new password is required',
+        Input::ERROR_INVALID => 'The new password is invalid',
+        Input::ERROR_RANGE => 'The new password must be between @min and @max characters long',
+      ],
+    ]))->out();
+
+    $compromised = false;
+    try {
+      $pwned = new Pwned([
+        'connection_timeout' => 5,
+        'remote_processing_timeout' => 2,
+      ]);
+      $compromised = $pwned->hasBeenPwned($new_password);
+    }
+    catch (ConnectionFailedException $e){
+      CoreUtils::logError("Failed to check password compromised status: {$e->getMessage()}\nStack trace:{$e->getTraceAsString()}", Logger::WARNING);
+    }
+    if ($compromised){
+      Response::fail('The specified new password is a known compromised password present in at least one data breach of other websites. Please chose a more unique password.');
+    }
+
+    DB::$instance->getConnection()->beginTransaction();
+
+    try {
+      Auth::$user->password = $hash_manager->make($new_password);
+      Auth::$user->save();
+
+      Session::delete_all(['conditions' => ['user_id' => Auth::$user->id]]);
+    }
+    catch (Throwable $e){
+      DB::$instance->getConnection()->rollBack();
+      CoreUtils::logError("Failed to save new password: {$e->getMessage()}\nStack trace:\n{$e->getTraceAsString()}");
+      Response::dbError('Could not set the password due to a database error');
+    }
+
+    if (!DB::$instance->getConnection()->commit()){
+      CoreUtils::logError("Failed to commit new password changes");
+      Response::dbError('Could not set the password due to a database error');
+    }
+
+    Response::success('Your new password has been set successfully. As a security precaution your existing sessions have been deleted, so you will need to log in again.');
+  }
+
+  public function emailApi($params):void {
+    if ($this->action !== 'POST'){
+      CoreUtils::notAllowed();
+    }
+
+    if (!Auth::$signed_in){
+      CoreUtils::noPerm();
+    }
+
+    CoreUtils::roleGate('staff');
+
+    $this->load_user($params);
+
+    $same_user = Auth::$user->id === $this->user->id;
+    if (!$same_user && !Permission::sufficient('staff')){
+      CoreUtils::noPerm();
+    }
+
+    $resend = (new Input('resend', 'bool', [
+      Input::IS_OPTIONAL => true,
+      Input::CUSTOM_ERROR_MESSAGES => [
+        Input::ERROR_INVALID => 'The resend value is invalid',
+      ],
+    ]))->out() ?? false;
+
+    $new_email = null;
+    if (!$resend){
+      $new_email = (new Input('new_email', 'string', [
+        Input::IS_OPTIONAL => false,
+        Input::IN_RANGE => [3, 128],
+        Input::CUSTOM_ERROR_MESSAGES => [
+          Input::ERROR_MISSING => 'The new e-mail is required',
+          Input::ERROR_INVALID => 'The new e-mail is invalid',
+          Input::ERROR_RANGE => 'The new e-mail must be between @min and @max characters long',
+        ],
+      ]))->out();
+
+      if ($new_email === $this->user->email){
+        Response::fail('You are trying to use same e-mail address '.($same_user ? 'you' : 'this user').' already '.($same_user ? 'have' : 'has').' set');
+      }
+
+      Users::validateEmail($new_email);
+
+      if ($same_user){
+        if (!$this->user->getPasswordSet()){
+          Response::fail('You will need to set a password first before changing your e-mail address');
+        }
+
+        Users::validateCurrentPassword($this->user);
+      }
+
+      $users_with_this_email_exist = User::exists(['conditions' => ['email' => $new_email]]);
+      if ($users_with_this_email_exist){
+        Response::fail('This e-mail address is already in use by another user');
+      }
+    }
+
+    if (!Users::sendEmailValidation($this->user, $new_email)){
+      Response::fail('There was an issue while trying to send a confirmation e-mail, please try again later');
+    }
+
+    Response::success('A confirmation e-mail has been sent to the specified address with a link to verify your address. Click the link to update the address in your account.');
+  }
+
+  public function verifyApi():void {
+    if ($this->action !== 'POST'){
+      CoreUtils::notAllowed();
+    }
+
+    CoreUtils::roleGate('staff');
+
+    $hash = (new Input('hash', 'string', [
+      Input::IS_OPTIONAL => false,
+      Input::IN_RANGE => [128, 128],
+      Input::CUSTOM_ERROR_MESSAGES => [
+        Input::ERROR_MISSING => 'The hash value is missing',
+        Input::ERROR_INVALID => 'The hash value is invalid',
+        Input::ERROR_RANGE => 'The hash value must be exactly @min characters long',
+      ],
+    ]))->out();
+
+    $verification = EmailVerification::find_by_hash($hash);
+    if ($verification === null || !$verification->isValid()) {
+      Response::fail('The specified validation hash is either invalid or has expired');
+    }
+
+    $action = (new Input('action', 'string', [
+      Input::IS_OPTIONAL => false,
+      Input::CUSTOM_ERROR_MESSAGES => [
+        Input::ERROR_MISSING => 'The action value is missing',
+        Input::ERROR_INVALID => 'The action value is invalid',
+      ],
+    ]))->out();
+
+    if ($action === 'block') {
+      BlockedEmail::record($verification->email);
+
+      Response::success('Your e-mail address has been added to our do-not-send list successfully.');
+    }
+
+    if (!$verification->user->setVerifiedEmail($verification)) {
+      Response::fail('Could not update the e-mail address in the database.');
+    }
+
+    Response::success('Your e-mail address has been verified successfully.');
   }
 
   public const CONTRIB_NAMES = [
@@ -324,9 +548,9 @@ class UserController extends Controller {
 
   public function list():void {
     $is_staff = Permission::sufficient('staff');
-    if (!$is_staff) {
+    if (!$is_staff){
       $can_see_users_with_roles = [];
-      foreach (Permission::ROLES as $role => $level) {
+      foreach (Permission::ROLES as $role => $level){
         if ($level >= Permission::ROLES['member'])
           $can_see_users_with_roles[] = $role;
       }
@@ -369,7 +593,7 @@ class UserController extends Controller {
         }
         else {
           $users_str = '';
-          if ($staff_section) {
+          if ($staff_section){
             foreach ($users as $user)
               $users_str .= sprintf("<div class='staff-block'>%s</div>", $user->toAnchor(WITH_AVATAR));
           }

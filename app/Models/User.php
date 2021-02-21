@@ -14,37 +14,36 @@ use App\Logs;
 use App\NavBreadcrumb;
 use App\Pagination;
 use App\Permission;
-use App\Response;
 use App\Time;
 use App\Twig;
 use App\UserPrefs;
-use Exception;
 use RuntimeException;
 use function count;
 
 /**
- * @property integer            $id
- * @property string             $name
- * @property string             $email
- * @property string             $role
- * @property DateTime           $email_verified_at
- * @property string             $password
- * @property string             $remember_token
- * @property DateTime           $created_at
- * @property DateTime           $updated_at
- * @property Session[]          $sessions         (Via relations)
- * @property Notification[]     $notifications    (Via relations)
- * @property Event[]            $submitted_events (Via relations)
- * @property Event[]            $finalized_events (Via relations)
- * @property Appearance[]       $pcg_appearances  (Via relations)
- * @property DeviantartUser     $deviantart_user  (Via relations)
- * @property DiscordMember      $discord_member   (Via relations)
- * @property Log[]              $logs             (Via relations)
- * @property PCGSlotHistory[]   $pcg_slot_history (Via relations)
- * @property string             $role_label       (Via magic method)
- * @property string             $avatar_url       (Via magic method)
- * @property null $previous_names
+ * @property integer          $id
+ * @property string           $name
+ * @property string           $email
+ * @property string           $role
+ * @property DateTime         $email_verified_at
+ * @property string           $password
+ * @property string           $remember_token
+ * @property DateTime         $created_at
+ * @property DateTime         $updated_at
+ * @property Session[]        $sessions         (Via relations)
+ * @property Notification[]   $notifications    (Via relations)
+ * @property Event[]          $submitted_events (Via relations)
+ * @property Event[]          $finalized_events (Via relations)
+ * @property Appearance[]     $pcg_appearances  (Via relations)
+ * @property DeviantartUser   $deviantart_user  (Via relations)
+ * @property DiscordMember    $discord_member   (Via relations)
+ * @property Log[]            $logs             (Via relations)
+ * @property PCGSlotHistory[] $pcg_slot_history (Via relations)
+ * @property string           $role_label       (Via magic method)
+ * @property string           $avatar_url       (Via magic method)
+ * @property null             $previous_names
  * @method static User find(...$args)
+ * @method static User find_by_email(string $email)
  */
 class User extends NSModel implements Linkable {
   public static $table_name = 'users';
@@ -77,8 +76,9 @@ class User extends NSModel implements Linkable {
     return $this->deviantart_user;
   }
 
-  public function get_avatar_url(): ?string {
+  public function get_avatar_url():?string {
     $da_user = $this->deviantart_user;
+
     return $da_user->avatar_url ?? GUEST_AVATAR;
   }
 
@@ -138,6 +138,7 @@ class User extends NSModel implements Linkable {
 
   /**
    * USED IN TWIG - DO NOT REMOVE
+   *
    * @noinspection PhpUnused
    */
   public function getVectorAppIcon():string {
@@ -161,7 +162,7 @@ class User extends NSModel implements Linkable {
     $old_role = (string)$this->role;
     if ($old_role === 'developer'){
       $old_role = GlobalSettings::get('dev_role_label');
-      if ($old_role === $new_role) {
+      if ($old_role === $new_role){
         return true;
       }
       $response = GlobalSettings::set('dev_role_label', $new_role);
@@ -334,9 +335,10 @@ class User extends NSModel implements Linkable {
 			WHERE c.contributor_id = ? AND p.owner_id IS NULL";
 
     $da_bound = $this->boundToDeviantartUser();
-    if ($count) {
+    if ($count){
       if (!$da_bound)
         return 0;
+
       return DB::$instance->querySingle($query, [$this->deviantart_user->id])['cnt'];
     }
 
@@ -469,6 +471,10 @@ class User extends NSModel implements Linkable {
 
   public function boundToDiscordMember():bool {
     return $this->discord_member instanceof DiscordMember;
+  }
+
+  public function safelyGetDiscordMember():?DiscordMember {
+    return $this->boundToDiscordMember() ? $this->discord_member : null;
   }
 
   public function isDiscordLinked():bool {
@@ -635,7 +641,7 @@ class User extends NSModel implements Linkable {
     return Permission::sufficient($role, $this->role);
   }
 
-  public function assignCorrectRole(): bool {
+  public function assignCorrectRole():bool {
     $da_user = $this->deviantart_user;
     $club_member = $da_user->isClubMember();
     if ($club_member){
@@ -647,5 +653,29 @@ class User extends NSModel implements Linkable {
       return $this->updateRole('user');
 
     return $this->save();
+  }
+
+  public function getPasswordSet():bool {
+    return $this->password !== null;
+  }
+
+  public function getEmailSet():bool {
+    return $this->email !== null;
+  }
+
+  public function getAccountPagePath():string {
+    return "/users/{$this->id}/account";
+  }
+
+  public function setVerifiedEmail(EmailVerification $verification):bool {
+    $this->email = $verification->email;
+    $this->email_verified_at = date('c');
+
+    $status = $this->save();
+    if ($status) {
+      $verification->delete();
+    }
+
+    return $status;
   }
 }

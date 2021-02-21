@@ -1,0 +1,17 @@
+{# @var email string #}
+{# @var block_url string #}
+{# @var verify_url string #}
+{# @var expires_at \ActiveRecord\DateTime #}
+{% extends 'email/html/_message.html.twig' %}
+
+{% block body %}
+  <p>Your e-mail address ({{ email }}) was added to an account on our website. We're sending this e-mail to confirm the address belongs to whoever did this.</p>
+
+  <p>If you on this address and requested this change yourself then please click the link below to confirm your address:</p>
+
+  {% include 'email/html/_button.html.twig' with { url: verify_url, text: 'Verify my e-mail address', color: 'green' } %}
+
+  <p>If this was in fact not done by you you can safely ignore this email. In case you are being spammed with messages from us you can <a href="{{ block_url }}">click this link</a> to stop receiving unwanted verification e-mails from our website permanently.</p>
+
+  <p>Both of the links above will expire on {{ expires_at | date('Y-m-d') }} at {{ expires_at | date('g:i:s a') }}, after which you will need to manually resend this confirmation message through the site.</p>
+{% endblock %}

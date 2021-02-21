@@ -37,6 +37,7 @@ class Event extends NSModel implements Linkable {
   public static $has_many = [
     ['entries', 'class_name' => 'EventEntry', 'order' => 'score desc, created_at asc'],
   ];
+
   public static $belongs_to = [
     ['creator', 'class' => 'User', 'foreign_key' => 'added_by'],
     ['finalizer', 'class' => 'User', 'foreign_key' => 'finalized_by'],

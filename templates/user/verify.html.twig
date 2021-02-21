@@ -1,0 +1,14 @@
+{# @controller \App\Controllers\UserController::verify #}
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+  <div id="content">
+    <div id="verify-status-wrap"></div>
+    <h1>{{ heading }}</h1>
+    <p id="verify-status">Please wait&hellip;</p>
+  </div>
+  {{ export_vars({
+    verifyHash: hash,
+    verifyAction: action,
+  }) }}
+{% endblock %}

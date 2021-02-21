@@ -1,0 +1,35 @@
+@import "../../vars";
+
+#content {
+  padding: 2rem;
+
+  #verify-status-wrap {
+    display: block;
+    margin: 0 auto 1rem;
+    width: 1.28em;
+    height: 1.28em;
+    border-radius: 50%;
+    font-size: 100px;
+    line-height: 1.1em;
+    text-align: center;
+
+    &:empty {
+      background: url('/img/loading-ring.svg') no-repeat center;
+      background-size: contain;
+    }
+
+    &[data-status="true"] {
+      background-color: $NGreen;
+      color: $NGreenBG;
+    }
+
+    &[data-status="false"] {
+      background-color: $NRed;
+      color: $NRedBG;
+    }
+  }
+
+  .notice {
+    margin: 1.5rem 0 0;
+  }
+}

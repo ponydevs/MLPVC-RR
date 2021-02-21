@@ -48,15 +48,16 @@ button, .btn, input[type=button] {
   padding-top: $ButtonPadding;
   padding-bottom: $ButtonPadding;
   font-family: $RegularFont;
-  $fontsize: 17px;
+  $fontsize: 16px;
   font-size: $fontsize;
   line-height: $fontsize;
   vertical-align: bottom;
 
   &.large {
-    $fontsize: 22px;
+    $fontsize: 18px;
     font-size: $fontsize;
     line-height: $fontsize;
+    padding: $ButtonPadding * 1.8;
   }
 
   &.blue {
@@ -102,6 +103,11 @@ button, .btn, input[type=button] {
   &.link {
     color: lighten($LinkHoverLight, 5) !important;
     background-color: $Link !important;
+  }
+
+  &.ui {
+    color: lighten($DefaultUIColor, 60%) !important;
+    background-color: $DefaultUIColor !important;
   }
 }
 

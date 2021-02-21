@@ -86,6 +86,8 @@ $router->map('GET', '/[sett]', 'UserController#profile');
 $router->map('GET', '/u/[uuid:uuid]', 'UserController#profileByUuid');
 $router->map('GET', '/users/[i:user_id]/contrib/[ad:type]/[i]?', 'UserController#contrib');
 $router->map('GET', '/user/contrib/lazyload/[favme:favme]', 'UserController#contribLazyload');
+$router->map('GET', '/users/[i:id]?/account', 'UserController#account');
+$router->map('GET', '/users/verify', 'UserController#verify');
 // Forced redirects from the old URL structure
 $router->map('GET', '/@[un:name]', 'UserController#forceRedirect');
 $router->map('GET', '/u/[un:name]?', 'UserController#forceRedirect');

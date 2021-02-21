@@ -192,7 +192,7 @@ class View {
         $bc = (new NavBreadcrumb('Users', '/users'))->setEnabled($is_staff);
         if ($this->method !== 'list'){
           /** @var $User User */
-          $user = $scope['user'];
+          $user = $scope['user'] ?? null;
           if ($user instanceof User){
             switch ($this->method){
               case 'colorguide':
@@ -217,6 +217,14 @@ class View {
             break;
             case 'profile':
               $subbc->setActive();
+            break;
+            case 'account':
+              $subbc->setChild(
+                new NavBreadcrumb('Account', null, true)
+              );
+            break;
+            case 'verify':
+              $subbc = new NavBreadcrumb($scope['heading'], null, true);
             break;
           }
           $bc->setChild($subbc);

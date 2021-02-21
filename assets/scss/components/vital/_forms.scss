@@ -85,6 +85,11 @@ input[type=checkbox] {
   }
 }
 
+input[readonly] {
+  opacity: .75;
+  border-style: dashed !important;
+}
+
 #dialogContent {
   > div:not(#dialogButtons) {
     > form[id] {
