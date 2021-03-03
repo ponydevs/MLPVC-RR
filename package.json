@@ -36,7 +36,7 @@
     "eslint-plugin-react": "^7.21.5",
     "fluidbox": "2.0.5",
     "gulp-cli": "^2.3.0",
-    "jquery": "^3.5.1",
+    "jquery": "^3.6.0",
     "minimist": ">=1.2.3",
     "prop-types": "15.6.2",
     "react": "16.8.6",
