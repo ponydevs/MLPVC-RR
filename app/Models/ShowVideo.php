@@ -51,6 +51,8 @@ class ShowVideo extends NSModel {
     if ($this->not_broken_at !== null && $this->not_broken_at->getTimestamp() + (Time::IN_SECONDS['hour'] * 2) > time())
       return false;
 
+    $broken = false;
+
     switch ($this->provider_abbr){
       case 'yt':
         $client = new Google_Client();
