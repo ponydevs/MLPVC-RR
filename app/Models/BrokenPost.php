@@ -19,7 +19,7 @@ class BrokenPost extends NSModel {
     ['post']
   ];
 
-  public static function record(int $post_id, int $response_code, string $failing_url, string $reserved_by) {
+  public static function record(int $post_id, int $response_code, string $failing_url, ?string $reserved_by) {
     self::create([
       'post_id' => $post_id,
       'response_code' => $response_code,
