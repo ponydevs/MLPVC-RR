@@ -300,7 +300,7 @@ class AdminController extends Controller {
         }
 
         $minrole = (new Input('minrole', function ($value) {
-          if (empty(Permission::ROLES_ASSOC[$value]) || Permission::insufficient('user', $value))
+          if (empty(Permission::ROLES_ASSOC[$value]) || Permission::insufficient('guest', $value))
             Response::fail();
         }, [
           Input::CUSTOM_ERROR_MESSAGES => [

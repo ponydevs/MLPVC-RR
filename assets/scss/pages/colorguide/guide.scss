@@ -553,19 +553,6 @@ ul.colors {
   }
 }
 
-#template-gen-form {
-  canvas {
-    background: url('/img/transparency.svg') repeat center;
-    background-size: 16px;
-    border: 1px solid black;
-    display: block;
-    height: 300px;
-    margin: 0 auto;
-    pointer-events: none;
-    width: 300px;
-  }
-}
-
 body.nutshell-names {
   #search-form input, .appearance-name:not(.pcg-name), .algolia-autocomplete .aa-suggestions {
     @include meme-font;

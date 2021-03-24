@@ -88,7 +88,6 @@ class ColorGuideController extends Controller {
 
   protected const GUIDE_MANAGE_JS = [
     'jquery.uploadzone',
-    'jquery.ponycolorpalette',
     'pages/colorguide/tag-list',
     'pages/colorguide/manage',
   ];

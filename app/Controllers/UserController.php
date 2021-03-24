@@ -62,7 +62,7 @@ class UserController extends Controller {
       $can_edit = $same_user = $dev_on_dev = false;
     }
     else {
-      $pagePath = $user->toURL(false).($user_id === null ? '#settings' : '');
+      $pagePath = $user->toURL(false);
       CoreUtils::fixPath($pagePath);
       $same_user = Auth::$signed_in && $user->id === Auth::$user->id;
       $can_edit = !$same_user && Permission::sufficient('staff') && Permission::sufficient($user->role);

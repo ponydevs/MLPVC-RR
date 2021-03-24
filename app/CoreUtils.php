@@ -233,6 +233,7 @@ class CoreUtils {
     'lib/jquery.swipe',
     'lib/jquery.simplemarquee',
     'lib/codemirror-modes/colorguide',
+    'jquery.ponycolorpalette',
     'shared-utils',
     'dialog',
     'global',
@@ -350,8 +351,8 @@ class CoreUtils {
           $notifs = Notifications::get(Notifications::UNREAD_ONLY);
           $scope['have_notifs'] = count($notifs) > 0;
           $scope['notifications'] = Notifications::getHTML($notifs);
-          $scope['useful_links'] = UsefulLink::in_order();
         }
+        $scope['useful_links'] = UsefulLink::in_order();
 
         // Happening soon
         $scope['happening_soon'] = self::getSidebarUpcoming();

@@ -11,6 +11,7 @@
 @import "components/vital/notices";
 @import "components/vital/section";
 @import "components/vital/codemirror";
+@import "components/vital/sprite-generator";
 // Mobile-only Styles
 @media all and (max-width: $Breakpoint) {
   .desktop-only {
@@ -796,7 +797,7 @@ header, #sidebar .mobile-nav {
       }
     }
 
-    &.welcome .links {
+    .sb-useful-links {
       list-style: none;
       border-radius: 5px;
       margin: 0 0 6px;
@@ -997,7 +998,7 @@ header, #sidebar .mobile-nav {
     }
   }
 
-  > section.welcome .links, > .logged-in {
+  > section .sb-useful-links, > .logged-in {
     color: $SidebarContentColor;
     background-color: $SidebarContentBackground;
     border: 1px solid $SidebarContentBorder;
