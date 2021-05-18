@@ -8,7 +8,7 @@
     chalk = require('chalk'),
     gulp = require('gulp'),
     plumber = require('gulp-plumber'),
-    sass = require('gulp-sass'),
+    { sass } = require('@mr-hope/gulp-sass'),
     sourceMaps = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
     cleanCss = require('gulp-clean-css'),
@@ -20,6 +20,8 @@
     fs = require('fs'),
     babelrc = JSON.parse(fs.readFileSync('./.babelrc', 'utf-8')),
     workingDir = __dirname;
+
+  sass.compiler = require('sass');
 
   require('dotenv').load();
 
