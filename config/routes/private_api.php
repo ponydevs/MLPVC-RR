@@ -6,9 +6,6 @@ global $router;
 
 // Proper REST API endpoints (sort of)
 // Allowing all request methods lets us reply with HTTP 405 to unsupported methods at the controller level
-use function define;
-
-define('PRIVATE_API_PATH', '/api/private');
 $private_api_endpoint = function ($path, $controller) use ($router) {
   $router->map('POST|GET|PUT|DELETE', PRIVATE_API_PATH.$path, $controller);
 };
