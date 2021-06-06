@@ -875,6 +875,7 @@ class CGUtils {
     $color_groups = $Appearance->color_groups;
     $colors = self::getColorsForEach($color_groups, true);
     foreach ($color_groups as $cg){
+      if (!isset($colors[$cg->id])) continue;
       $json[$label][$cg->label] = [];
       foreach ($colors[$cg->id] as $c)
         $json[$label][$cg->label][$c->label] = $c->hex;
@@ -1136,7 +1137,7 @@ class CGUtils {
       return '';
 
     $return = [];
-    foreach ($cgs as $i => $c)
+    foreach ($cgs as $c)
       $return[] = $c->label;
 
     return implode("\n", $return);
