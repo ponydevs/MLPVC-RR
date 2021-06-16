@@ -4,16 +4,13 @@ namespace App\Controllers;
 
 use App\Auth;
 use App\CoreUtils;
-use App\DB;
 use App\Exceptions\MismatchedProviderException;
 use App\Exceptions\UnsupportedProviderException;
 use App\ImageProvider;
 use App\Input;
 use App\Models\EventEntry;
-use App\Models\EventEntryVote;
 use App\Permission;
 use App\Response;
-use App\Time;
 use Exception;
 
 class EventEntryController extends EventController {
@@ -40,17 +37,6 @@ class EventEntryController extends EventController {
 
     $this->load_event(['id' => $this->entry->event_id]);
 
-    if ($action === 'vote'){
-      if ($this->event->type !== 'contest')
-        Response::fail('You can only vote on entries to contest events');
-      if (!$this->event->hasEnded())
-        Response::fail('This event has ended; entries can no longer be voted on');
-      if (!$this->event->checkCanVote(Auth::$user))
-        Response::fail('You are not allowed to vote on entries to this event');
-      if ($this->entry->submitted_by === Auth::$user->id)
-        Response::fail('You cannot vote on your own entries', ['disable' => true]);
-    }
-
     if ($action !== 'view' && Permission::insufficient('staff') && $this->event->ends_at->getTimestamp() < time())
       Response::fail('This event has ended, entries can no longer be submitted or modified. Please ask a staff member if you need to make any changes.');
   }
@@ -71,7 +57,7 @@ class EventEntryController extends EventController {
         ImageProvider::PROV_STASH,
       ], false, false);
     }
-    catch (MismatchedProviderException|UnsupportedProviderException $e){
+    catch (MismatchedProviderException | UnsupportedProviderException $e){
       Response::fail('Entry link must point to a deviation or Sta.sh submission');
     }
     catch (Exception $e){
@@ -127,30 +113,6 @@ class EventEntryController extends EventController {
           'prev_src' => $this->entry->prev_src,
         ]);
       break;
-      case 'POST':
-        if (!Auth::$signed_in)
-          Response::fail();
-
-        $this->load_event($params);
-
-        if (!$this->event->checkCanEnter(Auth::$user))
-          Response::fail('You cannot participate in this event.');
-        if (!$this->event->hasStarted())
-          Response::fail('This event hasn\'t started yet, so entries cannot be submitted.');
-        if ($this->event->hasEnded() && Permission::insufficient('staff'))
-          Response::fail('This event has concluded, so no new entries can be submitted.');
-
-        $insert = new EventEntry();
-        foreach ($this->_processEntryData() as $k => $v)
-          $insert->{$k} = $v;
-        $insert->submitted_by = Auth::$user->id;
-        $insert->event_id = $this->event->id;
-        $insert->score = $this->event->type === 'contest' ? 0 : null;
-        if (!$insert->save())
-          Response::dbError('Saving entry failed');
-
-        Response::done(['entrylist' => $this->event->getEntriesHTML(false, NOWRAP)]);
-      break;
       case 'PUT':
         $this->load_event_entry($params, 'manage');
 
@@ -178,67 +140,6 @@ class EventEntryController extends EventController {
       default:
         CoreUtils::notAllowed();
     }
-  }
-
-  public function voteApi($params) {
-    switch ($this->action){
-      case 'GET':
-        $this->load_event_entry($params, 'view');
-
-        Response::done(['voting' => $this->entry->getListItemVoting($this->event)]);
-      break;
-      case 'POST':
-        $this->load_event_entry($params, 'vote');
-
-        $userVote = $this->entry->getUserVote(Auth::$user);
-
-        $value = (new Input('value', 'vote', [
-          Input::IN_RANGE => [-1, 1],
-          Input::CUSTOM_ERROR_MESSAGES => [
-            Input::ERROR_MISSING => 'Vote value is missing',
-            Input::ERROR_INVALID => 'Vote value (@value) is invalid',
-            Input::ERROR_RANGE => 'Vote value must be @min or @max',
-          ],
-        ]))->out();
-        if (!empty($userVote)){
-          if ($userVote->value === $value)
-            Response::fail('You already voted for this entry', ['disable' => true]);
-
-          $this->_checkWipeLockedInVote($userVote);
-        }
-
-        $vote = new EventEntryVote();
-        $vote->entry_id = $this->entry->id;
-        $vote->user_id = Auth::$user->id;
-        $vote->value = $value;
-        if (!$vote->save())
-          Response::dbError('Vote could not be recorded');
-
-        $this->entry->updateScore();
-        Response::done(['score' => $this->entry->getFormattedScore()]);
-      break;
-      case 'DELETE':
-        $this->load_event_entry($params, 'vote');
-
-        $userVote = $this->entry->getUserVote(Auth::$user);
-        if (empty($userVote))
-          Response::fail('You haven\'t voted for this entry yet');
-        $this->_checkWipeLockedInVote($userVote);
-
-        $this->entry->updateScore();
-        Response::done(['score' => $this->entry->getFormattedScore()]);
-      break;
-      default:
-        CoreUtils::notAllowed();
-    }
-  }
-
-  private function _checkWipeLockedInVote(EventEntryVote $userVote) {
-    if ($userVote->isLockedIn($this->entry))
-      Response::fail('You already voted on this post '.Time::tag($userVote->created_at).'. Your vote is now locked in until the post is edited.');
-
-    if (!DB::$instance->where('user_id', Auth::$user->id)->where('entry_id', $this->entry->id)->delete(EventEntryVote::$table_name))
-      Response::dbError('Vote could not be removed');
   }
 
   public function lazyload($params) {

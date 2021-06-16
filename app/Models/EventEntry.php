@@ -4,16 +4,13 @@ namespace App\Models;
 
 use ActiveRecord\DateTime;
 use App\Auth;
-use App\CoreUtils;
-use App\DB;
 use App\DeviantArt;
 use App\Twig;
-use Exception;
+use RuntimeException;
 
 /**
  * @property int      $id
  * @property int      $event_id
- * @property int      $score
  * @property string   $prev_src
  * @property string   $prev_full
  * @property string   $prev_thumb
@@ -48,26 +45,7 @@ class EventEntry extends NSModel {
     if ($this->score === null)
       return;
 
-    $score = DB::$instance->disableAutoClass()->where('entryid', $this->id)->getOne(EventEntryVote::$table_name, 'COALESCE(SUM(value),0) as score');
-    $this->score = $score['score'];
-    $this->save();
-
-    try {
-      CoreUtils::socketEvent('entry-score', [
-        'entryid' => $this->id,
-      ]);
-    }
-    catch (Exception $e){
-      CoreUtils::logError("SocketEvent Error\n".$e->getMessage()."\n".$e->getTraceAsString());
-    }
-  }
-
-  public function getUserVote(User $user):?EventEntryVote {
-    return EventEntryVote::find_by_entry_id_and_user_id($this->id, $user->id);
-  }
-
-  public function getFormattedScore() {
-    return $this->score < 0 ? '−'.(-$this->score) : $this->score;
+    throw new RuntimeException('Score changes are currently not allowed!');
   }
 
   private static function _getPreviewDiv(string $fullsize, string $preview, ?string $file_type = null):string {
@@ -75,13 +53,6 @@ class EventEntry extends NSModel {
       'fullsize' => $fullsize,
       'preview' => $preview,
       'file_type' => $file_type,
-    ]);
-  }
-
-  public function getListItemVoting(Event $event):string {
-    return Twig::$env->render('event/_entry_voting.html.twig', [
-      'event' => $event,
-      'entry' => $this,
     ]);
   }
 

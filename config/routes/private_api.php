@@ -56,7 +56,6 @@ $private_api_endpoint('/event/[i:id]/finalize', 'EventController#finalize');
 $private_api_endpoint('/event/[i:id]/check-entries', 'EventController#checkEntries');
 $private_api_endpoint('/event/[i:id]/entry', 'EventEntryController#api');
 $private_api_endpoint('/event/entry/[i:entryid]', 'EventEntryController#api');
-$private_api_endpoint('/event/entry/[i:entryid]/vote', 'EventEntryController#voteApi');
 $private_api_endpoint('/event/entry/[i:entryid]/lazyload', 'EventEntryController#lazyload');
 $private_api_endpoint('/notif', 'NotificationsController#get');
 $private_api_endpoint('/notif/[i:id]/mark-read', 'NotificationsController#markRead');

@@ -135,15 +135,6 @@
         if ($post.length)
           $post.reloadLi(false);
       }));
-      this.conn.on('entry-score', wsdecoder(data => {
-        if (typeof data.entryid === 'undefined')
-          return;
-
-        let $entry = $(`#entry-${data.entryid}`);
-        console.log('[WS] Entry score updated (entryid=%s, score=%s)', data.entryid, data.score);
-        if ($entry.length)
-          $entry.refreshVoting();
-      }));
       this.conn.on('update', wsdecoder(response => {
         console.log('[WS] %cWebsite updated', 'color:darkblue');
         const speed = 100;
@@ -185,24 +176,6 @@
 
         this.substatus.postUpdates = subscribe;
         $('#episode-live-update')[this.substatus.postUpdates ? 'removeClass' : 'addClass']('hidden');
-        console.log('[WS] %c%s', 'color:green', data.message);
-      }));
-    }
-
-    recvEntryUpdates(subscribe) {
-      if (typeof this.conn === 'undefined')
-        return setTimeout(() => {
-          this.recvEntryUpdates(subscribe);
-        }, 2000);
-
-      if (typeof subscribe !== 'boolean' || this.substatus.entryUpdates === subscribe)
-        return;
-      this.conn.emit('entry-updates', String(subscribe), wsdecoder(data => {
-        if (!data.status)
-          return console.log('[WS] %centry-updates subscription status change failed (subscribe=%s)', 'color:red', subscribe);
-
-        this.substatus.entryUpdates = subscribe;
-        $('#entry-live-update')[this.substatus.entryUpdates && window.EventType === 'contest' ? 'removeClass' : 'addClass']('hidden');
         console.log('[WS] %c%s', 'color:green', data.message);
       }));
     }

@@ -9,7 +9,7 @@
 			<span>Entry link</span>
 			<input type="url" name="link" required>
 		</label>
-		<div class="notice info">This must point to a deviation on DeviantArt or a Sta.sh upload. A Sta.sh link will not be visible to the public, so use that if you do not want to share the source file with anyone other than the staff. For collaboration events, you only need to submit the source file, we'll take care of the rest.</div>`,
+		<div class="notice info">This must point to a deviation on DeviantArt or a Sta.sh upload. A Sta.sh link will not be visible to the public, so use that if you do not want to share the source file with anyone other than the staff. You only need to submit the source file, we'll take care of the rest.</div>`,
       $.mk('label').append(
         `<span>Entry title</span>`,
         $.mk('input').attr({
@@ -35,37 +35,6 @@
 
     return this;
   };
-
-  $('#enter-event').on('click', function(e) {
-    e.preventDefault();
-
-    let eventID = $(this).closest('[id^=event-]').attr('id').split('-')[1];
-
-    $.Dialog.wait('New entry', 'Checking whether you can submit any more entries');
-
-    $.API.get(`/event/${eventID}/check-entries`, function() {
-      if (!this.status) return $.Dialog.fail(false, this.message);
-
-      if (this.message)
-        $.Dialog.success(false, this.message);
-
-      $.Dialog.request(false, $entryForm.clone(), 'Enter', function($form) {
-        $form.on('submit', function(e) {
-          e.preventDefault();
-
-          let data = $form.mkData();
-          $.Dialog.wait(false, 'Submitting your entry');
-
-          $.API.post(`/event/${eventID}/entry`, data, function() {
-            if (!this.status) return $.Dialog.fail(false, this.message);
-
-            $eventEntries.html(this.entrylist).rebindFluidbox();
-            $.Dialog.close();
-          });
-        });
-      });
-    });
-  });
 
   $eventEntries.rebindFluidbox().on('click', '.edit-entry', function(e) {
     e.preventDefault();
@@ -109,7 +78,7 @@
 
     let $li = $(this).closest('[id^=entry-]'),
       entryID = $li.attr('id').split('-')[1],
-      title = $li.find('.label').text();
+      title = $li.find('.label').text().trim();
 
     $.Dialog.confirm(`Withdraw entry #${entryID}`, `Are you sure you want to withdraw the entry <q>${title}</q>?`, function(sure) {
       if (!sure) return;
@@ -126,60 +95,6 @@
       });
     });
   });
-
-  $eventEntries.on('click', '.voting > button', function(e) {
-    e.preventDefault();
-
-    let $btn = $(this),
-      $li = $btn.closest('[id^=entry-]'),
-      entryID = $li.attr('id').split('-')[1],
-      value = $btn.hasClass('upvote') ? 1 : -1,
-      un = $btn.hasClass('clicked');
-
-    $btn.siblings('button').addBack().disable();
-    $.API[un ? 'delete' : 'post'](`/event/entry/${entryID}/vote`, { value }, function() {
-      let $otherBtn = $btn.siblings('button');
-      if (!this.disable)
-        $otherBtn.addBack().enable();
-      if (!this.status)
-        return $.Dialog.fail('Voting on entry #' + entryID, this.message);
-
-      $btn[un ? 'removeClass' : 'addClass']('clicked');
-      $otherBtn.removeClass('clicked');
-      $btn.siblings('.score').text(this.score);
-
-      $eventEntries.triggerHandler('reorder-items');
-    });
-  }).on('reorder-items', function() {
-    if ($eventEntries.find('.voting').length === 0)
-      return;
-
-    $eventEntries.children().sort(function(a, b) {
-      const
-        aScore = parseInt($(a).find('.score').text().replace(/^\D/, '-'), 10),
-        bScore = parseInt($(b).find('.score').text().replace(/^\D/, '-'), 10);
-
-      return aScore < bScore ? 1 : (aScore > bScore ? -1 : 0);
-    }).appendTo($eventEntries);
-  });
-
-  $.fn.refreshVoting = function() {
-    const
-      $entry = this,
-      entryID = $entry.attr('id').split('-')[1];
-
-    $.API.get(`/event/entry/${entryID}/vote`, function() {
-      if (!this.status)
-        return $.Dialog.fail('Refresh voting buttons of entry #' + entryID, this.message);
-
-      $entry.find('.voting').replaceWith(this.voting);
-      $eventEntries.triggerHandler('reorder-items');
-    });
-  };
-
-  if (window.EventType === 'contest')
-    $.WS.recvEntryUpdates(true);
-
 
   const entryIO = new IntersectionObserver(entries => {
     entries.forEach(entry => {

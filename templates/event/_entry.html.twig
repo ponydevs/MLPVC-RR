@@ -9,7 +9,6 @@
   {% if wrap %}
     <li id='entry-{{ entry.id }}'>
   {% endif %}
-  {% include 'event/_entry_voting.html.twig' %}
   {% if lazyload %}
     <div class='entry-deviation-promise image-promise' data-entryid='{{ entry.id }}'></div>
   {% else %}
