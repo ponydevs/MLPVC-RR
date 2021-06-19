@@ -229,6 +229,11 @@
         height: $HeaderHeight + 30px;
         overflow-x: scroll;
         overflow-y: hidden;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: .313rem 1rem !important;
+        line-height: 1.5;
       }
 
       #to-the-top {
@@ -310,8 +315,6 @@
   }
 
   header nav ul {
-    padding-left: $HeaderLiTopMargin !important;
-
     li.sidebar-toggle {
       display: none;
 
@@ -362,8 +365,6 @@ header {
   nav {
     $toggleSize: $HeaderHeight;
     display: block;
-    line-height: 0;
-    font-size: 0;
     white-space: nowrap;
     user-select: none;
     cursor: default;
@@ -377,16 +378,9 @@ header {
       li {
         display: inline-block;
         color: #fff;
-        height: $HeaderLiHeight;
-        line-height: $HeaderLiHeight;
-        font-size: 18px;
+        font-size: 16px;
         box-sizing: border-box;
-        vertical-align: middle;
-        margin: $HeaderLiTopMargin 0;
-
-        &:not(:first-child) {
-          margin-left: 7px
-        }
+        margin: 0;
 
         a {
           cursor: pointer !important;
@@ -402,9 +396,11 @@ header {
           transition: background-color .35s linear;
           background-color: $HeaderFooterBG;
           box-shadow: 0 0 10px $HeaderFooterBG;
+          top: 0;
+          left: 0;
 
           + * {
-            margin-left: 7px + $toggleSize;
+            margin-left: calc(#{$toggleSize} - 1em);
           }
 
           &:before {
@@ -462,7 +458,7 @@ header {
             text-shadow: 0 1px 0 rgba($NRed, .3);
             background: #fff;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: bold;
             display: inline-block;
             max-width: 100%;
@@ -495,12 +491,14 @@ header, #sidebar .mobile-nav {
   a[href^=http]:after {
     font-style: italic;
     content: "";
-    width: 12px;
-    height: 12px;
-    background-image: url(/img/extlink.svg);
-    background-size: 12px;
+    width: 0.9rem;
+    height: 0.9rem;
+    background-image: url(/img/external-link-alt-solid.svg);
+    background-size: contain;
     display: inline-block;
-    margin-left: 2px;
+    margin-left: .25rem;
+    position: relative;
+    top: .1rem;
   }
 }
 
