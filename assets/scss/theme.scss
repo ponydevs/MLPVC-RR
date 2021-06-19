@@ -612,10 +612,10 @@ header, #sidebar .mobile-nav {
 }
 
 .typcn.btn-discord {
-  background-color: #7289DA;
+  background-color: $DiscordBlurple;
 
   &:before {
-    background-image: url('/img/discord-logo-white.svg')
+    background-image: url('/img/discord-logo-white.svg?v=2')
   }
 }
 
