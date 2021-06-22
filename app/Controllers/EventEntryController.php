@@ -15,8 +15,7 @@ use Exception;
 
 class EventEntryController extends EventController {
 
-  /** @var EventEntry */
-  private $entry;
+  private ?EventEntry $entry;
 
   private function load_event_entry($params, string $action) {
     $lazy_loading = $action === 'lazyload';

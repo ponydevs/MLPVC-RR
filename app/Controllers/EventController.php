@@ -13,7 +13,7 @@ class EventController extends Controller {
     parent::__construct();
   }
 
-  protected Event $event;
+  protected ?Event $event;
 
   protected function load_event($params) {
     if (empty($params['id']))
