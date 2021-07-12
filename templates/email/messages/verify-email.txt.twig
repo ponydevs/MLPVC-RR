@@ -7,7 +7,7 @@
 {% block body %}
 Your e-mail address ({{ email }}) was added to an account on our website. We're sending this e-mail to confirm the address belongs to whoever did this.
 
-If you on this address and requested this change yourself then please use the link below to update the address in your account:
+If you own this address and requested this change yourself then please use the link below to update the address in your account:
 
 {% include 'email/text/_button.txt.twig' with { url: verify_url, text: 'Verify my e-mail address' } %}
 
